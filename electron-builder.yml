@@ -1,5 +1,5 @@
-appId: com.cherry-ai.cherry-stuido-enterprise
-productName: Cherry Studio 企业版
+appId: com.cherry-ai.matai-enterprise
+productName: MatAI 企业版
 electronLanguages:
   - zh-CN
   - zh-TW
@@ -13,9 +13,9 @@ directories:
   buildResources: build
 
 protocols:
-  - name: Cherry Studio 企业版
+  - name: MatAI Enterprise
     schemes:
-      - cherrystudio
+      - cherrystudio-enterprise
 files:
   - '**/*'
   - '!**/{.vscode,.yarn,.yarn-lock,.github,.cursorrules,.prettierrc}'
@@ -64,8 +64,8 @@ asarUnpack:
   - '**/*.{metal,exp,lib}'
   - 'node_modules/@img/sharp-libvips-*/**'
 win:
-  executableName: Cherry Studio 企业版
-  artifactName: Cherry-Studio-Enterprise-${version}-${arch}-setup.${ext}
+  executableName: MatAI 企业版
+  artifactName: MatAI-Enterprise-${version}-${arch}-setup.${ext}
   target:
     - target: nsis
     # - target: portable
@@ -73,7 +73,7 @@ win:
     sign: scripts/win-sign.js
   verifyUpdateCodeSignature: false
 nsis:
-  artifactName: Cherry-Studio-Enterprise-${version}-${arch}-setup.${ext}
+  artifactName: MatAI-Enterprise-${version}-${arch}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -84,7 +84,7 @@ nsis:
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
-  artifactName: Cherry-Studio-Enterprise-${version}-${arch}.${ext}
+  artifactName: MatAI-Enterprise-${version}-${arch}.${ext}
   minimumSystemVersion: '20.1.0' # 最低支持 macOS 11.0
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
@@ -95,7 +95,7 @@ mac:
     - target: dmg
     - target: zip
 linux:
-  artifactName: Cherry-Studio-Enterprise-${version}-${arch}.${ext}
+  artifactName: MatAI-Enterprise-${version}-${arch}.${ext}
   target:
     - target: AppImage
     - target: deb
@@ -104,7 +104,7 @@ linux:
   category: Utility
   desktop:
     entry:
-      StartupWMClass: CherryStudio
+      StartupWMClass: MatAI-Enterprise
   mimeTypes:
     - x-scheme-handler/cherrystudio-enterprise
 rpm:
@@ -113,7 +113,7 @@ rpm:
   fpm: ['--rpm-rpmbuild-define=_build_id_links none']
 publish:
   provider: generic
-  url: https://releases.enterprise.cherry-ai.com
+  url: https://files.matai.center/d/MatAI
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
 beforePack: scripts/before-pack.js

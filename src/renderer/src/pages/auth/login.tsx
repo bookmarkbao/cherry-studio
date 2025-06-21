@@ -30,7 +30,7 @@ interface LoginFormValues {
   serverUrl: string
 }
 
-const BACKGROUND_IMAGE = 'https://api.dujin.org/bing/1920.php'
+const BACKGROUND_IMAGE = 'https://auth.matai.center/files/resource/built-in/admin/background-1.jpg'
 
 const LoginPage: FC = () => {
   const [loading, setLoading] = useState(false)
@@ -154,6 +154,11 @@ const LoginPage: FC = () => {
       setSsoLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    dispatch(setServerUrl('https://client.matai.center'))
+    form.setFieldsValue({ serverUrl: 'https://client.matai.center' })
+  }, [dispatch, form])
 
   const validateUrl = (_: any, value: string) => {
     try {

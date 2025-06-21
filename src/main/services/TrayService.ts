@@ -51,7 +51,7 @@ export class TrayService {
       this.tray.setContextMenu(this.contextMenu)
     }
 
-    this.tray.setToolTip('Cherry Studio 企业版')
+    this.tray.setToolTip('MatAI')
 
     this.tray.on('right-click', () => {
       if (this.contextMenu) {

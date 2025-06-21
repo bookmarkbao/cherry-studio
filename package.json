@@ -1,6 +1,6 @@
 {
-  "name": "CherryStudioEnterprise",
-  "version": "1.5.111",
+  "name": "MatAI-Enterprise",
+  "version": "1.5.112",
   "private": true,
   "description": "A powerful AI assistant for producer.",
   "main": "./out/main/index.js",
