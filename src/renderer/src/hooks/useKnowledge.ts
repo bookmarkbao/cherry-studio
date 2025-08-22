@@ -253,6 +253,12 @@ export const useKnowledge = (baseId: string) => {
 
   useEffect(() => {
     const notes = base?.items.filter((item) => item.type === 'note') || []
+
+    if (base?.isServer) {
+      setNoteItems(notes)
+      return
+    }
+
     runAsyncFunction(async () => {
       const newNoteItems = await Promise.all(
         notes.map(async (item) => {

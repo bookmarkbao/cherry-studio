@@ -10,6 +10,7 @@ export enum IpcChannel {
   App_Reload = 'app:reload',
   App_Info = 'app:info',
   App_Proxy = 'app:proxy',
+  App_ProxyForWebview = 'app:proxy-for-webview',
   App_SetLaunchToTray = 'app:set-launch-to-tray',
   App_SetTray = 'app:set-tray',
   App_SetTrayOnClose = 'app:set-tray-on-close',
@@ -303,5 +304,8 @@ export enum IpcChannel {
   OCR_ocr = 'ocr:ocr',
 
   // Cherryin
-  Cherryin_GetSignature = 'cherryin:get-signature'
+  Cherryin_GetSignature = 'cherryin:get-signature',
+
+  // OAuth
+  OAuth_Casdoor = 'oauth:casdoor'
 }

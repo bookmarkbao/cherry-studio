@@ -40,14 +40,13 @@ export default abstract class BaseReranker {
    */
   protected getRerankRequestBody(query: string, searchResults: ExtractChunkData[]) {
     const provider = this.base.rerankApiClient?.provider
-    const documents = searchResults.map((doc) => doc.pageContent)
     const topN = this.base.documentCount
 
     if (provider === 'voyageai') {
       return {
         model: this.base.rerankApiClient?.model,
         query,
-        documents,
+        documents: searchResults,
         top_k: topN
       }
     } else if (provider === 'bailian') {
@@ -55,7 +54,7 @@ export default abstract class BaseReranker {
         model: this.base.rerankApiClient?.model,
         input: {
           query,
-          documents
+          documents: searchResults
         },
         parameters: {
           top_n: topN
@@ -64,14 +63,14 @@ export default abstract class BaseReranker {
     } else if (provider?.includes('tei')) {
       return {
         query,
-        texts: documents,
+        texts: searchResults,
         return_text: true
       }
     } else {
       return {
         model: this.base.rerankApiClient?.model,
         query,
-        documents,
+        documents: searchResults,
         top_n: topN
       }
     }

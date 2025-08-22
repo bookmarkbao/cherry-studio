@@ -41,6 +41,7 @@ export type Assistant = {
   // for translate. 更好的做法是定义base assistant，把 Assistant 作为多种不同定义 assistant 的联合类型，但重构代价太大
   content?: string
   targetLanguage?: TranslateLanguage
+  isServer?: boolean
 }
 
 export type TranslateAssistant = Assistant & {
@@ -532,6 +533,7 @@ export type MinAppType = {
   style?: CSSProperties
   addTime?: string
   type?: 'Custom' | 'Default' // Added the 'type' property
+  isServer?: boolean
 }
 
 export enum ThemeMode {
@@ -619,6 +621,7 @@ export interface KnowledgeBase {
     type: 'preprocess'
     provider: PreprocessProvider
   }
+  isServer?: boolean
 }
 
 export type ApiClient = {
@@ -876,6 +879,7 @@ export interface MCPServer {
   shouldConfig?: boolean
   /** 用于标记服务器是否运行中 */
   isActive: boolean
+  isServer?: boolean
 }
 
 export type BuiltinMCPServer = MCPServer & {

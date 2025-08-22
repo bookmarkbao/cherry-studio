@@ -144,7 +144,12 @@ const MCPToolsSection = ({ tools, server, onToggleTool, onToggleAutoApprove }: M
       width: 150, // Fixed width might be good for alignment
       align: 'center',
       render: (_, tool) => (
-        <Switch checked={isToolEnabled(tool)} onChange={(checked) => handleToggle(tool, checked)} size="small" />
+        <Switch
+          checked={isToolEnabled(tool)}
+          onChange={(checked) => handleToggle(tool, checked)}
+          size="small"
+          disabled={server.isServer}
+        />
       )
     },
     {
@@ -169,7 +174,7 @@ const MCPToolsSection = ({ tools, server, onToggleTool, onToggleAutoApprove }: M
           placement="top">
           <Switch
             checked={isToolAutoApproved(tool, server)}
-            disabled={!isToolEnabled(tool)}
+            disabled={!isToolEnabled(tool) || server.isServer}
             onChange={(checked) => handleAutoApproveToggle(tool, checked)}
             size="small"
           />

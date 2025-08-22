@@ -17,9 +17,9 @@ export interface ToolEnvironmentConfig {
 // CLI 工具选项
 export const CLI_TOOLS = [
   { value: codeTools.claudeCode, label: 'Claude Code' },
-  { value: codeTools.qwenCode, label: 'Qwen Code' },
-  { value: codeTools.geminiCli, label: 'Gemini CLI' },
-  { value: codeTools.openaiCodex, label: 'OpenAI Codex' }
+  { value: codeTools.qwenCode, label: 'Qwen Code' }
+  // { value: codeTools.geminiCli, label: 'Gemini CLI' },
+  // { value: codeTools.openaiCodex, label: 'OpenAI Codex' }
 ]
 
 export const GEMINI_SUPPORTED_PROVIDERS = ['aihubmix', 'dmxapi', 'new-api']
@@ -110,11 +110,12 @@ export const generateToolEnvironment = ({
   baseUrl: string
 }): Record<string, string> => {
   const env: Record<string, string> = {}
+  const modelId = model.id + '@' + modelProvider.id
 
   switch (tool) {
     case codeTools.claudeCode:
       env.ANTHROPIC_BASE_URL = getCodeToolsApiBaseUrl(model, 'anthropic') || modelProvider.apiHost
-      env.ANTHROPIC_MODEL = model.id
+      env.ANTHROPIC_MODEL = modelId
       if (modelProvider.type === 'anthropic') {
         env.ANTHROPIC_API_KEY = apiKey
       } else {
@@ -127,7 +128,7 @@ export const generateToolEnvironment = ({
       env.GEMINI_API_KEY = apiKey
       env.GEMINI_BASE_URL = apiBaseUrl
       env.GOOGLE_GEMINI_BASE_URL = apiBaseUrl
-      env.GEMINI_MODEL = model.id
+      env.GEMINI_MODEL = modelId
       break
     }
 
@@ -135,7 +136,7 @@ export const generateToolEnvironment = ({
     case codeTools.openaiCodex:
       env.OPENAI_API_KEY = apiKey
       env.OPENAI_BASE_URL = baseUrl
-      env.OPENAI_MODEL = model.id
+      env.OPENAI_MODEL = modelId
       break
   }
 

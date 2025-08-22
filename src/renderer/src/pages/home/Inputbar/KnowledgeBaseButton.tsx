@@ -1,6 +1,6 @@
 import { QuickPanelListItem, useQuickPanel } from '@renderer/components/QuickPanel'
 import { useAppSelector } from '@renderer/store'
-import { KnowledgeBase } from '@renderer/types'
+import { Assistant, KnowledgeBase } from '@renderer/types'
 import { Tooltip } from 'antd'
 import { CircleX, FileSearch, Plus } from 'lucide-react'
 import { FC, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
@@ -15,11 +15,21 @@ interface Props {
   ref?: React.RefObject<KnowledgeBaseButtonRef | null>
   selectedBases?: KnowledgeBase[]
   onSelect: (bases: KnowledgeBase[]) => void
+  serverBases?: KnowledgeBase[]
+  assistant: Assistant
   disabled?: boolean
   ToolbarButton: any
 }
 
-const KnowledgeBaseButton: FC<Props> = ({ ref, selectedBases, onSelect, disabled, ToolbarButton }) => {
+const KnowledgeBaseButton: FC<Props> = ({
+  ref,
+  selectedBases,
+  onSelect,
+  disabled,
+  serverBases = [],
+  assistant,
+  ToolbarButton
+}) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const quickPanel = useQuickPanel()
@@ -44,6 +54,20 @@ const KnowledgeBaseButton: FC<Props> = ({ ref, selectedBases, onSelect, disabled
   )
 
   const baseItems = useMemo<QuickPanelListItem[]>(() => {
+    if (assistant.isServer) {
+      return serverBases.map((base) => {
+        const items = knowledgeState.bases.find((b) => b.id === base.id)?.items || []
+        return {
+          label: base.name,
+          description: `${items.length} ${t('files.count')}`,
+          icon: <FileSearch />,
+          action: () => {},
+          disabled: true,
+          isSelected: true
+        }
+      })
+    }
+
     const items: QuickPanelListItem[] = knowledgeState.bases.map((base) => ({
       label: base.name,
       description: `${base.items.length} ${t('files.count')}`,
@@ -71,7 +95,17 @@ const KnowledgeBaseButton: FC<Props> = ({ ref, selectedBases, onSelect, disabled
     })
 
     return items
-  }, [knowledgeState.bases, t, selectedBases, handleBaseSelect, navigate, onSelect, quickPanel])
+  }, [
+    assistant.isServer,
+    handleBaseSelect,
+    knowledgeState.bases,
+    navigate,
+    onSelect,
+    quickPanel,
+    selectedBases,
+    serverBases,
+    t
+  ])
 
   const openQuickPanel = useCallback(() => {
     quickPanel.open({

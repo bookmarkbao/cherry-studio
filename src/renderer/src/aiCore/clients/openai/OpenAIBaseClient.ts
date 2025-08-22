@@ -89,7 +89,7 @@ export abstract class OpenAIBaseClient<
     const sdk = await this.getSdkInstance()
 
     const data = await sdk.embeddings.create({
-      model: model.id,
+      model: model.id + '@' + model.provider,
       input: model?.provider === 'baidu-cloud' ? ['hi'] : 'hi',
       encoding_format: this.provider.id === 'voyageai' ? undefined : 'float'
     })

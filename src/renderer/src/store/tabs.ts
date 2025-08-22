@@ -52,9 +52,13 @@ const tabsSlice = createSlice({
     },
     setActiveTab: (state, action: PayloadAction<string>) => {
       state.activeTabId = action.payload
+    },
+    resetTabs: (state) => {
+      state.tabs = initialState.tabs
+      state.activeTabId = initialState.activeTabId
     }
   }
 })
 
-export const { setTabs, addTab, removeTab, setActiveTab, updateTab } = tabsSlice.actions
+export const { setTabs, addTab, removeTab, setActiveTab, updateTab, resetTabs } = tabsSlice.actions
 export default tabsSlice.reducer

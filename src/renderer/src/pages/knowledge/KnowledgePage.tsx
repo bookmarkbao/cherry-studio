@@ -8,7 +8,7 @@ import { useKnowledgeBases } from '@renderer/hooks/useKnowledge'
 import { useShortcut } from '@renderer/hooks/useShortcuts'
 import KnowledgeSearchPopup from '@renderer/pages/knowledge/components/KnowledgeSearchPopup'
 import { KnowledgeBase } from '@renderer/types'
-import { Dropdown, Empty, MenuProps } from 'antd'
+import { Dropdown, Empty, MenuProps, Tag } from 'antd'
 import { Book, Plus, Settings } from 'lucide-react'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -118,6 +118,7 @@ const KnowledgePage: FC = () => {
                     icon={<Book size={16} />}
                     title={base.name}
                     onClick={() => setSelectedBase(base)}
+                    rightContent={base.isServer ? <Tag color="orange">企业</Tag> : undefined}
                   />
                 </div>
               </Dropdown>

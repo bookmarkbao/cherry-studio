@@ -7,6 +7,7 @@ import storage from 'redux-persist/lib/storage'
 import storeSyncService from '../services/StoreSyncService'
 import agents from './agents'
 import assistants from './assistants'
+import auth from './auth'
 import backup from './backup'
 import codeTools from './codeTools'
 import copilot from './copilot'
@@ -36,6 +37,7 @@ import websearch from './websearch'
 const logger = loggerService.withContext('Store')
 
 const rootReducer = combineReducers({
+  auth,
   assistants,
   agents,
   backup,

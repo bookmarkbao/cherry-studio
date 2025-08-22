@@ -1,11 +1,9 @@
 import { GlobalOutlined } from '@ant-design/icons'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import Scrollbar from '@renderer/components/Scrollbar'
-import ModelSettings from '@renderer/pages/settings/ModelSettings/ModelSettings'
 import { Divider as AntDivider } from 'antd'
 import {
   Brain,
-  Cloud,
   Command,
   FileCode,
   Hammer,
@@ -13,10 +11,10 @@ import {
   Info,
   MonitorCog,
   NotebookPen,
-  Package,
   PictureInPicture2,
   Settings2,
   TextCursorInput,
+  User,
   Zap
 } from 'lucide-react'
 import { FC } from 'react'
@@ -31,12 +29,14 @@ import DocProcessSettings from './DocProcessSettings'
 import GeneralSettings from './GeneralSettings'
 import MCPSettings from './MCPSettings'
 import MemorySettings from './MemorySettings'
+import ModelSettings from './ModelSettings/ModelSettings'
 import NotesSettings from './NotesSettings'
 import { ProviderList } from './ProviderSettings'
 import QuickAssistantSettings from './QuickAssistantSettings'
 import QuickPhraseSettings from './QuickPhraseSettings'
 import SelectionAssistantSettings from './SelectionAssistantSettings/SelectionAssistantSettings'
 import ShortcutSettings from './ShortcutSettings'
+import UserSettings from './UserSettings'
 import WebSearchSettings from './WebSearchSettings'
 
 const SettingsPage: FC = () => {
@@ -52,7 +52,7 @@ const SettingsPage: FC = () => {
       </Navbar>
       <ContentContainer id="content-container">
         <SettingMenus>
-          <MenuItemLink to="/settings/provider">
+          {/* <MenuItemLink to="/settings/provider">
             <MenuItem className={isRoute('/settings/provider')}>
               <Cloud size={18} />
               {t('settings.provider.title')}
@@ -63,8 +63,13 @@ const SettingsPage: FC = () => {
               <Package size={18} />
               {t('settings.model')}
             </MenuItem>
+          </MenuItemLink> */}
+          <MenuItemLink to="/settings/user">
+            <MenuItem className={isRoute('/settings/user')}>
+              <User size={18} />
+              {t('settings.general.user.label')}
+            </MenuItem>
           </MenuItemLink>
-          <Divider />
           <MenuItemLink to="/settings/general">
             <MenuItem className={isRoute('/settings/general')}>
               <Settings2 size={18} />
@@ -149,6 +154,7 @@ const SettingsPage: FC = () => {
         </SettingMenus>
         <SettingContent>
           <Routes>
+            <Route path="user" element={<UserSettings />} />
             <Route path="provider" element={<ProviderList />} />
             <Route path="model" element={<ModelSettings />} />
             <Route path="websearch" element={<WebSearchSettings />} />

@@ -779,6 +779,10 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       (!WebSearchService.isWebSearchEnabled(assistant.webSearchProviderId) || isMandatoryWebSearchModel(model))
     ) {
       updateAssistant({ ...assistant, webSearchProviderId: undefined })
+      window.modal.info({
+        title: t('settings.tool.websearch.provider_not_configured'),
+        centered: true
+      })
     }
     if (!isGenerateImageModel(model) && assistant.enableGenerateImage) {
       updateAssistant({ ...assistant, enableGenerateImage: false })
@@ -786,7 +790,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     if (isAutoEnableImageGenerationModel(model) && !assistant.enableGenerateImage) {
       updateAssistant({ ...assistant, enableGenerateImage: true })
     }
-  }, [assistant, model, updateAssistant])
+  }, [assistant, model, t, updateAssistant])
 
   const onMentionModel = useCallback(
     (model: Model) => {

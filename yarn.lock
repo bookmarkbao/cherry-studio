@@ -1993,6 +1993,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cherrystudio/api-sdk@npm:^0.0.45":
+  version: 0.0.45
+  resolution: "@cherrystudio/api-sdk@npm:0.0.45"
+  dependencies:
+    axios: "npm:^1.6.1"
+  checksum: 10c0/9d7270e855ee323b2166f67a2420373294a78c28db098eae601f00c26987f105a16e5493ba00e256d0833440e1f6d93c5dd3ad41c0e4f3e89c35d1d58d759da0
+  languageName: node
+  linkType: hard
+
 "@cherrystudio/embedjs-interfaces@npm:0.1.30":
   version: 0.1.30
   resolution: "@cherrystudio/embedjs-interfaces@npm:0.1.30"
@@ -9378,9 +9387,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"CherryStudio@workspace:.":
+"CherryStudioEnterprise@workspace:.":
   version: 0.0.0-use.local
-  resolution: "CherryStudio@workspace:."
+  resolution: "CherryStudioEnterprise@workspace:."
   dependencies:
     "@agentic/exa": "npm:^7.3.3"
     "@agentic/searxng": "npm:^7.3.3"
@@ -9391,6 +9400,7 @@ __metadata:
     "@aws-sdk/client-bedrock": "npm:^3.840.0"
     "@aws-sdk/client-bedrock-runtime": "npm:^3.840.0"
     "@aws-sdk/client-s3": "npm:^3.840.0"
+    "@cherrystudio/api-sdk": "npm:^0.0.45"
     "@cherrystudio/embedjs": "npm:^0.1.31"
     "@cherrystudio/embedjs-libsql": "npm:^0.1.31"
     "@cherrystudio/embedjs-loader-csv": "npm:^0.1.31"
@@ -10222,6 +10232,17 @@ __metadata:
   version: 1.7.0
   resolution: "atomically@patch:atomically@npm%3A1.7.0#~/.yarn/patches/atomically-npm-1.7.0-e742e5293b.patch::version=1.7.0&hash=f1f4bf"
   checksum: 10c0/972dc0ce23ec1e186ec7a1536f668dc948d1890a9417ad3412d0a5c5720ed7795df9e664a54400405ec10cb33445fa424aed9547646a7f89b1a1a40433484f44
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.1":
+  version: 1.11.0
+  resolution: "axios@npm:1.11.0"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.4"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/5de273d33d43058610e4d252f0963cc4f10714da0bfe872e8ef2cbc23c2c999acc300fd357b6bce0fc84a2ca9bd45740fa6bb28199ce2c1266c8b1a393f2b36e
   languageName: node
   linkType: hard
 
@@ -14072,7 +14093,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.0":
+"form-data@npm:^4.0.0, form-data@npm:^4.0.4":
   version: 4.0.4
   resolution: "form-data@npm:4.0.4"
   dependencies:

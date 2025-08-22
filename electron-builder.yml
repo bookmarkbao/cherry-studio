@@ -1,5 +1,5 @@
-appId: com.kangfenmao.CherryStudio
-productName: Cherry Studio
+appId: com.cherry-ai.cherry-stuido-enterprise
+productName: Cherry Studio 企业版
 electronLanguages:
   - zh-CN
   - zh-TW
@@ -13,7 +13,7 @@ directories:
   buildResources: build
 
 protocols:
-  - name: Cherry Studio
+  - name: Cherry Studio 企业版
     schemes:
       - cherrystudio
 files:
@@ -64,16 +64,16 @@ asarUnpack:
   - '**/*.{metal,exp,lib}'
   - 'node_modules/@img/sharp-libvips-*/**'
 win:
-  executableName: Cherry Studio
-  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+  executableName: Cherry Studio 企业版
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}-setup.${ext}
   target:
     - target: nsis
-    - target: portable
+    # - target: portable
   signtoolOptions:
     sign: scripts/win-sign.js
   verifyUpdateCodeSignature: false
 nsis:
-  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -81,13 +81,10 @@ nsis:
   oneClick: false
   include: build/nsis-installer.nsh
   buildUniversalInstaller: false
-portable:
-  artifactName: ${productName}-${version}-${arch}-portable.${ext}
-  buildUniversalInstaller: false
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}.${ext}
   minimumSystemVersion: '20.1.0' # 最低支持 macOS 11.0
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
@@ -98,7 +95,7 @@ mac:
     - target: dmg
     - target: zip
 linux:
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}.${ext}
   target:
     - target: AppImage
     - target: deb
@@ -109,14 +106,14 @@ linux:
     entry:
       StartupWMClass: CherryStudio
   mimeTypes:
-    - x-scheme-handler/cherrystudio
+    - x-scheme-handler/cherrystudio-enterprise
 rpm:
   # Workaround for electron build issue on rpm package:
   # https://github.com/electron/forge/issues/3594
   fpm: ['--rpm-rpmbuild-define=_build_id_links none']
 publish:
   provider: generic
-  url: https://releases.cherry-ai.com
+  url: https://releases.enterprise.cherry-ai.com
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
 beforePack: scripts/before-pack.js
@@ -125,6 +122,20 @@ afterSign: scripts/notarize.js
 artifactBuildCompleted: scripts/artifact-build-completed.js
 releaseInfo:
   releaseNotes: |
-    Top navigation bar mode will display the mini-program using tabs
-    Fixed the issue with Google mini-program login
-    Notes support drag and drop sorting
+    ✨ 重要更新：
+    - 新增标签页拖拽重新排序功能
+    - 增强笔记编辑器同步功能
+    - 链接预览支持解析 OG 数据
+    - 新增"重试失败消息"按钮
+
+    🔧 性能优化：
+    - 优化 MCP 服务日志和错误处理
+    - 改进构建配置和依赖管理
+    - 增强 Linux 系统 OCR 构建支持
+
+    🐛 修复问题：
+    - 修复翻译功能相关问题
+    - 修复 MCP 服务相关问题
+    - 修复导航和标签页显示问题
+    - 修复 Obsidian 集成检测
+    - 其他界面和稳定性改进

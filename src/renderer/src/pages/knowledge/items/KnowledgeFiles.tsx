@@ -65,7 +65,7 @@ const KnowledgeFiles: FC<KnowledgeContentProps> = ({ selectedBase, progressMap, 
   }, [])
 
   const providerName = getProviderName(base?.model)
-  const disabled = !base?.version || !providerName
+  const disabled = !base?.version || !providerName || base.isServer
 
   const estimateSize = useCallback(() => 75, [])
 
@@ -193,7 +193,7 @@ const KnowledgeFiles: FC<KnowledgeContentProps> = ({ selectedBase, progressMap, 
                       ),
                       ext: file.ext,
                       extra: `${getDisplayTime(item)} · ${formatFileSize(file.size)}`,
-                      actions: (
+                      actions: !base.isServer && (
                         <FlexAlignCenter>
                           {item.uniqueId && (
                             <Button type="text" icon={<RefreshIcon />} onClick={() => refreshItem(item)} />

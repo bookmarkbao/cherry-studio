@@ -5,6 +5,7 @@ import { Sortable, useDndReorder } from '@renderer/components/dnd'
 import { EditIcon, RefreshIcon } from '@renderer/components/Icons'
 import Scrollbar from '@renderer/components/Scrollbar'
 import { useMCPServers } from '@renderer/hooks/useMCPServers'
+import { syncConfig } from '@renderer/services/sync/sync'
 import { MCPServer } from '@renderer/types'
 import { formatMcpError } from '@renderer/utils/error'
 import { matchKeywordsInString } from '@renderer/utils/match'
@@ -22,7 +23,6 @@ import EditMcpJsonPopup from './EditMcpJsonPopup'
 import InstallNpxUv from './InstallNpxUv'
 import McpMarketList from './McpMarketList'
 import McpServerCard from './McpServerCard'
-import SyncServersPopup from './SyncServersPopup'
 
 const logger = loggerService.withContext('McpServersList')
 
@@ -34,6 +34,7 @@ const McpServersList: FC = () => {
   const [modalType, setModalType] = useState<'json' | 'dxt'>('json')
   const [loadingServerIds, setLoadingServerIds] = useState<Set<string>>(new Set())
   const [serverVersions, setServerVersions] = useState<Record<string, string | null>>({})
+  const [isSyncing, setIsSyncing] = useState(false)
 
   const [searchText, _setSearchText] = useState('')
 
@@ -143,9 +144,17 @@ const McpServersList: FC = () => {
     [t]
   )
 
-  const onSyncServers = useCallback(() => {
-    SyncServersPopup.show(mcpServers)
-  }, [mcpServers])
+  const onSyncServers = useCallback(async () => {
+    try {
+      setIsSyncing(true)
+      await syncConfig()
+      window.message.success({ content: t('settings.mcp.sync.success'), key: 'mcp-sync' })
+    } catch (error) {
+      window.message.error({ content: t('settings.mcp.sync.error'), key: 'mcp-sync' })
+    } finally {
+      setIsSyncing(false)
+    }
+  }, [t])
 
   const handleAddServerSuccess = useCallback(
     async (server: MCPServer) => {
@@ -243,7 +252,12 @@ const McpServersList: FC = () => {
               {t('common.add')}
             </Button>
           </Dropdown>
-          <Button icon={<RefreshIcon size={14} />} type="default" onClick={onSyncServers} shape="round">
+          <Button
+            icon={<RefreshIcon size={14} />}
+            type="default"
+            loading={isSyncing}
+            onClick={onSyncServers}
+            shape="round">
             {t('settings.mcp.sync.button')}
           </Button>
         </ButtonGroup>
@@ -252,11 +266,13 @@ const McpServersList: FC = () => {
         items={filteredMcpServers}
         itemKey="id"
         onSortEnd={onSortEnd}
-        layout="grid"
+        layout="list"
+        horizontal={false}
         gap={'12px'}
+        listStyle={{ display: 'flex', flexDirection: 'column' }}
         useDragOverlay
         showGhost
-        renderItem={(server) => (
+        renderItem={(server: MCPServer) => (
           <McpServerCard
             server={server}
             version={serverVersions[server.id]}

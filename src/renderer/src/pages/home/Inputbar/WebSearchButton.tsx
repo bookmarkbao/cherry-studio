@@ -6,7 +6,7 @@ import { isGeminiModel, isWebSearchModel } from '@renderer/config/models'
 import { isGeminiWebSearchProvider } from '@renderer/config/providers'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useTimer } from '@renderer/hooks/useTimer'
-import { useWebSearchProviders } from '@renderer/hooks/useWebSearchProviders'
+import { useDefaultWebSearchProvider, useWebSearchProviders } from '@renderer/hooks/useWebSearchProviders'
 import { getProviderByModel } from '@renderer/services/AssistantService'
 import WebSearchService from '@renderer/services/WebSearchService'
 import { Assistant, WebSearchProvider, WebSearchProviderId } from '@renderer/types'
@@ -35,6 +35,8 @@ const WebSearchButton: FC<Props> = ({ ref, assistant, ToolbarButton }) => {
   const { providers } = useWebSearchProviders()
   const { updateAssistant } = useAssistant(assistant.id)
   const { setTimeoutTimer } = useTimer()
+
+  const { provider: defaultProvider } = useDefaultWebSearchProvider()
 
   // 注意：assistant.enableWebSearch 有不同的语义
   /** 表示是否启用网络搜索 */
@@ -118,9 +120,9 @@ const WebSearchButton: FC<Props> = ({ ref, assistant, ToolbarButton }) => {
     setTimeoutTimer('updateSelectedWebSearchBuiltin', () => updateAssistant(update), 200)
   }, [assistant, setTimeoutTimer, t, updateAssistant])
 
-  const providerItems = useMemo<QuickPanelListItem[]>(() => {
-    const isWebSearchModelEnabled = assistant.model && isWebSearchModel(assistant.model)
+  const isWebSearchModelEnabled = assistant.model && isWebSearchModel(assistant.model)
 
+  const providerItems = useMemo<QuickPanelListItem[]>(() => {
     const items: QuickPanelListItem[] = providers
       .map((p) => ({
         label: p.name,
@@ -153,8 +155,8 @@ const WebSearchButton: FC<Props> = ({ ref, assistant, ToolbarButton }) => {
   }, [
     WebSearchIcon,
     assistant.enableWebSearch,
-    assistant.model,
     assistant?.webSearchProviderId,
+    isWebSearchModelEnabled,
     providers,
     t,
     updateQuickPanelItem,
@@ -162,13 +164,21 @@ const WebSearchButton: FC<Props> = ({ ref, assistant, ToolbarButton }) => {
   ])
 
   const openQuickPanel = useCallback(() => {
-    quickPanel.open({
-      title: t('chat.input.web_search.label'),
-      list: providerItems,
-      symbol: '?',
-      pageSize: 9
-    })
-  }, [quickPanel, t, providerItems])
+    if (!defaultProvider) {
+      return quickPanel.open({
+        title: t('chat.input.web_search.label'),
+        list: providerItems,
+        symbol: '?',
+        pageSize: 9
+      })
+    }
+
+    if (isWebSearchModelEnabled) {
+      return updateAssistant({ ...assistant, enableWebSearch: true })
+    }
+
+    return updateAssistant({ ...assistant, webSearchProviderId: defaultProvider?.id })
+  }, [defaultProvider, isWebSearchModelEnabled, updateAssistant, assistant, quickPanel, t, providerItems])
 
   const handleOpenQuickPanel = useCallback(() => {
     if (quickPanel.isVisible && quickPanel.symbol === '?') {

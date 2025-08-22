@@ -1,8 +1,7 @@
 import App from '@renderer/components/MinApp/MinApp'
 import { useMinapps } from '@renderer/hooks/useMinapps'
 import { useRuntime } from '@renderer/hooks/useRuntime'
-import { useSettings } from '@renderer/hooks/useSettings'
-import { Code, FileSearch, Folder, Languages, LayoutGrid, NotepadText, Palette, Sparkle } from 'lucide-react'
+import { Code, FileSearch, Folder, Languages, LayoutGrid, MessageSquare, NotepadText, Sparkle } from 'lucide-react'
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -11,11 +10,17 @@ import styled from 'styled-components'
 const LaunchpadPage: FC = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { defaultPaintingProvider } = useSettings()
-  const { pinned } = useMinapps()
+  // const { defaultPaintingProvider } = useSettings()
+  const { pinned, serverMinapps } = useMinapps()
   const { openedKeepAliveMinapps } = useRuntime()
 
   const appMenuItems = [
+    {
+      icon: <MessageSquare size={32} className="icon" />,
+      text: t('title.chat'),
+      path: '/',
+      bgColor: 'linear-gradient(135deg, #2DD4BF, #0EA5E9)' // 聊天：青蓝渐变，代表沟通和智慧
+    },
     {
       icon: <LayoutGrid size={32} className="icon" />,
       text: t('title.apps'),
@@ -28,12 +33,12 @@ const LaunchpadPage: FC = () => {
       path: '/knowledge',
       bgColor: 'linear-gradient(135deg, #10B981, #34D399)' // 知识库：翠绿色，代表生长和知识
     },
-    {
-      icon: <Palette size={32} className="icon" />,
-      text: t('title.paintings'),
-      path: `/paintings/${defaultPaintingProvider}`,
-      bgColor: 'linear-gradient(135deg, #EC4899, #F472B6)' // 绘画：活力粉色，代表创造力和艺术
-    },
+    // {
+    //   icon: <Palette size={32} className="icon" />,
+    //   text: t('title.paintings'),
+    //   path: `/paintings/${defaultPaintingProvider}`,
+    //   bgColor: 'linear-gradient(135deg, #EC4899, #F472B6)' // 绘画：活力粉色，代表创造力和艺术
+    // },
     {
       icon: <Sparkle size={32} className="icon" />,
       text: t('title.agents'),
@@ -69,7 +74,7 @@ const LaunchpadPage: FC = () => {
   // 合并并排序小程序列表
   const sortedMinapps = useMemo(() => {
     // 先添加固定的小程序，保持原有顺序
-    const result = [...pinned]
+    const result = [...pinned, ...serverMinapps]
 
     // 再添加其他已打开但未固定的小程序
     openedKeepAliveMinapps.forEach((app) => {
@@ -79,7 +84,7 @@ const LaunchpadPage: FC = () => {
     })
 
     return result
-  }, [openedKeepAliveMinapps, pinned])
+  }, [openedKeepAliveMinapps, pinned, serverMinapps])
 
   return (
     <Container>

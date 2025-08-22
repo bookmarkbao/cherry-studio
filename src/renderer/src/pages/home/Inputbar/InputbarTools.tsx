@@ -361,6 +361,8 @@ const InputbarTools = ({
             onSelect={handleKnowledgeBaseSelect}
             ToolbarButton={ToolbarButton}
             disabled={files.length > 0}
+            assistant={assistant}
+            serverBases={assistant.knowledge_bases?.filter((base) => base.isServer)}
           />
         ),
         condition: showKnowledgeIcon

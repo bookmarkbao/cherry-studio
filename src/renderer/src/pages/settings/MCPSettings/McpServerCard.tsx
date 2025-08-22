@@ -6,7 +6,7 @@ import { getMcpTypeLabel } from '@renderer/i18n/label'
 import { MCPServer } from '@renderer/types'
 import { formatErrorMessage } from '@renderer/utils/error'
 import { Alert, Button, Space, Switch, Tag, Tooltip, Typography } from 'antd'
-import { CircleXIcon, Settings2, SquareArrowOutUpRight } from 'lucide-react'
+import { CircleXIcon, SquareArrowOutUpRight } from 'lucide-react'
 import { FC, useCallback } from 'react'
 import { FallbackProps } from 'react-error-boundary'
 import { useTranslation } from 'react-i18next'
@@ -130,6 +130,16 @@ const McpServerCard: FC<McpServerCardProps> = ({
             )}
           </ServerNameWrapper>
           <ToolbarWrapper onClick={(e) => e.stopPropagation()}>
+            {!server.isServer && (
+              <Button
+                type="text"
+                shape="circle"
+                icon={<DeleteIcon size={14} className="lucide-custom" />}
+                danger
+                onClick={onDelete}
+                data-no-dnd
+              />
+            )}
             <Switch
               value={server.isActive}
               key={server.id}
@@ -138,19 +148,15 @@ const McpServerCard: FC<McpServerCardProps> = ({
               size="small"
               data-no-dnd
             />
-            <Button
-              type="text"
-              shape="circle"
-              icon={<DeleteIcon size={14} className="lucide-custom" />}
-              danger
-              onClick={onDelete}
-              data-no-dnd
-            />
-            <Button type="text" shape="circle" icon={<Settings2 size={14} />} onClick={onEdit} data-no-dnd />
           </ToolbarWrapper>
         </ServerHeader>
         <ServerDescription>{server.description}</ServerDescription>
         <ServerFooter>
+          {server.isServer && (
+            <Tag color="orange" style={{ borderRadius: 20, margin: 0 }}>
+              {t('enterprise.enterprise')}
+            </Tag>
+          )}
           {version && (
             <VersionBadge color="#108ee9">
               <VersionText ellipsis={{ tooltip: true }}>{version}</VersionText>
@@ -183,6 +189,7 @@ const CardContainer = styled.div<{ $isActive: boolean }>`
   margin-bottom: 5px;
   height: 125px;
   opacity: ${(props) => (props.$isActive ? 1 : 0.6)};
+  width: calc(100vw - var(--settings-width) - 50px);
 
   &:hover {
     opacity: 1;

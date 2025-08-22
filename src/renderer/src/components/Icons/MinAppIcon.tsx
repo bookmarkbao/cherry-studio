@@ -11,11 +11,9 @@ interface Props {
 }
 
 const MinAppIcon: FC<Props> = ({ app, size = 48, style, sidebar = false }) => {
-  const _app = DEFAULT_MIN_APPS.find((item) => item.id === app.id)
+  const systemApp = DEFAULT_MIN_APPS.find((item) => item.id === app.id)
 
-  if (!_app) {
-    return null
-  }
+  const _app = systemApp || app
 
   return (
     <Container

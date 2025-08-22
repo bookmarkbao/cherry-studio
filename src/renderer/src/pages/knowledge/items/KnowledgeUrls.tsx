@@ -41,7 +41,7 @@ const KnowledgeUrls: FC<KnowledgeContentProps> = ({ selectedBase }) => {
   )
 
   const providerName = getProviderName(base?.model)
-  const disabled = !base?.version || !providerName
+  const disabled = !base?.version || !providerName || base.isServer
 
   const reversedItems = useMemo(() => [...urlItems].reverse(), [urlItems])
   const estimateSize = useCallback(() => 75, [])
@@ -113,16 +113,18 @@ const KnowledgeUrls: FC<KnowledgeContentProps> = ({ selectedBase }) => {
   return (
     <ItemContainer>
       <ItemHeader>
-        <Button
-          type="primary"
-          icon={<PlusIcon size={16} />}
-          onClick={(e) => {
-            e.stopPropagation()
-            handleAddUrl()
-          }}
-          disabled={disabled}>
-          {t('knowledge.add_url')}
-        </Button>
+        {!base.isServer && (
+          <Button
+            type="primary"
+            icon={<PlusIcon size={16} />}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleAddUrl()
+            }}
+            disabled={disabled}>
+            {t('knowledge.add_url')}
+          </Button>
+        )}
       </ItemHeader>
       <ItemFlexColumn>
         {urlItems.length === 0 && <KnowledgeEmptyView />}
@@ -172,7 +174,7 @@ const KnowledgeUrls: FC<KnowledgeContentProps> = ({ selectedBase }) => {
                 ),
                 ext: '.url',
                 extra: getDisplayTime(item),
-                actions: (
+                actions: !base.isServer && (
                   <FlexAlignCenter>
                     {item.uniqueId && <Button type="text" icon={<RefreshIcon />} onClick={() => refreshItem(item)} />}
                     <StatusIconWrapper>
