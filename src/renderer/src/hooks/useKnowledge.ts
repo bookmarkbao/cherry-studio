@@ -19,11 +19,9 @@ import { addFilesThunk, addItemThunk, addNoteThunk, addVedioThunk } from '@rende
 import {
   FileMetadata,
   isKnowledgeFileItem,
-  isKnowledgeNoteItem,
   isKnowledgeVideoItem,
   KnowledgeBase,
   KnowledgeItem,
-  KnowledgeNoteItem,
   ProcessingStatus
 } from '@renderer/types'
 import { runAsyncFunction, uuid } from '@renderer/utils'
@@ -301,12 +299,18 @@ export const useKnowledge = (baseId: string) => {
   const videoItems = base?.items.filter((item) => item.type === 'video') || []
 
   useEffect(() => {
-    const notes = base?.items.filter(isKnowledgeNoteItem) ?? []
+    const notes = base?.items.filter((item) => item.type === 'note') || []
+
+    if (base?.isServer) {
+      setNoteItems(notes)
+      return
+    }
+
     runAsyncFunction(async () => {
       const newNoteItems = await Promise.all(
         notes.map(async (item) => {
           const note = await db.knowledge_notes.get(item.id)
-          return { ...item, content: note?.content ?? '' } satisfies KnowledgeNoteItem
+          return { ...item, content: note?.content ?? '' }
         })
       )
       setNoteItems(newNoteItems)

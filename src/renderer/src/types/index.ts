@@ -47,6 +47,8 @@ export type Assistant = {
   // for translate. 更好的做法是定义base assistant，把 Assistant 作为多种不同定义 assistant 的联合类型，但重构代价太大
   content?: string
   targetLanguage?: TranslateLanguage
+  // Server Assistant
+  isServer?: boolean
 }
 
 export type TranslateAssistant = Assistant & {
@@ -133,6 +135,7 @@ export type AssistantSettings = {
   reasoning_effort_cache?: ReasoningEffortOption
   qwenThinkMode?: boolean
   toolUseMode: 'function' | 'prompt'
+  promptVisible?: boolean
 }
 
 export type Agent = Omit<Assistant, 'model'> & {
@@ -559,6 +562,7 @@ export type MinAppType = {
   style?: CSSProperties
   addTime?: string
   type?: 'Custom' | 'Default' // Added the 'type' property
+  isServer?: boolean
 }
 
 export enum ThemeMode {
@@ -838,6 +842,8 @@ export interface MCPServer {
   trustedAt?: number
   /** 安装时间戳 */
   installedAt?: number
+  /** 是否为服务器 MCP */
+  isServer?: boolean
 }
 
 export type BuiltinMCPServer = MCPServer & {

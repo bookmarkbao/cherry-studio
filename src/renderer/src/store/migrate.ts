@@ -29,6 +29,7 @@ import {
   Provider,
   ProviderApiOptions,
   SystemProviderIds,
+  ThemeMode,
   TranslateLanguageCode,
   WebSearchProvider
 } from '@renderer/types'
@@ -1901,7 +1902,7 @@ const migrateConfig = {
   },
   '122': (state: RootState) => {
     try {
-      state.settings.navbarPosition = 'left'
+      state.settings.navbarPosition = 'top'
       return state
     } catch (error) {
       logger.error('migrate 122 error', error as Error)
@@ -1927,6 +1928,18 @@ const migrateConfig = {
       if (lanyunProvider && lanyunProvider.models.length === 0) {
         updateProvider(state, 'lanyun', { models: SYSTEM_MODELS.lanyun })
       }
+
+      if (state.inputTools) {
+        state.inputTools.toolOrder.visible = state.inputTools.toolOrder.visible.filter(
+          (tool) => tool !== 'workflow_tools'
+        )
+        state.inputTools.toolOrder.hidden = state.inputTools.toolOrder.hidden.filter(
+          (tool) => tool !== 'workflow_tools'
+        )
+      }
+
+      state.settings.theme = ThemeMode.dark
+      state.settings.clickAssistantToShowTopic = false
 
       return state
     } catch (error) {

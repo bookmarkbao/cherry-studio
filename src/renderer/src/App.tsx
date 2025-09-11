@@ -9,6 +9,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { ToastPortal } from './components/ToastPortal'
 import TopViewContainer from './components/TopView'
 import AntdProvider from './context/AntdProvider'
+import AuthProvider from './context/AuthProvider'
 import { CodeStyleProvider } from './context/CodeStyleProvider'
 import { HeroUIProvider } from './context/HeroUIProvider'
 import { NotificationProvider } from './context/NotificationProvider'
@@ -42,7 +43,9 @@ function App(): React.ReactElement {
                   <CodeStyleProvider>
                     <PersistGate loading={null} persistor={persistor}>
                       <TopViewContainer>
-                        <Router />
+                        <AuthProvider>
+                          <Router />
+                        </AuthProvider>
                       </TopViewContainer>
                     </PersistGate>
                   </CodeStyleProvider>

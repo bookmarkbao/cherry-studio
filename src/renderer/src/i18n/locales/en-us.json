@@ -838,6 +838,51 @@
     "openai": "OpenAI",
     "openai-response": "OpenAI-Response"
   },
+  "enterprise": {
+    "auth": {
+      "logout": "Logout",
+      "logout_confirm": "Logging out will not delete your data, continue?",
+      "password_login": "Username/Password Login",
+      "sso_login": "SSO Login",
+      "switch_to_password_login": "Use Username/Password Login",
+      "switch_to_sso_login": "Use SSO Login"
+    },
+    "enterprise": "Enterprise",
+    "login": {
+      "admin_forbidden": "Administrators are not allowed to log in to the client",
+      "button": {
+        "login": "Login",
+        "sso_login": "SSO Login"
+      },
+      "error": {
+        "invalid_credentials": "Invalid username or password",
+        "login_failed": "Login failed",
+        "sso_failed": "SSO login failed",
+        "sso_timeout": "SSO login timeout, please try again",
+        "sync_config_failed": "Failed to sync configuration"
+      },
+      "placeholder": {
+        "password": "Password",
+        "server_url": "Server URL",
+        "username": "Username"
+      },
+      "switch": {
+        "password_mode": "Username/Password Login",
+        "sso_mode": "SSO Login"
+      },
+      "validation": {
+        "password_no_spaces": "Password cannot contain spaces",
+        "password_required": "Please enter password",
+        "server_url_empty": "Please enter server URL",
+        "server_url_invalid": "Please enter a valid server URL",
+        "server_url_invalid_format": "Please enter a valid URL",
+        "server_url_invalid_protocol": "Please enter a valid HTTP or HTTPS URL",
+        "server_url_required": "Please enter server URL first",
+        "username_no_spaces": "Username cannot contain spaces",
+        "username_required": "Please enter username"
+      }
+    }
+  },
   "error": {
     "availableProviders": "Available Providers",
     "availableTools": "Available Tools",
@@ -3316,6 +3361,9 @@
         "version_options": "Version Options"
       },
       "title": "General Settings",
+      "user": {
+        "label": "User Settings"
+      },
       "user_name": {
         "label": "User Name",
         "placeholder": "Enter your name"
@@ -4307,6 +4355,7 @@
   "title": {
     "agents": "Agents",
     "apps": "Apps",
+    "chat": "Chat",
     "code": "Code",
     "files": "Files",
     "home": "Home",

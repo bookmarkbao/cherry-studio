@@ -396,6 +396,8 @@ const InputbarTools = ({
             selectedBases={selectedKnowledgeBases}
             onSelect={handleKnowledgeBaseSelect}
             disabled={files.length > 0}
+            assistant={assistant}
+            serverBases={assistant.knowledge_bases?.filter((base) => base.isServer)}
           />
         ),
         condition: showKnowledgeBaseButton

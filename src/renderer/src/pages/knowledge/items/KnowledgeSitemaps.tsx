@@ -45,7 +45,7 @@ const KnowledgeSitemaps: FC<KnowledgeContentProps> = ({ selectedBase }) => {
   )
 
   const providerName = getProviderName(base?.model)
-  const disabled = !base?.version || !providerName
+  const disabled = !base?.version || !providerName || base.isServer
 
   const reversedItems = useMemo(() => [...sitemapItems].reverse(), [sitemapItems])
   const estimateSize = useCallback(() => 75, [])
@@ -86,16 +86,18 @@ const KnowledgeSitemaps: FC<KnowledgeContentProps> = ({ selectedBase }) => {
   return (
     <ItemContainer>
       <ItemHeader>
-        <ResponsiveButton
-          type="primary"
-          icon={<PlusIcon size={16} />}
-          onClick={(e) => {
-            e.stopPropagation()
-            handleAddSitemap()
-          }}
-          disabled={disabled}>
-          {t('knowledge.add_sitemap')}
-        </ResponsiveButton>
+        {!base.isServer && (
+          <ResponsiveButton
+            type="primary"
+            icon={<PlusIcon size={16} />}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleAddSitemap()
+            }}
+            disabled={disabled}>
+            {t('knowledge.add_sitemap')}
+          </ResponsiveButton>
+        )}
       </ItemHeader>
       <ItemFlexColumn>
         {sitemapItems.length === 0 && <KnowledgeEmptyView />}
@@ -123,7 +125,7 @@ const KnowledgeSitemaps: FC<KnowledgeContentProps> = ({ selectedBase }) => {
                 ),
                 ext: '.sitemap',
                 extra: getDisplayTime(item),
-                actions: (
+                actions: !base.isServer && (
                   <FlexAlignCenter>
                     {item.uniqueId && <Button type="text" icon={<RefreshIcon />} onClick={() => refreshItem(item)} />}
                     <StatusIconWrapper>

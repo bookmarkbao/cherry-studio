@@ -11,6 +11,7 @@ export const useMinapps = () => {
     minapps: enabled.map((app) => DEFAULT_MIN_APPS.find((item) => item.id === app.id) || app),
     disabled: disabled.map((app) => DEFAULT_MIN_APPS.find((item) => item.id === app.id) || app),
     pinned: pinned.map((app) => DEFAULT_MIN_APPS.find((item) => item.id === app.id) || app),
+    serverMinapps: enabled.filter((app) => app.isServer),
     updateMinapps: (minapps: MinAppType[]) => {
       dispatch(setMinApps(minapps))
     },

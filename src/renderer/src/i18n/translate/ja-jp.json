@@ -838,6 +838,51 @@
     "openai": "OpenAI",
     "openai-response": "OpenAI-Response"
   },
+  "enterprise": {
+    "auth": {
+      "logout": "ログアウト",
+      "logout_confirm": "ログアウトしませんか？",
+      "password_login": "ユーザー名/パスワードログイン",
+      "sso_login": "SSOログイン",
+      "switch_to_password_login": "ユーザー名/パスワードでログイン",
+      "switch_to_sso_login": "SSOでログイン"
+    },
+    "enterprise": "企業",
+    "login": {
+      "admin_forbidden": "管理者はクライアントへのログインが禁止されています",
+      "button": {
+        "login": "ログイン",
+        "sso_login": "SSOログイン"
+      },
+      "error": {
+        "invalid_credentials": "ユーザー名またはパスワードが無効です",
+        "login_failed": "ログインに失敗しました",
+        "sso_failed": "SSOログインに失敗しました",
+        "sso_timeout": "SSOログインがタイムアウトしました。もう一度お試しください",
+        "sync_config_failed": "設定の同期に失敗しました"
+      },
+      "placeholder": {
+        "password": "パスワード",
+        "server_url": "サーバーURL",
+        "username": "ユーザー名"
+      },
+      "switch": {
+        "password_mode": "ユーザー名/パスワードログイン",
+        "sso_mode": "SSOログイン"
+      },
+      "validation": {
+        "password_no_spaces": "パスワードにスペースを含めることはできません",
+        "password_required": "パスワードを入力してください",
+        "server_url_empty": "サーバーURLを入力してください",
+        "server_url_invalid": "有効なサーバーURLを入力してください",
+        "server_url_invalid_format": "有効なURLを入力してください",
+        "server_url_invalid_protocol": "有効なHTTPまたはHTTPS URLを入力してください",
+        "server_url_required": "まずサーバーURLを入力してください",
+        "username_no_spaces": "ユーザー名にスペースを含めることはできません",
+        "username_required": "ユーザー名を入力してください"
+      }
+    }
+  },
   "error": {
     "availableProviders": "利用可能なプロバイダー",
     "availableTools": "利用可能なツール",
@@ -3316,6 +3361,9 @@
         "version_options": "バージョンオプション"
       },
       "title": "一般設定",
+      "user": {
+        "label": "ユーザー設定"
+      },
       "user_name": {
         "label": "ユーザー名",
         "placeholder": "ユーザー名を入力"
@@ -4307,6 +4355,7 @@
   "title": {
     "agents": "エージェント",
     "apps": "アプリ",
+    "chat": "チャット",
     "code": "Code",
     "files": "ファイル",
     "home": "ホーム",

@@ -1,4 +1,5 @@
 import { loggerService } from '@logger'
+import api from '@renderer/config/api'
 import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
 import store from '@renderer/store'
@@ -49,18 +50,34 @@ export function useSystemAgents() {
           }
         }
 
-        // 如果没有远程配置或获取失败，加载本地代理
-        if (resourcesPath) {
-          try {
-            const fileName = currentLanguage === 'zh-CN' ? 'agents-zh.json' : 'agents-en.json'
-            const localAgentsData = await window.api.fs.read(`${resourcesPath}/data/${fileName}`, 'utf-8')
-            _agents = JSON.parse(localAgentsData) as Agent[]
-          } catch (error) {
-            logger.error('Failed to load local agents:', error as Error)
+        try {
+          if (_agents.length === 0) {
+            const serverAgents = await api.agentFindAll({ group: '' })
+            _agents = serverAgents.data as unknown as Agent[]
           }
-        }
+          setAgents(_agents)
+        } catch (error) {
+          logger.error('Failed to load server agents:', error as Error)
+          // 如果没有远程配置或获取失败，加载本地代理
+          if (resourcesPath) {
+            try {
+              let fileName = 'agents.json'
+              if (currentLanguage === 'zh-CN') {
+                fileName = 'agents-zh.json'
+              } else {
+                fileName = 'agents-en.json'
+              }
 
-        setAgents(_agents)
+              const localAgentsData = await window.api.fs.read(`${resourcesPath}/data/${fileName}`, 'utf-8')
+              _agents = JSON.parse(localAgentsData) as Agent[]
+            } catch (error) {
+              const localAgentsData = await window.api.fs.read(resourcesPath + '/data/agents.json', 'utf-8')
+              _agents = JSON.parse(localAgentsData) as Agent[]
+            }
+          }
+
+          setAgents(_agents)
+        }
       } catch (error) {
         logger.error('Failed to load agents:', error as Error)
         // 发生错误时使用已加载的本地 agents

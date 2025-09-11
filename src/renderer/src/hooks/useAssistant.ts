@@ -50,12 +50,21 @@ export function useAssistants() {
       }
       const index = assistants.findIndex((_assistant) => _assistant.id === assistant.id)
       const _assistant: Assistant = { ...assistant, id: uuid(), topics: [getDefaultTopic(assistant.id)] }
+
+      // 如果 promptVisible 为 false，不复制 prompt
+      if (_assistant.settings && assistant.settings?.promptVisible === false) {
+        _assistant.prompt = ''
+        const { promptVisible, ...restSettings } = _assistant.settings
+        _assistant.settings = restSettings
+      }
+
       if (index === -1) {
         logger.warn("Origin assistant's id not found. Fallback to addAssistant.")
         dispatch(addAssistant(_assistant))
       } else {
         // 插入到后面
         try {
+          delete _assistant.isServer
           dispatch(insertAssistant({ index: index + 1, assistant: _assistant }))
         } catch (e) {
           logger.error('Failed to insert assistant', e as Error)

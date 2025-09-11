@@ -80,7 +80,7 @@ export const ImageGenerationMiddleware: CompletionsMiddleware =
           if (imageFiles.length > 0) {
             response = await sdk.images.edit(
               {
-                model: assistant.model.id,
+                model: assistant.model.id + '@' + assistant.model.provider,
                 image: imageFiles,
                 prompt: prompt || ''
               },
@@ -89,7 +89,7 @@ export const ImageGenerationMiddleware: CompletionsMiddleware =
           } else {
             response = await sdk.images.generate(
               {
-                model: assistant.model.id,
+                model: assistant.model.id + '@' + assistant.model.provider,
                 prompt: prompt || '',
                 response_format: assistant.model.id.includes('gpt-image-1') ? undefined : 'b64_json'
               },

@@ -4,6 +4,7 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 
 import { loggerService } from '@logger'
+import { IpcChannel } from '@shared/IpcChannel'
 import { app } from 'electron'
 
 import { handleProvidersProtocolUrl } from './urlschema/handle-providers'
@@ -13,15 +14,17 @@ import { windowService } from './WindowService'
 const logger = loggerService.withContext('ProtocolClient')
 
 export const CHERRY_STUDIO_PROTOCOL = 'cherrystudio'
+export const CHERRY_STUDIO_ENTERPRISE_PROTOCOL = 'cherrystudio-enterprise'
 
 export function registerProtocolClient(app: Electron.App) {
   if (process.defaultApp) {
     if (process.argv.length >= 2) {
-      app.setAsDefaultProtocolClient(CHERRY_STUDIO_PROTOCOL, process.execPath, [process.argv[1]])
+      app.setAsDefaultProtocolClient(CHERRY_STUDIO_ENTERPRISE_PROTOCOL, process.execPath, [process.argv[1]])
+      return
     }
   }
 
-  app.setAsDefaultProtocolClient(CHERRY_STUDIO_PROTOCOL)
+  app.setAsDefaultProtocolClient(CHERRY_STUDIO_ENTERPRISE_PROTOCOL)
 }
 
 export function handleProtocolUrl(url: string) {
@@ -40,6 +43,9 @@ export function handleProtocolUrl(url: string) {
     case 'providers':
       handleProvidersProtocolUrl(urlObj)
       return
+    case 'oauth':
+      handleOauthProtocolUrl(urlObj)
+      return
   }
 
   // You can send the data to your renderer process
@@ -49,6 +55,21 @@ export function handleProtocolUrl(url: string) {
     mainWindow.webContents.send('protocol-data', {
       url,
       params: Object.fromEntries(params.entries())
+    })
+  }
+}
+
+function handleOauthProtocolUrl(urlObj: URL) {
+  const params = new URLSearchParams(urlObj.search)
+  const pathname = urlObj.pathname
+  const mainWindow = windowService.getMainWindow()
+
+  if (mainWindow && pathname === '/casdoor') {
+    const token = params.get('token')
+    const user = params.get('user')
+    mainWindow.webContents.send(IpcChannel.OAuth_Casdoor, {
+      token,
+      user: JSON.parse(user || '{}')
     })
   }
 }
@@ -87,11 +108,11 @@ export async function setupAppImageDeepLink(): Promise<void> {
     // %U allows passing the URL to the application
     // NoDisplay=true hides it from the regular application menu
     const desktopFileContent = `[Desktop Entry]
-Name=Cherry Studio
+Name=Cherry Studio 企业版
 Exec=${escapePathForExec(appPath)} %U
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/${CHERRY_STUDIO_PROTOCOL};
+MimeType=x-scheme-handler/${CHERRY_STUDIO_ENTERPRISE_PROTOCOL}
 NoDisplay=true
 `
 

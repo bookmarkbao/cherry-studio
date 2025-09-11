@@ -510,6 +510,7 @@ const McpSettings: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
+          disabled={server.isServer}
           onValuesChange={() => setIsFormChanged(true)}
           style={{
             overflowY: 'auto',
@@ -517,7 +518,7 @@ const McpSettings: React.FC = () => {
             paddingRight: '10px'
           }}>
           <Form.Item name="name" label={t('settings.mcp.name')} rules={[{ required: true, message: '' }]}>
-            <Input placeholder={t('common.name')} disabled={server.type === 'inMemory'} />
+            <Input placeholder={t('common.name')} disabled={server.type === 'inMemory' || server.isServer} />
           </Form.Item>
           <Form.Item name="description" label={t('settings.mcp.description')}>
             <TextArea rows={2} placeholder={t('common.description')} />
@@ -747,12 +748,14 @@ const McpSettings: React.FC = () => {
               <ServerName className="text-nowrap">{server?.name}</ServerName>
               {serverVersion && <VersionBadge count={serverVersion} color="blue" />}
             </Flex>
-            <Button
-              danger
-              icon={<DeleteIcon size={14} className="lucide-custom" />}
-              type="text"
-              onClick={() => onDeleteMcpServer(server)}
-            />
+            {!server.isServer && (
+              <Button
+                danger
+                icon={<DeleteIcon size={14} className="lucide-custom" />}
+                type="text"
+                onClick={() => onDeleteMcpServer(server)}
+              />
+            )}
           </Flex>
           <Flex align="center" gap={16}>
             <Switch

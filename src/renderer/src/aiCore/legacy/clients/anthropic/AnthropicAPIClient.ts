@@ -572,7 +572,7 @@ export class AnthropicAPIClient extends BaseApiClient<
         }
 
         const commonParams: MessageCreateParamsBase = {
-          model: model.id,
+          model: model.id + '@' + model.provider,
           messages:
             isRecursiveCall && recursiveSdkMessages && recursiveSdkMessages.length > 0
               ? recursiveSdkMessages

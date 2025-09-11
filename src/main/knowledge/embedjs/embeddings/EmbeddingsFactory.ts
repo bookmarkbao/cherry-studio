@@ -38,7 +38,7 @@ export default class EmbeddingsFactory {
         }
       })
     }
-    if (apiVersion !== undefined) {
+    if (apiVersion) {
       return new AzureOpenAiEmbeddings({
         azureOpenAIApiKey: apiKey,
         azureOpenAIApiVersion: apiVersion,

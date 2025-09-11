@@ -111,7 +111,7 @@ const getTabIcon = (
   }
 }
 
-let lastSettingsPath = '/settings/provider'
+let lastSettingsPath = '/settings/user'
 const specialTabs = ['launchpad', 'settings']
 
 const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
@@ -195,6 +195,12 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
   useEffect(() => {
     removeSpecialTabs()
   }, [removeSpecialTabs])
+
+  useEffect(() => {
+    navigate('/launchpad')
+    dispatch(setActiveTab('launchpad'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const closeTab = (tabId: string) => {
     tabsService.closeTab(tabId)

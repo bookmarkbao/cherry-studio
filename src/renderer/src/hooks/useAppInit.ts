@@ -6,9 +6,9 @@ import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
 import KnowledgeQueue from '@renderer/queue/KnowledgeQueue'
 import MemoryService from '@renderer/services/MemoryService'
-import { useAppDispatch } from '@renderer/store'
-import { useAppSelector } from '@renderer/store'
+import { syncConfig } from '@renderer/services/sync/sync'
 import { handleSaveData } from '@renderer/store'
+import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { selectMemoryConfig } from '@renderer/store/memory'
 import { setAvatar, setFilesPath, setResourcesPath, setUpdateState } from '@renderer/store/runtime'
 import { delay, runAsyncFunction } from '@renderer/utils'
@@ -16,7 +16,7 @@ import { checkDataLimit } from '@renderer/utils'
 import { defaultLanguage } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { useDefaultModel } from './useAssistant'
 import useFullScreenNotice from './useFullScreenNotice'
@@ -44,6 +44,8 @@ export function useAppInit() {
   const avatar = useLiveQuery(() => db.settings.get('image://avatar'))
   const { theme } = useTheme()
   const memoryConfig = useAppSelector(selectMemoryConfig)
+  const syncInterval = useAppSelector((state) => state.auth.syncInterval)
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     document.getElementById('spinner')?.remove()
@@ -180,4 +182,45 @@ export function useAppInit() {
   useEffect(() => {
     checkDataLimit()
   }, [])
+
+  useEffect(() => {
+    // 清除之前的定时器
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current)
+      syncTimeoutRef.current = null
+    }
+
+    // 首次同步
+    syncConfig()
+
+    const initAppSync = () => {
+      // 清除之前的定时器
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current)
+        syncTimeoutRef.current = null
+      }
+
+      syncTimeoutRef.current = setTimeout(async () => {
+        try {
+          logger.info('[Init] App Sync Start')
+          await syncConfig()
+          await delay(1)
+          initAppSync()
+        } catch (error) {
+          logger.error('[Init] App Sync Error:', error as Error)
+          initAppSync()
+        }
+      }, syncInterval * 1000)
+    }
+
+    initAppSync()
+
+    // 清理函数
+    return () => {
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current)
+        syncTimeoutRef.current = null
+      }
+    }
+  }, [syncInterval])
 }

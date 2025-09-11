@@ -56,7 +56,6 @@ import styled from 'styled-components'
 import NarrowLayout from '../Messages/NarrowLayout'
 import AttachmentPreview from './AttachmentPreview'
 import InputbarTools, { InputbarToolsRef } from './InputbarTools'
-import KnowledgeBaseInput from './KnowledgeBaseInput'
 import MentionModelsInput from './MentionModelsInput'
 import SendMessageButton from './SendMessageButton'
 import TokenCount from './TokenCount'
@@ -808,14 +807,14 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     setMentionedModels(mentionedModels.filter((m) => m.id !== model.id))
   }
 
-  const handleRemoveKnowledgeBase = (knowledgeBase: KnowledgeBase) => {
-    const newKnowledgeBases = assistant.knowledge_bases?.filter((kb) => kb.id !== knowledgeBase.id)
-    updateAssistant({
-      ...assistant,
-      knowledge_bases: newKnowledgeBases
-    })
-    setSelectedKnowledgeBases(newKnowledgeBases ?? [])
-  }
+  // const handleRemoveKnowledgeBase = (knowledgeBase: KnowledgeBase) => {
+  //   const newKnowledgeBases = assistant.knowledge_bases?.filter((kb) => kb.id !== knowledgeBase.id)
+  //   updateAssistant({
+  //     ...assistant,
+  //     knowledge_bases: newKnowledgeBases
+  //   })
+  //   setSelectedKnowledgeBases(newKnowledgeBases ?? [])
+  // }
 
   useEffect(() => {
     if (!isWebSearchModel(model) && assistant.enableWebSearch) {
@@ -826,6 +825,10 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       (!WebSearchService.isWebSearchEnabled(assistant.webSearchProviderId) || isMandatoryWebSearchModel(model))
     ) {
       updateAssistant({ ...assistant, webSearchProviderId: undefined })
+      window.modal.info({
+        title: t('settings.tool.websearch.provider_not_configured'),
+        centered: true
+      })
     }
     if (isGenerateImageModel(model)) {
       if (isAutoEnableImageGenerationModel(model) && !assistant.enableGenerateImage) {
@@ -834,7 +837,11 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
     } else if (assistant.enableGenerateImage) {
       updateAssistant({ ...assistant, enableGenerateImage: false })
     }
-  }, [assistant, model, updateAssistant])
+
+    if (isAutoEnableImageGenerationModel(model) && !assistant.enableGenerateImage) {
+      updateAssistant({ ...assistant, enableGenerateImage: true })
+    }
+  }, [assistant, model, t, updateAssistant])
 
   const onToggleExpanded = () => {
     const currentlyExpanded = expanded || !!textareaHeight
@@ -881,12 +888,12 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
           {files.length > 0 && (
             <AttachmentPreview files={files} setFiles={setFiles} onAttachmentContextMenu={appendTxtContentToInput} />
           )}
-          {selectedKnowledgeBases.length > 0 && (
+          {/* {selectedKnowledgeBases.length > 0 && (
             <KnowledgeBaseInput
               selectedKnowledgeBases={selectedKnowledgeBases}
               onRemoveKnowledgeBase={handleRemoveKnowledgeBase}
             />
-          )}
+          )} */}
           {mentionedModels.length > 0 && (
             <MentionModelsInput selectedModels={mentionedModels} onRemoveModel={handleRemoveModel} />
           )}

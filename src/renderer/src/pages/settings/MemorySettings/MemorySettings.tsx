@@ -15,7 +15,7 @@ import {
   setGlobalMemoryEnabled
 } from '@renderer/store/memory'
 import type { MemoryItem } from '@types'
-import { Badge, Button, Dropdown, Empty, Flex, Form, Input, Modal, Pagination, Space, Spin, Switch } from 'antd'
+import { Button, Dropdown, Empty, Flex, Form, Input, Modal, Pagination, Space, Spin, Switch } from 'antd'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Brain, Calendar, MenuIcon, PlusIcon, Settings2, UserRound, UserRoundMinus, UserRoundPlus } from 'lucide-react'
@@ -619,7 +619,7 @@ const MemorySettings = () => {
               {t('memory.statistics')}
             </SettingHelpText>
           </div>
-          <Badge count={uniqueUsers.length} showZero style={{ backgroundColor: 'var(--color-primary)' }} />
+          <span style={{ fontSize: '14px', color: 'var(--color-text-1)' }}>{uniqueUsers.length}</span>
         </SettingRow>
       </SettingGroup>
 

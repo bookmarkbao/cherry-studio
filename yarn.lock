@@ -2342,6 +2342,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@cherrystudio/api-sdk@npm:^0.0.61":
+  version: 0.0.61
+  resolution: "@cherrystudio/api-sdk@npm:0.0.61"
+  dependencies:
+    axios: "npm:^1.6.1"
+  checksum: 10c0/94fa2dafd1bae1c809ccd17e1ccf967530c77a4bb60fa9625b43d1e537b4f643b6f4cd3ecd8e43522e597f480d0c3645812a75bd9b8b533abb9f46ce2ecd164d
+  languageName: node
+  linkType: hard
+
 "@cherrystudio/embedjs-interfaces@npm:0.1.30":
   version: 0.1.30
   resolution: "@cherrystudio/embedjs-interfaces@npm:0.1.30"
@@ -13204,9 +13213,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"CherryStudio@workspace:.":
+"CherryStudioEnterprise@workspace:.":
   version: 0.0.0-use.local
-  resolution: "CherryStudio@workspace:."
+  resolution: "CherryStudioEnterprise@workspace:."
   dependencies:
     "@agentic/exa": "npm:^7.3.3"
     "@agentic/searxng": "npm:^7.3.3"
@@ -13223,6 +13232,7 @@ __metadata:
     "@aws-sdk/client-s3": "npm:^3.840.0"
     "@biomejs/biome": "npm:2.2.4"
     "@cherrystudio/ai-core": "workspace:^1.0.0-alpha.18"
+    "@cherrystudio/api-sdk": "npm:^0.0.61"
     "@cherrystudio/embedjs": "npm:^0.1.31"
     "@cherrystudio/embedjs-libsql": "npm:^0.1.31"
     "@cherrystudio/embedjs-loader-csv": "npm:^0.1.31"
@@ -14133,6 +14143,17 @@ __metadata:
   version: 1.0.20
   resolution: "aws4fetch@npm:1.0.20"
   checksum: 10c0/a4eac7bd0d1c3e611c17ed1ef41ac0b48c0a8e74a985ad968c071e74d94586d3572edc943b43fa5ca756c686ea73baa2f48e264d657bb8c2e95c8e0037d48a87
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.1":
+  version: 1.12.2
+  resolution: "axios@npm:1.12.2"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.4"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/80b063e318cf05cd33a4d991cea0162f3573481946f9129efb7766f38fde4c061c34f41a93a9f9521f02b7c9565ccbc197c099b0186543ac84a24580017adfed
   languageName: node
   linkType: hard
 
@@ -18258,7 +18279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.0":
+"form-data@npm:^4.0.0, form-data@npm:^4.0.4":
   version: 4.0.4
   resolution: "form-data@npm:4.0.4"
   dependencies:

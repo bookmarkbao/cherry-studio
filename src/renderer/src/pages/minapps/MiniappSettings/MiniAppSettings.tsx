@@ -1,8 +1,9 @@
 import { UndoOutlined } from '@ant-design/icons' // 导入重置图标
-import { DEFAULT_MIN_APPS } from '@renderer/config/minapps'
+import api from '@renderer/config/api'
 import { useMinapps } from '@renderer/hooks/useMinapps'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { SettingDescription, SettingDivider, SettingRowTitle, SettingTitle } from '@renderer/pages/settings'
+import { syncMinapps } from '@renderer/services/sync'
 import { useAppDispatch } from '@renderer/store'
 import {
   setMaxKeepAliveMinapps,
@@ -29,19 +30,31 @@ const MiniAppSettings: FC = () => {
   const [disabledMiniApps, setDisabledMiniApps] = useState(disabled || [])
   const [messageApi, contextHolder] = message.useMessage()
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  const handleResetMinApps = useCallback(() => {
-    setVisibleMiniApps(DEFAULT_MIN_APPS)
-    setDisabledMiniApps([])
-    updateMinapps(DEFAULT_MIN_APPS)
-    updateDisabledMinapps([])
+  const handleResetMinApps = useCallback(async () => {
+    try {
+      setLoading(true)
+      updateMinapps([])
+      updateDisabledMinapps([])
+      const { data: configurations } = await api.configurationGetConfigurations()
+      const { enabled, disabled } = await syncMinapps(configurations.minApps)
+      updateMinapps(enabled)
+      updateDisabledMinapps(disabled)
+      setVisibleMiniApps(enabled)
+      setDisabledMiniApps(disabled)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }, [updateDisabledMinapps, updateMinapps])
 
-  const handleSwapMinApps = useCallback(() => {
-    const temp = visibleMiniApps
-    setVisibleMiniApps(disabledMiniApps)
-    setDisabledMiniApps(temp)
-  }, [disabledMiniApps, visibleMiniApps])
+  // const handleSwapMinApps = useCallback(() => {
+  //   const temp = visibleMiniApps
+  //   setVisibleMiniApps(disabledMiniApps)
+  //   setDisabledMiniApps(temp)
+  // }, [disabledMiniApps, visibleMiniApps])
 
   // 恢复默认缓存数量
   const handleResetCacheLimit = useCallback(() => {
@@ -80,8 +93,10 @@ const MiniAppSettings: FC = () => {
       {contextHolder} {/* 添加消息上下文 */}
       <SettingTitle style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
         <ButtonWrapper>
-          <Button onClick={handleSwapMinApps}>{t('common.swap')}</Button>
-          <Button onClick={handleResetMinApps}>{t('common.reset')}</Button>
+          {/* <Button onClick={handleSwapMinApps}>{t('common.swap')}</Button> */}
+          <Button onClick={handleResetMinApps} loading={loading} disabled={loading}>
+            {t('common.reset')}
+          </Button>
         </ButtonWrapper>
       </SettingTitle>
       <BorderedContainer>

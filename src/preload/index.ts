@@ -50,6 +50,7 @@ const api = {
   quit: () => ipcRenderer.invoke(IpcChannel.App_Quit),
   setProxy: (proxy: string | undefined, bypassRules?: string) =>
     ipcRenderer.invoke(IpcChannel.App_Proxy, proxy, bypassRules),
+  setProxyForWebview: (proxy: string) => ipcRenderer.invoke(IpcChannel.App_ProxyForWebview, proxy),
   checkForUpdate: () => ipcRenderer.invoke(IpcChannel.App_CheckForUpdate),
   quitAndInstall: () => ipcRenderer.invoke(IpcChannel.App_QuitAndInstall),
   setLanguage: (lang: string) => ipcRenderer.invoke(IpcChannel.App_SetLanguage, lang),
