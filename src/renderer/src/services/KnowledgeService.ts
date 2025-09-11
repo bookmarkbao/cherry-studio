@@ -1,8 +1,10 @@
 import { loggerService } from '@logger'
 import { Span } from '@opentelemetry/api'
 import AiProvider from '@renderer/aiCore'
+import api from '@renderer/config/api'
 import { DEFAULT_KNOWLEDGE_DOCUMENT_COUNT, DEFAULT_KNOWLEDGE_THRESHOLD } from '@renderer/config/constant'
 import { getEmbeddingMaxContext } from '@renderer/config/embedings'
+import { APP_NAME } from '@renderer/config/env'
 import { addSpan, endSpan } from '@renderer/services/SpanManagerService'
 import store from '@renderer/store'
 import {
@@ -60,7 +62,7 @@ export const getKnowledgeBaseParams = (base: KnowledgeBase): KnowledgeBaseParams
     id: base.id,
     dimensions: base.dimensions,
     embedApiClient: {
-      model: base.model.id,
+      model: base.model.id + '@' + base.model.provider,
       provider: base.model.provider,
       apiKey: aiProvider.getApiKey() || 'secret',
       apiVersion: provider.apiVersion,
@@ -69,7 +71,7 @@ export const getKnowledgeBaseParams = (base: KnowledgeBase): KnowledgeBaseParams
     chunkSize,
     chunkOverlap: base.chunkOverlap,
     rerankApiClient: {
-      model: base.rerankModel?.id || '',
+      model: base.rerankModel ? base.rerankModel.id + '@' + base.rerankModel.provider : '',
       provider: rerankProvider.name.toLowerCase(),
       apiKey: rerankAiProvider.getApiKey() || 'secret',
       baseURL: rerankHost
@@ -83,7 +85,7 @@ export const getFileFromUrl = async (url: string): Promise<FileMetadata | null> 
   logger.debug(`getFileFromUrl: ${url}`)
   let fileName = ''
 
-  if (url && url.includes('CherryStudio')) {
+  if (url && url.includes(APP_NAME)) {
     if (url.includes('/Data/Files')) {
       fileName = url.split('/Data/Files/')[1]
     }
@@ -132,6 +134,27 @@ export const searchKnowledgeBase = async (
     const documentCount = base.documentCount || DEFAULT_KNOWLEDGE_DOCUMENT_COUNT
     const threshold = base.threshold || DEFAULT_KNOWLEDGE_THRESHOLD
 
+    const searchKnowledgeApi = async () => {
+      const { data } = await api.knowledgebaseSearch({
+        id: Number(base.id),
+        searchKnowledgeBaseDto: {
+          search: query
+        }
+      })
+      return data
+    }
+
+    const rerankKnowledgeBaseApi = async () => {
+      const { data } = await api.knowledgebaseRerank({
+        id: Number(base.id),
+        rerankKnowledgeBaseDto: {
+          search: rewrite || query,
+          results: filteredResults
+        }
+      })
+      return data
+    }
+
     if (topicId) {
       currentSpan = addSpan({
         topicId,
@@ -147,13 +170,16 @@ export const searchKnowledgeBase = async (
       })
     }
 
-    const searchResults: KnowledgeSearchResult[] = await window.api.knowledgeBase.search(
-      {
-        search: rewrite || query,
-        base: baseParams
-      },
-      currentSpan?.spanContext()
-    )
+    // 执行搜索
+    const searchResults = base.isServer
+      ? await searchKnowledgeApi()
+      : await window.api.knowledgeBase.search(
+          {
+            search: rewrite || query,
+            base: baseParams
+          },
+          currentSpan?.spanContext()
+        )
 
     // 过滤阈值不达标的结果
     const filteredResults = searchResults.filter((item) => item.score >= threshold)
@@ -161,14 +187,16 @@ export const searchKnowledgeBase = async (
     // 如果有rerank模型，执行重排
     let rerankResults = filteredResults
     if (base.rerankModel && filteredResults.length > 0) {
-      rerankResults = await window.api.knowledgeBase.rerank(
-        {
-          search: rewrite || query,
-          base: baseParams,
-          results: filteredResults
-        },
-        currentSpan?.spanContext()
-      )
+      rerankResults = base.isServer
+        ? await rerankKnowledgeBaseApi()
+        : await window.api.knowledgeBase.rerank(
+            {
+              search: rewrite || query,
+              base: baseParams,
+              results: filteredResults
+            },
+            currentSpan?.spanContext()
+          )
     }
 
     // 限制文档数量

@@ -40,7 +40,7 @@ const KnowledgeNotes: FC<KnowledgeContentProps> = ({ selectedBase }) => {
   )
 
   const providerName = getProviderName(base?.model)
-  const disabled = !base?.version || !providerName
+  const disabled = !base?.version || !providerName || base.isServer
 
   const reversedItems = useMemo(() => [...noteItems].reverse(), [noteItems])
   const estimateSize = useCallback(() => 75, [])
@@ -80,16 +80,18 @@ const KnowledgeNotes: FC<KnowledgeContentProps> = ({ selectedBase }) => {
   return (
     <ItemContainer>
       <ItemHeader>
-        <ResponsiveButton
-          type="primary"
-          icon={<PlusIcon size={16} />}
-          onClick={(e) => {
-            e.stopPropagation()
-            handleAddNote()
-          }}
-          disabled={disabled}>
-          {t('knowledge.add_note')}
-        </ResponsiveButton>
+        {!base.isServer && (
+          <ResponsiveButton
+            type="primary"
+            icon={<PlusIcon size={16} />}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleAddNote()
+            }}
+            disabled={disabled}>
+            {t('knowledge.add_note')}
+          </ResponsiveButton>
+        )}
       </ItemHeader>
       <ItemFlexColumn>
         {noteItems.length === 0 && <KnowledgeEmptyView />}
@@ -111,7 +113,7 @@ const KnowledgeNotes: FC<KnowledgeContentProps> = ({ selectedBase }) => {
                 ),
                 ext: isMarkdownContent(note.content as string) ? '.md' : '.txt',
                 extra: getDisplayTime(note),
-                actions: (
+                actions: !base.isServer && (
                   <FlexAlignCenter>
                     <Button type="text" onClick={() => handleEditNote(note)} icon={<EditIcon size={14} />} />
                     <StatusIconWrapper>

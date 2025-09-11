@@ -836,6 +836,51 @@
     "openai": "OpenAI",
     "openai-response": "OpenAI-Response"
   },
+  "enterprise": {
+    "auth": {
+      "logout": "Выйти",
+      "logout_confirm": "Выйти не удалит ваши данные, продолжить?",
+      "password_login": "Вход по логину/паролю",
+      "sso_login": "Вход через SSO",
+      "switch_to_password_login": "Использовать логин/пароль",
+      "switch_to_sso_login": "Использовать SSO"
+    },
+    "enterprise": "Предприятие",
+    "login": {
+      "admin_forbidden": "Администраторам запрещен вход в клиент",
+      "button": {
+        "login": "Войти",
+        "sso_login": "Вход через SSO"
+      },
+      "error": {
+        "invalid_credentials": "Неверное имя пользователя или пароль",
+        "login_failed": "Не удалось войти",
+        "sso_failed": "Не удалось войти через SSO",
+        "sso_timeout": "Истекло время ожидания входа через SSO, попробуйте еще раз",
+        "sync_config_failed": "Не удалось синхронизировать конфигурацию"
+      },
+      "placeholder": {
+        "password": "Пароль",
+        "server_url": "URL сервера",
+        "username": "Имя пользователя"
+      },
+      "switch": {
+        "password_mode": "Вход по логину/паролю",
+        "sso_mode": "Вход через SSO"
+      },
+      "validation": {
+        "password_no_spaces": "Пароль не может содержать пробелы",
+        "password_required": "Пожалуйста, введите пароль",
+        "server_url_empty": "Пожалуйста, введите URL сервера",
+        "server_url_invalid": "Пожалуйста, введите корректный URL сервера",
+        "server_url_invalid_format": "Пожалуйста, введите корректный URL",
+        "server_url_invalid_protocol": "Пожалуйста, введите корректный HTTP или HTTPS URL",
+        "server_url_required": "Пожалуйста, сначала введите URL сервера",
+        "username_no_spaces": "Имя пользователя не может содержать пробелы",
+        "username_required": "Пожалуйста, введите имя пользователя"
+      }
+    }
+  },
   "error": {
     "availableProviders": "Доступные провайдеры",
     "availableTools": "Доступные инструменты",
@@ -3265,6 +3310,9 @@
         "version_options": "Варианты версии"
       },
       "title": "Общие настройки",
+      "user": {
+        "label": "Настройки пользователя"
+      },
       "user_name": {
         "label": "Имя пользователя",
         "placeholder": "Введите ваше имя"
@@ -4249,6 +4297,7 @@
   "title": {
     "agents": "Агенты",
     "apps": "Приложения",
+    "chat": "Чат",
     "code": "Code",
     "files": "Файлы",
     "home": "Главная",

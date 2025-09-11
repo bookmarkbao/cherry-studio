@@ -2,6 +2,7 @@ import { loggerService } from '@logger'
 import type { MCPToolResponse } from '@renderer/types'
 import { WebSearchSource } from '@renderer/types'
 import { MessageBlockStatus, MessageBlockType, ToolMessageBlock } from '@renderer/types/newMessage'
+import { safeToString } from '@renderer/utils/error'
 import { createCitationBlock, createToolBlock } from '@renderer/utils/messageUtils/create'
 
 import { BlockManager } from '../BlockManager'
@@ -77,7 +78,7 @@ export const createToolCallbacks = (deps: ToolCallbacksDependencies) => {
         if (finalStatus === MessageBlockStatus.ERROR) {
           changes.error = {
             message: `Tool execution failed/error`,
-            details: toolResponse.response,
+            details: safeToString(toolResponse.response),
             name: null,
             stack: null
           }

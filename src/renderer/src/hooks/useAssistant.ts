@@ -56,6 +56,7 @@ export function useAssistants() {
       } else {
         // 插入到后面
         try {
+          delete _assistant.isServer
           dispatch(insertAssistant({ index: index + 1, assistant: _assistant }))
         } catch (e) {
           logger.error('Failed to insert assistant', e as Error)

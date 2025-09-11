@@ -201,8 +201,13 @@ const MCPToolsButton: FC<Props> = ({ ref, setInputValue, resizeTextArea, assista
       description: server.description || server.baseUrl,
       icon: <Hammer />,
       action: () => EventEmitter.emit('mcp-server-select', server),
-      isSelected: assistantMcpServers.some((s) => s.id === server.id)
+      isSelected: assistantMcpServers.some((s) => s.id === server.id),
+      disabled: assistant.isServer
     }))
+
+    if (assistant.isServer) {
+      return newList
+    }
 
     newList.push({
       label: t('settings.mcp.addServer.label') + '...',
@@ -222,7 +227,7 @@ const MCPToolsButton: FC<Props> = ({ ref, setInputValue, resizeTextArea, assista
     })
 
     return newList
-  }, [activedMcpServers, t, assistantMcpServers, navigate, updateMcpEnabled, quickPanel])
+  }, [activedMcpServers, t, assistant.isServer, assistantMcpServers, navigate, updateMcpEnabled, quickPanel])
 
   const openQuickPanel = useCallback(() => {
     quickPanel.open({
@@ -447,7 +452,8 @@ const MCPToolsButton: FC<Props> = ({ ref, setInputValue, resizeTextArea, assista
             label: resource.name,
             description: resource.description,
             icon: <Hammer />,
-            action: () => handleResourceSelect(resource)
+            action: () => handleResourceSelect(resource),
+            disabled: assistant.mcpServers?.some((s) => s.isServer)
           }))
         )
       }

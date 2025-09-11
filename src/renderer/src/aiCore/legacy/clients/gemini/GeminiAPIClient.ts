@@ -91,7 +91,8 @@ export class GeminiAPIClient extends BaseApiClient<
         abortSignal: options?.signal,
         httpOptions: {
           ...rest.config?.httpOptions,
-          timeout: options?.timeout
+          timeout: options?.timeout,
+          headers: this.defaultHeaders()
         }
       }
     } satisfies SendMessageParameters
@@ -100,6 +101,8 @@ export class GeminiAPIClient extends BaseApiClient<
 
     const chat = sdk.chats.create({
       model: model,
+      // @ts-ignore provider is not typed
+      provider: 'gemini',
       history: history
     })
 
@@ -121,11 +124,12 @@ export class GeminiAPIClient extends BaseApiClient<
         aspectRatio: imageSize,
         abortSignal: signal,
         httpOptions: {
-          timeout: defaultTimeout
+          timeout: defaultTimeout,
+          headers: this.defaultHeaders()
         }
       }
       const response = await sdk.models.generateImages({
-        model: model,
+        model,
         prompt,
         config
       })
@@ -181,7 +185,8 @@ export class GeminiAPIClient extends BaseApiClient<
         baseUrl: this.getBaseURL(),
         apiVersion: this.getApiVersion(),
         headers: {
-          ...this.provider.extra_headers
+          ...this.provider.extra_headers,
+          ...this.defaultHeaders()
         }
       }
     })

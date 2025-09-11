@@ -1,5 +1,5 @@
-appId: com.kangfenmao.CherryStudio
-productName: Cherry Studio
+appId: com.cherry-ai.cherry-stuido-enterprise
+productName: Cherry Studio 企业版
 electronLanguages:
   - zh-CN
   - zh-TW
@@ -13,9 +13,9 @@ directories:
   buildResources: build
 
 protocols:
-  - name: Cherry Studio
+  - name: Cherry Studio 企业版
     schemes:
-      - cherrystudio
+      - cherrystudio-enterprise
 files:
   - "**/*"
   - "!**/{.vscode,.yarn,.yarn-lock,.github,.cursorrules,.prettierrc}"
@@ -64,16 +64,16 @@ asarUnpack:
   - "**/*.{metal,exp,lib}"
   - "node_modules/@img/sharp-libvips-*/**"
 win:
-  executableName: Cherry Studio
-  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+  executableName: Cherry Studio 企业版
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}-setup.${ext}
   target:
     - target: nsis
-    - target: portable
+    # - target: portable
   signtoolOptions:
     sign: scripts/win-sign.js
   verifyUpdateCodeSignature: false
 nsis:
-  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -81,13 +81,10 @@ nsis:
   oneClick: false
   include: build/nsis-installer.nsh
   buildUniversalInstaller: false
-portable:
-  artifactName: ${productName}-${version}-${arch}-portable.${ext}
-  buildUniversalInstaller: false
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}.${ext}
   minimumSystemVersion: "20.1.0" # 最低支持 macOS 11.0
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
@@ -98,7 +95,7 @@ mac:
     - target: dmg
     - target: zip
 linux:
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Cherry-Studio-Enterprise-${version}-${arch}.${ext}
   target:
     - target: AppImage
     - target: deb
@@ -107,16 +104,16 @@ linux:
   category: Utility
   desktop:
     entry:
-      StartupWMClass: CherryStudio
+      StartupWMClass: CherryStudioEnterprise
   mimeTypes:
-    - x-scheme-handler/cherrystudio
+    - x-scheme-handler/cherrystudio-enterprise
 rpm:
   # Workaround for electron build issue on rpm package:
   # https://github.com/electron/forge/issues/3594
   fpm: ["--rpm-rpmbuild-define=_build_id_links none"]
 publish:
   provider: generic
-  url: https://releases.cherry-ai.com
+  url: https://releases.enterprise.cherry-ai.com
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
 beforePack: scripts/before-pack.js
@@ -125,39 +122,11 @@ afterSign: scripts/notarize.js
 artifactBuildCompleted: scripts/artifact-build-completed.js
 releaseInfo:
   releaseNotes: |
-    <!--LANG:en-->
-    What's New in v1.6.5
-
-    Features:
-    - Add Claude Haiku 4.5 model support
-    - Add Mistral provider configuration
-    - Add Intel OpenVINO (NPU) OCR provider
-    - Add notes full-text search with highlighting
-    - Add built-in DiDi MCP server (China only)
-    - Support NewAPI as generic provider
-
-    Bug Fixes:
-    - Fix webview search (Cmd/Ctrl+F) functionality
-    - Fix API key rotation for each request
-    - Fix translate auto copy functionality
-    - Fix message layout and overflow display
-
-    <!--LANG:zh-CN-->
-    v1.6.5 版本更新
-
-    新增功能:
-    - 新增 Claude Haiku 4.5 模型支持
-    - 新增 Mistral 提供商配置
-    - 新增 Intel OpenVINO (NPU) OCR 提取功能
-    - 新增笔记全文搜索和高亮显示
-    - 新增内置滴滴 MCP 服务器(仅限中国)
-    - 支持 NewAPI 作为通用提供商
-
-    问题修复:
-    - 修复 webview 搜索(Cmd/Ctrl+F)功能
-    - 修复 API 密钥轮换机制
-    - 修复翻译自动复制功能
-    - 修复消息布局和溢出显示
-
-    <!--LANG:END-->
-
+    内核更新: AI 引擎核心，更快更稳定
+    笔记: 新增笔记全文搜索和高亮显示，支持目录变化监控，更快的响应速度
+    富文本编辑器优化: 现在支持生成和导航目录
+    智能预览优化: 自动解析链接的 OG 数据，生成美观的预览卡片
+    快捷键增强: 新增“重命名话题”、“编辑最后一条消息”等实用快捷键
+    个性化外观优化: 桌面端支持自定义窗口控制按钮 ，并可更换全局字体
+    新增内置滴滴 MCP 服务器(仅限中国)
+    错误修复: 修复了大量错误，提升了稳定性

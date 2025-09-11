@@ -16,9 +16,9 @@ export interface ToolEnvironmentConfig {
 
 // CLI 工具选项
 export const CLI_TOOLS = [
-  { value: codeTools.claudeCode, label: 'Claude Code' },
+  // { value: codeTools.claudeCode, label: 'Claude Code' },
   { value: codeTools.qwenCode, label: 'Qwen Code' },
-  { value: codeTools.geminiCli, label: 'Gemini CLI' },
+  // { value: codeTools.geminiCli, label: 'Gemini CLI' },
   { value: codeTools.openaiCodex, label: 'OpenAI Codex' },
   { value: codeTools.iFlowCli, label: 'iFlow CLI' },
   { value: codeTools.githubCopilotCli, label: 'GitHub Copilot CLI' }
@@ -126,7 +126,7 @@ export const generateToolEnvironment = ({
   switch (tool) {
     case codeTools.claudeCode:
       env.ANTHROPIC_BASE_URL = getCodeToolsApiBaseUrl(model, 'anthropic') || modelProvider.apiHost
-      env.ANTHROPIC_MODEL = model.id
+      env.ANTHROPIC_MODEL = model.id + '@' + model.provider
       if (modelProvider.type === 'anthropic') {
         env.ANTHROPIC_API_KEY = apiKey
       } else {
@@ -139,26 +139,26 @@ export const generateToolEnvironment = ({
       env.GEMINI_API_KEY = apiKey
       env.GEMINI_BASE_URL = apiBaseUrl
       env.GOOGLE_GEMINI_BASE_URL = apiBaseUrl
-      env.GEMINI_MODEL = model.id
+      env.GEMINI_MODEL = model.id + '@' + model.provider
       break
     }
 
     case codeTools.qwenCode:
       env.OPENAI_API_KEY = apiKey
       env.OPENAI_BASE_URL = baseUrl
-      env.OPENAI_MODEL = model.id
+      env.OPENAI_MODEL = model.id + '@' + model.provider
       break
     case codeTools.openaiCodex:
       env.OPENAI_API_KEY = apiKey
       env.OPENAI_BASE_URL = baseUrl
-      env.OPENAI_MODEL = model.id
+      env.OPENAI_MODEL = model.id + '@' + model.provider
       env.OPENAI_MODEL_PROVIDER = modelProvider.id
       break
 
     case codeTools.iFlowCli:
       env.IFLOW_API_KEY = apiKey
       env.IFLOW_BASE_URL = baseUrl
-      env.IFLOW_MODEL_NAME = model.id
+      env.IFLOW_MODEL_NAME = model.id + '@' + model.provider
       break
 
     case codeTools.githubCopilotCli:

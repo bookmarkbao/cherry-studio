@@ -704,7 +704,7 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
         }
 
         const commonParams: OpenAISdkParams = {
-          model: model.id,
+          model: model.id + '@' + model.provider,
           messages:
             isRecursiveCall && recursiveSdkMessages && recursiveSdkMessages.length > 0
               ? recursiveSdkMessages

@@ -8,7 +8,8 @@ import styled from 'styled-components'
 const KnowledgeBaseInput: FC<{
   selectedKnowledgeBases: KnowledgeBase[]
   onRemoveKnowledgeBase: (knowledgeBase: KnowledgeBase) => void
-}> = ({ selectedKnowledgeBases, onRemoveKnowledgeBase }) => {
+  closable?: boolean
+}> = ({ selectedKnowledgeBases, onRemoveKnowledgeBase, closable = true }) => {
   return (
     <Container>
       <HorizontalScrollContainer dependencies={[selectedKnowledgeBases]} expandable>
@@ -17,7 +18,7 @@ const KnowledgeBaseInput: FC<{
             icon={<FileSearchOutlined />}
             color="#3d9d0f"
             key={knowledgeBase.id}
-            closable
+            closable={closable}
             onClose={() => onRemoveKnowledgeBase(knowledgeBase)}>
             {knowledgeBase.name}
           </CustomTag>

@@ -1,6 +1,7 @@
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { usePromptProcessor } from '@renderer/hooks/usePromptProcessor'
 import AssistantSettingsPopup from '@renderer/pages/settings/AssistantSettings'
+import AssistantSettingsPreviewPopup from '@renderer/pages/settings/AssistantSettings/AssistantSettingsPreviewPopup'
 import { Assistant, Topic } from '@renderer/types'
 import { containsSupportedVariables } from '@renderer/utils/prompt'
 import { FC, useEffect, useState } from 'react'
@@ -61,8 +62,16 @@ const Prompt: FC<Props> = ({ assistant, topic }) => {
     return null
   }
 
+  const handleClick = () => {
+    if (assistant.isServer) {
+      AssistantSettingsPreviewPopup.show({ assistant })
+    } else {
+      AssistantSettingsPopup.show({ assistant })
+    }
+  }
+
   return (
-    <Container className="system-prompt" onClick={() => AssistantSettingsPopup.show({ assistant })} $isDark={isDark}>
+    <Container className="system-prompt" onClick={handleClick} $isDark={isDark}>
       <Text $isVisible={isVisible}>{displayText}</Text>
     </Container>
   )

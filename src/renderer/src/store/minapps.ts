@@ -19,7 +19,7 @@ const minAppsSlice = createSlice({
   initialState,
   reducers: {
     setMinApps: (state, action: PayloadAction<MinAppType[]>) => {
-      state.enabled = action.payload.map((app) => ({ ...app, logo: undefined }))
+      state.enabled = action.payload.map((app) => ({ ...app, logo: app.isServer ? app.logo : undefined }))
     },
     addMinApp: (state, action: PayloadAction<MinAppType>) => {
       state.enabled.push(action.payload)

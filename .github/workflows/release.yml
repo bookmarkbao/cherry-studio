@@ -2,14 +2,6 @@ name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release tag (e.g. v1.0.0)'
-        required: true
-        default: 'v1.0.0'
-  push:
-    tags:
-      - v*.*.*
 
 permissions:
   contents: write
@@ -29,22 +21,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get release tag
+      - name: Get release tag from package.json
         id: get-tag
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
-          else
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          fi
+          VERSION=$(node -p "require('./package.json').version")
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "Using version from package.json: v$VERSION"
 
-      - name: Set package.json version
-        shell: bash
-        run: |
-          TAG="${{ steps.get-tag.outputs.tag }}"
-          VERSION="${TAG#v}"
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - name: Install Node.js
         uses: actions/setup-node@v5
