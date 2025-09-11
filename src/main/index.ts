@@ -17,7 +17,7 @@ import { configManager } from './services/ConfigManager'
 import mcpService from './services/MCPService'
 import { nodeTraceService } from './services/NodeTraceService'
 import {
-  CHERRY_STUDIO_PROTOCOL,
+  CHERRY_STUDIO_ENTERPRISE_PROTOCOL,
   handleProtocolUrl,
   registerProtocolClient,
   setupAppImageDeepLink
@@ -109,7 +109,7 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(async () => {
     initWebviewHotkeys()
     // Set app user model id for windows
-    electronApp.setAppUserModelId(import.meta.env.VITE_MAIN_BUNDLE_ID || 'com.kangfenmao.CherryStudio')
+    electronApp.setAppUserModelId(import.meta.env.VITE_MAIN_BUNDLE_ID || 'com.cherry-ai.cherry-stuido-enterprise')
 
     // Mac: Hide dock icon before window creation when launch to tray is set
     const isLaunchToTray = configManager.getLaunchToTray()
@@ -171,7 +171,7 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   const handleOpenUrl = (args: string[]) => {
-    const url = args.find((arg) => arg.startsWith(CHERRY_STUDIO_PROTOCOL + '://'))
+    const url = args.find((arg) => arg.startsWith(CHERRY_STUDIO_ENTERPRISE_PROTOCOL + '://'))
     if (url) handleProtocolUrl(url)
   }
 

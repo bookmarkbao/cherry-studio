@@ -11,7 +11,7 @@ import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { Assistant, AssistantsSortType } from '@renderer/types'
 import { getLeadingEmoji, uuid } from '@renderer/utils'
 import { hasTopicPendingRequests } from '@renderer/utils/queue'
-import { Dropdown, MenuProps } from 'antd'
+import { Dropdown, MenuProps, Tag as AntdTag } from 'antd'
 import { omit } from 'lodash'
 import {
   AlignJustify,
@@ -136,6 +136,28 @@ const AssistantItem: FC<AssistantItemProps> = ({
     [assistant.emoji, assistantName]
   )
 
+  const ServerTag = () => {
+    if (assistant.isServer) {
+      return (
+        <div>
+          <AntdTag color="orange" style={{ background: 'inherit', margin: 0 }}>
+            {t('enterprise.enterprise')}
+          </AntdTag>
+        </div>
+      )
+    }
+
+    if (isActive) {
+      return (
+        <MenuButton onClick={() => EventEmitter.emit(EVENT_NAMES.SWITCH_TOPIC_SIDEBAR)}>
+          <TopicCount className="topics-count">{assistant.topics.length}</TopicCount>
+        </MenuButton>
+      )
+    }
+
+    return null
+  }
+
   return (
     <Dropdown
       menu={{ items: menuItems }}
@@ -159,11 +181,7 @@ const AssistantItem: FC<AssistantItemProps> = ({
           )}
           <AssistantName className="text-nowrap">{assistantName}</AssistantName>
         </AssistantNameRow>
-        {isActive && (
-          <MenuButton onClick={() => EventEmitter.emit(EVENT_NAMES.SWITCH_TOPIC_SIDEBAR)}>
-            <TopicCount className="topics-count">{assistant.topics.length}</TopicCount>
-          </MenuButton>
-        )}
+        <ServerTag />
       </Container>
     </Dropdown>
   )
@@ -261,7 +279,7 @@ function getMenuItems({
   sortByPinyinDesc
 }): MenuProps['items'] {
   return [
-    {
+    !assistant.isServer && {
       label: t('assistants.edit.title'),
       key: 'edit',
       icon: <EditIcon size={14} />,
@@ -292,7 +310,7 @@ function getMenuItems({
         })
       }
     },
-    {
+    !assistant.isServer && {
       label: t('assistants.save.title'),
       key: 'save-to-agent',
       icon: <Save size={14} />,
@@ -355,10 +373,10 @@ function getMenuItems({
       icon: <ArrowUpAZ size={14} />,
       onClick: sortByPinyinDesc
     },
-    {
+    !assistant.isServer && {
       type: 'divider'
     },
-    {
+    !assistant.isServer && {
       label: t('common.delete'),
       key: 'delete',
       icon: <DeleteIcon size={14} className="lucide-custom" />,
@@ -373,13 +391,14 @@ function getMenuItems({
         })
       }
     }
-  ]
+  ].filter(Boolean) as MenuProps['items']
 }
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   padding: 0 8px;
   height: 37px;
   position: relative;

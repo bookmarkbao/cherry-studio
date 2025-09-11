@@ -354,6 +354,9 @@ export class ProxyManager {
   private originalHttpsGet: typeof https.get
   private originalHttpsRequest: typeof https.request
 
+  // for webview
+  private wvproxy: string = ''
+
   private originalAxiosAdapter
 
   constructor() {
@@ -471,7 +474,6 @@ export class ProxyManager {
     this.setEnvironment(config.proxyRules || '')
     this.setGlobalFetchProxy(config)
     this.setSessionsProxy(config)
-
     this.setGlobalHttpProxy(config)
   }
 
@@ -579,11 +581,23 @@ export class ProxyManager {
   }
 
   private async setSessionsProxy(config: ProxyConfig): Promise<void> {
-    const sessions = [session.defaultSession, session.fromPartition('persist:webview')]
-    await Promise.all(sessions.map((session) => session.setProxy(config)))
+    await session.defaultSession.setProxy(config)
+
+    if (!this.wvproxy) {
+      await session.fromPartition('persist:webview').setProxy(config)
+    }
 
     // set proxy for electron
     app.setProxy(config)
+  }
+
+  public setSessionsProxyForWebview(proxy: string): void {
+    const wvsession = session.fromPartition('persist:webview')
+    this.wvproxy = proxy
+    logger.info(`setSessionsProxyForWebview: ${proxy}`)
+    if (proxy.includes('://')) {
+      wvsession.setProxy({ mode: 'fixed_servers', proxyRules: proxy })
+    }
   }
 }
 

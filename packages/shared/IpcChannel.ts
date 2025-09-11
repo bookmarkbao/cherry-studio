@@ -11,6 +11,7 @@ export enum IpcChannel {
   App_Quit = 'app:quit',
   App_Info = 'app:info',
   App_Proxy = 'app:proxy',
+  App_ProxyForWebview = 'app:proxy-for-webview',
   App_SetLaunchToTray = 'app:set-launch-to-tray',
   App_SetTray = 'app:set-tray',
   App_SetTrayOnClose = 'app:set-tray-on-close',
@@ -343,5 +344,8 @@ export enum IpcChannel {
   Ovms_StopOVMS = 'ovms:stop-ovms',
 
   // CherryAI
-  Cherryai_GetSignature = 'cherryai:get-signature'
+  Cherryai_GetSignature = 'cherryai:get-signature',
+
+  // OAuth
+  OAuth_Casdoor = 'oauth:casdoor'
 }

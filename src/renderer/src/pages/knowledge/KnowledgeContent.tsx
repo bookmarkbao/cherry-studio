@@ -5,7 +5,7 @@ import CustomTag from '@renderer/components/Tags/CustomTag'
 import { useKnowledge } from '@renderer/hooks/useKnowledge'
 import { NavbarIcon } from '@renderer/pages/home/ChatNavbar'
 import { getProviderName } from '@renderer/services/ProviderService'
-import { KnowledgeBase } from '@renderer/types'
+import { KnowledgeBase, KnowledgeItem } from '@renderer/types'
 import { Button, Empty, Tabs, Tag, Tooltip } from 'antd'
 import { Book, Folder, Globe, Link, Notebook, Search, Settings, Video } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
@@ -84,7 +84,7 @@ const KnowledgeContent: FC<KnowledgeContentProps> = ({ selectedBase }) => {
       content: <KnowledgeNotes selectedBase={selectedBase} />,
       show: true
     },
-    {
+    !base?.isServer && {
       key: 'directories',
       title: t('knowledge.directories'),
       icon: activeKey === 'directories' ? <Folder size={16} color="var(--color-primary)" /> : <Folder size={16} />,
@@ -117,7 +117,14 @@ const KnowledgeContent: FC<KnowledgeContentProps> = ({ selectedBase }) => {
       content: <KnowledgeVideos selectedBase={selectedBase} />,
       show: false
     }
-  ]
+  ].filter(Boolean) as {
+    key: string
+    title: string
+    icon: React.ReactNode
+    items: KnowledgeItem[]
+    content: React.ReactNode
+    show: boolean
+  }[]
 
   if (!base) {
     return null
@@ -143,12 +150,14 @@ const KnowledgeContent: FC<KnowledgeContentProps> = ({ selectedBase }) => {
     <MainContainer>
       <HeaderContainer>
         <ModelInfo>
-          <Button
-            type="text"
-            icon={<Settings size={18} color="var(--color-icon)" />}
-            onClick={() => EditKnowledgeBasePopup.show({ base })}
-            size="small"
-          />
+          {!base.isServer && (
+            <Button
+              type="text"
+              icon={<Settings size={18} color="var(--color-icon)" />}
+              onClick={() => EditKnowledgeBasePopup.show({ base })}
+              size="small"
+            />
+          )}
           <div className="model-row">
             <div className="label-column">
               <label>{t('models.embedding_model')}</label>

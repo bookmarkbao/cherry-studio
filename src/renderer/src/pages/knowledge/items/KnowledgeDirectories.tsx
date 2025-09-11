@@ -45,7 +45,7 @@ const KnowledgeDirectories: FC<KnowledgeContentProps> = ({ selectedBase, progres
   )
 
   const providerName = getProviderName(base?.model)
-  const disabled = !base?.version || !providerName
+  const disabled = !base?.version || !providerName || base.isServer
 
   const reversedItems = useMemo(() => [...directoryItems].reverse(), [directoryItems])
   const estimateSize = useCallback(() => 75, [])
@@ -67,16 +67,18 @@ const KnowledgeDirectories: FC<KnowledgeContentProps> = ({ selectedBase, progres
   return (
     <ItemContainer>
       <ItemHeader>
-        <ResponsiveButton
-          type="primary"
-          icon={<PlusIcon size={16} />}
-          onClick={(e) => {
-            e.stopPropagation()
-            handleAddDirectory()
-          }}
-          disabled={disabled}>
-          {t('knowledge.add_directory')}
-        </ResponsiveButton>
+        {!base.isServer && (
+          <ResponsiveButton
+            type="primary"
+            icon={<PlusIcon size={16} />}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleAddDirectory()
+            }}
+            disabled={disabled}>
+            {t('knowledge.add_directory')}
+          </ResponsiveButton>
+        )}
       </ItemHeader>
       <ItemFlexColumn>
         {directoryItems.length === 0 && <KnowledgeEmptyView />}
@@ -100,7 +102,7 @@ const KnowledgeDirectories: FC<KnowledgeContentProps> = ({ selectedBase, progres
                 ),
                 ext: '.folder',
                 extra: getDisplayTime(item),
-                actions: (
+                actions: !base.isServer && (
                   <FlexAlignCenter>
                     {item.uniqueId && <Button type="text" icon={<RefreshIcon />} onClick={() => refreshItem(item)} />}
                     <StatusIconWrapper>

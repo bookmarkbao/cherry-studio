@@ -837,6 +837,51 @@
     "openai": "OpenAI",
     "openai-response": "OpenAI-Response"
   },
+  "enterprise": {
+    "auth": {
+      "logout": "退出登录",
+      "logout_confirm": "退出登录不会删除您的数据，是否继续？",
+      "password_login": "用户名密码登录",
+      "sso_login": "一键认证登录",
+      "switch_to_password_login": "使用用户名密码登录",
+      "switch_to_sso_login": "使用一键认证登录"
+    },
+    "enterprise": "企业",
+    "login": {
+      "admin_forbidden": "管理员禁止登录客户端",
+      "button": {
+        "login": "登录",
+        "sso_login": "一键认证登录"
+      },
+      "error": {
+        "invalid_credentials": "用户名或密码错误",
+        "login_failed": "登录失败",
+        "sso_failed": "SSO登录失败",
+        "sso_timeout": "SSO登录超时，请重试",
+        "sync_config_failed": "同步配置失败"
+      },
+      "placeholder": {
+        "password": "密码",
+        "server_url": "服务端地址",
+        "username": "用户名"
+      },
+      "switch": {
+        "password_mode": "用户名密码登录",
+        "sso_mode": "一键认证登录"
+      },
+      "validation": {
+        "password_no_spaces": "密码不能包含空格",
+        "password_required": "请输入密码",
+        "server_url_empty": "请输入服务端地址",
+        "server_url_invalid": "请输入有效的服务端地址",
+        "server_url_invalid_format": "请输入有效的 URL 地址",
+        "server_url_invalid_protocol": "请输入有效的 HTTP 或 HTTPS URL",
+        "server_url_required": "请先输入服务端地址",
+        "username_no_spaces": "用户名不能包含空格",
+        "username_required": "请输入用户名"
+      }
+    }
+  },
   "error": {
     "availableProviders": "可用提供商",
     "availableTools": "可用工具",
@@ -3276,6 +3321,9 @@
         "version_options": "版本选择"
       },
       "title": "常规设置",
+      "user": {
+        "label": "用户设置"
+      },
       "user_name": {
         "label": "用户名",
         "placeholder": "输入您的姓名"
@@ -4261,6 +4309,7 @@
   "title": {
     "agents": "智能体",
     "apps": "小程序",
+    "chat": "对话",
     "code": "Code",
     "files": "文件",
     "home": "首页",

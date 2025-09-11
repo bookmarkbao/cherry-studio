@@ -11,9 +11,8 @@ import { getModelUniqId } from '@renderer/services/ModelService'
 import { Model, ModelType, objectEntries, Provider } from '@renderer/types'
 import { classNames, filterModelsByKeywords, getFancyProviderName } from '@renderer/utils'
 import { getModelTags } from '@renderer/utils/model'
-import { Avatar, Divider, Empty, Modal, Tooltip } from 'antd'
+import { Avatar, Divider, Empty, Modal } from 'antd'
 import { first, sortBy } from 'lodash'
-import { Settings2 } from 'lucide-react'
 import React, {
   startTransition,
   useCallback,
@@ -180,21 +179,21 @@ const PopupContainer: React.FC<Props> = ({ model, filter: baseFilter, showTagFil
         key: `provider-${p.id}`,
         type: 'group',
         name: getFancyProviderName(p),
-        actions: p.id !== 'cherryai' && (
-          <Tooltip title={t('navigate.provider_settings')} mouseEnterDelay={0.5} mouseLeaveDelay={0}>
-            <Settings2
-              size={12}
-              color="var(--color-text)"
-              className="action-icon"
-              onClick={(e) => {
-                e.stopPropagation()
-                setOpen(false)
-                resolve(undefined)
-                window.navigate(`/settings/provider?id=${p.id}`)
-              }}
-            />
-          </Tooltip>
-        ),
+        // actions: p.id !== 'cherryai' && (
+        //   <Tooltip title={t('navigate.provider_settings')} mouseEnterDelay={0.5} mouseLeaveDelay={0}>
+        //     <Settings2
+        //       size={12}
+        //       color="var(--color-text)"
+        //       className="action-icon"
+        //       onClick={(e) => {
+        //         e.stopPropagation()
+        //         setOpen(false)
+        //         resolve(undefined)
+        //         window.navigate(`/settings/provider?id=${p.id}`)
+        //       }}
+        //     />
+        //   </Tooltip>
+        // ),
         isSelected: false
       })
 

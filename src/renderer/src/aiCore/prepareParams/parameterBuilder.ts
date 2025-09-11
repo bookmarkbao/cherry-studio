@@ -172,7 +172,7 @@ export async function buildStreamTextParams(
   logger.debug('params', params)
   return {
     params,
-    modelId: model.id,
+    modelId: model.id + '@' + model.provider,
     capabilities: { enableReasoning, enableWebSearch, enableGenerateImage, enableUrlContext },
     webSearchPluginConfig
   }

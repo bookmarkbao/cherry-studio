@@ -671,6 +671,12 @@ export class MemoryService {
    */
   public setConfig(config: MemoryConfig): void {
     this.config = config
+    if (config.llmApiClient?.model) {
+      config.llmApiClient.model = config.llmApiClient.model + '@' + config.llmApiClient.provider
+    }
+    if (config.embedderApiClient?.model) {
+      config.embedderApiClient.model = config.embedderApiClient.model + '@' + config.embedderApiClient.provider
+    }
     // Reset embeddings instance when config changes
     this.embeddings = null
   }

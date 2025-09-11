@@ -100,6 +100,7 @@ export interface KnowledgeBase {
     type: 'preprocess'
     provider: PreprocessProvider
   }
+  isServer?: boolean
 }
 
 export type ProcessingStatus = 'pending' | 'processing' | 'completed' | 'failed'

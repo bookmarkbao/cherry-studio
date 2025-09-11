@@ -66,7 +66,7 @@ const KnowledgeFiles: FC<KnowledgeContentProps> = ({ selectedBase, progressMap, 
   }, [])
 
   const providerName = getProviderName(base?.model)
-  const disabled = !base?.version || !providerName
+  const disabled = !base?.version || !providerName || base.isServer
 
   const estimateSize = useCallback(() => 75, [])
 
@@ -139,36 +139,40 @@ const KnowledgeFiles: FC<KnowledgeContentProps> = ({ selectedBase, progressMap, 
   return (
     <ItemContainer>
       <ItemHeader>
-        <ResponsiveButton
-          type="primary"
-          icon={<PlusIcon size={16} />}
-          onClick={(e) => {
-            e.stopPropagation()
-            handleAddFile()
-          }}
-          disabled={disabled}>
-          {t('knowledge.add_file')}
-        </ResponsiveButton>
+        {!base.isServer && (
+          <ResponsiveButton
+            type="primary"
+            icon={<PlusIcon size={16} />}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleAddFile()
+            }}
+            disabled={disabled}>
+            {t('knowledge.add_file')}
+          </ResponsiveButton>
+        )}
       </ItemHeader>
 
       <ItemFlexColumn>
-        <div
-          onClick={(e) => {
-            e.stopPropagation()
-            handleAddFile()
-          }}>
-          <Dragger
-            showUploadList={false}
-            customRequest={({ file }) => handleDrop([file as File])}
-            multiple={true}
-            accept={fileTypes.join(',')}
-            openFileDialogOnClick={false}>
-            <p className="ant-upload-text">{t('knowledge.drag_file')}</p>
-            <p className="ant-upload-hint">
-              {t('knowledge.file_hint', { file_types: 'TXT, MD, HTML, PDF, DOCX, PPTX, XLSX, EPUB...' })}
-            </p>
-          </Dragger>
-        </div>
+        {!base.isServer && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              handleAddFile()
+            }}>
+            <Dragger
+              showUploadList={false}
+              customRequest={({ file }) => handleDrop([file as File])}
+              multiple={true}
+              accept={fileTypes.join(',')}
+              openFileDialogOnClick={false}>
+              <p className="ant-upload-text">{t('knowledge.drag_file')}</p>
+              <p className="ant-upload-hint">
+                {t('knowledge.file_hint', { file_types: 'TXT, MD, HTML, PDF, DOCX, PPTX, XLSX, EPUB...' })}
+              </p>
+            </Dragger>
+          </div>
+        )}
         {fileItems.length === 0 ? (
           <KnowledgeEmptyView />
         ) : (
@@ -176,7 +180,7 @@ const KnowledgeFiles: FC<KnowledgeContentProps> = ({ selectedBase, progressMap, 
             list={fileItems.reverse()}
             estimateSize={estimateSize}
             overscan={2}
-            scrollerStyle={{ height: windowHeight - 270 }}
+            scrollerStyle={{ height: windowHeight - (base?.isServer ? 180 : 270) }}
             autoHideScrollbar>
             {(item) => {
               if (!isKnowledgeFileItem(item)) {
@@ -197,7 +201,7 @@ const KnowledgeFiles: FC<KnowledgeContentProps> = ({ selectedBase, progressMap, 
                       ),
                       ext: file.ext,
                       extra: `${getDisplayTime(item)} · ${formatFileSize(file.size)}`,
-                      actions: (
+                      actions: !base.isServer && (
                         <FlexAlignCenter>
                           {item.uniqueId && (
                             <Button type="text" icon={<RefreshIcon />} onClick={() => refreshItem(item)} />

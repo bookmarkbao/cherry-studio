@@ -4,6 +4,7 @@ import { isLocalAi } from '@renderer/config/env'
 import { isEmbeddingModel, isRerankModel, isWebSearchModel } from '@renderer/config/models'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useProvider } from '@renderer/hooks/useProvider'
+import AssistantSettingsPreviewPopup from '@renderer/pages/settings/AssistantSettings/AssistantSettingsPreviewPopup'
 import { getProviderName } from '@renderer/services/ProviderService'
 import { Assistant, Model } from '@renderer/types'
 import { Button, Tag } from 'antd'
@@ -25,6 +26,11 @@ const SelectModelButton: FC<Props> = ({ assistant }) => {
   const modelFilter = (model: Model) => !isEmbeddingModel(model) && !isRerankModel(model)
 
   const onSelectModel = async (event: React.MouseEvent<HTMLElement>) => {
+    if (assistant.isServer) {
+      AssistantSettingsPreviewPopup.show({ assistant })
+      return
+    }
+
     event.currentTarget.blur()
     const selectedModel = await SelectModelPopup.show({ model, filter: modelFilter })
     if (selectedModel) {
@@ -61,7 +67,7 @@ const SelectModelButton: FC<Props> = ({ assistant }) => {
           {model ? model.name : t('button.select_model')} {providerName ? ' | ' + providerName : ''}
         </ModelName>
       </ButtonContent>
-      <ChevronsUpDown size={14} color="var(--color-icon)" />
+      {!assistant.isServer && <ChevronsUpDown size={14} color="var(--color-icon)" />}
       {!provider && <Tag color="error">{t('models.invalid_model')}</Tag>}
     </DropdownButton>
   )

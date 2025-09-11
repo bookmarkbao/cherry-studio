@@ -6,7 +6,11 @@ import AiProvider from '@renderer/aiCore'
 import { CompletionsParams } from '@renderer/aiCore/legacy/middleware/schemas'
 import { AiSdkMiddlewareConfig } from '@renderer/aiCore/middleware/AiSdkMiddlewareBuilder'
 import { buildStreamTextParams } from '@renderer/aiCore/prepareParams'
-import { isDedicatedImageGenerationModel, isEmbeddingModel } from '@renderer/config/models'
+import {
+  isDedicatedImageGenerationModel,
+  isEmbeddingModel,
+  OPENAI_IMAGE_GENERATION_MODELS
+} from '@renderer/config/models'
 import { getStoreSetting } from '@renderer/hooks/useSettings'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
@@ -125,6 +129,8 @@ export async function fetchChatCompletion({
     requestOptions: options
   })
 
+  const model = assistant.model || getDefaultModel()
+
   const middlewareConfig: AiSdkMiddlewareConfig = {
     streamOutput: assistant.settings?.streamOutput ?? true,
     onChunk: onChunkReceived,
@@ -132,7 +138,8 @@ export async function fetchChatCompletion({
     enableReasoning: capabilities.enableReasoning,
     isPromptToolUse: isPromptToolUse(assistant),
     isSupportedToolUse: isSupportedToolUse(assistant),
-    isImageGenerationEndpoint: isDedicatedImageGenerationModel(assistant.model || getDefaultModel()),
+    isImageGenerationEndpoint:
+      isDedicatedImageGenerationModel(model) || OPENAI_IMAGE_GENERATION_MODELS.includes(model.id),
     webSearchPluginConfig: webSearchPluginConfig,
     enableWebSearch: capabilities.enableWebSearch,
     enableGenerateImage: capabilities.enableGenerateImage,
@@ -238,7 +245,7 @@ export async function fetchMessagesSummary({ messages, assistant }: { messages: 
       await appendTrace({ topicId, traceId: messageWithTrace.traceId, model })
     }
 
-    const { getText } = await AI.completions(model.id, llmMessages, {
+    const { getText } = await AI.completions(model.id + '@' + model.provider, llmMessages, {
       ...middlewareConfig,
       assistant: summaryAssistant,
       topicId,
@@ -301,7 +308,7 @@ export async function fetchNoteSummary({ content, assistant }: { content: string
   }
 
   try {
-    const { getText } = await AI.completions(model.id, llmMessages, {
+    const { getText } = await AI.completions(model.id + '@' + model.provider, llmMessages, {
       ...middlewareConfig,
       assistant: summaryAssistant,
       callType: 'summary'
@@ -380,7 +387,7 @@ export async function fetchGenerate({
 
   try {
     const result = await AI.completions(
-      model.id,
+      model.id + '@' + model.provider,
       {
         system: prompt,
         prompt: content
@@ -498,7 +505,7 @@ export async function checkApi(provider: Provider, model: Model, timeout = 15000
 
       // Try streaming check first
       try {
-        await ai.completions(model.id, params, config)
+        await ai.completions(model.id + '@' + model.provider, params, config)
       } catch (e) {
         if (!isAbortError(e) && !isAbortError(chunkError)) {
           throw e
