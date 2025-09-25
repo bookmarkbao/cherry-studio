@@ -30,7 +30,9 @@ const S3Settings: FC = () => {
     root: s3RootInit = '',
     syncInterval: s3SyncIntervalInit = 0,
     maxBackups: s3MaxBackupsInit = 5,
-    skipBackupFile: s3SkipBackupFileInit = false
+    skipBackupFile: s3SkipBackupFileInit = false,
+    singleFileOverwrite: s3SingleFileOverwriteInit = false,
+    singleFileName: s3SingleFileNameInit = ''
   } = s3
 
   const [endpoint, setEndpoint] = useState<string | undefined>(s3EndpointInit)
@@ -40,6 +42,8 @@ const S3Settings: FC = () => {
   const [secretAccessKey, setSecretAccessKey] = useState<string | undefined>(s3SecretAccessKeyInit)
   const [root, setRoot] = useState<string | undefined>(s3RootInit)
   const [skipBackupFile, setSkipBackupFile] = useState<boolean>(s3SkipBackupFileInit)
+  const [singleFileOverwrite, setSingleFileOverwrite] = useState<boolean>(!!s3SingleFileOverwriteInit)
+  const [singleFileName, setSingleFileName] = useState<string | undefined>(s3SingleFileNameInit)
   const [backupManagerVisible, setBackupManagerVisible] = useState(false)
 
   const [syncInterval, setSyncInterval] = useState<number>(s3SyncIntervalInit)
@@ -79,6 +83,15 @@ const S3Settings: FC = () => {
   const onSkipBackupFilesChange = (value: boolean) => {
     setSkipBackupFile(value)
     dispatch(setS3Partial({ skipBackupFile: value }))
+  }
+
+  const onSingleFileOverwriteChange = (value: boolean) => {
+    setSingleFileOverwrite(value)
+    dispatch(setS3Partial({ singleFileOverwrite: value }))
+  }
+
+  const onSingleFileNameBlur = () => {
+    dispatch(setS3Partial({ singleFileName: singleFileName || '' }))
   }
 
   const renderSyncStatus = () => {

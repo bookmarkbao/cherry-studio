@@ -168,7 +168,9 @@ export async function backupToWebdav({
     webdavPath,
     webdavMaxBackups,
     webdavSkipBackupFile,
-    webdavDisableStream
+    webdavDisableStream,
+    webdavSingleFileOverwrite,
+    webdavSingleFileName
   } = store.getState().settings
   let deviceType = 'unknown'
   let hostname = 'unknown'
@@ -179,7 +181,12 @@ export async function backupToWebdav({
     logger.error('Failed to get device type or hostname:', error as Error)
   }
   const timestamp = dayjs().format('YYYYMMDDHHmmss')
-  const backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  let backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
+  if (autoBackupProcess && webdavMaxBackups === 1 && webdavSingleFileOverwrite) {
+    const base = (webdavSingleFileName || `cherry-studio.${hostname}.${deviceType}`).trim()
+    backupFileName = base.endsWith('.zip') ? base : `${base}.zip`
+  }
   const finalFileName = backupFileName.endsWith('.zip') ? backupFileName : `${backupFileName}.zip`
   const backupData = await getBackupData()
 
@@ -212,8 +219,8 @@ export async function backupToWebdav({
       })
       showMessage && window.toast.success(i18n.t('message.backup.success'))
 
-      // 清理旧备份文件
-      if (webdavMaxBackups > 0) {
+      // 覆盖式单文件备份启用时（且=1），不进行清理
+      if (webdavMaxBackups > 0 && !(autoBackupProcess && webdavMaxBackups === 1 && webdavSingleFileOverwrite)) {
         try {
           // 获取所有备份文件
           const files = await window.api.backup.listWebdavFiles({
@@ -353,7 +360,12 @@ export async function backupToS3({
     logger.error('Failed to get device type or hostname:', error as Error)
   }
   const timestamp = dayjs().format('YYYYMMDDHHmmss')
-  const backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  let backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
+  if (autoBackupProcess && s3Config.maxBackups === 1 && s3Config.singleFileOverwrite) {
+    const base = (s3Config.singleFileName || `cherry-studio.${hostname}.${deviceType}`).trim()
+    backupFileName = base.endsWith('.zip') ? base : `${base}.zip`
+  }
   const finalFileName = backupFileName.endsWith('.zip') ? backupFileName : `${backupFileName}.zip`
   const backupData = await getBackupData()
 

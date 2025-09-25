@@ -119,6 +119,9 @@ export interface SettingsState {
   webdavMaxBackups: number
   webdavSkipBackupFile: boolean
   webdavDisableStream: boolean
+  // 覆盖式单文件备份（WebDAV）
+  webdavSingleFileOverwrite?: boolean
+  webdavSingleFileName?: string
   translateModelPrompt: string
   autoTranslateWithSpace: boolean
   showTranslateConfirm: boolean
@@ -210,6 +213,9 @@ export interface SettingsState {
   localBackupSyncInterval: number
   localBackupMaxBackups: number
   localBackupSkipBackupFile: boolean
+  // 覆盖式单文件备份（Local）
+  localSingleFileOverwrite?: boolean
+  localSingleFileName?: string
   defaultPaintingProvider: PaintingProvider
   s3: S3Config
   // Developer mode
@@ -306,6 +312,8 @@ export const initialState: SettingsState = {
   webdavMaxBackups: 0,
   webdavSkipBackupFile: false,
   webdavDisableStream: false,
+  webdavSingleFileOverwrite: false,
+  webdavSingleFileName: '',
   translateModelPrompt: TRANSLATE_PROMPT,
   autoTranslateWithSpace: false,
   showTranslateConfirm: true,
@@ -389,6 +397,8 @@ export const initialState: SettingsState = {
   localBackupSyncInterval: 0,
   localBackupMaxBackups: 0,
   localBackupSkipBackupFile: false,
+  localSingleFileOverwrite: false,
+  localSingleFileName: '',
   defaultPaintingProvider: 'zhipu',
   s3: {
     endpoint: '',
@@ -400,7 +410,9 @@ export const initialState: SettingsState = {
     autoSync: false,
     syncInterval: 0,
     maxBackups: 0,
-    skipBackupFile: false
+    skipBackupFile: false,
+    singleFileOverwrite: false,
+    singleFileName: ''
   },
 
   // Developer mode
@@ -555,6 +567,12 @@ const settingsSlice = createSlice({
     },
     setWebdavDisableStream: (state, action: PayloadAction<boolean>) => {
       state.webdavDisableStream = action.payload
+    },
+    setWebdavSingleFileOverwrite: (state, action: PayloadAction<boolean>) => {
+      state.webdavSingleFileOverwrite = action.payload
+    },
+    setWebdavSingleFileName: (state, action: PayloadAction<string>) => {
+      state.webdavSingleFileName = action.payload
     },
     setCodeExecution: (state, action: PayloadAction<{ enabled?: boolean; timeoutMinutes?: number }>) => {
       if (action.payload.enabled !== undefined) {
@@ -816,6 +834,12 @@ const settingsSlice = createSlice({
     setLocalBackupSkipBackupFile: (state, action: PayloadAction<boolean>) => {
       state.localBackupSkipBackupFile = action.payload
     },
+    setLocalSingleFileOverwrite: (state, action: PayloadAction<boolean>) => {
+      state.localSingleFileOverwrite = action.payload
+    },
+    setLocalSingleFileName: (state, action: PayloadAction<string>) => {
+      state.localSingleFileName = action.payload
+    },
     setDefaultPaintingProvider: (state, action: PayloadAction<PaintingProvider>) => {
       state.defaultPaintingProvider = action.payload
     },
@@ -903,6 +927,8 @@ export const {
   setWebdavMaxBackups,
   setWebdavSkipBackupFile,
   setWebdavDisableStream,
+  setWebdavSingleFileOverwrite,
+  setWebdavSingleFileName,
   setCodeExecution,
   setCodeEditor,
   setCodeViewer,
@@ -974,6 +1000,8 @@ export const {
   setLocalBackupSyncInterval,
   setLocalBackupMaxBackups,
   setLocalBackupSkipBackupFile,
+  setLocalSingleFileOverwrite,
+  setLocalSingleFileName,
   setDefaultPaintingProvider,
   setS3,
   setS3Partial,

@@ -873,6 +873,10 @@ export type S3Config = {
   autoSync: boolean
   syncInterval: number
   maxBackups: number
+  /** 当自动备份且保留份数=1时，是否启用覆盖式单文件备份 */
+  singleFileOverwrite?: boolean
+  /** 覆盖式单文件备份的自定义文件名（可选，默认使用不带时间戳的设备名+主机名） */
+  singleFileName?: string
 }
 
 export type { Message } from './newMessage'
