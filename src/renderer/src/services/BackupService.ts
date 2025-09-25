@@ -396,7 +396,11 @@ export async function backupToS3({
       showMessage && window.toast.success(i18n.t('message.backup.success'))
 
       // 清理旧备份文件
-      if (s3Config.maxBackups > 0) {
+      // 覆盖式单文件备份启用时（且=1），不进行清理，避免误删历史。后续不会再增长。
+      if (
+        s3Config.maxBackups > 0 &&
+        !(autoBackupProcess && s3Config.maxBackups === 1 && s3Config.singleFileOverwrite)
+      ) {
         try {
           // 获取所有备份文件
           const files = await window.api.backup.listS3Files(s3Config)
@@ -951,7 +955,9 @@ export async function backupToLocal({
   const {
     localBackupDir: localBackupDirSetting,
     localBackupMaxBackups,
-    localBackupSkipBackupFile
+    localBackupSkipBackupFile,
+    localSingleFileOverwrite,
+    localSingleFileName
   } = store.getState().settings
   const localBackupDir = await window.api.resolvePath(localBackupDirSetting)
   let deviceType = 'unknown'
@@ -963,7 +969,11 @@ export async function backupToLocal({
     logger.error('Failed to get device type or hostname:', error as Error)
   }
   const timestamp = dayjs().format('YYYYMMDDHHmmss')
-  const backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  let backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  if (autoBackupProcess && localBackupMaxBackups === 1 && localSingleFileOverwrite) {
+    const base = (localSingleFileName || `cherry-studio.${hostname}.${deviceType}`).trim()
+    backupFileName = base.endsWith('.zip') ? base : `${base}.zip`
+  }
   const finalFileName = backupFileName.endsWith('.zip') ? backupFileName : `${backupFileName}.zip`
   const backupData = await getBackupData()
 
@@ -993,8 +1003,11 @@ export async function backupToLocal({
         })
       }
 
-      // Clean up old backups if maxBackups is set
-      if (localBackupMaxBackups > 0) {
+      // 覆盖式单文件备份启用时（且=1），不进行清理
+      if (
+        localBackupMaxBackups > 0 &&
+        !(autoBackupProcess && localBackupMaxBackups === 1 && localSingleFileOverwrite)
+      ) {
         try {
           // Get all backup files
           const files = await window.api.backup.listLocalBackupFiles(localBackupDir)

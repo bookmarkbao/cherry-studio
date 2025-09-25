@@ -139,6 +139,37 @@ const S3Settings: FC = () => {
       </SettingTitle>
       <SettingHelpText>{t('settings.data.s3.title.help')}</SettingHelpText>
       <SettingDivider />
+      {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
+      <SettingRow>
+        <SettingRowTitle>
+          {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
+        </SettingRowTitle>
+        <Switch
+          checked={singleFileOverwrite}
+          onChange={onSingleFileOverwriteChange}
+          disabled={!(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingRow>
+        <SettingHelpText>
+          {t('settings.data.backup.singleFileOverwrite.help') ||
+            '当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。S3 会直接覆盖同键对象。'}
+        </SettingHelpText>
+      </SettingRow>
+      <SettingRow>
+        <SettingRowTitle>{t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}</SettingRowTitle>
+        <Input
+          placeholder={
+            t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
+          }
+          value={singleFileName}
+          onChange={(e) => setSingleFileName(e.target.value)}
+          onBlur={onSingleFileNameBlur}
+          style={{ width: 300 }}
+          disabled={!singleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingDivider />
       <SettingRow>
         <SettingRowTitle>{t('settings.data.s3.endpoint.label')}</SettingRowTitle>
         <Input
