@@ -14,6 +14,8 @@ import {
   setWebdavMaxBackups as _setWebdavMaxBackups,
   setWebdavPass as _setWebdavPass,
   setWebdavPath as _setWebdavPath,
+  setWebdavSingleFileName as _setWebdavSingleFileName,
+  setWebdavSingleFileOverwrite as _setWebdavSingleFileOverwrite,
   setWebdavSkipBackupFile as _setWebdavSkipBackupFile,
   setWebdavSyncInterval as _setWebdavSyncInterval,
   setWebdavUser as _setWebdavUser
@@ -34,7 +36,9 @@ const WebDavSettings: FC = () => {
     webdavSyncInterval: webDAVSyncInterval,
     webdavMaxBackups: webDAVMaxBackups,
     webdavSkipBackupFile: webdDAVSkipBackupFile,
-    webdavDisableStream: webDAVDisableStream
+    webdavDisableStream: webDAVDisableStream,
+    webdavSingleFileOverwrite: webDAVSingleFileOverwrite,
+    webdavSingleFileName: webDAVSingleFileName
   } = useSettings()
 
   const [webdavHost, setWebdavHost] = useState<string | undefined>(webDAVHost)
@@ -43,6 +47,8 @@ const WebDavSettings: FC = () => {
   const [webdavPath, setWebdavPath] = useState<string | undefined>(webDAVPath)
   const [webdavSkipBackupFile, setWebdavSkipBackupFile] = useState<boolean>(webdDAVSkipBackupFile)
   const [webdavDisableStream, setWebdavDisableStream] = useState<boolean>(webDAVDisableStream)
+  const [webdavSingleFileOverwrite, setWebdavSingleFileOverwrite] = useState<boolean>(!!webDAVSingleFileOverwrite)
+  const [webdavSingleFileName, setWebdavSingleFileName] = useState<string | undefined>(webDAVSingleFileName)
   const [backupManagerVisible, setBackupManagerVisible] = useState(false)
 
   const [syncInterval, setSyncInterval] = useState<number>(webDAVSyncInterval)
@@ -84,6 +90,15 @@ const WebDavSettings: FC = () => {
     dispatch(_setWebdavDisableStream(value))
   }
 
+  const onSingleFileOverwriteChange = (value: boolean) => {
+    setWebdavSingleFileOverwrite(value)
+    dispatch(_setWebdavSingleFileOverwrite(value))
+  }
+
+  const onSingleFileNameBlur = () => {
+    dispatch(_setWebdavSingleFileName(webdavSingleFileName || ''))
+  }
+
   const renderSyncStatus = () => {
     if (!webdavHost) return null
 
@@ -122,6 +137,37 @@ const WebDavSettings: FC = () => {
   return (
     <SettingGroup theme={theme}>
       <SettingTitle>{t('settings.data.webdav.title')}</SettingTitle>
+      <SettingDivider />
+      {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
+      <SettingRow>
+        <SettingRowTitle>
+          {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
+        </SettingRowTitle>
+        <Switch
+          checked={webdavSingleFileOverwrite}
+          onChange={onSingleFileOverwriteChange}
+          disabled={!(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingRow>
+        <SettingHelpText>
+          {t('settings.data.backup.singleFileOverwrite.help') ||
+            '当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。'}
+        </SettingHelpText>
+      </SettingRow>
+      <SettingRow>
+        <SettingRowTitle>{t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}</SettingRowTitle>
+        <Input
+          placeholder={
+            t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
+          }
+          value={webdavSingleFileName}
+          onChange={(e) => setWebdavSingleFileName(e.target.value)}
+          onBlur={onSingleFileNameBlur}
+          style={{ width: 300 }}
+          disabled={!webdavSingleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
       <SettingDivider />
       <SettingRow>
         <SettingRowTitle>{t('settings.data.webdav.host.label')}</SettingRowTitle>

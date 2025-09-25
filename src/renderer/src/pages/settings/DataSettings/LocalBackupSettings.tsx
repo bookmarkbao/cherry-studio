@@ -13,7 +13,9 @@ import {
   setLocalBackupDir as _setLocalBackupDir,
   setLocalBackupMaxBackups as _setLocalBackupMaxBackups,
   setLocalBackupSkipBackupFile as _setLocalBackupSkipBackupFile,
-  setLocalBackupSyncInterval as _setLocalBackupSyncInterval
+  setLocalBackupSyncInterval as _setLocalBackupSyncInterval,
+  setLocalSingleFileName as _setLocalSingleFileName,
+  setLocalSingleFileOverwrite as _setLocalSingleFileOverwrite
 } from '@renderer/store/settings'
 import { AppInfo } from '@renderer/types'
 import { Button, Input, Switch, Tooltip } from 'antd'
@@ -32,12 +34,16 @@ const LocalBackupSettings: React.FC = () => {
     localBackupDir: localBackupDirSetting,
     localBackupSyncInterval: localBackupSyncIntervalSetting,
     localBackupMaxBackups: localBackupMaxBackupsSetting,
-    localBackupSkipBackupFile: localBackupSkipBackupFileSetting
+    localBackupSkipBackupFile: localBackupSkipBackupFileSetting,
+    localSingleFileOverwrite: localSingleFileOverwriteSetting,
+    localSingleFileName: localSingleFileNameSetting
   } = useSettings()
 
   const [localBackupDir, setLocalBackupDir] = useState<string | undefined>(localBackupDirSetting)
   const [resolvedLocalBackupDir, setResolvedLocalBackupDir] = useState<string | undefined>(undefined)
   const [localBackupSkipBackupFile, setLocalBackupSkipBackupFile] = useState<boolean>(localBackupSkipBackupFileSetting)
+  const [localSingleFileOverwrite, setLocalSingleFileOverwrite] = useState<boolean>(!!localSingleFileOverwriteSetting)
+  const [localSingleFileName, setLocalSingleFileName] = useState<string | undefined>(localSingleFileNameSetting)
   const [backupManagerVisible, setBackupManagerVisible] = useState(false)
 
   const [syncInterval, setSyncInterval] = useState<number>(localBackupSyncIntervalSetting)
@@ -140,6 +146,15 @@ const LocalBackupSettings: React.FC = () => {
     dispatch(_setLocalBackupSkipBackupFile(value))
   }
 
+  const onSingleFileOverwriteChange = (value: boolean) => {
+    setLocalSingleFileOverwrite(value)
+    dispatch(_setLocalSingleFileOverwrite(value))
+  }
+
+  const onSingleFileNameBlur = () => {
+    dispatch(_setLocalSingleFileName(localSingleFileName || ''))
+  }
+
   const handleBrowseDirectory = async () => {
     try {
       const newLocalBackupDir = await window.api.select({
@@ -202,6 +217,37 @@ const LocalBackupSettings: React.FC = () => {
   return (
     <SettingGroup theme={theme}>
       <SettingTitle>{t('settings.data.local.title')}</SettingTitle>
+      <SettingDivider />
+      {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
+      <SettingRow>
+        <SettingRowTitle>
+          {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
+        </SettingRowTitle>
+        <Switch
+          checked={localSingleFileOverwrite}
+          onChange={onSingleFileOverwriteChange}
+          disabled={!(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingRow>
+        <SettingHelpText>
+          {t('settings.data.backup.singleFileOverwrite.help') ||
+            '当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。'}
+        </SettingHelpText>
+      </SettingRow>
+      <SettingRow>
+        <SettingRowTitle>{t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}</SettingRowTitle>
+        <Input
+          placeholder={
+            t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
+          }
+          value={localSingleFileName}
+          onChange={(e) => setLocalSingleFileName(e.target.value)}
+          onBlur={onSingleFileNameBlur}
+          style={{ width: 300 }}
+          disabled={!localSingleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
       <SettingDivider />
       <SettingRow>
         <SettingRowTitle>{t('settings.data.local.directory.label')}</SettingRowTitle>
