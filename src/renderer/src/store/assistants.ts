@@ -3,7 +3,7 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { DEFAULT_CONTEXTCOUNT, DEFAULT_TEMPERATURE } from '@renderer/config/constant'
 import { TopicManager } from '@renderer/hooks/useTopic'
 import { getDefaultAssistant, getDefaultTopic } from '@renderer/services/AssistantService'
-import { Assistant, AssistantSettings, Model, Topic } from '@renderer/types'
+import { Assistant, AssistantPreset, AssistantSettings, Model, Topic } from '@renderer/types'
 import { isEmpty, uniqBy } from 'lodash'
 
 import { RootState } from '.'
@@ -13,13 +13,15 @@ export interface AssistantsState {
   assistants: Assistant[]
   tagsOrder: string[]
   collapsedTags: Record<string, boolean>
+  presets: AssistantPreset[]
 }
 
 const initialState: AssistantsState = {
   defaultAssistant: getDefaultAssistant(),
   assistants: [getDefaultAssistant()],
   tagsOrder: [],
-  collapsedTags: {}
+  collapsedTags: {},
+  presets: []
 }
 
 const assistantsSlice = createSlice({
@@ -175,6 +177,51 @@ const assistantsSlice = createSlice({
             }
           : assistant
       )
+    },
+    // Assistant Presets
+    setAssistantPresets: (state, action: PayloadAction<AssistantPreset[]>) => {
+      const presets = action.payload
+      state.presets = []
+      presets.forEach((p) => {
+        state.presets.push(p)
+      })
+    },
+    addAssistantPreset: (state, action: PayloadAction<AssistantPreset>) => {
+      // @ts-ignore ts-2589 false positive
+      state.agents.push(action.payload)
+    },
+    removeAssistantPreset: (state, action: PayloadAction<{ id: string }>) => {
+      state.presets = state.presets.filter((c) => c.id !== action.payload.id)
+    },
+    updateAssistantPreset: (state, action: PayloadAction<AssistantPreset>) => {
+      const preset = action.payload
+      state.presets.forEach((a) => {
+        if (a.id === preset.id) {
+          a = preset
+        }
+      })
+    },
+    updateAssistantPresetSettings: (
+      state,
+      action: PayloadAction<{ assistantId: string; settings: Partial<AssistantSettings> }>
+    ) => {
+      for (const agent of state.presets) {
+        const settings = action.payload.settings
+        if (agent.id === action.payload.assistantId) {
+          for (const key in settings) {
+            if (!agent.settings) {
+              agent.settings = {
+                temperature: DEFAULT_TEMPERATURE,
+                contextCount: DEFAULT_CONTEXTCOUNT,
+                enableMaxTokens: false,
+                maxTokens: 0,
+                streamOutput: true
+              }
+            }
+            agent.settings[key] = settings[key]
+          }
+        }
+      }
     }
   }
 })
@@ -195,7 +242,12 @@ export const {
   setModel,
   setTagsOrder,
   updateAssistantSettings,
-  updateTagCollapse
+  updateTagCollapse,
+  setAssistantPresets,
+  addAssistantPreset,
+  removeAssistantPreset,
+  updateAssistantPreset,
+  updateAssistantPresetSettings
 } = assistantsSlice.actions
 
 export const selectAllTopics = createSelector([(state: RootState) => state.assistants.assistants], (assistants) =>
