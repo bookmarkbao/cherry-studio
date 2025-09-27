@@ -1,7 +1,12 @@
 import { HolderOutlined } from '@ant-design/icons'
 import { loggerService } from '@logger'
 import { ActionIconButton } from '@renderer/components/Buttons'
-import { QuickPanelReservedSymbol, QuickPanelView, useQuickPanel } from '@renderer/components/QuickPanel'
+import {
+  QuickPanelReservedSymbol,
+  QuickPanelTriggerInfo,
+  QuickPanelView,
+  useQuickPanel
+} from '@renderer/components/QuickPanel'
 import TranslateButton from '@renderer/components/TranslateButton'
 import {
   isAutoEnableImageGenerationModel,
@@ -49,7 +54,7 @@ import { IpcChannel } from '@shared/IpcChannel'
 import { Tooltip } from 'antd'
 import TextArea, { TextAreaRef } from 'antd/es/input/TextArea'
 import { debounce, isEmpty } from 'lodash'
-import { CirclePause } from 'lucide-react'
+import { CirclePause, Languages } from 'lucide-react'
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -141,7 +146,9 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     setIsExpanded,
     setCouldAddImageFile,
     setExtensions,
-    emitQuickPanelTrigger
+    emitQuickPanelTrigger,
+    quickPanelRootMenu,
+    registerQuickPanelTrigger
   } = useInputbarTools()
 
   const showKnowledgeIcon = useSidebarIconShow('knowledge')
@@ -180,6 +187,10 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   const isGenerateImageAssistant = useMemo(() => isGenerateImageModel(model), [model])
   const { setTimeoutTimer } = useTimer()
   const quickPanel = useQuickPanel()
+  const quickPanelOpen = quickPanel.open
+  const quickPanelIsVisible = quickPanel.isVisible
+  const quickPanelSymbol = quickPanel.symbol
+  const quickPanelUpdateList = quickPanel.updateList
 
   const isVisionSupported = useMemo(
     () =>
@@ -385,27 +396,63 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     }
   }, [config.showTokenCount, contextCount, estimateTokenCount, showInputEstimatedTokens])
 
-  // const quickPanelRootMenuItems = useMemo(() => {
-  //   if (!config.enableQuickPanel) {
-  //     return []
-  //   }
+  const quickPanelRootMenuItems = useMemo(() => {
+    if (!config.enableQuickPanel) {
+      return []
+    }
 
-  //   const baseMenu = [...quickPanelRootMenu]
+    const baseMenu = [...quickPanelRootMenu]
 
-  //   if (features.enableTranslate) {
-  //     baseMenu.push({
-  //       label: t('translate.title'),
-  //       description: t('translate.menu.description'),
-  //       icon: <Languages size={16} />,
-  //       action: () => {
-  //         if (!text) return
-  //         translate()
-  //       }
-  //     })
-  //   }
+    if (features.enableTranslate) {
+      baseMenu.push({
+        label: t('translate.title'),
+        description: t('translate.menu.description'),
+        icon: <Languages size={16} />,
+        action: () => {
+          if (!text.trim()) {
+            return
+          }
+          translate()
+        }
+      })
+    }
 
-  //   return baseMenu
-  // }, [config.enableQuickPanel, features.enableTranslate, quickPanelRootMenu, t, text, translate])
+    return baseMenu
+  }, [config.enableQuickPanel, features.enableTranslate, quickPanelRootMenu, t, text, translate])
+
+  useEffect(() => {
+    if (!config.enableQuickPanel) {
+      return
+    }
+
+    const disposeRootTrigger = registerQuickPanelTrigger('inputbar-root', QuickPanelReservedSymbol.Root, (payload) => {
+      if (!quickPanelRootMenuItems.length) {
+        return
+      }
+
+      const triggerInfo = (payload ?? {}) as QuickPanelTriggerInfo
+      quickPanelOpen({
+        title: t('settings.quickPanel.title'),
+        list: quickPanelRootMenuItems,
+        symbol: QuickPanelReservedSymbol.Root,
+        triggerInfo
+      })
+    })
+
+    return () => {
+      disposeRootTrigger()
+    }
+  }, [config.enableQuickPanel, quickPanelOpen, quickPanelRootMenuItems, registerQuickPanelTrigger, t])
+
+  useEffect(() => {
+    if (!config.enableQuickPanel) {
+      return
+    }
+
+    if (quickPanelIsVisible && quickPanelSymbol === QuickPanelReservedSymbol.Root) {
+      quickPanelUpdateList(quickPanelRootMenuItems)
+    }
+  }, [config.enableQuickPanel, quickPanelIsVisible, quickPanelSymbol, quickPanelUpdateList, quickPanelRootMenuItems])
 
   const onToggleExpanded = useCallback(() => {
     if (!features.enableExpand) {
@@ -600,6 +647,16 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
             position: cursorPosition - 1,
             originalText: newText
           })
+        }
+      }
+
+      if (quickPanel.isVisible && quickPanel.triggerInfo?.type === 'input') {
+        const activeSymbol = quickPanel.symbol as QuickPanelReservedSymbol
+        if (
+          (activeSymbol === QuickPanelReservedSymbol.Root || activeSymbol === QuickPanelReservedSymbol.MentionModels) &&
+          !newText.includes(activeSymbol)
+        ) {
+          quickPanel.close('delete-symbol')
         }
       }
 

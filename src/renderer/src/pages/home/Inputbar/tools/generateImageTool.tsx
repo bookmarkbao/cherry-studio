@@ -9,8 +9,8 @@ const GenerateImageTool = ({ context }) => {
   const { updateAssistant } = useAssistant(assistant.id)
 
   const handleToggle = useCallback(() => {
-    updateAssistant({ id: assistant.id, enableGenerateImage: !assistant.enableGenerateImage })
-  }, [assistant.enableGenerateImage, assistant.id, updateAssistant])
+    updateAssistant({ ...assistant, enableGenerateImage: !assistant.enableGenerateImage })
+  }, [assistant, updateAssistant])
 
   return <GenerateImageButton assistant={assistant} model={model} onEnableGenerateImage={handleToggle} />
 }

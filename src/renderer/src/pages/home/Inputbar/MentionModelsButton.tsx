@@ -276,7 +276,7 @@ const MentionModelsButton: FC<Props> = ({
   useEffect(() => {
     const disposeRootMenu = quickPanel.registerRootMenu([
       {
-        label: t('agents.edit.model.select.title'),
+        label: t('assitants.presets.edit.model.select.title'),
         description: '',
         icon: <AtSign />,
         isMenu: true,

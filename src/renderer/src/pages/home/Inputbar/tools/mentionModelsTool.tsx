@@ -7,7 +7,7 @@ import { AtSign } from 'lucide-react'
 
 const mentionModelsTool = defineTool({
   key: 'mention_models',
-  label: (t) => t('agents.edit.model.select.title'),
+  label: (t) => t('assistants.presets.edit.model.select.title'),
   icon: AtSign,
 
   visibleInScopes: [TopicType.Chat, 'mini-window'],
