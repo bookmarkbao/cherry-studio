@@ -127,7 +127,13 @@ export const QuickPanelView: React.FC<Props> = ({ setInputText }) => {
     const isSymbolChanged = prevSymbolRef.current !== ctx.symbol
 
     if (isSearchChanged || isSymbolChanged) {
-      setIndex(-1) // 不默认高亮任何项，让用户主动选择
+      // 当面板符号改变时，默认选中第一项（如果有的话）
+      const combinedLength = pinnedItems.length + filteredNormalItems.length
+      if (isSymbolChanged && combinedLength > 0) {
+        setIndex(0) // 默认选中第一项
+      } else {
+        setIndex(-1) // 搜索文本变化时不默认高亮
+      }
     } else {
       // 如果当前index超出范围，调整到有效范围内
       setIndex((prevIndex) => {

@@ -20,7 +20,7 @@ import {
 import db from '@renderer/databases'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useMessageOperations, useTopicLoading } from '@renderer/hooks/useMessageOperations'
-import { modelGenerating, useRuntime } from '@renderer/hooks/useRuntime'
+import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useShortcut } from '@renderer/hooks/useShortcuts'
 import { useSidebarIconShow } from '@renderer/hooks/useSidebarIcon'
@@ -487,6 +487,32 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === 'Tab' && inputFocus) {
+        event.preventDefault()
+        const textArea = textareaRef.current?.resizableTextArea?.textArea
+        if (!textArea) {
+          return
+        }
+        const cursorPosition = textArea.selectionStart
+        const selectionLength = textArea.selectionEnd - textArea.selectionStart
+        const text = textArea.value
+
+        let match = text.slice(cursorPosition + selectionLength).match(/\$\{[^}]+\}/)
+        let startIndex: number
+
+        if (!match) {
+          match = text.match(/\$\{[^}]+\}/)
+          startIndex = match?.index ?? -1
+        } else {
+          startIndex = cursorPosition + selectionLength + match.index!
+        }
+
+        if (startIndex !== -1) {
+          const endIndex = startIndex + match![0].length
+          textArea.setSelectionRange(startIndex, endIndex)
+          return
+        }
+      }
       if (autoTranslateWithSpace && event.key === ' ') {
         setSpaceClickCount((prev) => prev + 1)
         if (spaceClickTimer.current) {
@@ -603,60 +629,85 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       const isCursorAtTextStart = cursorPosition <= 1
       const hasValidTriggerBoundary = previousChar === ' ' || isCursorAtTextStart
 
-      const textBeforeCursor = newText.slice(0, cursorPosition)
-      const lastRootIndex = textBeforeCursor.lastIndexOf(QuickPanelReservedSymbol.Root)
-      const lastMentionIndex = textBeforeCursor.lastIndexOf(QuickPanelReservedSymbol.MentionModels)
-      const lastTriggerIndex = Math.max(lastRootIndex, lastMentionIndex)
-
-      if (lastTriggerIndex !== -1 && cursorPosition > lastTriggerIndex) {
-        const triggerChar = newText[lastTriggerIndex]
-        const boundaryChar = newText[lastTriggerIndex - 1] ?? ''
-        const hasBoundary = lastTriggerIndex === 0 || /\s/.test(boundaryChar)
-        const searchSegment = newText.slice(lastTriggerIndex + 1, cursorPosition)
-        const hasSearchContent = searchSegment.trim().length > 0
-
-        if (hasBoundary && (!hasSearchContent || isDeletion)) {
-          if (triggerChar === QuickPanelReservedSymbol.Root) {
-            emitQuickPanelTrigger(QuickPanelReservedSymbol.Root, {
-              type: 'input',
-              position: lastTriggerIndex
-            })
-          } else if (triggerChar === QuickPanelReservedSymbol.MentionModels) {
-            emitQuickPanelTrigger(QuickPanelReservedSymbol.MentionModels, {
-              type: 'input',
-              position: lastTriggerIndex
-            })
-          }
-        }
+      const openRootPanelAt = (position: number) => {
+        emitQuickPanelTrigger(QuickPanelReservedSymbol.Root, {
+          type: 'input',
+          position,
+          originalText: newText
+        })
       }
 
-      // 触发符号为 '/'：若当前未打开或符号不同，则切换/打开
-      if (
-        enableQuickPanelTriggers &&
-        config.enableQuickPanel &&
-        features.enableMentionModels &&
-        lastSymbol === QuickPanelReservedSymbol.MentionModels &&
-        hasValidTriggerBoundary
-      ) {
-        if (quickPanel.isVisible && quickPanel.symbol !== QuickPanelReservedSymbol.MentionModels) {
-          quickPanel.close('switch-symbol')
+      const openMentionPanelAt = (position: number) => {
+        emitQuickPanelTrigger(QuickPanelReservedSymbol.MentionModels, {
+          type: 'input',
+          position,
+          originalText: newText
+        })
+      }
+
+      if (enableQuickPanelTriggers && config.enableQuickPanel) {
+        const hasRootMenuItems = quickPanelRootMenuItems.length > 0
+        const textBeforeCursor = newText.slice(0, cursorPosition)
+        const lastRootIndex = textBeforeCursor.lastIndexOf(QuickPanelReservedSymbol.Root)
+        const lastMentionIndex = textBeforeCursor.lastIndexOf(QuickPanelReservedSymbol.MentionModels)
+        const lastTriggerIndex = Math.max(lastRootIndex, lastMentionIndex)
+
+        if (!quickPanel.isVisible && lastTriggerIndex !== -1 && cursorPosition > lastTriggerIndex) {
+          const triggerChar = newText[lastTriggerIndex]
+          const boundaryChar = newText[lastTriggerIndex - 1] ?? ''
+          const hasBoundary = lastTriggerIndex === 0 || /\s/.test(boundaryChar)
+          const searchSegment = newText.slice(lastTriggerIndex + 1, cursorPosition)
+          const hasSearchContent = searchSegment.trim().length > 0
+
+          if (hasBoundary && (!hasSearchContent || isDeletion)) {
+            if (triggerChar === QuickPanelReservedSymbol.Root && hasRootMenuItems) {
+              openRootPanelAt(lastTriggerIndex)
+            } else if (triggerChar === QuickPanelReservedSymbol.MentionModels && features.enableMentionModels) {
+              openMentionPanelAt(lastTriggerIndex)
+            }
+          }
         }
-        if (!quickPanel.isVisible || quickPanel.symbol !== QuickPanelReservedSymbol.MentionModels) {
-          emitQuickPanelTrigger(QuickPanelReservedSymbol.MentionModels, {
-            type: 'input',
-            position: cursorPosition - 1,
-            originalText: newText
-          })
+
+        if (lastSymbol === QuickPanelReservedSymbol.Root && hasValidTriggerBoundary && hasRootMenuItems) {
+          if (quickPanel.isVisible && quickPanel.symbol !== QuickPanelReservedSymbol.Root) {
+            quickPanel.close('switch-symbol')
+          }
+          if (!quickPanel.isVisible || quickPanel.symbol !== QuickPanelReservedSymbol.Root) {
+            openRootPanelAt(cursorPosition - 1)
+          }
+        }
+
+        if (
+          features.enableMentionModels &&
+          lastSymbol === QuickPanelReservedSymbol.MentionModels &&
+          hasValidTriggerBoundary
+        ) {
+          if (quickPanel.isVisible && quickPanel.symbol !== QuickPanelReservedSymbol.MentionModels) {
+            quickPanel.close('switch-symbol')
+          }
+          if (!quickPanel.isVisible || quickPanel.symbol !== QuickPanelReservedSymbol.MentionModels) {
+            openMentionPanelAt(cursorPosition - 1)
+          }
         }
       }
 
       if (quickPanel.isVisible && quickPanel.triggerInfo?.type === 'input') {
         const activeSymbol = quickPanel.symbol as QuickPanelReservedSymbol
-        if (
-          (activeSymbol === QuickPanelReservedSymbol.Root || activeSymbol === QuickPanelReservedSymbol.MentionModels) &&
-          !newText.includes(activeSymbol)
-        ) {
-          quickPanel.close('delete-symbol')
+        const triggerPosition = quickPanel.triggerInfo.position ?? -1
+        const isTrackedSymbol =
+          activeSymbol === QuickPanelReservedSymbol.Root || activeSymbol === QuickPanelReservedSymbol.MentionModels
+
+        if (isTrackedSymbol && triggerPosition >= 0) {
+          // Check if cursor is before the trigger position (user deleted the symbol)
+          if (cursorPosition <= triggerPosition) {
+            quickPanel.close('delete-symbol')
+          } else {
+            // Check if the trigger symbol still exists at the expected position
+            const triggerChar = newText[triggerPosition]
+            if (triggerChar !== activeSymbol) {
+              quickPanel.close('delete-symbol')
+            }
+          }
         }
       }
 
@@ -668,6 +719,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       enableQuickPanelTriggers,
       features.enableMentionModels,
       quickPanel,
+      quickPanelRootMenuItems,
       setText
     ]
   )
@@ -820,8 +872,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     if (!features.enableNewTopic) {
       return
     }
-
-    await modelGenerating()
 
     const newTopic = getDefaultTopic(assistant.id)
 
@@ -1069,6 +1119,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         className="inputbar">
+        {config.enableQuickPanel && <QuickPanelView setInputText={setInputText} />}
         <InputBarContainer
           id="inputbar"
           className={classNames(
@@ -1150,8 +1201,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
             </RightSection>
           </BottomBar>
         </InputBarContainer>
-
-        {config.enableQuickPanel && <QuickPanelView setInputText={setInputText} />}
       </Container>
     </NarrowLayout>
   )
