@@ -6,6 +6,7 @@ import {
   type ProviderSettingsMap
 } from '@cherrystudio/ai-core/provider'
 import { isOpenAIChatCompletionOnlyModel } from '@renderer/config/models'
+import { isNewApiProvider } from '@renderer/config/providers'
 import {
   getAwsBedrockAccessKeyId,
   getAwsBedrockRegion,
@@ -15,9 +16,9 @@ import { createVertexProvider, isVertexAIConfigured } from '@renderer/hooks/useV
 import { getProviderByModel } from '@renderer/services/AssistantService'
 import { loggerService } from '@renderer/services/LoggerService'
 import store from '@renderer/store'
-import type { Model, Provider } from '@renderer/types'
+import { isSystemProvider, type Model, type Provider } from '@renderer/types'
 import { formatApiHost } from '@renderer/utils/api'
-import { cloneDeep, isEmpty } from 'lodash'
+import { cloneDeep, trim } from 'lodash'
 
 import { aihubmixProviderCreator, newApiResolverCreator, vertexAnthropicProviderCreator } from './config'
 import { getAiSdkProviderId } from './factory'
@@ -61,14 +62,16 @@ function handleSpecialProviders(model: Model, provider: Provider): Provider {
   //   return createVertexProvider(provider)
   // }
 
-  if (provider.id === 'aihubmix') {
-    return aihubmixProviderCreator(model, provider)
-  }
-  if (provider.id === 'newapi') {
-    return newApiResolverCreator(model, provider)
-  }
-  if (provider.id === 'vertexai') {
-    return vertexAnthropicProviderCreator(model, provider)
+  if (isSystemProvider(provider)) {
+    if (provider.id === 'aihubmix') {
+      return aihubmixProviderCreator(model, provider)
+    }
+    if (isNewApiProvider(provider)) {
+      return newApiResolverCreator(model, provider)
+    }
+    if (provider.id === 'vertexai') {
+      return vertexAnthropicProviderCreator(model, provider)
+    }
   }
   return provider
 }
@@ -117,7 +120,7 @@ export function providerToAiSdkConfig(
 
   // 构建基础配置
   const baseConfig = {
-    baseURL: actualProvider.apiHost,
+    baseURL: trim(actualProvider.apiHost),
     apiKey: getRotatedApiKey(actualProvider)
   }
   // 处理OpenAI模式
@@ -192,7 +195,10 @@ export function providerToAiSdkConfig(
     } else if (baseConfig.baseURL.endsWith('/v1')) {
       baseConfig.baseURL = baseConfig.baseURL.slice(0, -3)
     }
-    baseConfig.baseURL = isEmpty(baseConfig.baseURL) ? '' : baseConfig.baseURL
+
+    if (baseConfig.baseURL && !baseConfig.baseURL.includes('publishers/google')) {
+      baseConfig.baseURL = `${baseConfig.baseURL}/v1/projects/${project}/locations/${location}/publishers/google`
+    }
   }
 
   // 如果AI SDK支持该provider，使用原生配置
@@ -211,7 +217,8 @@ export function providerToAiSdkConfig(
     options: {
       ...options,
       name: actualProvider.id,
-      ...extraOptions
+      ...extraOptions,
+      includeUsage: true
     }
   }
 }
@@ -247,10 +254,10 @@ export async function prepareSpecialProviderConfig(
       config.options.apiKey = token
       break
     }
-    case 'cherryin': {
+    case 'cherryai': {
       config.options.fetch = async (url, options) => {
         // 在这里对最终参数进行签名
-        const signature = await window.api.cherryin.generateSignature({
+        const signature = await window.api.cherryai.generateSignature({
           method: 'POST',
           path: '/chat/completions',
           query: '',

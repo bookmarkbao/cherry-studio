@@ -19,6 +19,7 @@ import {
   resetAssistantMessage
 } from '@renderer/utils/messageUtils/create'
 import { getTopicQueue, waitForTopicQueue } from '@renderer/utils/queue'
+import { defaultAppHeaders } from '@shared/utils'
 import { t } from 'i18next'
 import { isEmpty, throttle } from 'lodash'
 import { LRUCache } from 'lru-cache'
@@ -369,7 +370,8 @@ const fetchAndProcessAssistantResponseImpl = async (
         topicId,
         options: {
           signal: abortController.signal,
-          timeout: 30000
+          timeout: 30000,
+          headers: defaultAppHeaders()
         }
       },
       streamProcessorCallbacks
@@ -1073,7 +1075,7 @@ export const cloneMessagesToNewTopicThunk =
             const oldBlock = state.messageBlocks.entities[oldBlockId]
             if (oldBlock) {
               const newBlockId = uuid()
-              const newBlock: MessageBlock = {
+              const newBlock = {
                 ...oldBlock,
                 id: newBlockId,
                 messageId: newMsgId // Link block to the NEW message ID
@@ -1169,7 +1171,7 @@ export const updateMessageAndBlocksThunk =
     try {
       // 1. 更新 Redux Store
       if (messageUpdates && messageId) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // oxlint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: msgId, ...actualMessageChanges } = messageUpdates // Separate ID from actual changes
 
         // Only dispatch message update if there are actual changes beyond the ID

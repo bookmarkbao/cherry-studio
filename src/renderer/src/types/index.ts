@@ -1,3 +1,4 @@
+import type { LanguageModelV2Source } from '@ai-sdk/provider'
 import type { WebSearchResultBlock } from '@anthropic-ai/sdk/resources'
 import type { GenerateImagesConfig, GroundingMetadata, PersonGeneration } from '@google/genai'
 import type OpenAI from 'openai'
@@ -16,6 +17,7 @@ import type { BaseTool, MCPTool } from './tool'
 
 export * from './knowledge'
 export * from './mcp'
+export * from './notification'
 export * from './ocr'
 
 export type Assistant = {
@@ -267,7 +269,7 @@ export type Provider = {
 }
 
 export const SystemProviderIds = {
-  cherryin: 'cherryin',
+  // cherryin: 'cherryin',
   silicon: 'silicon',
   aihubmix: 'aihubmix',
   ocoolai: 'ocoolai',
@@ -319,7 +321,9 @@ export const SystemProviderIds = {
   gpustack: 'gpustack',
   voyageai: 'voyageai',
   'aws-bedrock': 'aws-bedrock',
-  poe: 'poe'
+  poe: 'poe',
+  aionly: 'aionly',
+  longcat: 'longcat'
 } as const
 
 export type SystemProviderId = keyof typeof SystemProviderIds
@@ -726,12 +730,15 @@ export type WebSearchProviderResponse = {
   results: WebSearchProviderResult[]
 }
 
+export type AISDKWebSearchResult = Omit<Extract<LanguageModelV2Source, { sourceType: 'url' }>, 'sourceType'>
+
 export type WebSearchResults =
   | WebSearchProviderResponse
   | GroundingMetadata
   | OpenAI.Chat.Completions.ChatCompletionMessage.Annotation.URLCitation[]
   | OpenAI.Responses.ResponseOutputText.URLCitation[]
   | WebSearchResultBlock[]
+  | AISDKWebSearchResult[]
   | any[]
 
 export enum WebSearchSource {
