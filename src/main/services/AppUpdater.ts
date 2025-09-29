@@ -302,7 +302,7 @@ export default class AppUpdater {
    */
   private parseMultiLangReleaseNotes(releaseNotes: string): string {
     try {
-      const language = configManager.getLanguage()
+      const language = preferenceService.get('app.language')
       const isChineseUser = language === 'zh-CN' || language === 'zh-TW'
 
       // Create regex patterns using constants
