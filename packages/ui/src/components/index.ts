@@ -11,7 +11,7 @@ export { default as IndicatorLight } from './base/IndicatorLight'
 export { default as Spinner } from './base/Spinner'
 export type { StatusTagProps, StatusType } from './base/StatusTag'
 export { ErrorTag, InfoTag, StatusTag, SuccessTag, WarnTag } from './base/StatusTag'
-export { Switch } from './base/Switch'
+export { DescriptionSwitch, Switch } from './base/Switch'
 export { default as TextBadge } from './base/TextBadge'
 export { getToastUtilities, type ToastUtilities } from './base/Toast'
 
@@ -50,6 +50,7 @@ export { default as SvgSpinners180Ring } from './icons/SvgSpinners180Ring'
 export { default as ToolsCallingIcon } from './icons/ToolsCallingIcon'
 
 // Interactive Components
+export { default as Selector } from './base/Selector'
 export {
   default as CodeEditor,
   type CodeEditorHandles,
@@ -64,9 +65,7 @@ export type { EditableNumberProps } from './interactive/EditableNumber'
 export { default as EditableNumber } from './interactive/EditableNumber'
 export { default as HelpTooltip } from './interactive/HelpTooltip'
 export { default as ImageToolButton } from './interactive/ImageToolButton'
-export { default as InfoPopover } from './interactive/InfoPopover'
 export { default as InfoTooltip } from './interactive/InfoTooltip'
-export { default as Selector } from './interactive/Selector'
 export { Sortable } from './interactive/Sortable'
 export { default as WarnTooltip } from './interactive/WarnTooltip'
 

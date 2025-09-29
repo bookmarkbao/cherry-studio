@@ -13,7 +13,14 @@ interface HelpTooltipProps extends InheritedTooltipProps {
 const HelpTooltip = ({ iconColor = 'var(--color-text-2)', iconSize = 14, iconStyle, ...rest }: HelpTooltipProps) => {
   return (
     <Tooltip {...rest}>
-      <HelpCircle size={iconSize} color={iconColor} style={{ ...iconStyle }} role="img" aria-label="Help" />
+      <HelpCircle
+        size={iconSize}
+        color={iconColor}
+        style={{ ...iconStyle, cursor: 'help' }}
+        role="img"
+        aria-label="Help"
+        className="relative z-10"
+      />
     </Tooltip>
   )
 }

@@ -60,7 +60,8 @@ const ModelListGroup: React.FC<ModelListGroupProps> = ({
           onSelectionChange: handleCollapseChange
         }}
         accordionItemProps={{
-          startContent: (
+          disableIndicatorAnimation: true,
+          indicator: (
             <Tooltip title={t('settings.models.manage.remove_whole_group')} mouseLeaveDelay={0}>
               <Button
                 variant="light"
