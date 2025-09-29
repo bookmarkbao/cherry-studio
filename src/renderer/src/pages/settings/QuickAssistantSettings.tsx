@@ -1,6 +1,7 @@
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { RowFlex } from '@cherrystudio/ui'
 import { Switch } from '@cherrystudio/ui'
+import { Button } from '@cherrystudio/ui'
 import { usePreference } from '@data/hooks/usePreference'
 import ModelAvatar from '@renderer/components/Avatar/ModelAvatar'
 import { useTheme } from '@renderer/context/ThemeProvider'
@@ -9,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setQuickAssistantId } from '@renderer/store/llm'
 import { matchKeywordsInString } from '@renderer/utils'
 import HomeWindow from '@renderer/windows/mini/home/HomeWindow'
-import { Button, Select, Tooltip } from 'antd'
+import { Select, Tooltip } from 'antd'
 import type { FC } from 'react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -156,16 +157,16 @@ const QuickAssistantSettings: FC = () => {
               )}
               <RowFlex className="items-center gap-0">
                 <StyledButton
-                  type={quickAssistantId ? 'primary' : 'default'}
-                  onClick={() => {
+                  color={quickAssistantId ? 'primary' : 'default'}
+                  onPress={() => {
                     dispatch(setQuickAssistantId(defaultAssistant.id))
                   }}
                   selected={!!quickAssistantId}>
                   {t('settings.models.use_assistant')}
                 </StyledButton>
                 <StyledButton
-                  type={!quickAssistantId ? 'primary' : 'default'}
-                  onClick={() => dispatch(setQuickAssistantId(''))}
+                  color={!quickAssistantId ? 'primary' : 'default'}
+                  onPress={() => dispatch(setQuickAssistantId(''))}
                   selected={!quickAssistantId}>
                   {t('settings.models.use_model')}
                 </StyledButton>
