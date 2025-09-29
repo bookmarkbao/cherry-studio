@@ -21,7 +21,6 @@ export { default as Ellipsis } from './display/Ellipsis'
 export { default as ExpandableText } from './display/ExpandableText'
 export { default as ListItem } from './display/ListItem'
 export { default as MaxContextCount } from './display/MaxContextCount'
-export { ProviderAvatar } from './display/ProviderAvatar'
 export { default as ThinkingEffect } from './display/ThinkingEffect'
 
 // Layout Components
