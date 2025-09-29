@@ -560,8 +560,4 @@ const BunInstallAlert = styled.div`
   margin-bottom: 24px;
 `
 
-const ProviderLogo = styled(Avatar)`
-  border-radius: 4px;
-`
-
 export default CodeToolsPage

@@ -184,8 +184,5 @@ const ProviderName = styled.span`
   font-size: 14px;
   font-weight: 500;
 `
-const ProviderLogo = styled(Avatar)`
-  border: 0.5px solid var(--color-border);
-`
 
 export default PreprocessProviderSettings

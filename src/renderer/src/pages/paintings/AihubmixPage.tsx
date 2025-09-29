@@ -1026,10 +1026,6 @@ const StyledInputNumber = styled(InputNumber)`
   width: 70px;
 `
 
-const ProviderLogo = styled(Avatar)`
-  border: 0.5px solid var(--color-border);
-`
-
 // 添加新的样式组件
 const ModeSegmentedContainer = styled.div`
   display: flex;
