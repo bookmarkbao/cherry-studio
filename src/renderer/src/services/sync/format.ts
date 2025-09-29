@@ -58,6 +58,14 @@ export function formatProvider(provider: Provider): ClientProvider {
 }
 
 export function formatModel(model: Model): ModelType {
+  if (!model) {
+    return {
+      id: '',
+      provider: '',
+      name: '',
+      group: ''
+    }
+  }
   return {
     id: model.model_id,
     provider: model.provider.provider_id,

@@ -9,12 +9,13 @@ import { net } from 'electron'
 
 import BasePreprocessProvider from './BasePreprocessProvider'
 
-const logger = loggerService.withContext('MineruPreprocessProvider')
+const logger = loggerService.withContext('MineruPreprocessProviderOfficial')
 
 type ApiResponse<T> = {
-  backend: string
-  version: string
-  results: T
+  code: number
+  data: T
+  msg?: string
+  trace_id?: string
 }
 
 type BatchUploadResponse = {
@@ -51,7 +52,7 @@ type QuotaResponse = {
   trace_id?: string
 }
 
-export default class MineruPreprocessProvider extends BasePreprocessProvider {
+export default class MineruPreprocessProviderOfficial extends BasePreprocessProvider {
   constructor(provider: PreprocessProvider, userId?: string) {
     super(provider, userId)
     // todo：免费期结束后删除
@@ -68,19 +69,23 @@ export default class MineruPreprocessProvider extends BasePreprocessProvider {
       await this.validateFile(filePath)
 
       // 1. 获取上传URL并上传文件
-      const mdContent = await this.uploadFile(file)
-      logger.info(`MinerU file upload completed`)
+      const batchId = await this.uploadFile(file)
+      logger.info(`MinerU file upload completed: batch_id=${batchId}`)
+
+      // 2. 等待处理完成并获取结果
+      const extractResult = await this.waitForCompletion(sourceId, batchId, file.origin_name)
+      logger.info(`MinerU processing completed for batch: ${batchId}`)
 
       // 3. 下载并解压文件
-      const { path: outputPath } = await this.downloadAndExtractFile(mdContent, file)
+      const { path: outputPath } = await this.downloadAndExtractFile(extractResult.full_zip_url!, file)
 
       // 4. check quota
-      // const quota = await this.checkQuota()
+      const quota = await this.checkQuota()
 
       // 5. 创建处理后的文件信息
       return {
         processedFile: this.createProcessedFileInfo(file, outputPath),
-        quota: 0
+        quota
       }
     } catch (error: any) {
       logger.error(`MinerU preprocess processing failed for:`, error as Error)
@@ -164,23 +169,36 @@ export default class MineruPreprocessProvider extends BasePreprocessProvider {
     }
   }
 
-  private async downloadAndExtractFile(content: string, file: FileMetadata): Promise<{ path: string }> {
+  private async downloadAndExtractFile(zipUrl: string, file: FileMetadata): Promise<{ path: string }> {
     const dirPath = this.storageDir
 
+    const zipPath = path.join(dirPath, `${file.id}.zip`)
     const extractPath = path.join(dirPath, `${file.id}`)
-    const mdPath = path.join(extractPath, `${file.id}.md`)
 
-    logger.info(`Downloading MinerU result to: ${mdPath}`)
+    logger.info(`Downloading MinerU result to: ${zipPath}`)
 
     try {
+      // 下载ZIP文件
+      const response = await net.fetch(zipUrl, { method: 'GET' })
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      const arrayBuffer = await response.arrayBuffer()
+      fs.writeFileSync(zipPath, Buffer.from(arrayBuffer))
+      logger.info(`Downloaded ZIP file: ${zipPath}`)
 
       // 确保提取目录存在
       if (!fs.existsSync(extractPath)) {
         fs.mkdirSync(extractPath, { recursive: true })
       }
 
-      fs.writeFileSync(mdPath, Buffer.from(content))
-      logger.info(`Downloaded markdown file: ${mdPath}`)
+      // 解压文件
+      const zip = new AdmZip(zipPath)
+      zip.extractAllTo(extractPath, true)
+      logger.info(`Extracted files to: ${extractPath}`)
+
+      // 删除临时ZIP文件
+      fs.unlinkSync(zipPath)
 
       return { path: extractPath }
     } catch (error: any) {
@@ -192,44 +210,57 @@ export default class MineruPreprocessProvider extends BasePreprocessProvider {
   private async uploadFile(file: FileMetadata): Promise<string> {
     try {
       // 步骤1: 获取上传URL
-      return await this.getBatchUploadUrls(file)
+      const { batchId, fileUrls } = await this.getBatchUploadUrls(file)
+      // 步骤2: 上传文件到获取的URL
+      const filePath = fileStorage.getFilePathById(file)
+      await this.putFileToUrl(filePath, fileUrls[0])
+      logger.info(`File uploaded successfully: ${filePath}`, { batchId, fileUrls })
+
+      return batchId
     } catch (error: any) {
       logger.error(`Failed to upload file:`, error as Error)
       throw new Error(error.message)
     }
   }
 
-  private async getBatchUploadUrls(file: FileMetadata): Promise<string> {
-    const endpoint = `${this.provider.apiHost}/file_parse`
+  private async getBatchUploadUrls(file: FileMetadata): Promise<{ batchId: string; fileUrls: string[] }> {
+    const endpoint = `${this.provider.apiHost}/api/v4/file-urls/batch`
+    console.log('endpoint', endpoint);
+    const payload = {
+      language: 'auto',
+      enable_formula: true,
+      enable_table: true,
+      files: [
+        {
+          name: file.origin_name,
+          is_ocr: true,
+          data_id: file.id
+        }
+      ]
+    }
 
     try {
-      // 获取文件的实际路径
-      const filePath = fileStorage.getFilePathById(file);
-
-      // 读取文件内容
-      const fileBuffer = await fs.promises.readFile(filePath);
-
-      // 创建Blob对象
-      const blob = new Blob([fileBuffer], { type: `application/${file.ext.slice(1)}` });
-
-      // 创建FormData并添加文件数据
-      const formData = new FormData()
-      formData.append('backbend', 'vlm-vllm-async-engine')
-      formData.append('files', blob, file.origin_name)
-
       const response = await net.fetch(endpoint, {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.provider.apiKey}`,
+          token: this.userId ?? '',
+          Accept: '*/*'
+        },
+        body: JSON.stringify(payload)
       })
-
+      console.log('response', response);
       if (response.ok) {
-        const data: ApiResponse<any> = await response.json()
-
-        if (data.results) {
-          let name = file.origin_name.split('.')[0]
-          return data.results[name].md_content
+        const data: ApiResponse<BatchUploadResponse> = await response.json()
+        if (data.code === 0 && data.data) {
+          const { batch_id, file_urls } = data.data
+          return {
+            batchId: batch_id,
+            fileUrls: file_urls
+          }
         } else {
-          throw new Error(`API returned error: ${JSON.stringify(data)}`)
+          throw new Error(`API returned error: ${data.msg || JSON.stringify(data)}`)
         }
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -285,7 +316,7 @@ export default class MineruPreprocessProvider extends BasePreprocessProvider {
     }
   }
 
-  private async getExtractResults(batchId: string): Promise<any> {
+  private async getExtractResults(batchId: string): Promise<ExtractResultResponse> {
     const endpoint = `${this.provider.apiHost}/api/v4/extract-results/batch/${batchId}`
 
     try {
@@ -300,11 +331,11 @@ export default class MineruPreprocessProvider extends BasePreprocessProvider {
 
       if (response.ok) {
         const data: ApiResponse<ExtractResultResponse> = await response.json()
-        // if (data.code === 0 && data.data) {
-        //   return data.data
-        // } else {
-        //   throw new Error(`API returned error: ${data.msg || JSON.stringify(data)}`)
-        // }
+        if (data.code === 0 && data.data) {
+          return data.data
+        } else {
+          throw new Error(`API returned error: ${data.msg || JSON.stringify(data)}`)
+        }
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }

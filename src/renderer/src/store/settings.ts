@@ -215,6 +215,8 @@ export interface SettingsState {
   // API Server
   apiServer: ApiServerConfig
   showMessageOutline: boolean
+  // S3 上传状态
+  s3State: string
 }
 
 export type MultiModelMessageStyle = 'horizontal' | 'vertical' | 'fold' | 'grid'
@@ -407,7 +409,8 @@ export const initialState: SettingsState = {
     port: 23333,
     apiKey: `cs-sk-${uuid()}`
   },
-  showMessageOutline: false
+  showMessageOutline: false,
+  s3State: ''
 }
 
 const settingsSlice = createSlice({
@@ -842,6 +845,9 @@ const settingsSlice = createSlice({
     },
     setShowMessageOutline: (state, action: PayloadAction<boolean>) => {
       state.showMessageOutline = action.payload
+    },
+    setS3State: (state, action: PayloadAction<string>) => {
+      state.s3State = action.payload
     }
   }
 })
@@ -969,6 +975,7 @@ export const {
   setEnableDeveloperMode,
   setNavbarPosition,
   setShowMessageOutline,
+  setS3State,
   // API Server actions
   setApiServerEnabled,
   setApiServerPort,

@@ -16,6 +16,7 @@ import { setDefaultModel, setQuickModel, setTranslateModel, updateProviders } fr
 import { setMCPServers } from '@renderer/store/mcp'
 import { setDisabledMinApps, setMinApps, setPinnedMinApps } from '@renderer/store/minapps'
 import { setDefaultPreprocessProvider, updatePreprocessProvider } from '@renderer/store/preprocess'
+import { setS3State } from '@renderer/store/settings'
 import { setProxyMode, setProxyUrl } from '@renderer/store/settings'
 import { setDefaultProvider, setWebSearchProviders } from '@renderer/store/websearch'
 import { Assistant, KnowledgeBase as KnowledgeBaseType, MCPServer, MinAppType, Model } from '@renderer/types'
@@ -265,6 +266,12 @@ export function syncSettings(settings: Setting[]): void {
     const syncIntervalSeconds = syncIntervalMinutes * 60
     if (syncIntervalSeconds !== store.getState().auth?.syncInterval) {
       dispatch(setSyncInterval(syncIntervalSeconds))
+    }
+
+    // 同步S3上传状态
+    const s3State = settings.find((s) => s.key === 's3_state')
+    if (typeof s3State !== 'undefined' && s3State.value) {
+      dispatch(setS3State(s3State.value))
     }
 
     // 同步代理设置

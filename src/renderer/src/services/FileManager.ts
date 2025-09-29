@@ -1,5 +1,6 @@
 import { loggerService } from '@logger'
 import db from '@renderer/databases'
+import { getStoreSetting } from '@renderer/hooks/useSettings'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
 import { FileMetadata } from '@renderer/types'
@@ -57,10 +58,9 @@ class FileManager {
   }
 
   static async uploadFile(file: FileMetadata): Promise<FileMetadata> {
-    logger.info(`Uploading file: ${JSON.stringify(file)}`)
-
+    // logger.info(`Uploading file: ${JSON.stringify(file)}`)
     const uploadFile = await window.api.file.upload(file)
-    logger.info('Uploaded file:', uploadFile)
+    // logger.info('Uploaded file:', uploadFile)
     const fileRecord = await db.files.get(uploadFile.id)
 
     if (fileRecord) {
@@ -69,8 +69,55 @@ class FileManager {
     }
 
     await db.files.add(uploadFile)
+    const s3State = getStoreSetting('s3State')
+    if (s3State) {
+      await this.uploadS3File(uploadFile)
+    }
 
     return uploadFile
+  }
+
+  /**
+   * 上传文件到S3
+   * @param file 文件元数据
+   * @returns 上传成功返回undefined，失败抛出错误
+   */
+  static async uploadS3File(file: FileMetadata): Promise<undefined> {
+    const { accessToken, serverUrl } = store.getState().auth
+    if (!accessToken || !serverUrl) {
+      return
+    }
+
+    // 读取实际的文件数据
+    const fileData = await window.api.file.base64File(file.id + file.ext)
+    const base64Data = fileData.data
+    const mimeString = fileData.mime
+
+    // 将base64数据转换为Blob
+    const byteString = atob(base64Data)
+    const ab = new ArrayBuffer(byteString.length)
+    const ia = new Uint8Array(ab)
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i)
+    }
+    const blob = new Blob([ab], { type: mimeString })
+
+    // 创建FormData并添加文件数据
+    const formData = new FormData()
+    formData.append('file', blob, file.origin_name)
+
+    const response = await fetch(`${serverUrl}/upload/file`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    if (!response.ok) {
+      throw new Error('API请求失败')
+    }
+    const data = await response.json()
+    logger.info('Uploaded Oss file:', data)
   }
 
   static async uploadFiles(files: FileMetadata[]): Promise<FileMetadata[]> {
