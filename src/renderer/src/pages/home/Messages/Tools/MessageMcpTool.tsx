@@ -5,6 +5,7 @@ import { CopyIcon, LoadingIcon } from '@renderer/components/Icons'
 import { useCodeStyle } from '@renderer/context/CodeStyleProvider'
 import { useMCPServers } from '@renderer/hooks/useMCPServers'
 import { useTimer } from '@renderer/hooks/useTimer'
+import { MCPToolResponse } from '@renderer/types'
 import type { ToolMessageBlock } from '@renderer/types/newMessage'
 import { isToolAutoApproved } from '@renderer/utils/mcp-tools'
 import { cancelToolAction, confirmToolAction } from '@renderer/utils/userConfirmation'
@@ -48,7 +49,7 @@ const MessageMcpTool: FC<Props> = ({ block }) => {
   const [progress, setProgress] = useState<number>(0)
   const { setTimeoutTimer } = useTimer()
 
-  const toolResponse = block.metadata?.rawMcpToolResponse
+  const toolResponse = block.metadata?.rawMcpToolResponse as MCPToolResponse
 
   const { id, tool, status, response } = toolResponse!
   const isPending = status === 'pending'
