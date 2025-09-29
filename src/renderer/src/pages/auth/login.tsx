@@ -156,8 +156,8 @@ const LoginPage: FC = () => {
   }, [])
 
   useEffect(() => {
-    dispatch(setServerUrl('https://client.matai.center'))
-    form.setFieldsValue({ serverUrl: 'https://client.matai.center' })
+    dispatch(setServerUrl('https://client.mat-ai.cn'))
+    form.setFieldsValue({ serverUrl: 'https://client.mat-ai.cn' })
   }, [dispatch, form])
 
   const validateUrl = (_: any, value: string) => {

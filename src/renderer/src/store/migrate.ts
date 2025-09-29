@@ -2379,6 +2379,15 @@ const migrateConfig = {
       logger.error('migrate 146 error', error as Error)
       return state
     }
+  },
+  '147': (state: RootState) => {
+    try {
+      state.auth.serverUrl = 'https://client.mat-ai.cn'
+      return state
+    } catch (error) {
+      logger.error('migrate 147 error', error as Error)
+      return state
+    }
   }
 }
 
