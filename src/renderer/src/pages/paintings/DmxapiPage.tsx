@@ -1,6 +1,7 @@
 import { PlusOutlined, RedoOutlined } from '@ant-design/icons'
 import { Button, RowFlex } from '@cherrystudio/ui'
 import { Switch } from '@cherrystudio/ui'
+import { Avatar } from '@cherrystudio/ui'
 import { useCache } from '@data/hooks/useCache'
 import DMXAPIToImg from '@renderer/assets/images/providers/DMXAPI-to-img.webp'
 import { Navbar, NavbarCenter, NavbarRight } from '@renderer/components/app/Navbar'
@@ -14,7 +15,7 @@ import FileManager from '@renderer/services/FileManager'
 import type { FileMetadata } from '@renderer/types'
 import { convertToBase64, uuid } from '@renderer/utils'
 import type { DmxapiPainting } from '@types'
-import { Avatar, Input, InputNumber, Segmented, Select, Tooltip } from 'antd'
+import { Input, InputNumber, Segmented, Select, Tooltip } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { Info } from 'lucide-react'
 import type { FC } from 'react'
@@ -804,10 +805,10 @@ const DmxapiPage: FC<{ Options: string[] }> = ({ Options }) => {
               <SettingHelpLink target="_blank" href={TOP_UP_URL}>
                 {t('paintings.top_up')}
               </SettingHelpLink>
-              <ProviderLogo
-                shape="square"
+              <Avatar
+                radius="md"
                 src={getProviderLogo(dmxapiProvider.id)}
-                size={16}
+                className="h-4 w-4 border-[0.5px] border-[var(--color-border)]"
                 style={{ marginLeft: 5 }}
               />
             </div>
@@ -816,7 +817,11 @@ const DmxapiPage: FC<{ Options: string[] }> = ({ Options }) => {
             {providerOptions.map((provider) => (
               <Select.Option value={provider.value} key={provider.value}>
                 <SelectOptionContainer>
-                  <ProviderLogo shape="square" src={getProviderLogo(provider.value || '')} size={16} />
+                  <Avatar
+                    radius="md"
+                    src={getProviderLogo(provider.value || '')}
+                    className="h-4 w-4 border-[0.5px] border-[var(--color-border)]"
+                  />
                   {provider.label}
                 </SelectOptionContainer>
               </Select.Option>
@@ -1028,9 +1033,6 @@ const ProviderTitleContainer = styled.div`
   margin-bottom: 5px;
 `
 
-const ProviderLogo = styled(Avatar)`
-  border: 0.5px solid var(--color-border);
-`
 const SelectOptionContainer = styled.div`
   display: flex;
   align-items: center;

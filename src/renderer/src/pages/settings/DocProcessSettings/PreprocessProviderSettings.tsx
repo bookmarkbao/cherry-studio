@@ -1,12 +1,13 @@
 import { ExportOutlined } from '@ant-design/icons'
 import { Flex } from '@cherrystudio/ui'
 import { Button } from '@cherrystudio/ui'
+import { Avatar } from '@cherrystudio/ui'
 import { ApiKeyListPopup } from '@renderer/components/Popups/ApiKeyListPopup'
 import { getPreprocessProviderLogo, PREPROCESS_PROVIDER_CONFIG } from '@renderer/config/preprocessProviders'
 import { usePreprocessProvider } from '@renderer/hooks/usePreprocess'
 import type { PreprocessProvider } from '@renderer/types'
 import { formatApiKeys, hasObjectKey } from '@renderer/utils'
-import { Avatar, Divider, Input, Tooltip } from 'antd'
+import { Divider, Input, Tooltip } from 'antd'
 import Link from 'antd/es/typography/Link'
 import { List } from 'lucide-react'
 import type { FC } from 'react'
@@ -73,7 +74,11 @@ const PreprocessProviderSettings: FC<Props> = ({ provider: _provider }) => {
     <>
       <SettingTitle>
         <Flex className="items-center gap-2">
-          <ProviderLogo shape="square" src={getPreprocessProviderLogo(preprocessProvider.id)} size={16} />
+          <Avatar
+            radius="md"
+            src={getPreprocessProviderLogo(preprocessProvider.id)}
+            className="h-4 w-4 border-[0.5px] border-[var(--color-border)]"
+          />
 
           <ProviderName> {preprocessProvider.name}</ProviderName>
           {officialWebsite && preprocessProviderConfig?.websites && (

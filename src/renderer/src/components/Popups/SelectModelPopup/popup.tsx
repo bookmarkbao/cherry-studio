@@ -1,5 +1,6 @@
 import { PushpinOutlined } from '@ant-design/icons'
 import { Flex } from '@cherrystudio/ui'
+import { Avatar } from '@cherrystudio/ui'
 import { FreeTrialModelTag } from '@renderer/components/FreeTrialModelTag'
 import ModelTagsWithLabel from '@renderer/components/ModelTagsWithLabel'
 import { TopView } from '@renderer/components/TopView'
@@ -12,7 +13,7 @@ import type { Model, ModelType, Provider } from '@renderer/types'
 import { objectEntries } from '@renderer/types'
 import { classNames, filterModelsByKeywords, getFancyProviderName } from '@renderer/utils'
 import { getModelTags } from '@renderer/utils/model'
-import { Avatar, Divider, Empty, Modal, Tooltip } from 'antd'
+import { Divider, Empty, Modal, Tooltip } from 'antd'
 import { first, sortBy } from 'lodash'
 import { Settings2 } from 'lucide-react'
 import React, {
@@ -124,7 +125,7 @@ const PopupContainer: React.FC<Props> = ({ model, filter: baseFilter, showTagFil
           </TagsContainer>
         ),
         icon: (
-          <Avatar src={getModelLogo(model.id || '')} size={24}>
+          <Avatar src={getModelLogo(model.id || '')} size="xs">
             {first(model.name) || 'M'}
           </Avatar>
         ),

@@ -1,7 +1,7 @@
 // Original path: src/renderer/src/components/ProviderAvatar.tsx
-import { Avatar } from '@heroui/react'
 import React from 'react'
 
+import { Avatar } from '../../base/Avatar'
 import { generateColorFromChar, getFirstCharacter, getForegroundColor } from './utils'
 
 interface ProviderAvatarProps {

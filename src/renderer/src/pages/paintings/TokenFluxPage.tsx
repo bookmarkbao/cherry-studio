@@ -1,5 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button } from '@cherrystudio/ui'
+import { Avatar } from '@cherrystudio/ui'
 import { useCache } from '@data/hooks/useCache'
 import { usePreference } from '@data/hooks/usePreference'
 import { loggerService } from '@logger'
@@ -16,7 +17,7 @@ import FileManager from '@renderer/services/FileManager'
 import { translateText } from '@renderer/services/TranslateService'
 import type { TokenFluxPainting } from '@renderer/types'
 import { getErrorMessage, uuid } from '@renderer/utils'
-import { Avatar, Select, Tooltip } from 'antd'
+import { Select, Tooltip } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { Info } from 'lucide-react'
 import type { FC } from 'react'
@@ -381,7 +382,11 @@ const TokenFluxPage: FC<{ Options: string[] }> = ({ Options }) => {
             <SettingTitle style={{ marginBottom: 8 }}>{t('common.provider')}</SettingTitle>
             <SettingHelpLink target="_blank" href="https://tokenflux.ai">
               {t('paintings.learn_more')}
-              <ProviderLogo shape="square" src={getProviderLogo('tokenflux')} size={16} style={{ marginLeft: 5 }} />
+              <Avatar
+                radius="md"
+                src={getProviderLogo('tokenflux')}
+                className="ml-[5px] h-4 w-4 border-[0.5px] border-[var(--color-border)]"
+              />
             </SettingHelpLink>
           </ProviderTitleContainer>
 
@@ -392,7 +397,11 @@ const TokenFluxPage: FC<{ Options: string[] }> = ({ Options }) => {
             {providerOptions.map((provider) => (
               <Select.Option value={provider.value} key={provider.value}>
                 <SelectOptionContainer>
-                  <ProviderLogo shape="square" src={getProviderLogo(provider.value || '')} size={16} />
+                  <Avatar
+                    radius="md"
+                    src={getProviderLogo(provider.value || '')}
+                    className="h-4 w-4 border-[0.5px] border-[var(--color-border)]"
+                  />
                   {provider.label}
                 </SelectOptionContainer>
               </Select.Option>
@@ -761,10 +770,6 @@ const InfoIcon = styled(Info)`
   &:hover {
     opacity: 1;
   }
-`
-
-const ProviderLogo = styled(Avatar)`
-  border: 0.5px solid var(--color-border);
 `
 
 const ProviderTitleContainer = styled.div`

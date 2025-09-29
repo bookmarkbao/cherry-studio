@@ -1,5 +1,6 @@
 import { RowFlex } from '@cherrystudio/ui'
 import { Button } from '@cherrystudio/ui'
+import { Avatar } from '@cherrystudio/ui'
 import { FreeTrialModelTag } from '@renderer/components/FreeTrialModelTag'
 import { type HealthResult, HealthStatusIndicator } from '@renderer/components/HealthStatusIndicator'
 import ModelIdWithTags from '@renderer/components/ModelIdWithTags'
@@ -7,7 +8,7 @@ import { getModelLogo } from '@renderer/config/models'
 import type { Model } from '@renderer/types'
 import type { ModelWithStatus } from '@renderer/types/healthCheck'
 import { maskApiKey } from '@renderer/utils/api'
-import { Avatar, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { Bolt, Minus } from 'lucide-react'
 import React, { memo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -37,7 +38,7 @@ const ModelListItem: React.FC<ModelListItemProps> = ({ ref, model, modelStatus, 
   return (
     <ListItem ref={ref}>
       <RowFlex className="flex-1 items-center gap-2.5">
-        <Avatar src={getModelLogo(model.id)} size={24}>
+        <Avatar src={getModelLogo(model.id)} className="h-6 w-6">
           {model?.name?.[0]?.toUpperCase()}
         </Avatar>
         <ModelIdWithTags

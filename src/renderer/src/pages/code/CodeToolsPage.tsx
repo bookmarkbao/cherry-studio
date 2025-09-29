@@ -1,4 +1,5 @@
 import { Button } from '@cherrystudio/ui'
+import { Avatar } from '@cherrystudio/ui'
 import AiProvider from '@renderer/aiCore'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import ModelSelector from '@renderer/components/ModelSelector'
@@ -17,7 +18,7 @@ import { setIsBunInstalled } from '@renderer/store/mcp'
 import type { EndpointType, Model } from '@renderer/types'
 import type { TerminalConfig } from '@shared/config/constant'
 import { codeTools, terminalApps } from '@shared/config/constant'
-import { Alert, Avatar, Checkbox, Input, Popover, Select, Space, Tooltip } from 'antd'
+import { Alert, Checkbox, Input, Popover, Select, Space, Tooltip } from 'antd'
 import { ArrowUpRight, Download, FolderOpen, HelpCircle, Terminal, X } from 'lucide-react'
 import type { FC } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -363,7 +364,7 @@ const CodeToolsPage: FC = () => {
                                 key={provider.id}
                                 style={{ color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 4 }}
                                 to={`/settings/provider?id=${provider.id}`}>
-                                <ProviderLogo shape="square" src={getProviderLogo(provider.id)} size={20} />
+                                <Avatar radius="md" src={getProviderLogo(provider.id)} className="h-5 w-5 rounded-md" />
                                 {getProviderLabel(provider.id)}
                                 <ArrowUpRight size={14} />
                               </Link>
