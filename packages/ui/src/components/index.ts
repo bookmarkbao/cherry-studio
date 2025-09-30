@@ -1,5 +1,5 @@
 // Base Components
-export { Avatar, AvatarGroup, type AvatarProps,EmojiAvatar } from './base/Avatar'
+export { Avatar, AvatarGroup, type AvatarProps, EmojiAvatar } from './base/Avatar'
 export { default as Button, type ButtonProps } from './base/Button'
 export { default as CopyButton } from './base/CopyButton'
 export { default as CustomCollapse } from './base/CustomCollapse'
@@ -48,8 +48,22 @@ export {
 export { default as SvgSpinners180Ring } from './icons/SvgSpinners180Ring'
 export { default as ToolsCallingIcon } from './icons/ToolsCallingIcon'
 
-// Interactive Components
+/* Interactive Components */
+
+// Selector / SearchableSelector
 export { default as Selector } from './base/Selector'
+export { default as SearchableSelector } from './base/Selector/SearchableSelector'
+export type {
+  MultipleSearchableSelectorProps,
+  MultipleSelectorProps,
+  SearchableSelectorItem,
+  SearchableSelectorProps,
+  SelectorItem,
+  SelectorProps,
+  SingleSearchableSelectorProps,
+  SingleSelectorProps
+} from './base/Selector/types'
+// CodeEditor
 export {
   default as CodeEditor,
   type CodeEditorHandles,
@@ -58,14 +72,22 @@ export {
   getCmThemeByName,
   getCmThemeNames
 } from './interactive/CodeEditor'
+// CollapsibleSearchBar
 export { default as CollapsibleSearchBar } from './interactive/CollapsibleSearchBar'
+// DraggableList
 export { DraggableList, useDraggableReorder } from './interactive/DraggableList'
+// EditableNumber
 export type { EditableNumberProps } from './interactive/EditableNumber'
+// EditableNumber
 export { default as EditableNumber } from './interactive/EditableNumber'
 export { default as HelpTooltip } from './interactive/HelpTooltip'
+// ImageToolButton
 export { default as ImageToolButton } from './interactive/ImageToolButton'
+// InfoTooltip
 export { default as InfoTooltip } from './interactive/InfoTooltip'
+// Sortable
 export { Sortable } from './interactive/Sortable'
+// WarnTooltip
 export { default as WarnTooltip } from './interactive/WarnTooltip'
 
 // Composite Components (复合组件)
