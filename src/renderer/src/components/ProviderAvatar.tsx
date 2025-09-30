@@ -73,7 +73,8 @@ export const ProviderAvatarPrimitive: React.FC<ProviderAvatarPrimitiveProps> = (
         color,
         ...style
       }}
-      name={getFirstCharacter(providerName)}
+      getInitials={getFirstCharacter}
+      name={providerName}
     />
   )
 }
