@@ -4,7 +4,6 @@ import path from 'node:path'
 import { loggerService } from '@logger'
 import { fileStorage } from '@main/services/FileStorage'
 import { FileMetadata, PreprocessProvider } from '@types'
-import AdmZip from 'adm-zip'
 import { net } from 'electron'
 
 import BasePreprocessProvider from './BasePreprocessProvider'
@@ -15,30 +14,6 @@ type ApiResponse<T> = {
   backend: string
   version: string
   results: T
-}
-
-type BatchUploadResponse = {
-  batch_id: string
-  file_urls: string[]
-}
-
-type ExtractProgress = {
-  extracted_pages: number
-  total_pages: number
-  start_time: string
-}
-
-type ExtractFileResult = {
-  file_name: string
-  state: 'done' | 'waiting-file' | 'pending' | 'running' | 'converting' | 'failed'
-  err_msg: string
-  full_zip_url?: string
-  extract_progress?: ExtractProgress
-}
-
-type ExtractResultResponse = {
-  batch_id: string
-  extract_result: ExtractFileResult[]
 }
 
 type QuotaResponse = {
@@ -64,7 +39,7 @@ export default class MineruPreprocessProvider extends BasePreprocessProvider {
   ): Promise<{ processedFile: FileMetadata; quota: number }> {
     try {
       const filePath = fileStorage.getFilePathById(file)
-      logger.info(`MinerU preprocess processing started: ${filePath}`)
+      logger.info(`MinerU preprocess processing started: ${filePath} ${sourceId}`)
       await this.validateFile(filePath)
 
       // 1. 获取上传URL并上传文件
@@ -238,132 +213,5 @@ export default class MineruPreprocessProvider extends BasePreprocessProvider {
       logger.error(`Failed to get batch upload URLs: ${error.message}`)
       throw new Error(error.message)
     }
-  }
-
-  private async putFileToUrl(filePath: string, uploadUrl: string): Promise<void> {
-    try {
-      const fileBuffer = await fs.promises.readFile(filePath)
-
-      const response = await net.fetch(uploadUrl, {
-        method: 'PUT',
-        body: fileBuffer,
-        headers: {
-          'Content-Type': 'application/pdf'
-        }
-        // headers: {
-        //   'Content-Length': fileBuffer.length.toString()
-        // }
-      })
-
-      if (!response.ok) {
-        // 克隆 response 以避免消费 body stream
-        const responseClone = response.clone()
-
-        try {
-          const responseBody = await responseClone.text()
-          const errorInfo = {
-            status: response.status,
-            statusText: response.statusText,
-            url: response.url,
-            type: response.type,
-            redirected: response.redirected,
-            headers: Object.fromEntries(response.headers.entries()),
-            body: responseBody
-          }
-
-          logger.error('Response details:', errorInfo)
-          throw new Error(`Upload failed with status ${response.status}: ${responseBody}`)
-        } catch (parseError) {
-          throw new Error(`Upload failed with status ${response.status}. Could not parse response body.`)
-        }
-      }
-
-      logger.info(`File uploaded successfully to: ${uploadUrl}`)
-    } catch (error: any) {
-      logger.error(`Failed to upload file to URL ${uploadUrl}: ${error}`)
-      throw new Error(error.message)
-    }
-  }
-
-  private async getExtractResults(batchId: string): Promise<any> {
-    const endpoint = `${this.provider.apiHost}/api/v4/extract-results/batch/${batchId}`
-
-    try {
-      const response = await net.fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.provider.apiKey}`,
-          token: this.userId ?? ''
-        }
-      })
-
-      if (response.ok) {
-        const data: ApiResponse<ExtractResultResponse> = await response.json()
-        // if (data.code === 0 && data.data) {
-        //   return data.data
-        // } else {
-        //   throw new Error(`API returned error: ${data.msg || JSON.stringify(data)}`)
-        // }
-      } else {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-      }
-    } catch (error: any) {
-      logger.error(`Failed to get extract results for batch ${batchId}: ${error.message}`)
-      throw new Error(error.message)
-    }
-  }
-
-  private async waitForCompletion(
-    sourceId: string,
-    batchId: string,
-    fileName: string,
-    maxRetries: number = 60,
-    intervalMs: number = 5000
-  ): Promise<ExtractFileResult> {
-    let retries = 0
-
-    while (retries < maxRetries) {
-      try {
-        const result = await this.getExtractResults(batchId)
-
-        // 查找对应文件的处理结果
-        const fileResult = result.extract_result.find((item) => item.file_name === fileName)
-        if (!fileResult) {
-          throw new Error(`File ${fileName} not found in batch results`)
-        }
-
-        // 检查处理状态
-        if (fileResult.state === 'done' && fileResult.full_zip_url) {
-          logger.info(`Processing completed for file: ${fileName}`)
-          return fileResult
-        } else if (fileResult.state === 'failed') {
-          throw new Error(`Processing failed for file: ${fileName}, error: ${fileResult.err_msg}`)
-        } else if (fileResult.state === 'running') {
-          // 发送进度更新
-          if (fileResult.extract_progress) {
-            const progress = Math.round(
-              (fileResult.extract_progress.extracted_pages / fileResult.extract_progress.total_pages) * 100
-            )
-            await this.sendPreprocessProgress(sourceId, progress)
-            logger.info(`File ${fileName} processing progress: ${progress}%`)
-          } else {
-            // 如果没有具体进度信息，发送一个通用进度
-            await this.sendPreprocessProgress(sourceId, 50)
-            logger.info(`File ${fileName} is still processing...`)
-          }
-        }
-      } catch (error) {
-        logger.warn(`Failed to check status for batch ${batchId}, retry ${retries + 1}/${maxRetries}`)
-        if (retries === maxRetries - 1) {
-          throw error
-        }
-      }
-
-      retries++
-      await new Promise((resolve) => setTimeout(resolve, intervalMs))
-    }
-
-    throw new Error(`Processing timeout for batch: ${batchId}`)
   }
 }
