@@ -227,7 +227,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
 
     try {
       // Dispatch the sendMessage action with all options
-      const uploadedFiles = await FileManager.uploadFiles(files)
+      const uploadedFiles = await FileManager.uploadFiles(files, true)
 
       const baseUserMessage: MessageInputBaseParams = { assistant, topic, content: text }
       logger.info('baseUserMessage', baseUserMessage)

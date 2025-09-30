@@ -57,7 +57,7 @@ class FileManager {
     return base64File
   }
 
-  static async uploadFile(file: FileMetadata): Promise<FileMetadata> {
+  static async uploadFile(file: FileMetadata, isUploadS3: boolean = false): Promise<FileMetadata> {
     // logger.info(`Uploading file: ${JSON.stringify(file)}`)
     const uploadFile = await window.api.file.upload(file)
     // logger.info('Uploaded file:', uploadFile)
@@ -69,8 +69,10 @@ class FileManager {
     }
 
     await db.files.add(uploadFile)
+
     const s3State = getStoreSetting('s3State')
-    if (s3State) {
+    console.log('s3State', s3State);
+    if (s3State && isUploadS3) {
       await this.uploadS3File(uploadFile)
     }
 
@@ -120,8 +122,8 @@ class FileManager {
     logger.info('Uploaded Oss file:', data)
   }
 
-  static async uploadFiles(files: FileMetadata[]): Promise<FileMetadata[]> {
-    return Promise.all(files.map((file) => this.uploadFile(file)))
+  static async uploadFiles(files: FileMetadata[], isUploadS3: boolean = false): Promise<FileMetadata[]> {
+    return Promise.all(files.map((file) => this.uploadFile(file, isUploadS3)))
   }
 
   static async getFile(id: string): Promise<FileMetadata | undefined> {
