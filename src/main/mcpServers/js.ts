@@ -107,7 +107,7 @@ class JsServer {
           timeout: timeout ?? DEFAULT_TIMEOUT
         })
 
-        const { combinedOutput, isError } = formatExecutionResult(result as any)
+        const { combinedOutput, isError } = formatExecutionResult(result)
 
         return {
           content: [

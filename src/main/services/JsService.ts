@@ -41,6 +41,12 @@ export class JsService {
       throw new Error('JavaScript code must be a non-empty string')
     }
 
+    // Limit code size to 1MB to prevent memory issues
+    const MAX_CODE_SIZE = 1_000_000
+    if (code.length > MAX_CODE_SIZE) {
+      throw new Error(`JavaScript code exceeds maximum size of ${MAX_CODE_SIZE / 1_000_000}MB`)
+    }
+
     return new Promise<JsExecutionResult>((resolve, reject) => {
       const worker = createJsWorker({
         workerData: { code },
@@ -98,7 +104,9 @@ export class JsService {
 
       timeoutId = setTimeout(() => {
         logger.warn(`JavaScript execution timed out after ${timeout}ms`)
-        void settleError(new Error('JavaScript execution timed out'))
+        settleError(new Error('JavaScript execution timed out')).catch((err) => {
+          logger.error('Error during timeout cleanup:', err instanceof Error ? err : new Error(String(err)))
+        })
       }, timeout)
     })
   }

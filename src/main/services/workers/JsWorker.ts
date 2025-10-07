@@ -1,7 +1,6 @@
 import { mkdtemp, open, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { env } from 'node:process'
 import { WASI } from 'node:wasi'
 import { parentPort, workerData } from 'node:worker_threads'
 
@@ -40,7 +39,7 @@ async function runQuickJsInSandbox(jsCode: string): Promise<JsExecutionResult> {
     const wasi = new WASI({
       version: 'preview1',
       args: ['qjs', '-e', jsCode],
-      env,
+      env: {}, // Empty environment for security - don't expose host env vars
       stdin: 0,
       stdout: stdoutHandle.fd,
       stderr: stderrHandle.fd,
@@ -60,10 +59,14 @@ async function runQuickJsInSandbox(jsCode: string): Promise<JsExecutionResult> {
       }
     }
 
-    await stdoutHandle.close()
+    // Close handles before reading files to prevent descriptor leak
+    const _stdoutHandle = stdoutHandle
     stdoutHandle = undefined
-    await stderrHandle.close()
+    await _stdoutHandle.close()
+
+    const _stderrHandle = stderrHandle
     stderrHandle = undefined
+    await _stderrHandle.close()
 
     const capturedStdout = await readFile(stdoutPath, 'utf8')
     const capturedStderr = await readFile(stderrPath, 'utf8')
