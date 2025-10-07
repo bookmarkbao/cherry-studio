@@ -153,8 +153,8 @@ export const CodeBlockView: React.FC<Props> = memo(({ children, language, onSave
     setIsRunning(true)
     setExecutionResult(null)
 
-    const isPython = language === 'python'
-    const isJavaScript = ['javascript', 'js', 'typescript', 'ts'].includes(language.toLowerCase())
+    const isPython = ['python', 'py'].includes(language.toLowerCase())
+    const isJavaScript = ['javascript', 'js'].includes(language.toLowerCase())
 
     if (isPython) {
       pyodideService
