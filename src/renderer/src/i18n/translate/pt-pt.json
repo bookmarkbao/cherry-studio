@@ -334,7 +334,7 @@
       "new_topic": "Novo tópico {{Command}}",
       "pause": "Pausar",
       "placeholder": "Digite sua mensagem aqui...",
-      "placeholder_without_triggers": "[to be translated]:在这里输入消息，按 {{key}} 发送",
+      "placeholder_without_triggers": "Digite a mensagem aqui, pressione {{key}} para enviar",
       "send": "Enviar",
       "settings": "Configurações",
       "thinking": {
@@ -1698,10 +1698,10 @@
   },
   "notes": {
     "auto_rename": {
-      "empty_note": "[to be translated]:笔记为空，无法生成名称",
-      "failed": "[to be translated]:生成笔记名称失败",
-      "label": "[to be translated]:生成笔记名称",
-      "success": "[to be translated]:笔记名称生成成功"
+      "empty_note": "A nota está vazia, não é possível gerar um nome",
+      "failed": "Falha ao gerar o nome da nota",
+      "label": "Gerar nome da nota",
+      "success": "Nome da nota gerado com sucesso"
     },
     "characters": "caractere",
     "collapse": "[minimizar]",
@@ -1784,6 +1784,8 @@
     "sort_updated_asc": "Tempo de atualização (do mais antigo para o mais recente)",
     "sort_updated_desc": "atualização de tempo (do mais novo para o mais antigo)",
     "sort_z2a": "Nome do arquivo (Z-A)",
+    "spell_check": "verificação ortográfica",
+    "spell_check_tooltip": "Ativar/Desativar verificação ortográfica",
     "star": "Notas favoritas",
     "starred_notes": "notas salvas",
     "title": "nota",
@@ -3346,7 +3348,6 @@
         "dify_knowledge": "Implementação do servidor MCP do Dify, que fornece uma API simples para interagir com o Dify. Requer a configuração da chave Dify",
         "fetch": "servidor MCP para obter o conteúdo da página web do URL",
         "filesystem": "Servidor Node.js do protocolo de contexto de modelo (MCP) para implementar operações de sistema de ficheiros. Requer configuração do diretório permitido para acesso",
-        "js": "[to be translated]:在安全的沙盒环境中执行 JavaScript 代码。使用 quickJs 运行 JavaScript，支持大多数标准库和流行的第三方库",
         "mcp_auto_install": "Instalação automática do serviço MCP (beta)",
         "memory": "Implementação base de memória persistente baseada em grafos de conhecimento locais. Isso permite que o modelo lembre informações relevantes do utilizador entre diferentes conversas. É necessário configurar a variável de ambiente MEMORY_FILE_PATH.",
         "no": "sem descrição",
