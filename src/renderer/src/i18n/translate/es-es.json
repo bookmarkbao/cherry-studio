@@ -334,6 +334,7 @@
       "new_topic": "Nuevo tema {{Command}}",
       "pause": "Pausar",
       "placeholder": "Escribe aquí tu mensaje...",
+      "placeholder_without_triggers": "[to be translated]:在这里输入消息，按 {{key}} 发送",
       "send": "Enviar",
       "settings": "Configuración",
       "thinking": {
@@ -1696,6 +1697,12 @@
     "provider_settings": "Ir a la configuración del proveedor"
   },
   "notes": {
+    "auto_rename": {
+      "empty_note": "[to be translated]:笔记为空，无法生成名称",
+      "failed": "[to be translated]:生成笔记名称失败",
+      "label": "[to be translated]:生成笔记名称",
+      "success": "[to be translated]:笔记名称生成成功"
+    },
     "characters": "carácter",
     "collapse": "ocultar",
     "content_placeholder": "Introduzca el contenido de la nota...",
@@ -3339,6 +3346,7 @@
         "dify_knowledge": "Implementación del servidor MCP de Dify, que proporciona una API sencilla para interactuar con Dify. Se requiere configurar la clave de Dify.",
         "fetch": "Servidor MCP para obtener el contenido de la página web de una URL",
         "filesystem": "Servidor Node.js que implementa el protocolo de contexto del modelo (MCP) para operaciones del sistema de archivos. Requiere configuración del directorio permitido para el acceso",
+        "js": "[to be translated]:在安全的沙盒环境中执行 JavaScript 代码。使用 quickJs 运行 JavaScript，支持大多数标准库和流行的第三方库",
         "mcp_auto_install": "Instalación automática del servicio MCP (versión beta)",
         "memory": "Implementación básica de memoria persistente basada en un grafo de conocimiento local. Esto permite que el modelo recuerde información relevante del usuario entre diferentes conversaciones. Es necesario configurar la variable de entorno MEMORY_FILE_PATH.",
         "no": "sin descripción",
