@@ -543,6 +543,11 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic,
               onContextMenu={() => setTargetTopic(topic)}
               className={classNames(isActive ? 'active' : '', singlealone ? 'singlealone' : '')}
               onClick={editingTopicId === topic.id && topicEdit.isEditing ? undefined : () => onSwitchTopic(topic)}
+              onDoubleClick={() => {
+                if (editingTopicId === topic.id && topicEdit.isEditing) return
+                setEditingTopicId(topic.id)
+                topicEdit.startEdit(topic.name)
+              }}
               style={{
                 borderRadius,
                 cursor: editingTopicId === topic.id && topicEdit.isEditing ? 'default' : 'pointer'
@@ -559,13 +564,7 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic,
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
-                  <TopicName
-                    className={getTopicNameClassName()}
-                    title={topicName}
-                    onDoubleClick={() => {
-                      setEditingTopicId(topic.id)
-                      topicEdit.startEdit(topic.name)
-                    }}>
+                  <TopicName className={getTopicNameClassName()} title={topicName}>
                     {topicName}
                   </TopicName>
                 )}
@@ -589,7 +588,8 @@ const Topics: FC<Props> = ({ assistant: _assistant, activeTopic, setActiveTopic,
                         } else {
                           handleDeleteClick(topic.id, e)
                         }
-                      }}>
+                      }}
+                      onDoubleClick={(e) => e.stopPropagation()}>
                       {deletingTopicId === topic.id ? (
                         <DeleteIcon size={14} color="var(--color-error)" style={{ pointerEvents: 'none' }} />
                       ) : (

@@ -6,12 +6,16 @@ import { useInPlaceEdit } from '@renderer/hooks/useInPlaceEdit'
 import { useKnowledgeBases } from '@renderer/hooks/useKnowledge'
 import { useActiveNode } from '@renderer/hooks/useNotesQuery'
 import NotesSidebarHeader from '@renderer/pages/notes/NotesSidebarHeader'
+import { fetchNoteSummary } from '@renderer/services/ApiService'
+import type { RootState } from '@renderer/store'
 import { useAppSelector } from '@renderer/store'
 import { selectSortType } from '@renderer/store/note'
 import type { NotesSortType, NotesTreeNode } from '@renderer/types/note'
+import { exportNote } from '@renderer/utils/export'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { InputRef, MenuProps } from 'antd'
 import { Dropdown, Input } from 'antd'
+import type { ItemType, MenuItemType } from 'antd/es/menu/interface'
 import {
   ChevronDown,
   ChevronRight,
@@ -21,12 +25,15 @@ import {
   FileSearch,
   Folder,
   FolderOpen,
+  Sparkles,
   Star,
-  StarOff
+  StarOff,
+  UploadIcon
 } from 'lucide-react'
 import type { FC, Ref } from 'react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 interface NotesSidebarProps {
@@ -52,6 +59,8 @@ interface TreeNodeProps {
   selectedFolderId?: string | null
   activeNodeId?: string
   editingNodeId: string | null
+  renamingNodeIds: Set<string>
+  newlyRenamedNodeIds: Set<string>
   draggedNodeId: string | null
   dragOverNodeId: string | null
   dragPosition: 'before' | 'inside' | 'after'
@@ -74,6 +83,8 @@ const TreeNode = memo<TreeNodeProps>(
     selectedFolderId,
     activeNodeId,
     editingNodeId,
+    renamingNodeIds,
+    newlyRenamedNodeIds,
     draggedNodeId,
     dragOverNodeId,
     dragPosition,
@@ -94,12 +105,20 @@ const TreeNode = memo<TreeNodeProps>(
       ? node.type === 'folder' && node.id === selectedFolderId
       : node.id === activeNodeId
     const isEditing = editingNodeId === node.id && inPlaceEdit.isEditing
+    const isRenaming = renamingNodeIds.has(node.id)
+    const isNewlyRenamed = newlyRenamedNodeIds.has(node.id)
     const hasChildren = node.children && node.children.length > 0
     const isDragging = draggedNodeId === node.id
     const isDragOver = dragOverNodeId === node.id
     const isDragBefore = isDragOver && dragPosition === 'before'
     const isDragInside = isDragOver && dragPosition === 'inside'
     const isDragAfter = isDragOver && dragPosition === 'after'
+
+    const getNodeNameClassName = () => {
+      if (isRenaming) return 'shimmer'
+      if (isNewlyRenamed) return 'typing'
+      return ''
+    }
 
     return (
       <div key={node.id}>
@@ -158,7 +177,7 @@ const TreeNode = memo<TreeNodeProps>(
                     size="small"
                   />
                 ) : (
-                  <NodeName>{node.name}</NodeName>
+                  <NodeName className={getNodeNameClassName()}>{node.name}</NodeName>
                 )}
               </TreeNodeContent>
             </TreeNodeContainer>
@@ -175,6 +194,8 @@ const TreeNode = memo<TreeNodeProps>(
                 selectedFolderId={selectedFolderId}
                 activeNodeId={activeNodeId}
                 editingNodeId={editingNodeId}
+                renamingNodeIds={renamingNodeIds}
+                newlyRenamedNodeIds={newlyRenamedNodeIds}
                 draggedNodeId={draggedNodeId}
                 dragOverNodeId={dragOverNodeId}
                 dragPosition={dragPosition}
@@ -215,7 +236,10 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
   const { bases } = useKnowledgeBases()
   const { activeNode } = useActiveNode(notesTree)
   const sortType = useAppSelector(selectSortType)
+  const exportMenuOptions = useSelector((state: RootState) => state.settings.exportMenuOptions)
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null)
+  const [renamingNodeIds, setRenamingNodeIds] = useState<Set<string>>(new Set())
+  const [newlyRenamedNodeIds, setNewlyRenamedNodeIds] = useState<Set<string>>(new Set())
   const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null)
   const [dragOverNodeId, setDragOverNodeId] = useState<string | null>(null)
   const [dragPosition, setDragPosition] = useState<'before' | 'inside' | 'after'>('inside')
@@ -336,6 +360,49 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
       }
     },
     [bases.length, t]
+  )
+
+  const handleAutoRename = useCallback(
+    async (note: NotesTreeNode) => {
+      if (note.type !== 'file') return
+
+      setRenamingNodeIds((prev) => new Set(prev).add(note.id))
+      try {
+        const content = await window.api.file.readExternal(note.externalPath)
+        if (!content || content.trim().length === 0) {
+          window.toast.warning(t('notes.auto_rename.empty_note'))
+          return
+        }
+
+        const summaryText = await fetchNoteSummary({ content })
+        if (summaryText) {
+          onRenameNode(note.id, summaryText)
+          window.toast.success(t('notes.auto_rename.success'))
+        } else {
+          window.toast.error(t('notes.auto_rename.failed'))
+        }
+      } catch (error) {
+        window.toast.error(t('notes.auto_rename.failed'))
+        logger.error(`Failed to auto-rename note: ${error}`)
+      } finally {
+        setRenamingNodeIds((prev) => {
+          const next = new Set(prev)
+          next.delete(note.id)
+          return next
+        })
+
+        setNewlyRenamedNodeIds((prev) => new Set(prev).add(note.id))
+
+        setTimeout(() => {
+          setNewlyRenamedNodeIds((prev) => {
+            const next = new Set(prev)
+            next.delete(note.id)
+            return next
+          })
+        }, 700)
+      }
+    },
+    [onRenameNode, t]
   )
 
   const handleDragStart = useCallback((e: React.DragEvent, node: NotesTreeNode) => {
@@ -492,7 +559,22 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
 
   const getMenuItems = useCallback(
     (node: NotesTreeNode) => {
-      const baseMenuItems: MenuProps['items'] = [
+      const baseMenuItems: MenuProps['items'] = []
+
+      // only show auto rename for file for now
+      if (node.type !== 'folder') {
+        baseMenuItems.push({
+          label: t('notes.auto_rename.label'),
+          key: 'auto-rename',
+          icon: <Sparkles size={14} />,
+          disabled: renamingNodeIds.has(node.id),
+          onClick: () => {
+            handleAutoRename(node)
+          }
+        })
+      }
+
+      baseMenuItems.push(
         {
           label: t('notes.rename'),
           key: 'rename',
@@ -509,7 +591,7 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
             window.api.openPath(node.externalPath)
           }
         }
-      ]
+      )
       if (node.type !== 'folder') {
         baseMenuItems.push(
           {
@@ -527,6 +609,48 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
             onClick: () => {
               handleExportKnowledge(node)
             }
+          },
+          {
+            label: t('chat.topics.export.title'),
+            key: 'export',
+            icon: <UploadIcon size={14} />,
+            children: [
+              exportMenuOptions.markdown && {
+                label: t('chat.topics.export.md.label'),
+                key: 'markdown',
+                onClick: () => exportNote({ node, platform: 'markdown' })
+              },
+              exportMenuOptions.docx && {
+                label: t('chat.topics.export.word'),
+                key: 'word',
+                onClick: () => exportNote({ node, platform: 'docx' })
+              },
+              exportMenuOptions.notion && {
+                label: t('chat.topics.export.notion'),
+                key: 'notion',
+                onClick: () => exportNote({ node, platform: 'notion' })
+              },
+              exportMenuOptions.yuque && {
+                label: t('chat.topics.export.yuque'),
+                key: 'yuque',
+                onClick: () => exportNote({ node, platform: 'yuque' })
+              },
+              exportMenuOptions.obsidian && {
+                label: t('chat.topics.export.obsidian'),
+                key: 'obsidian',
+                onClick: () => exportNote({ node, platform: 'obsidian' })
+              },
+              exportMenuOptions.joplin && {
+                label: t('chat.topics.export.joplin'),
+                key: 'joplin',
+                onClick: () => exportNote({ node, platform: 'joplin' })
+              },
+              exportMenuOptions.siyuan && {
+                label: t('chat.topics.export.siyuan'),
+                key: 'siyuan',
+                onClick: () => exportNote({ node, platform: 'siyuan' })
+              }
+            ].filter(Boolean) as ItemType<MenuItemType>[]
           }
         )
       }
@@ -545,7 +669,16 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
 
       return baseMenuItems
     },
-    [t, handleStartEdit, onToggleStar, handleExportKnowledge, handleDeleteNode]
+    [
+      t,
+      handleStartEdit,
+      onToggleStar,
+      handleExportKnowledge,
+      handleDeleteNode,
+      renamingNodeIds,
+      handleAutoRename,
+      exportMenuOptions
+    ]
   )
 
   const handleDropFiles = useCallback(
@@ -682,6 +815,8 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
                         selectedFolderId={selectedFolderId}
                         activeNodeId={activeNode?.id}
                         editingNodeId={editingNodeId}
+                        renamingNodeIds={renamingNodeIds}
+                        newlyRenamedNodeIds={newlyRenamedNodeIds}
                         draggedNodeId={draggedNodeId}
                         dragOverNodeId={dragOverNodeId}
                         dragPosition={dragPosition}
@@ -726,6 +861,8 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
                       selectedFolderId={selectedFolderId}
                       activeNodeId={activeNode?.id}
                       editingNodeId={editingNodeId}
+                      renamingNodeIds={renamingNodeIds}
+                      newlyRenamedNodeIds={newlyRenamedNodeIds}
                       draggedNodeId={draggedNodeId}
                       dragOverNodeId={dragOverNodeId}
                       dragPosition={dragPosition}
@@ -748,6 +885,8 @@ const NotesSidebar: FC<NotesSidebarProps> = ({
                       selectedFolderId={selectedFolderId}
                       activeNodeId={activeNode?.id}
                       editingNodeId={editingNodeId}
+                      renamingNodeIds={renamingNodeIds}
+                      newlyRenamedNodeIds={newlyRenamedNodeIds}
                       draggedNodeId={draggedNodeId}
                       dragOverNodeId={dragOverNodeId}
                       dragPosition={dragPosition}
@@ -935,6 +1074,44 @@ const NodeName = styled.div`
   text-overflow: ellipsis;
   font-size: 13px;
   color: var(--color-text);
+  position: relative;
+  will-change: background-position, width;
+
+  --color-shimmer-mid: var(--color-text-1);
+  --color-shimmer-end: color-mix(in srgb, var(--color-text-1) 25%, transparent);
+
+  &.shimmer {
+    background: linear-gradient(to left, var(--color-shimmer-end), var(--color-shimmer-mid), var(--color-shimmer-end));
+    background-size: 200% 100%;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
+  &.typing {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typewriter 0.5s steps(40, end);
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes typewriter {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
 `
 
 const EditInput = styled(Input)`

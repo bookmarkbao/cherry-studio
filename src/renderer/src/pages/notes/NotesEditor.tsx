@@ -1,12 +1,15 @@
 import { SpaceBetweenRowFlex } from '@cherrystudio/ui'
+import { usePreference } from '@data/hooks/usePreference'
+import ActionIconButton from '@renderer/components/Buttons/ActionIconButton'
 import CodeEditor from '@renderer/components/CodeEditor'
 import RichEditor from '@renderer/components/RichEditor'
 import type { RichEditorRef } from '@renderer/components/RichEditor/types'
 import Selector from '@renderer/components/Selector'
-import { useCodeStyle } from '@renderer/context/CodeStyleProvider'
 import { useNotesSettings } from '@renderer/hooks/useNotesSettings'
+import { useAppDispatch } from '@renderer/store'
 import type { EditorView } from '@renderer/types'
-import { Empty } from 'antd'
+import { Empty, Tooltip } from 'antd'
+import { SpellCheck } from 'lucide-react'
 import type { FC, RefObject } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,8 +26,10 @@ interface NotesEditorProps {
 const NotesEditor: FC<NotesEditorProps> = memo(
   ({ activeNodeId, currentContent, tokenCount, onMarkdownChange, editorRef }) => {
     const { t } = useTranslation()
+    // oxlint-disable-next-line no-unused-vars
+    const dispatch = useAppDispatch()
     const { settings } = useNotesSettings()
-    const { activeCmTheme } = useCodeStyle()
+    const [enableSpellCheck, setEnableSpellCheck] = usePreference('app.spell_check.enabled')
     const currentViewMode = useMemo(() => {
       if (settings.defaultViewMode === 'edit') {
         return settings.defaultEditMode
@@ -55,8 +60,6 @@ const NotesEditor: FC<NotesEditorProps> = memo(
           {tmpViewMode === 'source' ? (
             <SourceEditorWrapper isFullWidth={settings.isFullWidth} fontSize={settings.fontSize}>
               <CodeEditor
-                theme={activeCmTheme}
-                fontSize={settings.fontSize}
                 value={currentContent}
                 language="markdown"
                 onChange={onMarkdownChange}
@@ -82,6 +85,7 @@ const NotesEditor: FC<NotesEditorProps> = memo(
               isFullWidth
               fontFamily={settings.fontFamily}
               fontSize={settings.fontSize}
+              enableSpellCheck={enableSpellCheck}
             />
           )}
         </RichEditorContainer>
@@ -96,8 +100,24 @@ const NotesEditor: FC<NotesEditorProps> = memo(
                 color: 'var(--color-text-3)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 8
+                gap: 12
               }}>
+              {tmpViewMode === 'preview' && (
+                // oxlint-disable-next-line no-undef
+                <Tooltip placement="top" title={t('notes.spell_check_tooltip')} mouseLeaveDelay={0} arrow>
+                  <ActionIconButton
+                    active={enableSpellCheck}
+                    onClick={() => {
+                      const newValue = !enableSpellCheck
+                      setEnableSpellCheck(newValue)
+                      window.api.setEnableSpellCheck(newValue)
+                    }}
+                    icon={<SpellCheck size={18} />}>
+                    <SpellCheck size={18} />
+                  </ActionIconButton>
+                  {/* oxlint-disable-next-line no-undef */}
+                </Tooltip>
+              )}
               <Selector
                 value={tmpViewMode as EditorView}
                 onChange={(value: EditorView) => setTmpViewMode(value)}
