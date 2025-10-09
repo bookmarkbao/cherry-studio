@@ -6,7 +6,7 @@ import { first } from 'lodash'
 import type { FC } from 'react'
 
 interface Props {
-  model: Model
+  model?: Model
   size: number
   props?: AvatarProps
   className?: string

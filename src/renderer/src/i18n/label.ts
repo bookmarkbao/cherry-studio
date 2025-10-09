@@ -5,7 +5,7 @@
  */
 
 import { loggerService } from '@logger'
-import type { BuiltinMCPServerName, BuiltinOcrProviderId, ThinkingOption } from '@renderer/types'
+import type { AgentType, BuiltinMCPServerName, BuiltinOcrProviderId, ThinkingOption } from '@renderer/types'
 import { BuiltinMCPServerNames } from '@renderer/types'
 
 import i18n from './index'
@@ -128,7 +128,8 @@ export const getRestoreProgressLabel = (key: string): string => {
 }
 
 const titleKeyMap = {
-  agents: 'title.agents',
+  // TODO: update i18n key
+  store: 'title.store',
   apps: 'title.apps',
   code: 'title.code',
   files: 'title.files',
@@ -340,4 +341,13 @@ export const getBuiltinOcrProviderLabel = (key: BuiltinOcrProviderId) => {
   if (key === 'tesseract') return 'Tesseract'
   else if (key == 'paddleocr') return 'PaddleOCR'
   else return getLabel(builtinOcrProviderKeyMap, key)
+}
+
+export const getAgentTypeLabel = (key: AgentType) => {
+  switch (key) {
+    case 'claude-code':
+      return 'Claude Code'
+    default:
+      return 'Unknown Type'
+  }
 }

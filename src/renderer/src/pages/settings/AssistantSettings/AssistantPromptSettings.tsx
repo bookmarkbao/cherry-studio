@@ -71,7 +71,7 @@ const AssistantPromptSettings: React.FC<Props> = ({ assistant, updateAssistant }
     updateAssistant(_assistant)
   }
 
-  const promptVarsContent = <pre>{t('agents.add.prompt.variables.tip.content')}</pre>
+  const promptVarsContent = <pre>{t('assistants.presets.add.prompt.variables.tip.content')}</pre>
 
   return (
     <Container>
@@ -119,7 +119,7 @@ const AssistantPromptSettings: React.FC<Props> = ({ assistant, updateAssistant }
         <Tooltip
           content={
             <>
-              <h1 className="text-lg">{t('agents.add.prompt.variables.tip.title')}</h1>
+              <h1 className="text-lg">{t('assistants.presets.add.prompt.variables.tip.title')}</h1>
               {promptVarsContent}
             </>
           }

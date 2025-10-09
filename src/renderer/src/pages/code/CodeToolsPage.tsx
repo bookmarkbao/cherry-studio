@@ -15,6 +15,7 @@ import { getModelUniqId } from '@renderer/services/ModelService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setIsBunInstalled } from '@renderer/store/mcp'
 import type { EndpointType, Model } from '@renderer/types'
+import { getClaudeSupportedProviders } from '@renderer/utils/provider'
 import type { TerminalConfig } from '@shared/config/constant'
 import { codeTools, terminalApps } from '@shared/config/constant'
 import { Alert, Checkbox, Input, Popover, Select, Space } from 'antd'
@@ -30,7 +31,6 @@ import {
   CLI_TOOL_PROVIDER_MAP,
   CLI_TOOLS,
   generateToolEnvironment,
-  getClaudeSupportedProviders,
   OPENAI_CODEX_SUPPORTED_PROVIDERS,
   parseEnvironmentVariables
 } from '.'

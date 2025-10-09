@@ -2,7 +2,7 @@ import { Button, HelpTooltip, RowFlex, Switch } from '@cherrystudio/ui'
 import ModelAvatar from '@renderer/components/Avatar/ModelAvatar'
 import EditableNumber from '@renderer/components/EditableNumber'
 import { DeleteIcon, ResetIcon } from '@renderer/components/Icons'
-import SelectModelPopup from '@renderer/components/Popups/SelectModelPopup'
+import { SelectModelPopup } from '@renderer/components/Popups/SelectModelPopup'
 import Selector from '@renderer/components/Selector'
 import { DEFAULT_CONTEXTCOUNT, DEFAULT_TEMPERATURE, MAX_CONTEXT_COUNT } from '@renderer/config/constant'
 import { isEmbeddingModel, isRerankModel } from '@renderer/config/models'
@@ -221,7 +221,7 @@ const AssistantModelSettings: FC<Props> = ({ assistant, updateAssistant, updateA
           <ModelSelectButton
             startContent={defaultModel ? <ModelAvatar model={defaultModel} size={20} /> : <PlusIcon size={18} />}
             onPress={onSelectModel}>
-            <ModelName>{defaultModel ? defaultModel.name : t('agents.edit.model.select.title')}</ModelName>
+            <ModelName>{defaultModel ? defaultModel.name : t('assistants.presets.edit.model.select.title')}</ModelName>
           </ModelSelectButton>
           {defaultModel && (
             <Button

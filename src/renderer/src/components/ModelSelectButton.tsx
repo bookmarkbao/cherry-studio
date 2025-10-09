@@ -4,7 +4,7 @@ import type { Model } from '@renderer/types'
 import { useCallback, useMemo } from 'react'
 
 import ModelAvatar from './Avatar/ModelAvatar'
-import SelectModelPopup from './Popups/SelectModelPopup'
+import { SelectModelPopup } from './Popups/SelectModelPopup'
 
 type Props = {
   model: Model

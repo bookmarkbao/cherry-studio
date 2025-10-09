@@ -133,7 +133,7 @@ const MainMenus: FC = () => {
 
   const iconMap = {
     assistants: <MessageSquare size={18} className="icon" />,
-    agents: <Sparkle size={18} className="icon" />,
+    store: <Sparkle size={18} className="icon" />,
     paintings: <Palette size={18} className="icon" />,
     translate: <Languages size={18} className="icon" />,
     minapp: <LayoutGrid size={18} className="icon" />,
@@ -145,7 +145,7 @@ const MainMenus: FC = () => {
 
   const pathMap = {
     assistants: '/',
-    agents: '/agents',
+    store: '/store',
     paintings: `/paintings/${defaultPaintingProvider}`,
     translate: '/translate',
     minapp: '/apps',

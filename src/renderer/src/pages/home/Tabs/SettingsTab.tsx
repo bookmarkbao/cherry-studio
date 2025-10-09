@@ -19,7 +19,7 @@ import { modalConfirm } from '@renderer/utils'
 import { getSendMessageShortcutLabel } from '@renderer/utils/input'
 import type { MultiModelMessageStyle, SendMessageShortcut } from '@shared/data/preference/preferenceTypes'
 import { ThemeMode } from '@shared/data/preference/preferenceTypes'
-import { Col, InputNumber, Row, Slider } from 'antd'
+import { Col, InputNumber, Row, Slider, Switch } from 'antd'
 import { Settings2 } from 'lucide-react'
 import type { FC } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -223,131 +223,131 @@ const SettingsTab: FC<Props> = (props) => {
 
   return (
     <Container className="settings-tab">
-      <CollapsibleSettingGroup
-        title={t('assistants.settings.title')}
-        defaultExpanded={true}
-        extra={
-          <RowFlex className="items-center gap-0.5">
-            <Button
-              variant="light"
-              size="sm"
-              isIconOnly
-              onPress={() => AssistantSettingsPopup.show({ assistant, tab: 'model' })}>
-              <Settings2 size={16} />
-            </Button>
-          </RowFlex>
-        }>
-        <SettingGroup style={{ marginTop: 5 }}>
-          <Row align="middle">
-            {/* <SettingRowTitleSmall>
-              {t('chat.settings.temperature.label')}
-              <HelpTooltip title={t('chat.settings.temperature.tip')} />
-            </SettingRowTitleSmall> */}
-            <DescriptionSwitch
-              size="sm"
-              className="ml-auto"
-              isSelected={enableTemperature}
-              onValueChange={(enabled) => {
-                setEnableTemperature(enabled)
-                onUpdateAssistantSettings({ enableTemperature: enabled })
-              }}>
+      {props.assistant.id !== 'fake' && (
+        <CollapsibleSettingGroup
+          title={t('assistants.settings.title')}
+          defaultExpanded={true}
+          extra={
+            <RowFlex className="items-center gap-0.5">
+              <Button
+                variant="light"
+                size="sm"
+                isIconOnly
+                onPress={() => AssistantSettingsPopup.show({ assistant, tab: 'model' })}>
+                <Settings2 size={16} />
+              </Button>
+            </RowFlex>
+          }>
+          <SettingGroup style={{ marginTop: 5 }}>
+            <Row align="middle">
               <SettingRowTitleSmall>
                 {t('chat.settings.temperature.label')}
-                <HelpTooltip content={t('chat.settings.temperature.tip')} />
+                <HelpTooltip title={t('chat.settings.temperature.tip')} />
               </SettingRowTitleSmall>
-            </DescriptionSwitch>
-          </Row>
-          {enableTemperature ? (
+              <Switch
+                size="small"
+                style={{ marginLeft: 'auto' }}
+                checked={enableTemperature}
+                onChange={(enabled) => {
+                  setEnableTemperature(enabled)
+                  onUpdateAssistantSettings({ enableTemperature: enabled })
+                }}
+              />
+            </Row>
+            {enableTemperature ? (
+              <Row align="middle" gutter={10}>
+                <Col span={23}>
+                  <Slider
+                    min={0}
+                    max={2}
+                    onChange={setTemperature}
+                    onChangeComplete={onTemperatureChange}
+                    value={typeof temperature === 'number' ? temperature : 0}
+                    step={0.1}
+                  />
+                </Col>
+              </Row>
+            ) : (
+              <SettingDivider />
+            )}
+            <Row align="middle">
+              <SettingRowTitleSmall>
+                {t('chat.settings.context_count.label')}
+                <HelpTooltip title={t('chat.settings.context_count.tip')} />
+              </SettingRowTitleSmall>
+            </Row>
             <Row align="middle" gutter={10}>
               <Col span={23}>
                 <Slider
                   min={0}
-                  max={2}
-                  onChange={setTemperature}
-                  onChangeComplete={onTemperatureChange}
-                  value={typeof temperature === 'number' ? temperature : 0}
-                  step={0.1}
+                  max={maxContextCount}
+                  onChange={setContextCount}
+                  onChangeComplete={onContextCountChange}
+                  value={typeof contextCount === 'number' ? contextCount : 0}
+                  step={1}
                 />
               </Col>
             </Row>
-          ) : (
             <SettingDivider />
-          )}
-          <Row align="middle">
-            <SettingRowTitleSmall>
-              {t('chat.settings.context_count.label')}
-              <HelpTooltip content={t('chat.settings.context_count.tip')} />
-            </SettingRowTitleSmall>
-          </Row>
-          <Row align="middle" gutter={10}>
-            <Col span={23}>
-              <Slider
-                min={0}
-                max={maxContextCount}
-                onChange={setContextCount}
-                onChangeComplete={onContextCountChange}
-                value={typeof contextCount === 'number' ? contextCount : 0}
-                step={1}
-              />
-            </Col>
-          </Row>
-          <SettingDivider />
-          <SettingRow>
-            <DescriptionSwitch
-              size="sm"
-              isSelected={streamOutput}
-              onValueChange={(checked) => {
-                setStreamOutput(checked)
-                onUpdateAssistantSettings({ streamOutput: checked })
-              }}>
+            <SettingRow>
               <SettingRowTitleSmall>{t('models.stream_output')}</SettingRowTitleSmall>
-            </DescriptionSwitch>
-          </SettingRow>
-          <SettingDivider />
-          <SettingRow>
-            <DescriptionSwitch
-              size="sm"
-              isSelected={enableMaxTokens}
-              onValueChange={async (enabled) => {
-                if (enabled) {
-                  const confirmed = await modalConfirm({
-                    title: t('chat.settings.max_tokens.confirm'),
-                    content: t('chat.settings.max_tokens.confirm_content'),
-                    okButtonProps: {
-                      danger: true
-                    }
-                  })
-                  if (!confirmed) return
-                }
-                setEnableMaxTokens(enabled)
-                onUpdateAssistantSettings({ enableMaxTokens: enabled })
-              }}>
-              <SettingRowTitleSmall>
-                {t('chat.settings.max_tokens.label')}
-                <HelpTooltip content={t('chat.settings.max_tokens.tip')} />
-              </SettingRowTitleSmall>
-            </DescriptionSwitch>
-          </SettingRow>
-          {enableMaxTokens && (
-            <Row align="middle" gutter={10} style={{ marginTop: 10 }}>
-              <Col span={24}>
-                <InputNumber
-                  disabled={!enableMaxTokens}
-                  min={0}
-                  max={10000000}
-                  step={100}
-                  value={typeof maxTokens === 'number' ? maxTokens : 0}
-                  changeOnBlur
-                  onChange={(value) => value && setMaxTokens(value)}
-                  onBlur={() => onMaxTokensChange(maxTokens)}
-                  style={{ width: '100%' }}
-                />
-              </Col>
-            </Row>
-          )}
-          <SettingDivider />
-        </SettingGroup>
-      </CollapsibleSettingGroup>
+              <Switch
+                size="small"
+                checked={streamOutput}
+                onChange={(checked) => {
+                  setStreamOutput(checked)
+                  onUpdateAssistantSettings({ streamOutput: checked })
+                }}
+              />
+            </SettingRow>
+            <SettingDivider />
+            <SettingRow>
+              <Row align="middle">
+                <SettingRowTitleSmall>
+                  {t('chat.settings.max_tokens.label')}
+                  <HelpTooltip title={t('chat.settings.max_tokens.tip')} />
+                </SettingRowTitleSmall>
+              </Row>
+              <Switch
+                size="small"
+                checked={enableMaxTokens}
+                onChange={async (enabled) => {
+                  if (enabled) {
+                    const confirmed = await modalConfirm({
+                      title: t('chat.settings.max_tokens.confirm'),
+                      content: t('chat.settings.max_tokens.confirm_content'),
+                      okButtonProps: {
+                        danger: true
+                      }
+                    })
+                    if (!confirmed) return
+                  }
+                  setEnableMaxTokens(enabled)
+                  onUpdateAssistantSettings({ enableMaxTokens: enabled })
+                }}
+              />
+            </SettingRow>
+            {enableMaxTokens && (
+              <Row align="middle" gutter={10} style={{ marginTop: 10 }}>
+                <Col span={24}>
+                  <InputNumber
+                    disabled={!enableMaxTokens}
+                    min={0}
+                    max={10000000}
+                    step={100}
+                    value={typeof maxTokens === 'number' ? maxTokens : 0}
+                    changeOnBlur
+                    onChange={(value) => value && setMaxTokens(value)}
+                    onBlur={() => onMaxTokensChange(maxTokens)}
+                    style={{ width: '100%' }}
+                  />
+                </Col>
+              </Row>
+            )}
+            <SettingDivider />
+          </SettingGroup>
+        </CollapsibleSettingGroup>
+      )}
       {isOpenAI && (
         <OpenAISettingsGroup
           model={model}

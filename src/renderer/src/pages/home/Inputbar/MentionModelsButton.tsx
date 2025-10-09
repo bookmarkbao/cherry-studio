@@ -239,7 +239,7 @@ const MentionModelsButton: FC<Props> = ({
       triggerInfoRef.current = triggerInfo
 
       quickPanel.open({
-        title: t('agents.edit.model.select.title'),
+        title: t('assistants.presets.edit.model.select.title'),
         list: modelItems,
         symbol: QuickPanelReservedSymbol.MentionModels,
         multiple: true,
@@ -303,7 +303,7 @@ const MentionModelsButton: FC<Props> = ({
   }))
 
   return (
-    <Tooltip content={t('agents.edit.model.select.title')} closeDelay={0}>
+    <Tooltip content={t('assistants.presets.edit.model.select.title')} closeDelay={0}>
       <ActionIconButton
         onPress={handleOpenQuickPanel}
         active={mentionedModels.length > 0}

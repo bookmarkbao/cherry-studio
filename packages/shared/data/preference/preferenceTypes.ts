@@ -55,7 +55,7 @@ export type AssistantTabSortType = 'tags' | 'list'
 
 export type SidebarIcon =
   | 'assistants'
-  | 'agents'
+  | 'store'
   | 'paintings'
   | 'translate'
   | 'minapp'
