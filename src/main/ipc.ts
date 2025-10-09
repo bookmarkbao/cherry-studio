@@ -15,14 +15,13 @@ import { MIN_WINDOW_HEIGHT, MIN_WINDOW_WIDTH } from '@shared/config/constant'
 import type { UpgradeChannel } from '@shared/data/preference/preferenceTypes'
 import { IpcChannel } from '@shared/IpcChannel'
 import type {
+  AgentPersistedMessage,
   FileMetadata,
   Notification,
   OcrProvider,
   Provider,
   Shortcut,
-  SupportedOcrFile,
-  AgentPersistedMessage
-} from '@types'
+  SupportedOcrFile} from '@types'
 import checkDiskSpace from 'check-disk-space'
 import type { ProxyConfig } from 'electron'
 import { BrowserWindow, dialog, ipcMain, session, shell, systemPreferences, webContents } from 'electron'
