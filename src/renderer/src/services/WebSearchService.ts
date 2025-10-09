@@ -430,7 +430,8 @@ class WebSearchService {
   public async processWebsearch(
     webSearchProvider: WebSearchProvider,
     extractResults: ExtractResults,
-    requestId: string
+    requestId: string,
+    externalSignal?: AbortSignal
   ): Promise<WebSearchProviderResponse> {
     // 重置状态
     await this.setWebSearchStatus(requestId, { phase: 'default' })
@@ -441,8 +442,8 @@ class WebSearchService {
       return { results: [] }
     }
 
-    // 使用请求特定的signal，如果没有则回退到全局signal
-    const signal = this.getRequestState(requestId).signal || this.signal
+    // 优先使用外部传入的signal，其次是请求特定的signal，最后回退到全局signal
+    const signal = externalSignal || this.getRequestState(requestId).signal || this.signal
 
     const span = webSearchProvider.topicId
       ? addSpan({

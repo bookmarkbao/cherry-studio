@@ -20,23 +20,42 @@ export default class TavilyProvider extends BaseWebSearchProvider {
     this.tvly = new TavilyClient({ apiKey: this.apiKey, apiBaseUrl: this.apiHost })
   }
 
-  public async search(query: string, websearch: WebSearchState): Promise<WebSearchProviderResponse> {
+  public async search(
+    query: string,
+    websearch: WebSearchState,
+    httpOptions?: RequestInit
+  ): Promise<WebSearchProviderResponse> {
     try {
       if (!query.trim()) {
         throw new Error('Search query cannot be empty')
       }
 
-      const result = await this.tvly.search({
+      // 使用 Promise.race 来支持 abort signal
+      const searchPromise = this.tvly.search({
         query,
         max_results: Math.max(1, websearch.maxResults)
       })
+
+      let result: Awaited<typeof searchPromise>
+      if (httpOptions?.signal) {
+        result = await Promise.race([
+          searchPromise,
+          new Promise<never>((_, reject) => {
+            httpOptions.signal?.addEventListener('abort', () => {
+              reject(new DOMException('The operation was aborted.', 'AbortError'))
+            })
+          })
+        ])
+      } else {
+        result = await searchPromise
+      }
       return {
         query: result.query,
-        results: result.results.slice(0, websearch.maxResults).map((result) => {
+        results: result.results.slice(0, websearch.maxResults).map((item) => {
           return {
-            title: result.title || 'No title',
-            content: result.content || '',
-            url: result.url || ''
+            title: item.title || 'No title',
+            content: item.content || '',
+            url: item.url || ''
           }
         })
       }

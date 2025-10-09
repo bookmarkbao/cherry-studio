@@ -95,7 +95,11 @@ export default class SearxngProvider extends BaseWebSearchProvider {
     }
   }
 
-  public async search(query: string, websearch: WebSearchState): Promise<WebSearchProviderResponse> {
+  public async search(
+    query: string,
+    websearch: WebSearchState,
+    httpOptions?: RequestInit
+  ): Promise<WebSearchProviderResponse> {
     try {
       if (!query) {
         throw new Error('Search query cannot be empty')
@@ -124,7 +128,7 @@ export default class SearxngProvider extends BaseWebSearchProvider {
       // Fetch content for each URL concurrently
       const fetchPromises = validItems.map(async (item) => {
         // Logger.log(`Fetching content for ${item.url}...`)
-        return await fetchWebContent(item.url, 'markdown', this.provider.usingBrowser)
+        return await fetchWebContent(item.url, 'markdown', this.provider.usingBrowser, httpOptions)
       })
 
       // Wait for all fetches to complete

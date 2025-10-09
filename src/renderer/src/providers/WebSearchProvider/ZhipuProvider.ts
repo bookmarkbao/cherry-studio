@@ -43,7 +43,11 @@ export default class ZhipuProvider extends BaseWebSearchProvider {
     }
   }
 
-  public async search(query: string, websearch: WebSearchState): Promise<WebSearchProviderResponse> {
+  public async search(
+    query: string,
+    websearch: WebSearchState,
+    httpOptions?: RequestInit
+  ): Promise<WebSearchProviderResponse> {
     try {
       if (!query.trim()) {
         throw new Error('Search query cannot be empty')
@@ -62,7 +66,8 @@ export default class ZhipuProvider extends BaseWebSearchProvider {
           'Content-Type': 'application/json',
           ...this.defaultHeaders()
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        signal: httpOptions?.signal
       })
 
       if (!response.ok) {
