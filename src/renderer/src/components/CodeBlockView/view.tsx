@@ -87,7 +87,7 @@ export const CodeBlockView: React.FC<Props> = memo(({ children, language, onSave
   const [tools, setTools] = useState<ActionTool[]>([])
 
   const isExecutable = useMemo(() => {
-    const executableLanguages = ['python', 'javascript', 'js', 'typescript', 'ts']
+    const executableLanguages = ['python', 'py', 'javascript', 'js']
     return codeExecution.enabled && executableLanguages.includes(language.toLowerCase())
   }, [codeExecution.enabled, language])
 
