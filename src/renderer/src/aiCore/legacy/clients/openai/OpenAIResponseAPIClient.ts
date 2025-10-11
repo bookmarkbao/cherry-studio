@@ -155,7 +155,7 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
 
   public async createVideo(params: CreateVideoParams): Promise<OpenAI.Videos.Video> {
     const sdk = await this.getSdkInstance()
-    return await sdk.videos.create(params.params, params.options)
+    return sdk.videos.create(params.params, params.options)
   }
 
   private async handlePdfFile(file: FileMetadata): Promise<OpenAI.Responses.ResponseInputFile | undefined> {
