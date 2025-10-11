@@ -1,7 +1,11 @@
 import { cn, Divider } from '@heroui/react'
 import { PropsWithChildren, ReactNode } from 'react'
 
-export const SettingItem = ({ children, divider = true }: PropsWithChildren<{ divider?: boolean }>) => {
+export const SettingsGroup = ({ children }: PropsWithChildren) => {
+  return <div className="rounded-2xl bg-foreground-200">{children}</div>
+}
+
+export const SettingItem = ({ children, divider = false }: PropsWithChildren<{ divider?: boolean }>) => {
   return (
     <>
       <div className="mb-2">{children}</div>
