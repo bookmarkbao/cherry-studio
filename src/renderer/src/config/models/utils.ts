@@ -1,6 +1,6 @@
+import OpenAI from '@cherrystudio/openai'
 import { Model } from '@renderer/types'
 import { getLowerBaseModelName } from '@renderer/utils'
-import OpenAI from 'openai'
 
 import { WEB_SEARCH_PROMPT_FOR_OPENROUTER } from '../prompts'
 import { getWebSearchTools } from '../tools'
