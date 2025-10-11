@@ -7,6 +7,7 @@ export type VideoEndpointType = 'openai'
 export type VideoStatus = 'queued' | 'in_progress' | 'completed' | 'failed'
 
 interface VideoBase {
+  id: string
   type: VideoEndpointType
   status: VideoStatus
 }
@@ -34,9 +35,16 @@ export interface VideoFailed extends VideoBase {
   error: unknown
 }
 
+export interface OpenAIVideoQueued extends VideoQueued, OpenAIVideoBase {}
+export interface OpenAIVideoInProgress extends VideoInProgress, OpenAIVideoBase {}
+export interface OpenAIVideoCompleted extends VideoCompleted, OpenAIVideoBase {}
 export interface OpenAIVideoFailed extends VideoFailed, OpenAIVideoBase {
   error: OpenAI.Videos.Video['error']
 }
+
+export type OpenAIVideo = OpenAIVideoQueued | OpenAIVideoInProgress | OpenAIVideoCompleted | OpenAIVideoFailed
+
+export type Video = OpenAIVideo
 
 // Create Video
 interface CreateVideoBaseParams {

@@ -30,6 +30,7 @@ import settings from './settings'
 import shortcuts from './shortcuts'
 import tabs from './tabs'
 import translate from './translate'
+import video from './video'
 import websearch from './websearch'
 
 const logger = loggerService.withContext('Store')
@@ -58,7 +59,8 @@ const rootReducer = combineReducers({
   inputTools: inputToolsReducer,
   translate,
   ocr,
-  note
+  note,
+  video
 })
 
 const persistedReducer = persistReducer(
