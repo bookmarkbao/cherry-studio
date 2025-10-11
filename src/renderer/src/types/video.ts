@@ -1,6 +1,30 @@
 import OpenAI from '@cherrystudio/openai'
 
-// Only OpenAI for now.
-export type CreateVideoParams = { params: OpenAI.VideoCreateParams; options?: OpenAI.RequestOptions }
+import { Provider } from './provider'
 
-export type CreateVideoResult = OpenAI.Videos.Video
+// Only OpenAI (Responses) is supported for now.
+export type VideoEndpointType = 'openai'
+
+interface CreateVideoBaseParams {
+  type: VideoEndpointType
+  provider: Provider
+}
+
+export interface OpenAICreateVideoParams extends CreateVideoBaseParams {
+  type: 'openai'
+  params: OpenAI.VideoCreateParams
+  options?: OpenAI.RequestOptions
+}
+
+export type CreateVideoParams = OpenAICreateVideoParams
+
+interface CreateVideoBaseResult {
+  type: VideoEndpointType
+}
+
+export interface OpenAICreateVideoResult extends CreateVideoBaseResult {
+  type: 'openai'
+  video: OpenAI.Videos.Video
+}
+
+export type CreateVideoResult = OpenAICreateVideoResult
