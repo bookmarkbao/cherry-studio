@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ModelSetting } from './settings/ModelSetting'
 import { ProviderSetting } from './settings/ProviderSetting'
+import { VideoList } from './VideoList'
 import { VideoPanel } from './VideoPanel'
 
 export const VideoPage = () => {
@@ -31,7 +32,7 @@ export const VideoPage = () => {
         <VideoPanel provider={provider} />
         <Divider orientation="vertical" />
         {/* Video list */}
-        <div className="w-40"></div>
+        <VideoList providerId={providerId} />
       </div>
     </div>
   )
