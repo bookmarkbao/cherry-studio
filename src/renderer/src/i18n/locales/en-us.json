@@ -4665,6 +4665,8 @@
     "prompt": {
       "placeholder": "describes the video to generate"
     },
+    "seconds": "Seconds",
+    "size": "Size",
     "status": {
       "completed": "Generation Completed",
       "downloading": "Downloading",
