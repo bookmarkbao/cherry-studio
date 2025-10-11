@@ -4,6 +4,39 @@ import { Provider } from './provider'
 
 // Only OpenAI (Responses) is supported for now.
 export type VideoEndpointType = 'openai'
+export type VideoStatus = 'queued' | 'in_progress' | 'completed' | 'failed'
+
+interface VideoBase {
+  type: VideoEndpointType
+  status: VideoStatus
+}
+
+interface OpenAIVideoBase {
+  type: 'openai'
+}
+
+export interface VideoQueued extends VideoBase {
+  status: 'queued'
+}
+
+export interface VideoInProgress extends VideoBase {
+  status: 'in_progress'
+  progress: number
+}
+
+export interface VideoCompleted extends VideoBase {
+  status: 'completed'
+  fileId: string
+}
+
+export interface VideoFailed extends VideoBase {
+  status: 'failed'
+  error: unknown
+}
+
+export interface OpenAIVideoFailed extends VideoFailed, OpenAIVideoBase {
+  error: OpenAI.Videos.Video['error']
+}
 
 // Create Video
 interface CreateVideoBaseParams {
