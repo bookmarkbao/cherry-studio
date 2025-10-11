@@ -2,6 +2,7 @@
 
 import { Divider } from '@heroui/react'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
+import { useProvider } from '@renderer/hooks/useProvider'
 import { SystemProviderIds } from '@renderer/types'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,6 +15,7 @@ export const VideoPage = () => {
   const { t } = useTranslation()
   const [providerId, setProviderId] = useState<string>(SystemProviderIds.openai)
   const [modelId, setModelId] = useState('sora-2')
+  const { provider } = useProvider(providerId)
   return (
     <div className="flex flex-1 flex-col">
       <Navbar>
@@ -26,7 +28,7 @@ export const VideoPage = () => {
           <ModelSetting providerId={providerId} modelId={modelId} setModelId={setModelId} />
         </div>
         <Divider orientation="vertical" />
-        <VideoPanel />
+        <VideoPanel provider={provider} />
         <Divider orientation="vertical" />
         {/* Video list */}
         <div className="w-40"></div>
