@@ -3,24 +3,24 @@ import { loggerService } from '@logger'
 import { useAddOpenAIVideo } from '@renderer/hooks/video/useOpenAIVideos'
 import { createVideo } from '@renderer/services/ApiService'
 import { Provider } from '@renderer/types'
+import { Video } from '@renderer/types/video'
 import { ArrowUp } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Video } from './Video'
+import { VideoPlayer } from './VideoPlayer'
 
 export type VideoPanelProps = {
   provider: Provider
+  video?: Video
 }
 
 const logger = loggerService.withContext('VideoPanel')
 
-export const VideoPanel = ({ provider }: VideoPanelProps) => {
+export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
   const { t } = useTranslation()
   const [prompt, setPrompt] = useState('')
   const addOpenAIVideo = useAddOpenAIVideo(provider.id)
-  // TODO: get video job from api
-  const video = { success: false, data: undefined }
 
   const sendRequest = useCallback(async () => {
     const result = await createVideo({
@@ -44,7 +44,7 @@ export const VideoPanel = ({ provider }: VideoPanelProps) => {
     <div className="flex flex-1 flex-col p-2">
       <div className="m-8 flex-1">
         <Skeleton className="h-full w-full rounded-2xl" classNames={{ content: 'h-full w-full' }} isLoaded={true}>
-          <Video video={video.data} />
+          <VideoPlayer video={video} />
         </Skeleton>
       </div>
       <div className="relative">

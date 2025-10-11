@@ -1,11 +1,12 @@
+import { Video } from '@renderer/types/video'
 import { CircleXIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export interface VideoProps {
-  video: null | undefined
+  video?: Video | null
 }
 
-export const Video = ({ video }: VideoProps) => {
+export const VideoPlayer = ({ video }: VideoProps) => {
   const { t } = useTranslation()
   return (
     <div className="flex h-full w-full items-center justify-center rounded-2xl bg-foreground-200">
