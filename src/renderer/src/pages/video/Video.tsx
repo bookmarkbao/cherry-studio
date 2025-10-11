@@ -9,6 +9,7 @@ export const Video = ({ video }: VideoProps) => {
   const { t } = useTranslation()
   return (
     <div className="flex h-full w-full items-center justify-center rounded-2xl bg-foreground-200">
+      {/* TODO: complete video widget */}
       {video && <video></video>}
       {video === undefined && t('video.undefined')}
       {video === null && (
