@@ -30,6 +30,13 @@ export const OpenAIParamSettings = ({ params, updateParams }: OpenAIParamSetting
     [updateParams]
   )
 
+  const updateSize = useCallback(
+    (size: VideoSize) => {
+      updateParams({ params: { size } })
+    },
+    [updateParams]
+  )
+
   return (
     <SettingsGroup>
       <SettingItem>
@@ -56,7 +63,7 @@ export const OpenAIParamSettings = ({ params, updateParams }: OpenAIParamSetting
           labelPlacement="outside"
           selectedKeys={[params.params.size ?? '720x1280']}
           onSelectionChange={(keys) => {
-            if (keys.currentKey) updateParams({ params: { size: keys.currentKey as VideoSize } })
+            if (keys.currentKey) updateSize(keys.currentKey as VideoSize)
           }}
           items={sizeItems}
           selectionMode="single"
