@@ -54,3 +54,29 @@ export interface OpenAIRetrieveVideoResult extends RetrieveVideoBaseResult {
 }
 
 export type RetrieveVideoResult = OpenAIRetrieveVideoResult
+
+// Retrieve Video Content
+interface RetrieveVideoContentBaseParams {
+  type: VideoEndpointType
+  provider: Provider
+}
+
+export interface OpenAIRetrieveVideoContentParams extends RetrieveVideoContentBaseParams {
+  type: 'openai'
+  videoId: string
+  query?: OpenAI.Videos.VideoDownloadContentParams
+  options?: OpenAI.RequestOptions
+}
+
+export type RetrieveVideoContentParams = OpenAIRetrieveVideoContentParams
+
+interface RetrieveVideoContentBaseResult {
+  type: VideoEndpointType
+}
+
+export interface OpenAIRetrieveVideoContentResult extends RetrieveVideoContentBaseResult {
+  type: 'openai'
+  response: Response
+}
+
+export type RetrieveVideoContentResult = OpenAIRetrieveVideoContentResult

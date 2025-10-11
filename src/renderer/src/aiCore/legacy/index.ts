@@ -7,7 +7,13 @@ import { withSpanResult } from '@renderer/services/SpanManagerService'
 import { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
 import type { GenerateImageParams, Model, Provider } from '@renderer/types'
 import type { RequestOptions, SdkModel } from '@renderer/types/sdk'
-import { CreateVideoParams, CreateVideoResult, RetrieveVideoParams, RetrieveVideoResult } from '@renderer/types/video'
+import {
+  CreateVideoParams,
+  CreateVideoResult,
+  RetrieveVideoContentResult,
+  RetrieveVideoParams,
+  RetrieveVideoResult
+} from '@renderer/types/video'
 import { isSupportedToolUse } from '@renderer/utils/mcp-tools'
 
 import { AihubmixAPIClient } from './clients/aihubmix/AihubmixAPIClient'
@@ -181,7 +187,7 @@ export default class AiProvider {
   }
 
   public async createVideo(params: CreateVideoParams): Promise<CreateVideoResult> {
-    if (this.apiClient instanceof OpenAIResponseAPIClient) {
+    if (this.apiClient instanceof OpenAIResponseAPIClient && params.type === 'openai') {
       const video = await this.apiClient.createVideo(params)
       return {
         type: 'openai',
@@ -198,6 +204,18 @@ export default class AiProvider {
       return {
         type: 'openai',
         video
+      }
+    } else {
+      throw new Error('Video generation is not supported by this provider')
+    }
+  }
+
+  public async retrieveVideoContent(params: RetrieveVideoParams): Promise<RetrieveVideoContentResult> {
+    if (this.apiClient instanceof OpenAIResponseAPIClient && params.type === 'openai') {
+      const response = await this.apiClient.retrieveVideoContent(params)
+      return {
+        type: 'openai',
+        response
       }
     } else {
       throw new Error('Video generation is not supported by this provider')

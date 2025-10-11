@@ -16,7 +16,13 @@ import type { StreamTextParams } from '@renderer/types/aiCoreTypes'
 import { type Chunk, ChunkType } from '@renderer/types/chunk'
 import { Message } from '@renderer/types/newMessage'
 import { SdkModel } from '@renderer/types/sdk'
-import { CreateVideoParams, CreateVideoResult, RetrieveVideoParams, RetrieveVideoResult } from '@renderer/types/video'
+import {
+  CreateVideoParams,
+  CreateVideoResult,
+  RetrieveVideoContentResult,
+  RetrieveVideoParams,
+  RetrieveVideoResult
+} from '@renderer/types/video'
 import { removeSpecialCharactersForTopicName, uuid } from '@renderer/utils'
 import { abortCompletion, readyToAbort } from '@renderer/utils/abortController'
 import { isAbortError } from '@renderer/utils/error'
@@ -406,6 +412,11 @@ export async function createVideo(params: CreateVideoParams): Promise<CreateVide
 export async function retrieveVideo(params: RetrieveVideoParams): Promise<RetrieveVideoResult> {
   const ai = new AiProviderNew(params.provider)
   return ai.retrieveVideo(params)
+}
+
+export async function retrieveVideoContent(params: RetrieveVideoParams): Promise<RetrieveVideoContentResult> {
+  const ai = new AiProviderNew(params.provider)
+  return ai.retrieveVideoContent(params)
 }
 
 export function hasApiKey(provider: Provider) {
