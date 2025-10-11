@@ -1,4 +1,4 @@
-import { Progress, Radio, RadioGroup, Spinner } from '@heroui/react'
+import { Button, Progress, Radio, RadioGroup, Spinner } from '@heroui/react'
 import { Video, VideoStatus } from '@renderer/types/video'
 import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -85,12 +85,20 @@ export const VideoViewer = ({ video: _video }: VideoProps) => {
           <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
             <CircleXIcon size={64} className="fill-danger text-danger-200" />
             <span className="font-bold text-2xl">{t('video.status.failed')}</span>
+            <div className="my-2 flex justify-between gap-2">
+              <Button onPress={() => window.toast.info('Not implemented')}>{t('common.detail')}</Button>
+              <Button onPress={() => window.toast.info('Not implemented')}>{t('common.retry')}</Button>
+            </div>
           </div>
         )}
         {video && video.status === 'downloaded' && loadSuccess === false && (
           <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
             <CircleXIcon size={64} className="fill-danger text-danger-200" />
-            <span className="font-bold text-2xl">{t('video.error.load')}</span>
+            <span className="font-bold text-2xl">{t('video.error.load.message')}</span>
+            <span>{t('video.error.load.reason')}</span>
+            <div className="my-2 flex justify-between gap-2">
+              <Button onPress={() => window.toast.info('Not implemented')}>{t('common.redownload')}</Button>
+            </div>
           </div>
         )}
       </div>

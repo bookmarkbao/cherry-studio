@@ -1014,10 +1014,12 @@
     "prompt": "Prompt",
     "provider": "Provider",
     "reasoning_content": "Deep reasoning",
+    "redownload": "Redownload",
     "refresh": "Refresh",
     "regenerate": "Regenerate",
     "rename": "Rename",
     "reset": "Reset",
+    "retry": "Retry",
     "save": "Save",
     "saved": "Saved",
     "search": "Search",
@@ -4648,7 +4650,10 @@
   "video": {
     "error": {
       "invalid": "Invalid video",
-      "load": "Failed to load the video"
+      "load": {
+        "message": "Failed to load the video",
+        "reason": "The file may be corrupted or has been deleted externally."
+      }
     },
     "prompt": {
       "placeholder": "describes the video to generate"
