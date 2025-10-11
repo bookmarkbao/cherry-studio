@@ -181,12 +181,11 @@ export default class AiProvider {
   }
 
   public async createVideo(params: CreateVideoParams): Promise<CreateVideoResult> {
-    throw new Error('Not implemented')
-    // if (this.apiClient instanceof OpenAIResponseAPIClient) {
-    //   return this.apiClient.createVideo(params)
-    // } else {
-    //   throw new Error('Video generation is not supported by this provider')
-    // }
+    if (this.apiClient instanceof OpenAIResponseAPIClient) {
+      return this.apiClient.createVideo(params)
+    } else {
+      throw new Error('Video generation is not supported by this provider')
+    }
   }
 
   public getBaseURL(): string {

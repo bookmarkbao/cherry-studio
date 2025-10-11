@@ -153,9 +153,9 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
     return await sdk.responses.create(payload, options)
   }
 
-  public async createVideo(params: CreateVideoParams) {
-    // TODO: implement it
-    throw new Error('Not implemented')
+  public async createVideo(params: CreateVideoParams): Promise<OpenAI.Videos.Video> {
+    const sdk = await this.getSdkInstance()
+    return await sdk.videos.create(params.params, params.options)
   }
 
   private async handlePdfFile(file: FileMetadata): Promise<OpenAI.Responses.ResponseInputFile | undefined> {

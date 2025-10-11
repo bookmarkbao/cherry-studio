@@ -1,10 +1,6 @@
-export type CreateVideoRequest = {
-  type: 'openai'
-}
+import OpenAI from '@cherrystudio/openai'
 
-export type CreateVideoParams = {
-  providerId: string
-  modelId: string
-}
+// Only OpenAI for now.
+export type CreateVideoParams = { params: OpenAI.VideoCreateParams; options?: OpenAI.RequestOptions }
 
-export type CreateVideoResult = {}
+export type CreateVideoResult = OpenAI.Videos.Video
