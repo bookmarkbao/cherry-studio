@@ -1,6 +1,6 @@
 import { Button, Skeleton, Textarea, Tooltip } from '@heroui/react'
 import { loggerService } from '@logger'
-import { useAddOpenAIVideo } from '@renderer/hooks/video/useOpenAIVideos'
+import { useAddOpenAIVideo } from '@renderer/hooks/video/useAddOpenAIVideo'
 import { createVideo } from '@renderer/services/ApiService'
 import { Provider } from '@renderer/types'
 import { Video } from '@renderer/types/video'
