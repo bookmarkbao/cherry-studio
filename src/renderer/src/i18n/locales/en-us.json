@@ -4646,7 +4646,14 @@
     "title": "Update"
   },
   "video": {
-    "title": "Video"
+    "error": {
+      "invalid": "Invalid video"
+    },
+    "prompt": {
+      "placeholder": "describes the video to generate"
+    },
+    "title": "Video",
+    "undefined": "No available video"
   },
   "warning": {
     "missing_provider": "The supplier does not exist; reverted to the default supplier {{provider}}. This may cause issues."
