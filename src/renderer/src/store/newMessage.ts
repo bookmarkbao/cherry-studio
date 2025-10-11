@@ -3,7 +3,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit'
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
 // Separate type-only imports from value imports
 import type { Message } from '@renderer/types/newMessage'
-import { AssistantMessageStatus, MessageBlockStatus } from '@renderer/types/newMessage'
+import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType } from '@renderer/types/newMessage'
 
 const logger = loggerService.withContext('newMessage')
 
@@ -51,6 +51,7 @@ interface UpsertBlockReferencePayload {
   messageId: string
   blockId: string
   status?: MessageBlockStatus
+  blockType?: MessageBlockType
 }
 
 // Payload for removing a single message
@@ -219,7 +220,7 @@ export const messagesSlice = createSlice({
       messagesAdapter.removeMany(state, messageIds)
     },
     upsertBlockReference(state, action: PayloadAction<UpsertBlockReferencePayload>) {
-      const { messageId, blockId, status } = action.payload
+      const { messageId, blockId, status, blockType } = action.payload
 
       const messageToUpdate = state.entities[messageId]
       if (!messageToUpdate) {
@@ -232,7 +233,11 @@ export const messagesSlice = createSlice({
       // Update Block ID
       const currentBlocks = messageToUpdate.blocks || []
       if (!currentBlocks.includes(blockId)) {
-        changes.blocks = [...currentBlocks, blockId]
+        if (blockType === MessageBlockType.THINKING) {
+          changes.blocks = [blockId, ...currentBlocks]
+        } else {
+          changes.blocks = [...currentBlocks, blockId]
+        }
       }
 
       // Update Message Status based on Block Status

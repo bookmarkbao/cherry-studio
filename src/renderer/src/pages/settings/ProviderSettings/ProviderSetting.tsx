@@ -174,15 +174,22 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
   const onUpdateApiVersion = () => updateProvider({ apiVersion })
 
   const openApiKeyList = async () => {
+    if (localApiKey !== provider.apiKey) {
+      updateProvider({ apiKey: formatApiKeys(localApiKey) })
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    }
+
     await ApiKeyListPopup.show({
       providerId: provider.id,
-      title: `${fancyProviderName} ${t('settings.provider.api.key.list.title')}`
+      title: `${fancyProviderName} ${t('settings.provider.api.key.list.title')}`,
+      providerType: 'llm'
     })
   }
 
   const onCheckApi = async () => {
+    const formattedLocalKey = formatApiKeys(localApiKey)
     // 如果存在多个密钥，直接打开管理窗口
-    if (provider.apiKey.includes(',')) {
+    if (formattedLocalKey.includes(',')) {
       await openApiKeyList()
       return
     }
@@ -206,7 +213,7 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
 
     try {
       setApiKeyConnectivity((prev) => ({ ...prev, checking: true, status: HealthStatus.NOT_CHECKED }))
-      await checkApi({ ...provider, apiHost }, model)
+      await checkApi({ ...provider, apiHost, apiKey: formattedLocalKey }, model)
 
       window.toast.success({
         timeout: 2000,
@@ -475,14 +482,13 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
                       onBlur={onUpdateAnthropicHost}
                     />
                   </Space.Compact>
-                  <SettingHelpTextRow style={{ justifyContent: 'space-between' }}>
-                    <SettingHelpText
-                      style={{ marginLeft: 6, marginRight: '1em', whiteSpace: 'break-spaces', wordBreak: 'break-all' }}>
+                  <SettingHelpTextRow style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+                    <SettingHelpText style={{ marginLeft: 6, whiteSpace: 'break-spaces', wordBreak: 'break-all' }}>
                       {t('settings.provider.anthropic_api_host_preview', {
                         url: anthropicHostPreview || '—'
                       })}
                     </SettingHelpText>
-                    <SettingHelpText style={{ minWidth: 'fit-content', whiteSpace: 'normal' }}>
+                    <SettingHelpText style={{ marginLeft: 6 }}>
                       {t('settings.provider.anthropic_api_host_tip')}
                     </SettingHelpText>
                   </SettingHelpTextRow>
