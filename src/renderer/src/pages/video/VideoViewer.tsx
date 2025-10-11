@@ -11,6 +11,7 @@ export interface VideoProps {
 export const VideoViewer = ({ video: _video }: VideoProps) => {
   const { t } = useTranslation()
   const [video, setVideo] = useState<Video | undefined>(_video)
+  const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
   return (
     <>
       {/* For test */}
@@ -18,11 +19,11 @@ export const VideoViewer = ({ video: _video }: VideoProps) => {
         label="Status"
         value={video?.status}
         onValueChange={(v) => {
-          if (v) setVideo({ ...video, status: v as VideoStatus } as Video)
+          if (v !== 'undefined') setVideo({ ..._video, status: v as VideoStatus, progress: 60 } as Video)
           else setVideo(undefined)
         }}
         orientation="horizontal"
-        className="absolute rounded-2xl bg-foreground-100 p-4">
+        className="absolute z-100 rounded-2xl bg-foreground-100 p-4">
         <Radio value="undefined">undefined</Radio>
         <Radio value="queued">queued</Radio>
         <Radio value="in_progress">in_progress</Radio>
@@ -71,12 +72,25 @@ export const VideoViewer = ({ video: _video }: VideoProps) => {
             />
           </div>
         )}
-        {/* TODO: complete video widget */}
-        {video && video.status === 'downloaded' && <video></video>}
+        {video && video.status === 'downloaded' && loadSuccess !== false && (
+          <video
+            controls
+            className="h-full w-full"
+            onLoadedData={() => setLoadSuccess(true)}
+            onError={() => setLoadSuccess(false)}>
+            <source src="video.mp4" type="video/mp4" />
+          </video>
+        )}
         {video && video.status === 'failed' && (
           <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
             <CircleXIcon size={64} className="fill-danger text-danger-200" />
             <span className="font-bold text-2xl">{t('video.status.failed')}</span>
+          </div>
+        )}
+        {video && video.status === 'downloaded' && loadSuccess === false && (
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
+            <CircleXIcon size={64} className="fill-danger text-danger-200" />
+            <span className="font-bold text-2xl">{t('video.error.load')}</span>
           </div>
         )}
       </div>

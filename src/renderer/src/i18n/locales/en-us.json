@@ -4647,7 +4647,8 @@
   },
   "video": {
     "error": {
-      "invalid": "Invalid video"
+      "invalid": "Invalid video",
+      "load": "Failed to load the video"
     },
     "prompt": {
       "placeholder": "describes the video to generate"
