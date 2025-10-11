@@ -8,7 +8,7 @@ import { ArrowUp } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { VideoPlayer } from './VideoPlayer'
+import { VideoViewer } from './VideoViewer'
 
 export type VideoPanelProps = {
   provider: Provider
@@ -44,7 +44,7 @@ export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
     <div className="flex flex-1 flex-col p-2">
       <div className="m-8 flex-1">
         <Skeleton className="h-full w-full rounded-2xl" classNames={{ content: 'h-full w-full' }} isLoaded={true}>
-          <VideoPlayer video={video} />
+          <VideoViewer video={video} />
         </Skeleton>
       </div>
       <div className="relative">
