@@ -22,6 +22,7 @@ export * from './mcp'
 export * from './notification'
 export * from './ocr'
 export * from './provider'
+export * from './video'
 
 export type Assistant = {
   id: string

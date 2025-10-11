@@ -2,13 +2,14 @@
 
 import { Divider } from '@heroui/react'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
+import { mockVideos } from '@renderer/config/models/video'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { SystemProviderIds } from '@renderer/types'
 import { CreateVideoParams } from '@renderer/types/video'
 import { deepUpdate } from '@renderer/utils/deepUpdate'
 import { isVideoModel } from '@renderer/utils/model/video'
 import { DeepPartial } from 'ai'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ModelSetting } from './settings/ModelSetting'
@@ -46,6 +47,8 @@ export const VideoPage = () => {
     [updateParams]
   )
 
+  const activeVideo = useMemo(() => mockVideos.find((v) => v.id === activeVideoId), [activeVideoId])
+
   return (
     <div className="flex flex-1 flex-col">
       <Navbar>
@@ -65,8 +68,7 @@ export const VideoPage = () => {
           {provider.type === 'openai-response' && <OpenAIParamSettings params={params} updateParams={updateParams} />}
         </div>
         <Divider orientation="vertical" />
-        {/* TODO: pass video prop. retrieve correct video by swr */}
-        <VideoPanel provider={provider} params={params} updateParams={updateParams} />
+        <VideoPanel provider={provider} params={params} updateParams={updateParams} video={activeVideo} />
         <Divider orientation="vertical" />
         {/* Video list */}
         <VideoList providerId={providerId} activeVideoId={activeVideoId} setActiveVideoId={setActiveVideoId} />

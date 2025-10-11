@@ -9,7 +9,7 @@ import { MB } from '@shared/config/constant'
 import { DeepPartial } from 'ai'
 import { isEmpty } from 'lodash'
 import { ArrowUp, CircleXIcon, ImageIcon } from 'lucide-react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { VideoViewer } from './VideoViewer'
@@ -35,6 +35,13 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     () => !isProcessing && !isEmpty(params.params.prompt),
     [isProcessing, params.params.prompt]
   )
+
+  useEffect(() => {
+    if (video) {
+      updateParams({ params: { prompt: video.prompt } })
+    }
+  }, [updateParams, video])
+
   const handleCreateVideo = useCallback(async () => {
     if (!couldCreateVideo) return
     setIsProcessing(true)

@@ -1,7 +1,7 @@
 import { Button, Progress, Radio, RadioGroup, Spinner } from '@heroui/react'
 import { Video, VideoStatus } from '@renderer/types/video'
 import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface VideoProps {
@@ -12,6 +12,9 @@ export const VideoViewer = ({ video: _video }: VideoProps) => {
   const { t } = useTranslation()
   const [video, setVideo] = useState<Video | undefined>(_video)
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
+  useEffect(() => {
+    setVideo(_video)
+  }, [_video])
   return (
     <>
       {/* For test */}
