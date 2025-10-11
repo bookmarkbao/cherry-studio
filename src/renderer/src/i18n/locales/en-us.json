@@ -4652,6 +4652,13 @@
     "prompt": {
       "placeholder": "describes the video to generate"
     },
+    "status": {
+      "completed": "Generation Completed",
+      "downloading": "Downloading",
+      "failed": "Failed to generate video",
+      "in_progress": "Generating",
+      "queued": "Queued"
+    },
     "title": "Video",
     "undefined": "No available video"
   },
