@@ -6,7 +6,7 @@ import { getFancyProviderName } from '@renderer/utils'
 import { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SettingItem, SettingTitle } from './shared'
+import { SettingItem } from './shared'
 
 export interface ProviderSettingProps {
   providerId: string
@@ -29,8 +29,9 @@ export const ProviderSetting = ({ providerId, setProviderId }: ProviderSettingPr
 
   return (
     <SettingItem>
-      <SettingTitle name={t('common.provider')} />
       <Select
+        label={t('common.provider')}
+        labelPlacement="outside"
         selectionMode="single"
         items={items}
         defaultSelectedKeys={[providerId]}
