@@ -64,7 +64,7 @@ export const VideoPage = () => {
           {provider.type === 'openai-response' && <OpenAIParamSettings params={params} updateParams={updateParams} />}
         </div>
         <Divider orientation="vertical" />
-        <VideoPanel provider={provider} />
+        <VideoPanel provider={provider} params={params} updateParams={updateParams} />
         <Divider orientation="vertical" />
         {/* Video list */}
         <VideoList providerId={providerId} />

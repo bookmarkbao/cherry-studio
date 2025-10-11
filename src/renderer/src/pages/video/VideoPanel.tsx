@@ -3,8 +3,9 @@ import { loggerService } from '@logger'
 import { useAddOpenAIVideo } from '@renderer/hooks/video/useAddOpenAIVideo'
 import { createVideo } from '@renderer/services/ApiService'
 import { Provider } from '@renderer/types'
-import { Video } from '@renderer/types/video'
+import { CreateVideoParams, Video } from '@renderer/types/video'
 import { getErrorMessage } from '@renderer/utils'
+import { DeepPartial } from 'ai'
 import { ArrowUp, ImageIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,13 +15,14 @@ import { VideoViewer } from './VideoViewer'
 export type VideoPanelProps = {
   provider: Provider
   video?: Video
+  params: CreateVideoParams
+  updateParams: (upadte: DeepPartial<Omit<CreateVideoParams, 'type'>>) => void
 }
 
 const logger = loggerService.withContext('VideoPanel')
 
-export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
+export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanelProps) => {
   const { t } = useTranslation()
-  const [prompt, setPrompt] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const addOpenAIVideo = useAddOpenAIVideo(provider.id)
 
@@ -28,13 +30,7 @@ export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
     if (isProcessing) return
     setIsProcessing(true)
     try {
-      const result = await createVideo({
-        type: 'openai',
-        params: {
-          prompt
-        },
-        provider
-      })
+      const result = await createVideo(params)
       const video = result.video
       switch (result.type) {
         case 'openai':
@@ -48,7 +44,9 @@ export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
     } finally {
       setIsProcessing(false)
     }
-  }, [addOpenAIVideo, isProcessing, prompt, provider, t])
+  }, [addOpenAIVideo, isProcessing, params, t])
+
+  const setPrompt = useCallback((value: string) => updateParams({ params: { prompt: value } }), [updateParams])
 
   return (
     <div className="flex flex-1 flex-col p-2">
@@ -61,7 +59,7 @@ export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
         <Textarea
           label={t('common.prompt')}
           placeholder={t('video.prompt.placeholder')}
-          value={prompt}
+          value={params.params.prompt}
           onValueChange={setPrompt}
           isClearable
           isDisabled={isProcessing}
