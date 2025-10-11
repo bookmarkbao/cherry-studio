@@ -5,9 +5,9 @@ import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { SystemProviderIds } from '@renderer/types'
 import { CreateVideoParams } from '@renderer/types/video'
+import { deepUpdate } from '@renderer/utils/deepUpdate'
 import { isVideoModel } from '@renderer/utils/model/video'
 import { DeepPartial } from 'ai'
-import { merge } from 'lodash'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -33,7 +33,7 @@ export const VideoPage = () => {
   })
 
   const updateParams = useCallback((update: DeepPartial<Omit<CreateVideoParams, 'type'>>) => {
-    setParams((prev) => merge({}, prev, update))
+    setParams((prev) => deepUpdate<CreateVideoParams>(prev, update))
   }, [])
 
   const updateModelId = useCallback(

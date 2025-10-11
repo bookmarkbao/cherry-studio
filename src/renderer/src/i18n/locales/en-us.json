@@ -4659,6 +4659,10 @@
     },
     "input_reference": {
       "add": {
+        "error": {
+          "format": "Not a image",
+          "size": "This image is too large. It should be under 5MB."
+        },
         "tooltip": "Add image reference"
       }
     },
