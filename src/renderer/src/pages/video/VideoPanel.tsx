@@ -1,11 +1,11 @@
-import { Button, Skeleton, Textarea } from '@heroui/react'
+import { Button, Skeleton, Textarea, Tooltip } from '@heroui/react'
 import { loggerService } from '@logger'
 import { useAddOpenAIVideo } from '@renderer/hooks/video/useOpenAIVideos'
 import { createVideo } from '@renderer/services/ApiService'
 import { Provider } from '@renderer/types'
 import { Video } from '@renderer/types/video'
 import { getErrorMessage } from '@renderer/utils'
-import { ArrowUp } from 'lucide-react'
+import { ArrowUp, ImageIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -73,14 +73,28 @@ export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
             }
           }}
         />
-        <Button
-          color="primary"
-          radius="full"
-          isIconOnly
-          isLoading={isProcessing}
-          className="absolute right-2 bottom-2 h-6 w-6 min-w-0">
-          <ArrowUp size={16} className="text-primary-foreground" />
-        </Button>
+        <div className="absolute bottom-0 flex w-full items-end justify-between p-2">
+          <div className="flex">
+            <Tooltip content={t('video.input_reference.add.tooltip')} closeDelay={0}>
+              <Button
+                variant="light"
+                startContent={<ImageIcon size={16} />}
+                isIconOnly
+                className="h-6 w-6 min-w-0"
+                isDisabled={isProcessing}
+                onPress={() => {
+                  window.toast.info('Not implemented')
+                }}
+              />
+            </Tooltip>
+          </div>
+
+          <Tooltip content={t('common.send')} closeDelay={0}>
+            <Button color="primary" radius="full" isIconOnly isLoading={isProcessing} className="h-6 w-6 min-w-0">
+              <ArrowUp size={16} className="text-primary-foreground" />
+            </Button>
+          </Tooltip>
+        </div>
       </div>
     </div>
   )

@@ -1027,6 +1027,7 @@
     "selected": "Selected",
     "selectedItems": "Selected {{count}} items",
     "selectedMessages": "Selected {{count}} messages",
+    "send": "Send",
     "settings": "Settings",
     "sort": {
       "pinyin": {
@@ -4654,6 +4655,11 @@
       "load": {
         "message": "Failed to load the video",
         "reason": "The file may be corrupted or has been deleted externally."
+      }
+    },
+    "input_reference": {
+      "add": {
+        "tooltip": "Add image reference"
       }
     },
     "prompt": {
