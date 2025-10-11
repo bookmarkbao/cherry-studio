@@ -17,7 +17,7 @@ export const VideoViewer = ({ video: _video }: VideoProps) => {
       {/* For test */}
       <RadioGroup
         label="Status"
-        value={video?.status}
+        value={video?.status ?? 'undefined'}
         onValueChange={(v) => {
           if (v !== 'undefined') setVideo({ ..._video, status: v as VideoStatus, progress: 60 } as Video)
           else setVideo(undefined)
