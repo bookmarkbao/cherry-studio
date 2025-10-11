@@ -6,7 +6,7 @@ const logger = loggerService.withContext('Store:paintings')
 
 export interface VideoState {
   /** Provider ID to videos */
-  videoMap: Record<string, Video[]>
+  videoMap: Record<string, Video[] | undefined>
 }
 
 const initialState: VideoState = {
@@ -19,7 +19,7 @@ const videoSlice = createSlice({
   reducers: {
     addVideo: (state: VideoState, action: PayloadAction<{ providerId: string; video: Video }>) => {
       const { providerId, video } = action.payload
-      if (state[providerId]) {
+      if (state.videoMap[providerId]) {
         state.videoMap[providerId].unshift(video)
       } else {
         state.videoMap[providerId] = [video]
@@ -36,8 +36,8 @@ const videoSlice = createSlice({
     ) => {
       const { providerId, update } = action.payload
 
-      const existingIndex = state.videoMap[providerId].findIndex((c) => c.id === update.id)
-      if (existingIndex !== -1) {
+      const existingIndex = state.videoMap[providerId]?.findIndex((c) => c.id === update.id)
+      if (existingIndex && existingIndex !== -1) {
         state.videoMap[providerId] = state.videoMap[providerId]?.map((c) => (c.id === update.id ? { ...c, update } : c))
       } else {
         logger.error(`Video with id ${update.id} not found in ${providerId}`)
