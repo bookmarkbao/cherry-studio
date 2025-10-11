@@ -31,6 +31,7 @@ export const VideoPage = () => {
     },
     options: {}
   })
+  const [activeVideoId, setActiveVideoId] = useState<string>()
 
   const updateParams = useCallback((update: DeepPartial<Omit<CreateVideoParams, 'type'>>) => {
     setParams((prev) => deepUpdate<CreateVideoParams>(prev, update))
@@ -64,10 +65,11 @@ export const VideoPage = () => {
           {provider.type === 'openai-response' && <OpenAIParamSettings params={params} updateParams={updateParams} />}
         </div>
         <Divider orientation="vertical" />
+        {/* TODO: pass video prop. retrieve correct video by swr */}
         <VideoPanel provider={provider} params={params} updateParams={updateParams} />
         <Divider orientation="vertical" />
         {/* Video list */}
-        <VideoList providerId={providerId} />
+        <VideoList providerId={providerId} activeVideoId={activeVideoId} setActiveVideoId={setActiveVideoId} />
       </div>
     </div>
   )

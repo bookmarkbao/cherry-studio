@@ -1,12 +1,12 @@
-import { Progress, Spinner } from '@heroui/react'
+import { cn, Progress, Spinner } from '@heroui/react'
 import { useVideos } from '@renderer/hooks/video/useVideos'
 import { Video } from '@renderer/types/video'
 import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-export type VideoListProps = { providerId: string }
+export type VideoListProps = { providerId: string; activeVideoId?: string; setActiveVideoId: (id: string) => void }
 
-export const VideoList = ({ providerId }: VideoListProps) => {
+export const VideoList = ({ providerId, activeVideoId, setActiveVideoId }: VideoListProps) => {
   const { videos } = useVideos(providerId)
 
   // Mock data for testing
@@ -146,13 +146,18 @@ export const VideoList = ({ providerId }: VideoListProps) => {
   return (
     <div className="w-40 space-y-3 overflow-auto p-2">
       {displayVideos.map((video) => (
-        <VideoListItem key={video.id} video={video} />
+        <VideoListItem
+          key={video.id}
+          video={video}
+          isActive={activeVideoId === video.id}
+          onClick={() => setActiveVideoId(video.id)}
+        />
       ))}
     </div>
   )
 }
 
-const VideoListItem = ({ video }: { video: Video }) => {
+const VideoListItem = ({ video, isActive, onClick }: { video: Video; isActive: boolean; onClick: () => void }) => {
   const { t } = useTranslation()
 
   const getStatusIcon = () => {
@@ -177,19 +182,19 @@ const VideoListItem = ({ video }: { video: Video }) => {
   const getStatusColor = () => {
     switch (video.status) {
       case 'queued':
-        return 'border-default-300 bg-default-100'
+        return 'bg-default-100'
       case 'in_progress':
-        return 'border-primary-300 bg-primary-50'
+        return 'bg-primary-50'
       case 'completed':
-        return 'border-success-300 bg-success-50'
+        return 'bg-success-50'
       case 'downloading':
-        return 'border-primary-300 bg-primary-50'
+        return 'bg-primary-50'
       case 'downloaded':
-        return 'border-success-300 bg-success-50'
+        return 'bg-success-50'
       case 'failed':
-        return 'border-danger-300 bg-danger-50'
+        return 'bg-danger-50'
       default:
-        return 'border-default-200 bg-default-50'
+        return 'bg-default-50'
     }
   }
 
@@ -198,7 +203,11 @@ const VideoListItem = ({ video }: { video: Video }) => {
 
   return (
     <div
-      className={`group relative aspect-square cursor-pointer overflow-hidden rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg ${getStatusColor()}`}>
+      className={cn(
+        `group relative aspect-square cursor-pointer overflow-hidden rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg ${getStatusColor()}`,
+        isActive ? 'border-primary' : undefined
+      )}
+      onClick={onClick}>
       {/* Thumbnail placeholder */}
       <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-default-100 to-default-200">
         {showThumbnail ? (
