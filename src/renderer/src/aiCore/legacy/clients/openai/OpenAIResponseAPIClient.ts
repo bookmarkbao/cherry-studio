@@ -36,7 +36,7 @@ import {
   OpenAIResponseSdkTool,
   OpenAIResponseSdkToolCall
 } from '@renderer/types/sdk'
-import { CreateVideoParams } from '@renderer/types/video'
+import { CreateVideoParams, RetrieveVideoParams } from '@renderer/types/video'
 import { addImageFileToContents } from '@renderer/utils/formats'
 import {
   isSupportedToolUse,
@@ -156,6 +156,11 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
   public async createVideo(params: CreateVideoParams): Promise<OpenAI.Videos.Video> {
     const sdk = await this.getSdkInstance()
     return sdk.videos.create(params.params, params.options)
+  }
+
+  public async retrieveVideo(params: RetrieveVideoParams): Promise<OpenAI.Videos.Video> {
+    const sdk = await this.getSdkInstance()
+    return sdk.videos.retrieve(params.videoId, params.options)
   }
 
   private async handlePdfFile(file: FileMetadata): Promise<OpenAI.Responses.ResponseInputFile | undefined> {

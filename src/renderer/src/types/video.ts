@@ -5,6 +5,7 @@ import { Provider } from './provider'
 // Only OpenAI (Responses) is supported for now.
 export type VideoEndpointType = 'openai'
 
+// Create Video
 interface CreateVideoBaseParams {
   type: VideoEndpointType
   provider: Provider
@@ -28,3 +29,28 @@ export interface OpenAICreateVideoResult extends CreateVideoBaseResult {
 }
 
 export type CreateVideoResult = OpenAICreateVideoResult
+
+// Retrieve Video
+interface RetrieveVideoBaseParams {
+  type: VideoEndpointType
+  provider: Provider
+}
+
+export interface OpenAIRetrieveVideoParams extends RetrieveVideoBaseParams {
+  type: 'openai'
+  videoId: string
+  options?: OpenAI.RequestOptions
+}
+
+export type RetrieveVideoParams = OpenAIRetrieveVideoParams
+
+interface RetrieveVideoBaseResult {
+  type: VideoEndpointType
+}
+
+export interface OpenAIRetrieveVideoResult extends RetrieveVideoBaseResult {
+  type: 'openai'
+  video: OpenAI.Videos.Video
+}
+
+export type RetrieveVideoResult = OpenAIRetrieveVideoResult

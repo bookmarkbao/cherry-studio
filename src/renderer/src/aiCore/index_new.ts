@@ -14,7 +14,7 @@ import { addSpan, endSpan } from '@renderer/services/SpanManagerService'
 import { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
 import type { Assistant, GenerateImageParams, Model, Provider } from '@renderer/types'
 import type { AiSdkModel, StreamTextParams } from '@renderer/types/aiCoreTypes'
-import { CreateVideoParams, CreateVideoResult } from '@renderer/types/video'
+import { CreateVideoParams, CreateVideoResult, RetrieveVideoParams, RetrieveVideoResult } from '@renderer/types/video'
 import { buildClaudeCodeSystemModelMessage } from '@shared/anthropic'
 import { type ImageModel, type LanguageModel, type Provider as AiSdkProvider, wrapLanguageModel } from 'ai'
 
@@ -506,6 +506,13 @@ export default class ModernAiProvider {
    */
   public async createVideo(params: CreateVideoParams): Promise<CreateVideoResult> {
     return this.legacyProvider.createVideo(params)
+  }
+
+  /**
+   * We manually implement this method before aisdk supports it well
+   */
+  public async retrieveVideo(params: RetrieveVideoParams): Promise<RetrieveVideoResult> {
+    return this.legacyProvider.retrieveVideo(params)
   }
 
   public getBaseURL(): string {
