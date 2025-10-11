@@ -4,7 +4,7 @@ import { Provider } from './provider'
 
 // Only OpenAI (Responses) is supported for now.
 export type VideoEndpointType = 'openai'
-export type VideoStatus = 'queued' | 'in_progress' | 'completed' | 'failed'
+export type VideoStatus = 'queued' | 'in_progress' | 'completed' | 'downloading' | 'downloaded' | 'failed'
 
 interface VideoBase {
   id: string
@@ -14,6 +14,7 @@ interface VideoBase {
 
 interface OpenAIVideoBase {
   type: 'openai'
+  metadata: OpenAI.Videos.Video
 }
 
 export interface VideoQueued extends VideoBase {
@@ -22,11 +23,20 @@ export interface VideoQueued extends VideoBase {
 
 export interface VideoInProgress extends VideoBase {
   status: 'in_progress'
+  /** integer percent */
   progress: number
 }
-
 export interface VideoCompleted extends VideoBase {
   status: 'completed'
+}
+
+export interface VideoDownloading extends VideoBase {
+  status: 'downloading'
+  /** integer percent */
+  progress: number
+}
+export interface Videodownloaded extends VideoBase {
+  status: 'downloaded'
   fileId: string
 }
 
@@ -38,11 +48,19 @@ export interface VideoFailed extends VideoBase {
 export interface OpenAIVideoQueued extends VideoQueued, OpenAIVideoBase {}
 export interface OpenAIVideoInProgress extends VideoInProgress, OpenAIVideoBase {}
 export interface OpenAIVideoCompleted extends VideoCompleted, OpenAIVideoBase {}
+export interface OpenAIVideoDownloading extends VideoDownloading, OpenAIVideoBase {}
+export interface OpenAIVideoDownloaded extends Videodownloaded, OpenAIVideoBase {}
 export interface OpenAIVideoFailed extends VideoFailed, OpenAIVideoBase {
   error: OpenAI.Videos.Video['error']
 }
 
-export type OpenAIVideo = OpenAIVideoQueued | OpenAIVideoInProgress | OpenAIVideoCompleted | OpenAIVideoFailed
+export type OpenAIVideo =
+  | OpenAIVideoQueued
+  | OpenAIVideoInProgress
+  | OpenAIVideoCompleted
+  | OpenAIVideoDownloading
+  | OpenAIVideoDownloaded
+  | OpenAIVideoFailed
 
 export type Video = OpenAIVideo
 
@@ -62,6 +80,7 @@ export type CreateVideoParams = OpenAICreateVideoParams
 
 interface CreateVideoBaseResult {
   type: VideoEndpointType
+  video: unknown
 }
 
 export interface OpenAICreateVideoResult extends CreateVideoBaseResult {
