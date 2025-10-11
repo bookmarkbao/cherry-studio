@@ -4649,6 +4649,7 @@
   },
   "video": {
     "error": {
+      "create": "Failed to create video",
       "invalid": "Invalid video",
       "load": {
         "message": "Failed to load the video",
