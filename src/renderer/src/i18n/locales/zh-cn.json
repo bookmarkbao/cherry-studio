@@ -4659,6 +4659,10 @@
     },
     "input_reference": {
       "add": {
+        "error": {
+          "format": "需要上传图片格式的文件",
+          "size": "图片过大，应小于 5MB"
+        },
         "tooltip": "添加图像参考"
       }
     },
@@ -4670,9 +4674,12 @@
     "status": {
       "completed": "生成完成",
       "downloading": "下载中",
-      "failed": "视频生成失败",
+      "failed": "生成失败",
       "in_progress": "生成中",
       "queued": "排队中"
+    },
+    "thumbnail": {
+      "placeholder": "无缩略图"
     },
     "title": "视频",
     "undefined": "无可用视频"

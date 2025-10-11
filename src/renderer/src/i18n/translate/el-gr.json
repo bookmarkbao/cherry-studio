@@ -4659,6 +4659,10 @@
     },
     "input_reference": {
       "add": {
+        "error": {
+          "format": "[to be translated]:Not a image",
+          "size": "[to be translated]:This image is too large. It should be under 5MB."
+        },
         "tooltip": "[to be translated]:Add image reference"
       }
     },
@@ -4673,6 +4677,9 @@
       "failed": "[to be translated]:Failed to generate video",
       "in_progress": "[to be translated]:Generating",
       "queued": "[to be translated]:Queued"
+    },
+    "thumbnail": {
+      "placeholder": "[to be translated]:No thumbnail"
     },
     "title": "[to be translated]:Video",
     "undefined": "[to be translated]:No available video"

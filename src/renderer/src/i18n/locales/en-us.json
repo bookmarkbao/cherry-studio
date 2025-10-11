@@ -4674,9 +4674,12 @@
     "status": {
       "completed": "Generation Completed",
       "downloading": "Downloading",
-      "failed": "Failed to generate video",
+      "failed": "Generation Failed",
       "in_progress": "Generating",
       "queued": "Queued"
+    },
+    "thumbnail": {
+      "placeholder": "No thumbnail"
     },
     "title": "Video",
     "undefined": "No available video"
