@@ -7,6 +7,7 @@ import { withSpanResult } from '@renderer/services/SpanManagerService'
 import { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
 import type { GenerateImageParams, Model, Provider } from '@renderer/types'
 import type { RequestOptions, SdkModel } from '@renderer/types/sdk'
+import { CreateVideoParams, CreateVideoResult } from '@renderer/types/video'
 import { isSupportedToolUse } from '@renderer/utils/mcp-tools'
 
 import { AihubmixAPIClient } from './clients/aihubmix/AihubmixAPIClient'
@@ -177,6 +178,15 @@ export default class AiProvider {
       return client.generateImage(params)
     }
     return this.apiClient.generateImage(params)
+  }
+
+  public async createVideo(params: CreateVideoParams): Promise<CreateVideoResult> {
+    throw new Error('Not implemented')
+    // if (this.apiClient instanceof OpenAIResponseAPIClient) {
+    //   return this.apiClient.createVideo(params)
+    // } else {
+    //   throw new Error('Video generation is not supported by this provider')
+    // }
   }
 
   public getBaseURL(): string {
