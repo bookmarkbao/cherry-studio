@@ -4486,7 +4486,8 @@
     "paintings": "绘画",
     "settings": "设置",
     "store": "助手库",
-    "translate": "翻译"
+    "translate": "翻译",
+    "video": "视频"
   },
   "trace": {
     "backList": "返回列表",
@@ -4643,6 +4644,16 @@
     "noReleaseNotes": "暂无更新日志",
     "saveDataError": "保存数据失败，请重试",
     "title": "更新提示"
+  },
+  "video": {
+    "error": {
+      "invalid": "[to be translated]:Invalid video"
+    },
+    "prompt": {
+      "placeholder": "[to be translated]:describes the video to generate"
+    },
+    "title": "[to be translated]:Video",
+    "undefined": "[to be translated]:No available video"
   },
   "warning": {
     "missing_provider": "供应商不存在，已回退到默认供应商 {{provider}}。这可能导致问题。"

@@ -4486,7 +4486,8 @@
     "paintings": "Peintures",
     "settings": "Paramètres",
     "store": "Bibliothèque d'assistants",
-    "translate": "Traduire"
+    "translate": "Traduire",
+    "video": "[to be translated]:Video"
   },
   "trace": {
     "backList": "Retour à la liste",
@@ -4643,6 +4644,16 @@
     "noReleaseNotes": "Aucune note de version",
     "saveDataError": "Échec de la sauvegarde des données, veuillez réessayer",
     "title": "Mise à jour"
+  },
+  "video": {
+    "error": {
+      "invalid": "[to be translated]:Invalid video"
+    },
+    "prompt": {
+      "placeholder": "[to be translated]:describes the video to generate"
+    },
+    "title": "[to be translated]:Video",
+    "undefined": "[to be translated]:No available video"
   },
   "warning": {
     "missing_provider": "Le fournisseur n’existe pas, retour au fournisseur par défaut {{provider}}. Cela peut entraîner des problèmes."

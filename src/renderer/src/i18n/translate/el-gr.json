@@ -4486,7 +4486,8 @@
     "paintings": "Ζωγραφική",
     "settings": "Ρυθμίσεις",
     "store": "Βιβλιοθήκη βοηθών",
-    "translate": "Μετάφραση"
+    "translate": "Μετάφραση",
+    "video": "[to be translated]:Video"
   },
   "trace": {
     "backList": "Επιστροφή στη λίστα",
@@ -4643,6 +4644,16 @@
     "noReleaseNotes": "Χωρίς σημειώσεις",
     "saveDataError": "Η αποθήκευση των δεδομένων απέτυχε, δοκιμάστε ξανά",
     "title": "Ενημέρωση"
+  },
+  "video": {
+    "error": {
+      "invalid": "[to be translated]:Invalid video"
+    },
+    "prompt": {
+      "placeholder": "[to be translated]:describes the video to generate"
+    },
+    "title": "[to be translated]:Video",
+    "undefined": "[to be translated]:No available video"
   },
   "warning": {
     "missing_provider": "Ο προμηθευτής δεν υπάρχει, έγινε επαναφορά στον προεπιλεγμένο προμηθευτή {{provider}}. Αυτό μπορεί να προκαλέσει προβλήματα."

@@ -4486,7 +4486,8 @@
     "paintings": "Pinturas",
     "settings": "Configuración",
     "store": "Biblioteca de asistentes",
-    "translate": "Traducir"
+    "translate": "Traducir",
+    "video": "[to be translated]:Video"
   },
   "trace": {
     "backList": "Volver a la lista",
@@ -4643,6 +4644,16 @@
     "noReleaseNotes": "Sin notas de la versión",
     "saveDataError": "Error al guardar los datos, inténtalo de nuevo",
     "title": "Actualización"
+  },
+  "video": {
+    "error": {
+      "invalid": "[to be translated]:Invalid video"
+    },
+    "prompt": {
+      "placeholder": "[to be translated]:describes the video to generate"
+    },
+    "title": "[to be translated]:Video",
+    "undefined": "[to be translated]:No available video"
   },
   "warning": {
     "missing_provider": "El proveedor no existe, se ha revertido al proveedor predeterminado {{provider}}. Esto podría causar problemas."

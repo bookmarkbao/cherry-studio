@@ -4486,7 +4486,8 @@
     "paintings": "Рисунки",
     "settings": "Настройки",
     "store": "Библиотека помощников",
-    "translate": "Перевод"
+    "translate": "Перевод",
+    "video": "[to be translated]:Video"
   },
   "trace": {
     "backList": "Вернуться к списку",
@@ -4643,6 +4644,16 @@
     "noReleaseNotes": "Нет заметок об обновлении",
     "saveDataError": "Ошибка сохранения данных, повторите попытку",
     "title": "Обновление"
+  },
+  "video": {
+    "error": {
+      "invalid": "[to be translated]:Invalid video"
+    },
+    "prompt": {
+      "placeholder": "[to be translated]:describes the video to generate"
+    },
+    "title": "[to be translated]:Video",
+    "undefined": "[to be translated]:No available video"
   },
   "warning": {
     "missing_provider": "Поставщик не существует, возвращение к поставщику по умолчанию {{provider}}. Это может привести к проблемам."
