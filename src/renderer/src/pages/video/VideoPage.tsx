@@ -4,19 +4,47 @@ import { Divider } from '@heroui/react'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { SystemProviderIds } from '@renderer/types'
-import { useState } from 'react'
+import { CreateVideoParams } from '@renderer/types/video'
+import { isVideoModel } from '@renderer/utils/model/video'
+import { DeepPartial } from 'ai'
+import { merge } from 'lodash'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ModelSetting } from './settings/ModelSetting'
+import { OpenAIParamSettings } from './settings/OpenAIParamSettings'
 import { ProviderSetting } from './settings/ProviderSetting'
+import { SettingsGroup } from './settings/shared'
 import { VideoList } from './VideoList'
 import { VideoPanel } from './VideoPanel'
 
 export const VideoPage = () => {
   const { t } = useTranslation()
   const [providerId, setProviderId] = useState<string>(SystemProviderIds.openai)
-  const [modelId, setModelId] = useState('sora-2')
   const { provider } = useProvider(providerId)
+  const [params, setParams] = useState<CreateVideoParams>({
+    type: 'openai',
+    provider,
+    params: {
+      model: 'sora-2',
+      prompt: ''
+    },
+    options: {}
+  })
+
+  const updateParams = useCallback((update: DeepPartial<Omit<CreateVideoParams, 'type'>>) => {
+    setParams((prev) => merge({}, prev, update))
+  }, [])
+
+  const updateModelId = useCallback(
+    (id: string) => {
+      if (isVideoModel(id)) {
+        updateParams({ params: { model: id } })
+      }
+    },
+    [updateParams]
+  )
+
   return (
     <div className="flex flex-1 flex-col">
       <Navbar>
@@ -25,8 +53,15 @@ export const VideoPage = () => {
       <div id="content-container" className="flex flex-1">
         {/* Settings */}
         <div className="flex w-70 flex-col p-2">
-          <ProviderSetting providerId={providerId} setProviderId={setProviderId} />
-          <ModelSetting providerId={providerId} modelId={modelId} setModelId={setModelId} />
+          <SettingsGroup>
+            <ProviderSetting providerId={providerId} setProviderId={setProviderId} />
+            <ModelSetting
+              providerId={providerId}
+              modelId={params.params.model ?? 'sora-2'}
+              setModelId={updateModelId}
+            />
+          </SettingsGroup>
+          {provider.type === 'openai-response' && <OpenAIParamSettings params={params} updateParams={updateParams} />}
         </div>
         <Divider orientation="vertical" />
         <VideoPanel provider={provider} />
