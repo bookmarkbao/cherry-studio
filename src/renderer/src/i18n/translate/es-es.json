@@ -1014,10 +1014,12 @@
     "prompt": "Prompt",
     "provider": "Proveedor",
     "reasoning_content": "Pensamiento profundo",
+    "redownload": "[to be translated]:Redownload",
     "refresh": "Actualizar",
     "regenerate": "Regenerar",
     "rename": "Renombrar",
     "reset": "Restablecer",
+    "retry": "[to be translated]:Retry",
     "save": "Guardar",
     "saved": "Guardado",
     "search": "Buscar",
@@ -1025,6 +1027,7 @@
     "selected": "Seleccionado",
     "selectedItems": "{{count}} elementos seleccionados",
     "selectedMessages": "{{count}} mensajes seleccionados",
+    "send": "[to be translated]:Send",
     "settings": "Configuración",
     "sort": {
       "pinyin": {
@@ -4647,10 +4650,29 @@
   },
   "video": {
     "error": {
-      "invalid": "[to be translated]:Invalid video"
+      "create": "[to be translated]:Failed to create video",
+      "invalid": "[to be translated]:Invalid video",
+      "load": {
+        "message": "[to be translated]:Failed to load the video",
+        "reason": "[to be translated]:The file may be corrupted or has been deleted externally."
+      }
+    },
+    "input_reference": {
+      "add": {
+        "tooltip": "[to be translated]:Add image reference"
+      }
     },
     "prompt": {
       "placeholder": "[to be translated]:describes the video to generate"
+    },
+    "seconds": "[to be translated]:Seconds",
+    "size": "[to be translated]:Size",
+    "status": {
+      "completed": "[to be translated]:Generation Completed",
+      "downloading": "[to be translated]:Downloading",
+      "failed": "[to be translated]:Failed to generate video",
+      "in_progress": "[to be translated]:Generating",
+      "queued": "[to be translated]:Queued"
     },
     "title": "[to be translated]:Video",
     "undefined": "[to be translated]:No available video"

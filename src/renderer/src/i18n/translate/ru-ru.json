@@ -1014,10 +1014,12 @@
     "prompt": "Промпт",
     "provider": "Провайдер",
     "reasoning_content": "Глубокий анализ",
+    "redownload": "[to be translated]:Redownload",
     "refresh": "Обновить",
     "regenerate": "Пересоздать",
     "rename": "Переименовать",
     "reset": "Сбросить",
+    "retry": "[to be translated]:Retry",
     "save": "Сохранить",
     "saved": "Сохранено",
     "search": "Поиск",
@@ -1025,6 +1027,7 @@
     "selected": "Выбрано",
     "selectedItems": "Выбрано {{count}} элементов",
     "selectedMessages": "Выбрано {{count}} сообщений",
+    "send": "[to be translated]:Send",
     "settings": "Настройки",
     "sort": {
       "pinyin": {
@@ -4647,10 +4650,29 @@
   },
   "video": {
     "error": {
-      "invalid": "[to be translated]:Invalid video"
+      "create": "[to be translated]:Failed to create video",
+      "invalid": "[to be translated]:Invalid video",
+      "load": {
+        "message": "[to be translated]:Failed to load the video",
+        "reason": "[to be translated]:The file may be corrupted or has been deleted externally."
+      }
+    },
+    "input_reference": {
+      "add": {
+        "tooltip": "[to be translated]:Add image reference"
+      }
     },
     "prompt": {
       "placeholder": "[to be translated]:describes the video to generate"
+    },
+    "seconds": "[to be translated]:Seconds",
+    "size": "[to be translated]:Size",
+    "status": {
+      "completed": "[to be translated]:Generation Completed",
+      "downloading": "[to be translated]:Downloading",
+      "failed": "[to be translated]:Failed to generate video",
+      "in_progress": "[to be translated]:Generating",
+      "queued": "[to be translated]:Queued"
     },
     "title": "[to be translated]:Video",
     "undefined": "[to be translated]:No available video"
