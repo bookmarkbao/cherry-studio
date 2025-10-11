@@ -90,7 +90,13 @@ export const VideoPanel = ({ provider, video }: VideoPanelProps) => {
           </div>
 
           <Tooltip content={t('common.send')} closeDelay={0}>
-            <Button color="primary" radius="full" isIconOnly isLoading={isProcessing} className="h-6 w-6 min-w-0">
+            <Button
+              color="primary"
+              radius="full"
+              isIconOnly
+              isLoading={isProcessing}
+              className="h-6 w-6 min-w-0"
+              onPress={handleCreateVideo}>
               <ArrowUp size={16} className="text-primary-foreground" />
             </Button>
           </Tooltip>
