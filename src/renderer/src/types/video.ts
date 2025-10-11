@@ -10,6 +10,7 @@ interface VideoBase {
   id: string
   type: VideoEndpointType
   status: VideoStatus
+  prompt: string
 }
 
 interface OpenAIVideoBase {
@@ -28,15 +29,21 @@ export interface VideoInProgress extends VideoBase {
 }
 export interface VideoCompleted extends VideoBase {
   status: 'completed'
+  /** When generation completed, firstly try to retrieve thumbnail. */
+  thumbnail: string
 }
 
 export interface VideoDownloading extends VideoBase {
+  /** Downloading video content */
   status: 'downloading'
+  thumbnail: string
   /** integer percent */
   progress: number
 }
 export interface Videodownloaded extends VideoBase {
   status: 'downloaded'
+  thumbnail: string
+  /** Managed by fileManager */
   fileId: string
 }
 
