@@ -1,15 +1,45 @@
 import { Button, Skeleton, Textarea } from '@heroui/react'
+import { loggerService } from '@logger'
+import { useAddOpenAIVideo } from '@renderer/hooks/video/useOpenAIVideos'
+import { createVideo } from '@renderer/services/ApiService'
+import { Provider } from '@renderer/types'
 import { ArrowUp } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Video } from './Video'
 
-export const VideoPanel = () => {
+export type VideoPanelProps = {
+  provider: Provider
+}
+
+const logger = loggerService.withContext('VideoPanel')
+
+export const VideoPanel = ({ provider }: VideoPanelProps) => {
   const { t } = useTranslation()
   const [prompt, setPrompt] = useState('')
+  const addOpenAIVideo = useAddOpenAIVideo(provider.id)
   // TODO: get video job from api
   const video = { success: false, data: undefined }
+
+  const sendRequest = useCallback(async () => {
+    const result = await createVideo({
+      type: 'openai',
+      params: {
+        prompt
+      },
+      provider
+    })
+    const video = result.video
+    switch (result.type) {
+      case 'openai':
+        addOpenAIVideo(video)
+        break
+      default:
+        logger.error(`Invalid video type ${result.type}.`)
+    }
+  }, [addOpenAIVideo, prompt, provider])
+
   return (
     <div className="flex flex-1 flex-col p-2">
       <div className="m-8 flex-1">
@@ -25,6 +55,12 @@ export const VideoPanel = () => {
           onValueChange={setPrompt}
           isClearable
           classNames={{ inputWrapper: 'pb-8' }}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            if (e.key === 'Enter') {
+              e.stopPropagation()
+              sendRequest()
+            }
+          }}
         />
         <Button
           color="primary"
