@@ -9,6 +9,16 @@ export type VideoStatus = 'queued' | 'in_progress' | 'completed' | 'downloading'
 interface VideoBase {
   id: string
   type: VideoEndpointType
+  /**
+   * Represents the possible states of a video generation or download process.
+   *
+   * - `queued`: The video task has been submitted and is waiting to be processed.
+   * - `in_progress`: The video is currently being generated.
+   * - `completed`: The video has been successfully generated and is ready for download.
+   * - `downloading`: The video content is being downloaded to local storage.
+   * - `downloaded`: The video has been fully downloaded and is available locally.
+   * - `failed`: The video task encountered an error and could not be completed.
+   */
   status: VideoStatus
   prompt: string
 }
@@ -34,7 +44,6 @@ export interface VideoCompleted extends VideoBase {
 }
 
 export interface VideoDownloading extends VideoBase {
-  /** Downloading video content */
   status: 'downloading'
   thumbnail: string
   /** integer percent */
