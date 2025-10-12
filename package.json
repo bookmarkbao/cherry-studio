@@ -1,6 +1,6 @@
 {
   "name": "CherryStudio",
-  "version": "1.7.0-alpha.5",
+  "version": "1.7.0-sora.1",
   "private": true,
   "description": "A powerful AI assistant for producer.",
   "main": "./out/main/index.js",
@@ -374,8 +374,8 @@
     "file-stream-rotator@npm:^0.6.1": "patch:file-stream-rotator@npm%3A0.6.1#~/.yarn/patches/file-stream-rotator-npm-0.6.1-eab45fb13d.patch",
     "libsql@npm:^0.4.4": "patch:libsql@npm%3A0.4.7#~/.yarn/patches/libsql-npm-0.4.7-444e260fb1.patch",
     "node-abi": "4.12.0",
-    "openai@npm:^4.77.0": "patch:openai@npm%3A5.12.2#~/.yarn/patches/openai-npm-5.12.2-30b075401c.patch",
-    "openai@npm:^4.87.3": "patch:openai@npm%3A5.12.2#~/.yarn/patches/openai-npm-5.12.2-30b075401c.patch",
+    "openai@npm:^4.77.0": "npm:@cherrystudio/openai@6.3.0-fork.1",
+    "openai@npm:^4.87.3": "npm:@cherrystudio/openai@6.3.0-fork.1",
     "pdf-parse@npm:1.1.1": "patch:pdf-parse@npm%3A1.1.1#~/.yarn/patches/pdf-parse-npm-1.1.1-04a6109b2a.patch",
     "pkce-challenge@npm:^4.1.0": "patch:pkce-challenge@npm%3A4.1.0#~/.yarn/patches/pkce-challenge-npm-4.1.0-fbc51695a3.patch",
     "undici": "6.21.2",
