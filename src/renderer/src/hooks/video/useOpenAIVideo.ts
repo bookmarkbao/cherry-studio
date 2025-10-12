@@ -23,6 +23,7 @@ export const useOpenAIVideo = (id: string) => {
   const addOpenAIVideo = useAddOpenAIVideo(providerId)
   let options: SWRConfiguration = {}
   switch (video?.status) {
+    case 'queued':
     case 'in_progress':
       options = {
         refreshInterval: 3000
@@ -39,12 +40,14 @@ export const useOpenAIVideo = (id: string) => {
   const revalidate = () => mutate(`video/openai/${id}`)
 
   useEffect(() => {
-    // update progress
-    if (data && data.video.status === 'in_progress' && data.video.progress) {
-      if (video) {
-        updateVideo({ id: video.id, progress: data.video.progress })
-      } else {
-        addOpenAIVideo(data.video, 'Prompt lost')
+    // queue -> in_progress / update progress
+    if (data) {
+      if (data.video.status === 'in_progress' && data.video.progress) {
+        if (video) {
+          updateVideo({ id: video.id, progress: data.video.progress })
+        } else {
+          addOpenAIVideo(data.video, 'Prompt lost')
+        }
       }
     }
   }, [addOpenAIVideo, data, updateVideo, video])
