@@ -48,21 +48,26 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     if (!couldCreateVideo) return
     setIsProcessing(true)
     try {
-      const result = await createVideo(params)
-      const video = result.video
-      switch (result.type) {
-        case 'openai':
-          addOpenAIVideo(video)
-          break
-        default:
-          logger.error(`Invalid video type ${result.type}.`)
+      if (video === undefined) {
+        const result = await createVideo(params)
+        const video = result.video
+        switch (result.type) {
+          case 'openai':
+            addOpenAIVideo(video)
+            break
+          default:
+            logger.error(`Invalid video type ${result.type}.`)
+        }
+      } else {
+        // TODO: remix video
+        window.toast.info('Remix video is not implemented.')
       }
     } catch (e) {
       window.toast.error({ title: t('video.error.create'), description: getErrorMessage(e), timeout: 5000 })
     } finally {
       setIsProcessing(false)
     }
-  }, [addOpenAIVideo, couldCreateVideo, params, t])
+  }, [addOpenAIVideo, couldCreateVideo, params, t, video])
 
   const handleUploadFile = useCallback(() => {
     fileInputRef.current?.click()
