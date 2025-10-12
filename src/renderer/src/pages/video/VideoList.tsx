@@ -2,10 +2,14 @@ import { cn, Progress, Spinner } from '@heroui/react'
 import { mockVideos } from '@renderer/config/models/video'
 import { useVideos } from '@renderer/hooks/video/useVideos'
 import { Video } from '@renderer/types'
-import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon } from 'lucide-react'
+import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon, PlusIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-export type VideoListProps = { providerId: string; activeVideoId?: string; setActiveVideoId: (id: string) => void }
+export type VideoListProps = {
+  providerId: string
+  activeVideoId?: string
+  setActiveVideoId: (id: string | undefined) => void
+}
 
 export const VideoList = ({ providerId, activeVideoId, setActiveVideoId }: VideoListProps) => {
   const { videos } = useVideos(providerId)
@@ -15,6 +19,11 @@ export const VideoList = ({ providerId, activeVideoId, setActiveVideoId }: Video
 
   return (
     <div className="w-40 space-y-3 overflow-auto p-2">
+      <div
+        className="group relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
+        onClick={() => setActiveVideoId(undefined)}>
+        <PlusIcon size={24} />
+      </div>
       {displayVideos.map((video) => (
         <VideoListItem
           key={video.id}

@@ -39,6 +39,8 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
   useEffect(() => {
     if (video) {
       updateParams({ params: { prompt: video.prompt } })
+    } else {
+      updateParams({ params: { prompt: undefined } })
     }
   }, [updateParams, video])
 
