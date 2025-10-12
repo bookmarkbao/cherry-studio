@@ -1,24 +1,23 @@
-import { Button, Progress, Radio, RadioGroup, Spinner } from '@heroui/react'
-import { Video, VideoStatus } from '@renderer/types/video'
+import { Button, Progress, Spinner } from '@heroui/react'
+import { Video } from '@renderer/types/video'
 import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface VideoProps {
   video?: Video
 }
 
-export const VideoViewer = ({ video: _video }: VideoProps) => {
+export const VideoViewer = ({ video }: VideoProps) => {
   const { t } = useTranslation()
-  const [video, setVideo] = useState<Video | undefined>(_video)
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
-  useEffect(() => {
-    setVideo(_video)
-  }, [_video])
+  // useEffect(() => {
+  //   setVideo(_video)
+  // }, [_video])
   return (
     <>
       {/* For test */}
-      <RadioGroup
+      {/* <RadioGroup
         label="Status"
         value={video?.status ?? 'undefined'}
         onValueChange={(v) => {
@@ -34,7 +33,7 @@ export const VideoViewer = ({ video: _video }: VideoProps) => {
         <Radio value="downloading">downloading</Radio>
         <Radio value="downloaded">downloaded</Radio>
         <Radio value="failed">failed</Radio>
-      </RadioGroup>
+      </RadioGroup> */}
       <div className="flex h-full w-full items-center justify-center rounded-2xl bg-foreground-200">
         {video === undefined && t('video.undefined')}
         {video && video.status === 'queued' && (
