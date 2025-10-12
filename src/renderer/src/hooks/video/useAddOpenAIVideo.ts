@@ -7,14 +7,15 @@ export const useAddOpenAIVideo = (providerId: string) => {
   const { addVideo } = useVideos(providerId)
 
   const addOpenAIVideo = useCallback(
-    (video: OpenAI.Videos.Video) => {
+    (video: OpenAI.Videos.Video, prompt: string) => {
       switch (video.status) {
         case 'queued':
           addVideo({
             id: video.id,
             status: video.status,
             type: 'openai',
-            metadata: video
+            metadata: video,
+            prompt
           })
           break
         case 'in_progress':
@@ -23,7 +24,8 @@ export const useAddOpenAIVideo = (providerId: string) => {
             status: 'in_progress',
             type: 'openai',
             progress: video.progress,
-            metadata: video
+            metadata: video,
+            prompt
           })
           break
         case 'completed':
@@ -31,7 +33,9 @@ export const useAddOpenAIVideo = (providerId: string) => {
             id: video.id,
             status: 'completed',
             type: 'openai',
-            metadata: video
+            metadata: video,
+            prompt,
+            thumbnail: null
           })
           break
         case 'failed':
@@ -40,7 +44,8 @@ export const useAddOpenAIVideo = (providerId: string) => {
             status: 'failed',
             type: 'openai',
             error: video.error,
-            metadata: video
+            metadata: video,
+            prompt
           })
           break
       }

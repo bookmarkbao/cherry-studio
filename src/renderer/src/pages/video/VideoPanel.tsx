@@ -53,7 +53,7 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
         const video = result.video
         switch (result.type) {
           case 'openai':
-            addOpenAIVideo(video)
+            addOpenAIVideo(video, params.params.prompt)
             break
           default:
             logger.error(`Invalid video type ${result.type}.`)

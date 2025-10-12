@@ -89,7 +89,7 @@ const VideoListItem = ({ video, isActive, onClick }: { video: Video; isActive: b
       {/* Thumbnail placeholder */}
       <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-default-100 to-default-200">
         {showThumbnail ? (
-          <img src={video.thumbnail} alt="Video thumbnail" className="h-full w-full object-cover" />
+          <img src={video.thumbnail ?? ''} alt="Video thumbnail" className="h-full w-full object-cover" />
         ) : (
           <div className="flex flex-col items-center gap-2 text-default-400">
             <div className="text-2xl">🎬</div>

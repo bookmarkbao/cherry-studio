@@ -30,7 +30,7 @@ export interface VideoInProgress extends VideoBase {
 export interface VideoCompleted extends VideoBase {
   status: 'completed'
   /** When generation completed, firstly try to retrieve thumbnail. */
-  thumbnail: string
+  thumbnail: string | null
 }
 
 export interface VideoDownloading extends VideoBase {
