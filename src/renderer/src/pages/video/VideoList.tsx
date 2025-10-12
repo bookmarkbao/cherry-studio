@@ -1,5 +1,4 @@
 import { cn, Progress, Spinner } from '@heroui/react'
-import { mockVideos } from '@renderer/config/models/video'
 import { useVideos } from '@renderer/hooks/video/useVideos'
 import { Video } from '@renderer/types'
 import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon, PlusIcon } from 'lucide-react'
@@ -14,8 +13,8 @@ export type VideoListProps = {
 export const VideoList = ({ providerId, activeVideoId, setActiveVideoId }: VideoListProps) => {
   const { videos } = useVideos(providerId)
 
-  // Use mock data instead of real videos for now
-  const displayVideos = mockVideos
+  // const displayVideos = mockVideos
+  const displayVideos = videos
 
   return (
     <div className="w-40 space-y-3 overflow-auto p-2">
