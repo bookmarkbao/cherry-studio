@@ -2,7 +2,6 @@
 
 import { Divider } from '@heroui/react'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
-import { mockVideos } from '@renderer/config/models/video'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { SystemProviderIds } from '@renderer/types'
 import { CreateVideoParams } from '@renderer/types/video'
@@ -49,7 +48,7 @@ export const VideoPage = () => {
   )
 
   const { videos } = useVideos(providerId)
-  const activeVideo = useMemo(() => mockVideos.find((v) => v.id === activeVideoId), [activeVideoId])
+  const activeVideo = useMemo(() => videos.find((v) => v.id === activeVideoId), [activeVideoId])
 
   return (
     <div className="flex flex-1 flex-col">
