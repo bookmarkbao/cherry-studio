@@ -39,7 +39,14 @@ const videoSlice = createSlice({
       if (videos) {
         let video = videos.find((v) => v.id === update.id)
         if (video) {
-          video = { ...video, ...update }
+          switch (video.status) {
+            case 'queued':
+            case 'in_progress':
+              video = { ...video, ...update, thumbnail: undefined }
+              break
+            default:
+              video = { ...video, ...update }
+          }
         } else {
           logger.error(`Video with id ${update.id} not found in ${providerId}`)
         }
