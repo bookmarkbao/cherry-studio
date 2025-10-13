@@ -213,7 +213,7 @@ const VideoPlayer = ({
     <video
       ref={videoRef}
       controls
-      className="h-full w-full rounded-2xl bg-black object-contain"
+      className="h-full w-full rounded-2xl bg-content2 object-contain dark:bg-background"
       onLoadedData={() => setLoadSuccess(true)}
       onError={() => setLoadSuccess(false)}>
       <source src={`file://${src}`} type="video/mp4" />
