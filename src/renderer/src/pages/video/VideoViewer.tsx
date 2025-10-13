@@ -14,7 +14,7 @@ import FileManager from '@renderer/services/FileManager'
 import { Video, VideoDownloaded, VideoFailed } from '@renderer/types/video'
 import dayjs from 'dayjs'
 import { CheckCircleIcon, CircleXIcon, Clock9Icon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWRImmutable from 'swr/immutable'
 
@@ -33,9 +33,12 @@ export type VideoViewerProps =
 export const VideoViewer = ({ video, onDownload, onRegenerate }: VideoViewerProps) => {
   const { t } = useTranslation()
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
+  useEffect(() => {
+    setLoadSuccess(undefined)
+  }, [video?.id])
   return (
     <>
-      <div className="flex h-full w-full items-center justify-center rounded-2xl bg-foreground-200">
+      <div className="flex h-full max-h-full w-full items-center justify-center rounded-2xl bg-foreground-200">
         {video === undefined && t('video.undefined')}
         {video && video.status === 'queued' && <QueuedVideo />}
         {video && video.status === 'in_progress' && <InProgressVideo progress={video.progress} />}
@@ -194,15 +197,17 @@ const VideoPlayer = ({
     setLoadSuccess(false)
   }
 
+  if (isLoading) {
+    return <Skeleton />
+  }
+
   return (
-    <Skeleton isLoaded={!isLoading}>
-      <video
-        controls
-        className="h-full w-full"
-        onLoadedData={() => setLoadSuccess(true)}
-        onError={() => setLoadSuccess(false)}>
-        <source src={src} type="video/mp4" />
-      </video>
-    </Skeleton>
+    <video
+      controls
+      className="h-full w-full rounded-2xl bg-black object-contain"
+      onLoadedData={() => setLoadSuccess(true)}
+      onError={() => setLoadSuccess(false)}>
+      <source src={`file://${src}`} type="video/mp4" />
+    </video>
   )
 }

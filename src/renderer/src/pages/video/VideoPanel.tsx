@@ -3,13 +3,16 @@ import { loggerService } from '@logger'
 import { useAddOpenAIVideo } from '@renderer/hooks/video/useAddOpenAIVideo'
 import { useVideos } from '@renderer/hooks/video/useVideos'
 import { createVideo, retrieveVideoContent } from '@renderer/services/ApiService'
-import { Provider } from '@renderer/types'
+import FileManager from '@renderer/services/FileManager'
+import { FileTypes, Provider, VideoFileMetadata } from '@renderer/types'
 import { CreateVideoParams, Video } from '@renderer/types/video'
 import { getErrorMessage } from '@renderer/utils'
 import { MB } from '@shared/config/constant'
 import { DeepPartial } from 'ai'
+import dayjs from 'dayjs'
 import { isEmpty } from 'lodash'
 import { ArrowUp, CircleXIcon, ImageIcon } from 'lucide-react'
+import mime from 'mime-types'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -80,29 +83,97 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     window.toast.info('Not implemented')
   }, [])
 
-  const handleDownloadVideo = async () => {
+  const handleDownloadVideo = useCallback(async () => {
     if (!video) return
-    if (video.status === 'completed' || video.status === 'downloaded') {
+    if (video.status !== 'completed' && video.status !== 'downloaded') return
+
+    const baseVideo: Video = {
+      ...video,
+      status: 'downloading',
+      progress: 0,
+      thumbnail: video.thumbnail
+    }
+    setVideo(baseVideo)
+
+    try {
+      const { response } = await retrieveVideoContent({ type: 'openai', videoId: video.id, provider })
+      if (!response.body) {
+        throw new Error('Video response body is empty')
+      }
+
+      const reader = response.body.getReader()
+      const contentLengthHeader = response.headers.get('content-length')
+      const totalSize = contentLengthHeader ? Number(contentLengthHeader) : undefined
+      const chunks: Uint8Array[] = []
+      let receivedLength = 0
+      let progressValue = 0
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        if (!value) continue
+
+        chunks.push(value)
+        receivedLength += value.length
+
+        if (totalSize && Number.isFinite(totalSize) && totalSize > 0) {
+          progressValue = Math.floor((receivedLength / totalSize) * 100)
+        } else {
+          progressValue = Math.min(progressValue + 1, 99)
+        }
+
+        setVideo({
+          ...baseVideo,
+          progress: Math.min(progressValue, 99)
+        })
+      }
+
+      const fileData = new Uint8Array(receivedLength)
+      let offset = 0
+      for (const chunk of chunks) {
+        fileData.set(chunk, offset)
+        offset += chunk.length
+      }
+
+      const contentType = response.headers.get('content-type') ?? 'video/mp4'
+      const normalizedContentType = contentType.split(';')[0]?.trim() || 'video/mp4'
+      const extension = (() => {
+        const ext = mime.extension(normalizedContentType)
+        return ext ? `.${ext}` : '.mp4'
+      })()
+
+      const fileName = `${video.id}${extension}`.toLowerCase()
+
+      const tempFilePath = await window.api.file.createTempFile(fileName)
+      await window.api.file.write(tempFilePath, fileData)
+
+      const tempFileMetadata = {
+        id: crypto.randomUUID(),
+        name: fileName,
+        origin_name: fileName,
+        path: tempFilePath,
+        size: receivedLength,
+        ext: extension,
+        type: FileTypes.VIDEO,
+        created_at: dayjs().toISOString(),
+        count: 1
+      } satisfies VideoFileMetadata
+
+      const uploadedFile = await FileManager.uploadFile(tempFileMetadata)
+
       setVideo({
         ...video,
-        status: 'downloading',
-        progress: 0
+        status: 'downloaded',
+        thumbnail: video.thumbnail,
+        fileId: uploadedFile.id,
+        name: uploadedFile.origin_name
       })
-      const promise = retrieveVideoContent({ type: 'openai', videoId: video.id, provider })
-      promise
-        .then((result) => result.response)
-        .then((response) => {
-          // TODO: implement download
-          logger.debug('download response', response)
-        })
-      promise.catch((e) => {
-        logger.error(`Failed to download video ${video.id}.`, e as Error)
-        window.toast.error(t('video.error.download'))
-        // rollback
-        setVideo(video)
-      })
+    } catch (error) {
+      logger.error(`Failed to download video ${video.id}.`, error as Error)
+      window.toast.error(t('video.error.download'))
+      setVideo(video)
     }
-  }
+  }, [provider, setVideo, t, video])
 
   const handleUploadFile = useCallback(() => {
     fileInputRef.current?.click()
@@ -147,7 +218,7 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
 
   return (
     <div className="flex flex-1 flex-col p-2">
-      <div className="m-8 flex-1">
+      <div className="m-8 flex-1 overflow-hidden">
         <Skeleton className="h-full w-full rounded-2xl" classNames={{ content: 'h-full w-full' }} isLoaded={true}>
           {video && <VideoViewer video={video} onDownload={handleDownloadVideo} onRegenerate={handleRegenerateVideo} />}
           {!video && <VideoViewer video={video} />}
