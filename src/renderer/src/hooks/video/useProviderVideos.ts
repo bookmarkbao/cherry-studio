@@ -160,7 +160,7 @@ export const useProviderVideos = (providerId: string) => {
           })
       }
     })
-  }, [data, error, provider, providerId, retrieveThumbnail, setVideo])
+  }, [data, error, provider, providerId, retrieveThumbnail, setVideo, t])
 
   return {
     videos: videos ?? [],

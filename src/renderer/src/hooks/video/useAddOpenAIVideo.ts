@@ -58,7 +58,7 @@ export const useAddOpenAIVideo = (providerId: string) => {
           break
       }
     },
-    [addVideo]
+    [addVideo, providerId]
   )
 
   return addOpenAIVideo
