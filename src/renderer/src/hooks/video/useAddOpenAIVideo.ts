@@ -12,6 +12,8 @@ export const useAddOpenAIVideo = (providerId: string) => {
         case 'queued':
           addVideo({
             id: video.id,
+            name: video.id,
+            providerId,
             status: video.status,
             type: 'openai',
             metadata: video,
@@ -21,6 +23,8 @@ export const useAddOpenAIVideo = (providerId: string) => {
         case 'in_progress':
           addVideo({
             id: video.id,
+            name: video.id,
+            providerId,
             status: 'in_progress',
             type: 'openai',
             progress: video.progress,
@@ -31,6 +35,8 @@ export const useAddOpenAIVideo = (providerId: string) => {
         case 'completed':
           addVideo({
             id: video.id,
+            name: video.id,
+            providerId,
             status: 'completed',
             type: 'openai',
             metadata: video,
@@ -41,6 +47,8 @@ export const useAddOpenAIVideo = (providerId: string) => {
         case 'failed':
           addVideo({
             id: video.id,
+            name: video.id,
+            providerId,
             status: 'failed',
             type: 'openai',
             error: video.error,

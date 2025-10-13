@@ -14,6 +14,8 @@ export const mockVideos: Video[] = [
     prompt: 'A beautiful sunset over the ocean with waves crashing',
     thumbnail: 'https://picsum.photos/200/200?random=1',
     fileId: 'file-001',
+    providerId: 'openai',
+    name: 'video-001',
     metadata: {
       id: 'video-001',
       object: 'video',
@@ -35,6 +37,8 @@ export const mockVideos: Video[] = [
     status: 'in_progress',
     prompt: 'A cat playing with a ball of yarn in slow motion',
     progress: 65,
+    providerId: 'openai',
+    name: 'video-002',
     metadata: {
       id: 'video-002',
       object: 'video',
@@ -55,6 +59,8 @@ export const mockVideos: Video[] = [
     type: 'openai',
     status: 'queued',
     prompt: 'Time-lapse of flowers blooming in a garden',
+    providerId: 'openai',
+    name: 'video-003',
     metadata: {
       id: 'video-003',
       object: 'video',
@@ -77,6 +83,8 @@ export const mockVideos: Video[] = [
     status: 'downloading',
     progress: 80,
     thumbnail: 'https://picsum.photos/200/200?random=4',
+    providerId: 'openai',
+    name: 'video-004',
     metadata: {
       id: 'video-004',
       object: 'video',
@@ -98,6 +106,8 @@ export const mockVideos: Video[] = [
     status: 'failed',
     error: { code: '400', message: 'Video generation failed' },
     prompt: 'Mountain landscape with snow peaks and forest',
+    providerId: 'openai',
+    name: 'video-005',
     metadata: {
       id: 'video-005',
       object: 'video',
@@ -119,6 +129,8 @@ export const mockVideos: Video[] = [
     status: 'completed',
     thumbnail: 'https://picsum.photos/200/200?random=6',
     prompt: 'City street at night with neon lights reflecting on wet pavement',
+    providerId: 'openai',
+    name: 'video-006',
     metadata: {
       id: 'video-006',
       object: 'video',

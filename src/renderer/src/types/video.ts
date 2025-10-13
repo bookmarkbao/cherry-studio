@@ -7,8 +7,11 @@ export type VideoEndpointType = 'openai'
 export type VideoStatus = 'queued' | 'in_progress' | 'completed' | 'downloading' | 'downloaded' | 'failed'
 
 interface VideoBase {
-  id: string
-  type: VideoEndpointType
+  readonly id: string
+  readonly type: VideoEndpointType
+  name: string
+  readonly providerId: string
+  prompt: string
   /**
    * Represents the possible states of a video generation or download process.
    *
@@ -19,45 +22,44 @@ interface VideoBase {
    * - `downloaded`: The video has been fully downloaded and is available locally.
    * - `failed`: The video task encountered an error and could not be completed.
    */
-  status: VideoStatus
-  prompt: string
+  readonly status: VideoStatus
 }
 
 interface OpenAIVideoBase {
-  type: 'openai'
+  readonly type: 'openai'
   metadata: OpenAI.Videos.Video
 }
 
 export interface VideoQueued extends VideoBase {
-  status: 'queued'
+  readonly status: 'queued'
 }
 
 export interface VideoInProgress extends VideoBase {
-  status: 'in_progress'
+  readonly status: 'in_progress'
   /** integer percent */
   progress: number
 }
 export interface VideoCompleted extends VideoBase {
-  status: 'completed'
+  readonly status: 'completed'
   /** When generation completed, firstly try to retrieve thumbnail. */
   thumbnail: string | null
 }
 
 export interface VideoDownloading extends VideoBase {
-  status: 'downloading'
+  readonly status: 'downloading'
   thumbnail: string
   /** integer percent */
   progress: number
 }
 export interface VideoDownloaded extends VideoBase {
-  status: 'downloaded'
+  readonly status: 'downloaded'
   thumbnail: string
   /** Managed by fileManager */
   fileId: string
 }
 
 export interface VideoFailedBase extends VideoBase {
-  status: 'failed'
+  readonly status: 'failed'
   error: unknown
 }
 
