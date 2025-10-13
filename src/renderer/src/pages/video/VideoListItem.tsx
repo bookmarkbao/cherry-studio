@@ -52,6 +52,25 @@ export const VideoListItem = ({
     }
   }
 
+  const getStatusLabel = () => {
+    switch (video.status) {
+      case 'queued':
+        return t('video.status.queued')
+      case 'in_progress':
+        return t('video.status.in_progress')
+      case 'completed':
+        return t('video.status.completed')
+      case 'downloading':
+        return t('video.status.downloading')
+      case 'downloaded':
+        return ''
+      case 'failed':
+        return t('video.status.failed')
+      default:
+        return ''
+    }
+  }
+
   const showProgress = video.status === 'in_progress' || video.status === 'downloading'
   const showThumbnail =
     (video.status === 'completed' || video.status === 'downloading' || video.status === 'downloaded') &&
@@ -82,7 +101,7 @@ export const VideoListItem = ({
       {getStatusIcon() && (
         <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 backdrop-blur-sm">
           {getStatusIcon()}
-          <span className="font-medium text-xs">{t(`video.status.${video.status}`)}</span>
+          <span className="font-medium text-black text-xs">{getStatusLabel()}</span>
         </div>
       )}
 
