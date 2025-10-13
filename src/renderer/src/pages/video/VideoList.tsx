@@ -17,6 +17,7 @@ export const VideoList = ({ videos, activeVideoId, setActiveVideoId }: VideoList
         onClick={() => setActiveVideoId(undefined)}>
         <PlusIcon size={24} />
       </div>
+      {/* {mockVideos.map((video) => ( */}
       {videos.map((video) => (
         <VideoListItem
           key={video.id}

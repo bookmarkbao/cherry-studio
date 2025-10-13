@@ -48,7 +48,8 @@ export const VideoPage = () => {
   )
 
   const { videos } = useVideos(providerId)
-  const activeVideo = useMemo(() => videos.find((v) => v.id === activeVideoId), [activeVideoId])
+  // const activeVideo = useMemo(() => mockVideos.find((v) => v.id === activeVideoId), [activeVideoId])
+  const activeVideo = useMemo(() => videos.find((v) => v.id === activeVideoId), [activeVideoId, videos])
 
   return (
     <div className="flex flex-1 flex-col">
