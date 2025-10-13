@@ -72,7 +72,9 @@ const VideoListItem = ({ video, isActive, onClick }: { video: Video; isActive: b
   }
 
   const showProgress = video.status === 'in_progress' || video.status === 'downloading'
-  const showThumbnail = video.status === 'completed' || video.status === 'downloading' || video.status === 'downloaded'
+  const showThumbnail =
+    (video.status === 'completed' || video.status === 'downloading' || video.status === 'downloaded') &&
+    video.thumbnail !== null
 
   return (
     <div
