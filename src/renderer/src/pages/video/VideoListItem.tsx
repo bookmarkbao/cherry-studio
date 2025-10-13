@@ -90,6 +90,7 @@ export const VideoListItem = ({
       {showProgress && (
         <div className="absolute right-0 bottom-0 left-0 p-2">
           <Progress
+            aria-label="progress bar"
             size="sm"
             value={video.progress}
             color={video.status === 'downloading' ? 'primary' : 'primary'}
