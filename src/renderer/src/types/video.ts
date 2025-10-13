@@ -9,8 +9,10 @@ export type VideoStatus = 'queued' | 'in_progress' | 'completed' | 'downloading'
 interface VideoBase {
   readonly id: string
   readonly type: VideoEndpointType
-  name: string
   readonly providerId: string
+  name: string
+  thumbnail?: string | null
+  fileId?: string
   prompt: string
   /**
    * Represents the possible states of a video generation or download process.
@@ -162,3 +164,29 @@ export interface OpenAIRetrieveVideoContentResult extends RetrieveVideoContentBa
 }
 
 export type RetrieveVideoContentResult = OpenAIRetrieveVideoContentResult
+
+// Delete Video
+export interface DeleteVideoBaseParams {
+  type: VideoEndpointType
+  provider: Provider
+}
+
+export interface OpenAIDeleteVideoParams extends DeleteVideoBaseParams {
+  type: 'openai'
+  videoId: string
+  options?: OpenAI.RequestOptions
+}
+
+export type DeleteVideoParams = OpenAIDeleteVideoParams
+
+interface DeleteVideoBaseResult {
+  type: VideoEndpointType
+  result: unknown
+}
+
+export interface OpenAIDeleteVideoResult extends DeleteVideoBaseResult {
+  type: 'openai'
+  result: OpenAI.Videos.VideoDeleteResponse
+}
+
+export type DeleteVideoResult = OpenAIDeleteVideoResult
