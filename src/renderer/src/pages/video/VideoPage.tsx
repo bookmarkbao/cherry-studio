@@ -130,7 +130,7 @@ export const VideoPage = () => {
       <Navbar>
         <NavbarCenter style={{ borderRight: 'none' }}>{t('video.title')}</NavbarCenter>
       </Navbar>
-      <div id="content-container" className="flex max-h-full flex-1">
+      <div id="content-container" className="flex flex-1 overflow-hidden">
         {/* Settings */}
         <div className="flex w-70 flex-col p-2">
           <SettingsGroup>
