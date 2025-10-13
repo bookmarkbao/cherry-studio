@@ -1,7 +1,8 @@
 import { Button, cn, Image, Skeleton, Textarea, Tooltip } from '@heroui/react'
 import { loggerService } from '@logger'
 import { useAddOpenAIVideo } from '@renderer/hooks/video/useAddOpenAIVideo'
-import { createVideo } from '@renderer/services/ApiService'
+import { useVideos } from '@renderer/hooks/video/useVideos'
+import { createVideo, retrieveVideoContent } from '@renderer/services/ApiService'
 import { Provider } from '@renderer/types'
 import { CreateVideoParams, Video } from '@renderer/types/video'
 import { getErrorMessage } from '@renderer/utils'
@@ -26,14 +27,20 @@ const logger = loggerService.withContext('VideoPanel')
 export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanelProps) => {
   const { t } = useTranslation()
   const addOpenAIVideo = useAddOpenAIVideo(provider.id)
+  const { setVideo } = useVideos(provider.id)
 
   const [isProcessing, setIsProcessing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const inputReference = params.params.input_reference
 
   const couldCreateVideo = useMemo(
-    () => !isProcessing && !isEmpty(params.params.prompt),
-    [isProcessing, params.params.prompt]
+    () =>
+      !isProcessing &&
+      !isEmpty(params.params.prompt) &&
+      video?.status !== 'queued' &&
+      video?.status !== 'downloading' &&
+      video?.status !== 'in_progress',
+    [isProcessing, params.params.prompt, video?.status]
   )
 
   useEffect(() => {
@@ -69,8 +76,28 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     }
   }, [addOpenAIVideo, couldCreateVideo, params, t, video])
 
-  const handleDownloadVideo = (videoId: string) => {
-    window.toast.info('Not implemented')
+  const handleDownloadVideo = async () => {
+    if (!video) return
+    if (video.status === 'completed' || video.status === 'downloaded') {
+      setVideo({
+        ...video,
+        status: 'downloading',
+        progress: 0
+      })
+      const promise = retrieveVideoContent({ type: 'openai', videoId: video.id, provider })
+      promise
+        .then((result) => result.response)
+        .then((response) => {
+          // TODO: implement download
+          logger.debug('download response', response)
+        })
+      promise.catch((e) => {
+        logger.error(`Failed to download video ${video.id}.`, e as Error)
+        window.toast.error(t('video.error.download'))
+        // rollback
+        setVideo(video)
+      })
+    }
   }
 
   const handleUploadFile = useCallback(() => {

@@ -144,6 +144,7 @@ export const useVideos = (providerId: string) => {
     addVideo,
     updateVideo,
     setVideos,
+    setVideo,
     removeVideo
   }
 }

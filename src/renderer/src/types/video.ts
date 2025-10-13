@@ -47,13 +47,13 @@ export interface VideoCompleted extends VideoBase {
 
 export interface VideoDownloading extends VideoBase {
   readonly status: 'downloading'
-  thumbnail: string
+  thumbnail: string | null
   /** integer percent */
   progress: number
 }
 export interface VideoDownloaded extends VideoBase {
   readonly status: 'downloaded'
-  thumbnail: string
+  thumbnail: string | null
   /** Managed by fileManager */
   fileId: string
 }

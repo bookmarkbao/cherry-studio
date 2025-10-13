@@ -4651,6 +4651,7 @@
   "video": {
     "error": {
       "create": "Failed to create video",
+      "download": "Failed to download video.",
       "invalid": "Invalid video",
       "load": {
         "message": "Failed to load the video",

@@ -21,7 +21,7 @@ export type VideoViewerProps =
     }
   | {
       video: Video
-      onDownload: (videoId: string) => void
+      onDownload: () => void
     }
 
 export const VideoViewer = ({ video, onDownload }: VideoViewerProps) => {
@@ -33,7 +33,7 @@ export const VideoViewer = ({ video, onDownload }: VideoViewerProps) => {
         {video === undefined && t('video.undefined')}
         {video && video.status === 'queued' && <QueuedVideo />}
         {video && video.status === 'in_progress' && <InProgressVideo progress={video.progress} />}
-        {video && video.status === 'completed' && <CompletedVideo onDownload={() => onDownload(video.id)} />}
+        {video && video.status === 'completed' && <CompletedVideo onDownload={onDownload} />}
         {video && video.status === 'downloading' && <DownloadingVideo progress={video.progress} />}
         {video && video.status === 'downloaded' && loadSuccess !== false && (
           <video
