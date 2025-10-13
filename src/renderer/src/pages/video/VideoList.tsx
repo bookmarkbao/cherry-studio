@@ -1,4 +1,4 @@
-import { Video } from '@renderer/types'
+import type { Video } from '@renderer/types'
 import { PlusIcon } from 'lucide-react'
 
 import { VideoListItem } from './VideoListItem'

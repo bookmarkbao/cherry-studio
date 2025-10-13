@@ -1,6 +1,7 @@
 import { loggerService } from '@logger'
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Video } from '@renderer/types/video'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
+import type { Video } from '@renderer/types/video'
 
 const logger = loggerService.withContext('Store:video')
 

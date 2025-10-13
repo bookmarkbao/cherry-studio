@@ -1,6 +1,6 @@
 import { Select, SelectItem } from '@heroui/react'
 import { videoModelsMap } from '@renderer/config/models/video'
-import { Model } from '@renderer/types'
+import type { Model } from '@renderer/types'
 import { useTranslation } from 'react-i18next'
 
 import { SettingItem } from './shared'

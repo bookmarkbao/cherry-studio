@@ -1,6 +1,6 @@
-import OpenAI from '@cherrystudio/openai'
+import type OpenAI from '@cherrystudio/openai'
 
-import { Provider } from './provider'
+import type { Provider } from './provider'
 
 // Only OpenAI (Responses) is supported for now.
 export type VideoEndpointType = 'openai'

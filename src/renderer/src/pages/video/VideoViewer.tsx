@@ -12,7 +12,7 @@ import {
 } from '@heroui/react'
 import { usePending } from '@renderer/hooks/usePending'
 import FileManager from '@renderer/services/FileManager'
-import { Video, VideoDownloaded, VideoFailed } from '@renderer/types/video'
+import type { Video, VideoDownloaded, VideoFailed } from '@renderer/types/video'
 import dayjs from 'dayjs'
 import { CheckCircleIcon, CircleXIcon, Clock9Icon } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'

@@ -1,9 +1,9 @@
 import { Select, SelectItem } from '@heroui/react'
 import { ProviderAvatar } from '@renderer/components/ProviderAvatar'
 import { useProviders } from '@renderer/hooks/useProvider'
-import { Provider, SystemProviderId } from '@renderer/types'
+import type { Provider, SystemProviderId } from '@renderer/types'
 import { getFancyProviderName } from '@renderer/utils'
-import { Dispatch, SetStateAction } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingItem } from './shared'

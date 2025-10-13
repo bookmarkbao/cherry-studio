@@ -1,4 +1,4 @@
-import { SystemProviderId, Video } from '@renderer/types'
+import type { SystemProviderId, Video } from '@renderer/types'
 
 // Hard-encoded for now. We may implement a function to filter video generation model from provider.models.
 export const videoModelsMap = {

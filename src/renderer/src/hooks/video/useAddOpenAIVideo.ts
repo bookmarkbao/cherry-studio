@@ -1,4 +1,4 @@
-import OpenAI from '@cherrystudio/openai'
+import type OpenAI from '@cherrystudio/openai'
 import { useCallback } from 'react'
 
 import { useProviderVideos } from './useProviderVideos'

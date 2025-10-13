@@ -2,7 +2,7 @@ import { loggerService } from '@logger'
 import { retrieveVideoContent } from '@renderer/services/ApiService'
 import ImageStorage from '@renderer/services/ImageStorage'
 import { getProviderById } from '@renderer/services/ProviderService'
-import { Video } from '@renderer/types'
+import type { Video } from '@renderer/types'
 import { useCallback } from 'react'
 
 const logger = loggerService.withContext('useRetrieveThumbnail')

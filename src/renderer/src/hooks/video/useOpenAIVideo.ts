@@ -1,5 +1,6 @@
 import { retrieveVideo } from '@renderer/services/ApiService'
-import useSWR, { SWRConfiguration, useSWRConfig } from 'swr'
+import type { SWRConfiguration } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { useProvider } from '../useProvider'
 import { useVideo } from './useVideo'

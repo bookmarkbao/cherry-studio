@@ -1,4 +1,4 @@
-import { DeepPartial } from 'ai'
+import type { DeepPartial } from 'ai'
 import { cloneDeep } from 'lodash'
 
 /**

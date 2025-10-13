@@ -1,4 +1,4 @@
-import { VideoModel } from '@cherrystudio/openai/resources'
+import type { VideoModel } from '@cherrystudio/openai/resources'
 import { videoModelsMap } from '@renderer/config/models/video'
 
 // Only for openai, use hard-encoded values
