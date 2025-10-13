@@ -6,14 +6,17 @@ import {
   ModalContent,
   ModalFooter,
   Progress,
+  Skeleton,
   Spinner,
   useDisclosure
 } from '@heroui/react'
-import { Video, VideoFailed } from '@renderer/types/video'
+import FileManager from '@renderer/services/FileManager'
+import { Video, VideoDownloaded, VideoFailed } from '@renderer/types/video'
 import dayjs from 'dayjs'
 import { CheckCircleIcon, CircleXIcon, Clock9Icon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import useSWRImmutable from 'swr/immutable'
 
 export type VideoViewerProps =
   | {
@@ -41,13 +44,7 @@ export const VideoViewer = ({ video, onDownload, onRegenerate }: VideoViewerProp
         )}
         {video && video.status === 'downloading' && <DownloadingVideo progress={video.progress} />}
         {video && video.status === 'downloaded' && loadSuccess !== false && (
-          <video
-            controls
-            className="h-full w-full"
-            onLoadedData={() => setLoadSuccess(true)}
-            onError={() => setLoadSuccess(false)}>
-            <source src="video.mp4" type="video/mp4" />
-          </video>
+          <VideoPlayer video={video} setLoadSuccess={setLoadSuccess} />
         )}
         {video && video.status === 'failed' && <FailedVideo error={video.error} />}
         {video && video.status === 'downloaded' && loadSuccess === false && (
@@ -174,5 +171,38 @@ const LoadFailedVideo = ({ onRedownload }: { onRedownload: () => void }) => {
         <Button onPress={onRedownload}>{t('common.redownload')}</Button>
       </div>
     </div>
+  )
+}
+
+const VideoPlayer = ({
+  video,
+  setLoadSuccess
+}: {
+  video: VideoDownloaded
+  setLoadSuccess: (value: boolean) => void
+}) => {
+  const fetcher = async () => {
+    const file = await FileManager.getFile(video.fileId)
+    if (!file) {
+      throw new Error(`Video file ${video.fileId} not exist.`)
+    }
+    return FileManager.getFilePath(file)
+  }
+  const { data: src, isLoading, error } = useSWRImmutable(`video/file/${video.id}`, fetcher)
+
+  if (error) {
+    setLoadSuccess(false)
+  }
+
+  return (
+    <Skeleton isLoaded={!isLoading}>
+      <video
+        controls
+        className="h-full w-full"
+        onLoadedData={() => setLoadSuccess(true)}
+        onError={() => setLoadSuccess(false)}>
+        <source src={src} type="video/mp4" />
+      </video>
+    </Skeleton>
   )
 }
