@@ -15,6 +15,8 @@ import {
 import { isSupportDeveloperRoleProvider } from '@renderer/config/providers'
 import { estimateTextTokens } from '@renderer/services/TokenService'
 import type {
+  CreateVideoParams,
+  DeleteVideoParams,
   FileMetadata,
   MCPCallToolResponse,
   MCPTool,
@@ -22,6 +24,8 @@ import type {
   Model,
   OpenAIServiceTier,
   Provider,
+  RetrieveVideoContentParams,
+  RetrieveVideoParams,
   ToolCallResponse
 } from '@renderer/types'
 import { FileTypes, WebSearchSource } from '@renderer/types'
@@ -35,12 +39,6 @@ import type {
   OpenAIResponseSdkTool,
   OpenAIResponseSdkToolCall
 } from '@renderer/types/sdk'
-import type {
-  CreateVideoParams,
-  DeleteVideoParams,
-  RetrieveVideoContentParams,
-  RetrieveVideoParams
-} from '@renderer/types/video'
 import { addImageFileToContents } from '@renderer/utils/formats'
 import {
   isSupportedToolUse,

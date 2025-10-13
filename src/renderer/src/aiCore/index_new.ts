@@ -14,21 +14,19 @@ import { addSpan, endSpan } from '@renderer/services/SpanManagerService'
 import type { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
 import type {
   Assistant,
+  CreateVideoParams,
+  CreateVideoResult,
   DeleteVideoParams,
   DeleteVideoResult,
   GenerateImageParams,
   Model,
   Provider,
-  RetrieveVideoContentParams
-} from '@renderer/types'
-import type { AiSdkModel, StreamTextParams } from '@renderer/types/aiCoreTypes'
-import type {
-  CreateVideoParams,
-  CreateVideoResult,
+  RetrieveVideoContentParams,
   RetrieveVideoContentResult,
   RetrieveVideoParams,
   RetrieveVideoResult
-} from '@renderer/types/video'
+} from '@renderer/types'
+import type { AiSdkModel, StreamTextParams } from '@renderer/types/aiCoreTypes'
 import { buildClaudeCodeSystemModelMessage } from '@shared/anthropic'
 import { type ImageModel, type LanguageModel, type Provider as AiSdkProvider, wrapLanguageModel } from 'ai'
 

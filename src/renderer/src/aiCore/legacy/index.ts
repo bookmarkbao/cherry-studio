@@ -6,21 +6,19 @@ import { getProviderByModel } from '@renderer/services/AssistantService'
 import { withSpanResult } from '@renderer/services/SpanManagerService'
 import type { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
 import type {
+  CreateVideoParams,
+  CreateVideoResult,
   DeleteVideoParams,
   DeleteVideoResult,
   GenerateImageParams,
   Model,
   Provider,
-  RetrieveVideoContentParams
-} from '@renderer/types'
-import type { RequestOptions, SdkModel } from '@renderer/types/sdk'
-import type {
-  CreateVideoParams,
-  CreateVideoResult,
+  RetrieveVideoContentParams,
   RetrieveVideoContentResult,
   RetrieveVideoParams,
   RetrieveVideoResult
-} from '@renderer/types/video'
+} from '@renderer/types'
+import type { RequestOptions, SdkModel } from '@renderer/types/sdk'
 import { isSupportedToolUse } from '@renderer/utils/mcp-tools'
 
 import { AihubmixAPIClient } from './clients/aihubmix/AihubmixAPIClient'

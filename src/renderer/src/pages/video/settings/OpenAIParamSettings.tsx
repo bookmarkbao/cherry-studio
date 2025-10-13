@@ -1,6 +1,6 @@
 import type { VideoSeconds, VideoSize } from '@cherrystudio/openai/resources'
 import { Select, SelectItem } from '@heroui/react'
-import type { OpenAICreateVideoParams } from '@renderer/types/video'
+import type { OpenAICreateVideoParams } from '@renderer/types'
 import type { DeepPartial } from 'ai'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'

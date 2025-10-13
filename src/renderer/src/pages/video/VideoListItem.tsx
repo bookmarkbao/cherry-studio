@@ -1,6 +1,6 @@
 import { cn, Progress, Spinner } from '@heroui/react'
 import { DeleteIcon } from '@renderer/components/Icons'
-import type { Video } from '@renderer/types/video'
+import type { Video } from '@renderer/types'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@renderer/ui/context-menu'
 import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon, ImageDownIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
