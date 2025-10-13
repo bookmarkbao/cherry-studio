@@ -3,6 +3,7 @@
 import { Divider } from '@heroui/react'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import { useProvider } from '@renderer/hooks/useProvider'
+import { useVideos } from '@renderer/hooks/video/useVideos'
 import { SystemProviderIds } from '@renderer/types'
 import { CreateVideoParams } from '@renderer/types/video'
 import { deepUpdate } from '@renderer/utils/deepUpdate'
@@ -17,7 +18,6 @@ import { ProviderSetting } from './settings/ProviderSetting'
 import { SettingsGroup } from './settings/shared'
 import { VideoList } from './VideoList'
 import { VideoPanel } from './VideoPanel'
-import { useVideos } from '@renderer/hooks/video/useVideos'
 
 export const VideoPage = () => {
   const { t } = useTranslation()

@@ -1,12 +1,9 @@
 import { retrieveVideo } from '@renderer/services/ApiService'
 import { SystemProviderIds } from '@renderer/types'
-import { useEffect } from 'react'
 import useSWR, { SWRConfiguration, useSWRConfig } from 'swr'
 
 import { useProvider } from '../useProvider'
-import { useAddOpenAIVideo } from './useAddOpenAIVideo'
 import { useVideo } from './useVideo'
-import { useVideos } from './useVideos'
 
 export const useOpenAIVideo = (id: string) => {
   const providerId = SystemProviderIds.openai
@@ -19,8 +16,6 @@ export const useOpenAIVideo = (id: string) => {
     })
   }
   const video = useVideo(providerId, id)
-  const { updateVideo } = useVideos(providerId)
-  const addOpenAIVideo = useAddOpenAIVideo(providerId)
   let options: SWRConfiguration = {}
   switch (video?.status) {
     case 'queued':
@@ -38,19 +33,6 @@ export const useOpenAIVideo = (id: string) => {
   const { data, isLoading, error } = useSWR(`video/openai/${id}`, fetcher, options)
   const { mutate } = useSWRConfig()
   const revalidate = () => mutate(`video/openai/${id}`)
-
-  useEffect(() => {
-    // queue -> in_progress / update progress
-    if (data) {
-      if (data.video.status === 'in_progress' && data.video.progress) {
-        if (video) {
-          updateVideo({ id: video.id, progress: data.video.progress })
-        } else {
-          addOpenAIVideo(data.video, 'Prompt lost')
-        }
-      }
-    }
-  }, [addOpenAIVideo, data, updateVideo, video])
 
   return {
     video: data,
