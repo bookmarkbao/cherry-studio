@@ -9,17 +9,20 @@ import {
   setVideosAction,
   updateVideoAction
 } from '@renderer/store/video'
-import { SystemProviderIds } from '@renderer/types'
 import { Video } from '@renderer/types/video'
-import { video } from 'notion-helper'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import useSWR from 'swr'
 
 const logger = loggerService.withContext('useVideo')
 
 export const useVideos = (providerId: string) => {
   const videos = useAppSelector((state) => state.video.videoMap[providerId])
+  const videosRef = useRef(videos)
   const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    videosRef.current = videos
+  }, [videos])
 
   const addVideo = useCallback(
     (video: Video) => {
@@ -65,17 +68,27 @@ export const useVideos = (providerId: string) => {
   }, [setVideos, videos])
 
   // update videos from api
-  const openai = getProviderById(SystemProviderIds.openai)
+  // NOTE: This provider should support openai videos endpoint. No runtime check here.
+  const provider = getProviderById(providerId)
   const fetcher = async () => {
-    if (!videos || !openai) return []
+    if (!videos || !provider) return []
     const openaiVideos = videos.filter((v) => v.type === 'openai')
-    const jobs = openaiVideos.map((v) => retrieveVideo({ type: 'openai', videoId: v.id, provider: openai }))
+    const jobs = openaiVideos.map((v) => retrieveVideo({ type: 'openai', videoId: v.id, provider }))
     const result = await Promise.allSettled(jobs)
     return result.filter((p) => p.status === 'fulfilled').map((p) => p.value)
   }
-  const { data, isLoading, error } = useSWR('video/openai/videos', fetcher, { refreshInterval: 3000 })
+  const { data, error } = useSWR('video/openai/videos', fetcher, { refreshInterval: 3000 })
   useEffect(() => {
-    logger.debug('effect', { data, videos })
+    if (error) {
+      logger.error('Failed to fetch video status updates', error)
+      return
+    }
+    if (!provider) {
+      logger.warn(`Provider ${providerId} not found.`)
+      return
+    }
+    const videos = videosRef.current
+
     if (!data || !videos) return
     data.forEach((v) => {
       const retrievedVideo = v.video
@@ -100,15 +113,9 @@ export const useVideos = (providerId: string) => {
           if (storeVideo.status === 'in_progress' || storeVideo.status === 'queued') {
             setVideo({ ...storeVideo, status: 'completed', thumbnail: null, metadata: retrievedVideo })
             // try to request thumbnail here.
-            if (!openai) {
-              logger.warn(
-                `Try to fetch thumbnail for video ${retrievedVideo.id}, but provider ${providerId} not found.`
-              )
-              return
-            }
             retrieveVideoContent({
               type: 'openai',
-              provider: openai,
+              provider,
               videoId: retrievedVideo.id,
               query: { variant: 'thumbnail' }
             })
@@ -130,7 +137,7 @@ export const useVideos = (providerId: string) => {
           })
       }
     })
-  }, [data])
+  }, [data, error, provider, providerId, setVideo])
 
   return {
     videos: videos ?? [],
