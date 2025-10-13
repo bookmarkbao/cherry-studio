@@ -14,7 +14,7 @@ import FileManager from '@renderer/services/FileManager'
 import { Video, VideoDownloaded, VideoFailed } from '@renderer/types/video'
 import dayjs from 'dayjs'
 import { CheckCircleIcon, CircleXIcon, Clock9Icon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWRImmutable from 'swr/immutable'
 
@@ -184,6 +184,7 @@ const VideoPlayer = ({
   video: VideoDownloaded
   setLoadSuccess: (value: boolean) => void
 }) => {
+  const videoRef = useRef<HTMLVideoElement>(null)
   const fetcher = async () => {
     const file = await FileManager.getFile(video.fileId)
     if (!file) {
@@ -192,6 +193,13 @@ const VideoPlayer = ({
     return FileManager.getFilePath(file)
   }
   const { data: src, isLoading, error } = useSWRImmutable(`video/file/${video.id}`, fetcher)
+
+  useEffect(() => {
+    const videoElement = videoRef.current
+    if (videoElement) {
+      videoElement.load()
+    }
+  }, [video?.id])
 
   if (error) {
     setLoadSuccess(false)
@@ -203,6 +211,7 @@ const VideoPlayer = ({
 
   return (
     <video
+      ref={videoRef}
       controls
       className="h-full w-full rounded-2xl bg-black object-contain"
       onLoadedData={() => setLoadSuccess(true)}
