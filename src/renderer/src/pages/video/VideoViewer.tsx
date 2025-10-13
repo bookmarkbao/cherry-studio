@@ -14,11 +14,11 @@ import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export interface VideoProps {
+export interface VideoViewerProps {
   video?: Video
 }
 
-export const VideoViewer = ({ video }: VideoProps) => {
+export const VideoViewer = ({ video }: VideoViewerProps) => {
   const { t } = useTranslation()
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
   const { isOpen, onOpen, onClose } = useDisclosure()
