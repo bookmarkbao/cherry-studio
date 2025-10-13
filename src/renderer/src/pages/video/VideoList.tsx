@@ -1,5 +1,4 @@
 import { cn, Progress, Spinner } from '@heroui/react'
-import { useVideos } from '@renderer/hooks/video/useVideos'
 import { Video } from '@renderer/types'
 import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon, PlusIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -11,7 +10,6 @@ export type VideoListProps = {
 }
 
 export const VideoList = ({ videos, activeVideoId, setActiveVideoId }: VideoListProps) => {
-
   return (
     <div className="w-40 space-y-3 overflow-auto p-2">
       <div
