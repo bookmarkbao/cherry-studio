@@ -1194,7 +1194,8 @@
     "size": "Size",
     "text": "Text",
     "title": "Files",
-    "type": "Type"
+    "type": "Type",
+    "video": "Video"
   },
   "gpustack": {
     "keep_alive_time": {
