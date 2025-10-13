@@ -10,7 +10,8 @@ import {
   useDisclosure
 } from '@heroui/react'
 import { Video, VideoFailed } from '@renderer/types/video'
-import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
+import dayjs from 'dayjs'
+import { CheckCircleIcon, CircleXIcon, Clock9Icon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -18,13 +19,15 @@ export type VideoViewerProps =
   | {
       video: undefined
       onDownload?: never
+      onRegenerate?: never
     }
   | {
       video: Video
       onDownload: () => void
+      onRegenerate: () => void
     }
 
-export const VideoViewer = ({ video, onDownload }: VideoViewerProps) => {
+export const VideoViewer = ({ video, onDownload, onRegenerate }: VideoViewerProps) => {
   const { t } = useTranslation()
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
   return (
@@ -33,7 +36,9 @@ export const VideoViewer = ({ video, onDownload }: VideoViewerProps) => {
         {video === undefined && t('video.undefined')}
         {video && video.status === 'queued' && <QueuedVideo />}
         {video && video.status === 'in_progress' && <InProgressVideo progress={video.progress} />}
-        {video && video.status === 'completed' && <CompletedVideo onDownload={onDownload} />}
+        {video && video.status === 'completed' && (
+          <CompletedVideo video={video} onDownload={onDownload} onRegenerate={onRegenerate} />
+        )}
         {video && video.status === 'downloading' && <DownloadingVideo progress={video.progress} />}
         {video && video.status === 'downloaded' && loadSuccess !== false && (
           <video
@@ -78,9 +83,26 @@ const InProgressVideo = ({ progress }: { progress: number }) => {
   )
 }
 
-const CompletedVideo = ({ onDownload }: { onDownload: () => void }) => {
+const CompletedVideo = ({
+  video,
+  onDownload,
+  onRegenerate
+}: {
+  video: Video
+  onDownload: () => void
+  onRegenerate: () => void
+}) => {
   const { t } = useTranslation()
-
+  const isExpired = video.metadata.expires_at !== null && video.metadata.expires_at < dayjs().unix()
+  if (isExpired) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl bg-warning-200">
+        <Clock9Icon size={64} className="text-warning" />
+        <span className="font-bold text-2xl">{t('video.expired')}</span>
+        <Button onPress={onRegenerate}>{t('common.regenerate')}</Button>
+      </div>
+    )
+  }
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl bg-success-200">
       <CheckCircleIcon size={64} className="text-success" />

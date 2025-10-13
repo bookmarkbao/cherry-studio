@@ -76,6 +76,10 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     }
   }, [addOpenAIVideo, couldCreateVideo, params, t, video])
 
+  const handleRegenerateVideo = useCallback(() => {
+    window.toast.info('Not implemented')
+  }, [])
+
   const handleDownloadVideo = async () => {
     if (!video) return
     if (video.status === 'completed' || video.status === 'downloaded') {
@@ -145,7 +149,7 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     <div className="flex flex-1 flex-col p-2">
       <div className="m-8 flex-1">
         <Skeleton className="h-full w-full rounded-2xl" classNames={{ content: 'h-full w-full' }} isLoaded={true}>
-          {video && <VideoViewer video={video} onDownload={handleDownloadVideo} />}
+          {video && <VideoViewer video={video} onDownload={handleDownloadVideo} onRegenerate={handleRegenerateVideo} />}
           {!video && <VideoViewer video={video} />}
         </Skeleton>
       </div>
