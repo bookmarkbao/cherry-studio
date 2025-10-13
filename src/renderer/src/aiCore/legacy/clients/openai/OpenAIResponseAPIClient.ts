@@ -1,3 +1,5 @@
+import OpenAI, { AzureOpenAI } from '@cherrystudio/openai'
+import type { ResponseInput } from '@cherrystudio/openai/resources/responses/responses'
 import { loggerService } from '@logger'
 import type { GenericChunk } from '@renderer/aiCore/legacy/middleware/schemas'
 import type { CompletionsContext } from '@renderer/aiCore/legacy/middleware/types'
@@ -33,6 +35,12 @@ import type {
   OpenAIResponseSdkTool,
   OpenAIResponseSdkToolCall
 } from '@renderer/types/sdk'
+import type {
+  CreateVideoParams,
+  DeleteVideoParams,
+  RetrieveVideoContentParams,
+  RetrieveVideoParams
+} from '@renderer/types/video'
 import { addImageFileToContents } from '@renderer/utils/formats'
 import {
   isSupportedToolUse,
@@ -44,8 +52,6 @@ import { findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/fi
 import { MB } from '@shared/config/constant'
 import { t } from 'i18next'
 import { isEmpty } from 'lodash'
-import OpenAI, { AzureOpenAI } from 'openai'
-import type { ResponseInput } from 'openai/resources/responses/responses'
 
 import type { RequestTransformer, ResponseChunkTransformer } from '../types'
 import { OpenAIAPIClient } from './OpenAIApiClient'
@@ -149,6 +155,26 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
   ): Promise<OpenAIResponseSdkRawOutput> {
     const sdk = await this.getSdkInstance()
     return await sdk.responses.create(payload, options)
+  }
+
+  public async createVideo(params: CreateVideoParams): Promise<OpenAI.Videos.Video> {
+    const sdk = await this.getSdkInstance()
+    return sdk.videos.create(params.params, params.options)
+  }
+
+  public async retrieveVideo(params: RetrieveVideoParams): Promise<OpenAI.Videos.Video> {
+    const sdk = await this.getSdkInstance()
+    return sdk.videos.retrieve(params.videoId, params.options)
+  }
+
+  public async retrieveVideoContent(params: RetrieveVideoContentParams): Promise<Response> {
+    const sdk = await this.getSdkInstance()
+    return sdk.videos.downloadContent(params.videoId, params.query, params.options)
+  }
+
+  public async deleteVideo(params: DeleteVideoParams): Promise<OpenAI.Videos.VideoDeleteResponse> {
+    const sdk = await this.getSdkInstance()
+    return sdk.videos.delete(params.videoId, params.options)
   }
 
   private async handlePdfFile(file: FileMetadata): Promise<OpenAI.Responses.ResponseInputFile | undefined> {
@@ -342,7 +368,14 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
     }
     switch (message.type) {
       case 'function_call_output':
-        sum += estimateTextTokens(message.output)
+        if (typeof message.output === 'string') {
+          sum += estimateTextTokens(message.output)
+        } else {
+          sum += message.output
+            .filter((item) => item.type === 'input_text')
+            .map((item) => estimateTextTokens(item.text))
+            .reduce((prev, cur) => prev + cur, 0)
+        }
         break
       case 'function_call':
         sum += estimateTextTokens(message.arguments)
