@@ -56,6 +56,8 @@ export interface RuntimeState {
   chat: ChatState
   websearch: WebSearchState
   iknow: Record<string, boolean>
+  /** To indicate something is pending. */
+  pendingMap: Record<string, boolean | undefined>
 }
 
 export interface ExportState {
@@ -98,7 +100,8 @@ const initialState: RuntimeState = {
   websearch: {
     activeSearches: {}
   },
-  iknow: {}
+  iknow: {},
+  pendingMap: {}
 }
 
 const runtimeSlice = createSlice({
@@ -191,6 +194,14 @@ const runtimeSlice = createSlice({
     setSessionWaitingAction: (state, action: PayloadAction<{ id: string; value: boolean }>) => {
       const { id, value } = action.payload
       state.chat.sessionWaiting[id] = value
+    },
+    setPendingAction: (state, action: PayloadAction<{ id: string; value: boolean | undefined }>) => {
+      const { id, value } = action.payload
+      if (value) {
+        state.pendingMap[id] = value
+      } else {
+        delete state.pendingMap[id]
+      }
     }
   }
 })
@@ -210,6 +221,7 @@ export const {
   setUpdateState,
   setExportState,
   addIknowAction,
+  setPendingAction,
   // Chat related actions
   toggleMultiSelectMode,
   setSelectedMessageIds,
