@@ -19,10 +19,10 @@ export const videoTable = sqliteTable(
     error: text('error', { mode: 'json' }),
     ...createUpdateTimestamps
   },
-  (table) => ({
-    statusIdx: index('status_idx').on(table.status),
-    providerIdx: index('provider_idx').on(table.providerId),
-    typeIdx: index('type_idx').on(table.type),
-    fileIdIdx: uniqueIndex('file_id_idx').on(table.fileId)
-  })
+  (table) => [
+    index('status_idx').on(table.status),
+    index('provider_idx').on(table.providerId),
+    index('type_idx').on(table.type),
+    uniqueIndex('file_id_idx').on(table.fileId)
+  ]
 )
