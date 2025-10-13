@@ -14,6 +14,14 @@ export const useVideoThumbnail = () => {
     return `video-thumbnail-${id}`
   }, [])
 
+  const isRetrieving = useCallback(
+    (id: string) => {
+      const key = getThumbnailKey(id)
+      return pendingSet.has(key)
+    },
+    [getThumbnailKey]
+  )
+
   const retrieveThumbnail = useCallback(
     async (video: Video): Promise<string> => {
       const provider = getProviderById(video.providerId)
@@ -21,7 +29,7 @@ export const useVideoThumbnail = () => {
         throw new Error(`Provider not found for id ${video.providerId}`)
       }
       const thumbnailKey = getThumbnailKey(video.id)
-      if (pendingSet.has(thumbnailKey)) {
+      if (isRetrieving(video.id)) {
         throw new Error('Thumbnail retrieval already pending')
       }
 
@@ -82,5 +90,5 @@ export const useVideoThumbnail = () => {
     [getThumbnailKey]
   )
 
-  return { getThumbnailKey, retrieveThumbnail, removeThumbnail }
+  return { getThumbnailKey, retrieveThumbnail, removeThumbnail, isRetrieving }
 }

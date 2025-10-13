@@ -92,7 +92,7 @@ export const useProviderVideos = (providerId: string) => {
     }
   }
   const { data, error } = useSWR('video/openai/videos', fetcher, { refreshInterval: 3000 })
-  const { retrieveThumbnail } = useVideoThumbnail()
+  const { retrieveThumbnail, isRetrieving } = useVideoThumbnail()
   useEffect(() => {
     if (error) {
       logger.error('Failed to fetch video status updates', error)
@@ -128,6 +128,7 @@ export const useProviderVideos = (providerId: string) => {
             const newVideo = { ...storeVideo, status: 'completed', thumbnail: null, metadata: retrievedVideo } as const
             setVideo(newVideo)
             // Try to get thumbnail
+            if (isRetrieving(storeVideo.id)) return
             retrieveThumbnail(newVideo)
               .then((thumbnail) => {
                 const latestVideo = videosRef.current?.find((v) => v.id === newVideo.id)
