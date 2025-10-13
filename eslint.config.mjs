@@ -2,6 +2,7 @@ import tseslint from '@electron-toolkit/eslint-config-ts'
 import eslint from '@eslint/js'
 import eslintReact from '@eslint-react/eslint-plugin'
 import { defineConfig } from 'eslint/config'
+import drizzle from 'eslint-plugin-drizzle'
 import importZod from 'eslint-plugin-import-zod'
 import oxlint from 'eslint-plugin-oxlint'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -17,7 +18,8 @@ export default defineConfig([
     plugins: {
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
-      'import-zod': importZod
+      'import-zod': importZod,
+      drizzle
     },
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -27,7 +29,9 @@ export default defineConfig([
       'simple-import-sort/exports': 'error',
       'unused-imports/no-unused-imports': 'error',
       '@eslint-react/no-prop-types': 'error',
-      'import-zod/prefer-zod-namespace': 'error'
+      'import-zod/prefer-zod-namespace': 'error',
+      ...drizzle.configs.recommended.rules,
+      'drizzle/enforce-delete-with-where': ['warn', { drizzleObjectName: 'db' }]
     }
   },
   // Configuration for ensuring compatibility with the original ESLint(8.x) rules
