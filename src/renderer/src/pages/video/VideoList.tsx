@@ -5,16 +5,12 @@ import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon, PlusIcon } from 
 import { useTranslation } from 'react-i18next'
 
 export type VideoListProps = {
-  providerId: string
+  videos: Video[]
   activeVideoId?: string
   setActiveVideoId: (id: string | undefined) => void
 }
 
-export const VideoList = ({ providerId, activeVideoId, setActiveVideoId }: VideoListProps) => {
-  const { videos } = useVideos(providerId)
-
-  // const displayVideos = mockVideos
-  const displayVideos = videos
+export const VideoList = ({ videos, activeVideoId, setActiveVideoId }: VideoListProps) => {
 
   return (
     <div className="w-40 space-y-3 overflow-auto p-2">
@@ -23,7 +19,7 @@ export const VideoList = ({ providerId, activeVideoId, setActiveVideoId }: Video
         onClick={() => setActiveVideoId(undefined)}>
         <PlusIcon size={24} />
       </div>
-      {displayVideos.map((video) => (
+      {videos.map((video) => (
         <VideoListItem
           key={video.id}
           video={video}

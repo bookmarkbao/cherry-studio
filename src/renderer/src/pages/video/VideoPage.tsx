@@ -18,6 +18,7 @@ import { ProviderSetting } from './settings/ProviderSetting'
 import { SettingsGroup } from './settings/shared'
 import { VideoList } from './VideoList'
 import { VideoPanel } from './VideoPanel'
+import { useVideos } from '@renderer/hooks/video/useVideos'
 
 export const VideoPage = () => {
   const { t } = useTranslation()
@@ -47,6 +48,7 @@ export const VideoPage = () => {
     [updateParams]
   )
 
+  const { videos } = useVideos(providerId)
   const activeVideo = useMemo(() => mockVideos.find((v) => v.id === activeVideoId), [activeVideoId])
 
   return (
@@ -71,7 +73,7 @@ export const VideoPage = () => {
         <VideoPanel provider={provider} params={params} updateParams={updateParams} video={activeVideo} />
         <Divider orientation="vertical" />
         {/* Video list */}
-        <VideoList providerId={providerId} activeVideoId={activeVideoId} setActiveVideoId={setActiveVideoId} />
+        <VideoList videos={videos} activeVideoId={activeVideoId} setActiveVideoId={setActiveVideoId} />
       </div>
     </div>
   )

@@ -12,7 +12,7 @@ import { loggerService } from '@logger'
 import { getEnableDeveloperMode } from '@renderer/hooks/useSettings'
 import { addSpan, endSpan } from '@renderer/services/SpanManagerService'
 import { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
-import type { Assistant, GenerateImageParams, Model, Provider } from '@renderer/types'
+import type { Assistant, GenerateImageParams, Model, Provider, RetrieveVideoContentParams } from '@renderer/types'
 import type { AiSdkModel, StreamTextParams } from '@renderer/types/aiCoreTypes'
 import {
   CreateVideoParams,
@@ -524,7 +524,7 @@ export default class ModernAiProvider {
   /**
    * We manually implement this method before aisdk supports it well
    */
-  public async retrieveVideoContent(params: RetrieveVideoParams): Promise<RetrieveVideoContentResult> {
+  public async retrieveVideoContent(params: RetrieveVideoContentParams): Promise<RetrieveVideoContentResult> {
     return this.legacyProvider.retrieveVideoContent(params)
   }
 

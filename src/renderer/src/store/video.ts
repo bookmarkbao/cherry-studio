@@ -2,7 +2,7 @@ import { loggerService } from '@logger'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Video } from '@renderer/types/video'
 
-const logger = loggerService.withContext('Store:paintings')
+const logger = loggerService.withContext('Store:video')
 
 export interface VideoState {
   /** Provider ID to videos */
@@ -32,15 +32,32 @@ const videoSlice = createSlice({
     },
     updateVideo: (
       state: VideoState,
-      action: PayloadAction<{ providerId: string; update: Partial<Video> & { id: string } }>
+      action: PayloadAction<{ providerId: string; update: Partial<Omit<Video, 'status'>> & { id: string } }>
     ) => {
       const { providerId, update } = action.payload
-
-      const existingIndex = state.videoMap[providerId]?.findIndex((c) => c.id === update.id)
-      if (existingIndex && existingIndex !== -1) {
-        state.videoMap[providerId] = state.videoMap[providerId]?.map((c) => (c.id === update.id ? { ...c, update } : c))
+      const videos = state.videoMap[providerId]
+      if (videos) {
+        let video = videos.find((v) => v.id === update.id)
+        if (video) {
+          video = { ...video, ...update }
+        } else {
+          logger.error(`Video with id ${update.id} not found in ${providerId}`)
+        }
       } else {
-        logger.error(`Video with id ${update.id} not found in ${providerId}`)
+        logger.error(`Videos with Provider ${providerId} is undefined.`)
+      }
+    },
+    setVideo: (state: VideoState, action: PayloadAction<{ providerId: string; video: Video }>) => {
+      const { providerId, video } = action.payload
+      if (state.videoMap[providerId]) {
+        const index = state.videoMap[providerId].findIndex((v) => v.id === video.id)
+        if (index !== -1) {
+          state.videoMap[providerId][index] = video
+        } else {
+          state.videoMap[providerId].push(video)
+        }
+      } else {
+        state.videoMap[providerId] = [video]
       }
     },
     setVideos: (state: VideoState, action: PayloadAction<{ providerId: string; videos: Video[] }>) => {
@@ -54,6 +71,7 @@ export const {
   addVideo: addVideoAction,
   removeVideo: removeVideoAction,
   updateVideo: updateVideoAction,
+  setVideo: setVideoAction,
   setVideos: setVideosAction
 } = videoSlice.actions
 

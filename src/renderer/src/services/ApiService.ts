@@ -10,7 +10,7 @@ import { isDedicatedImageGenerationModel, isEmbeddingModel } from '@renderer/con
 import { getStoreSetting } from '@renderer/hooks/useSettings'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
-import type { FetchChatCompletionParams } from '@renderer/types'
+import type { FetchChatCompletionParams, RetrieveVideoContentParams } from '@renderer/types'
 import { Assistant, MCPServer, MCPTool, Model, Provider } from '@renderer/types'
 import type { StreamTextParams } from '@renderer/types/aiCoreTypes'
 import { type Chunk, ChunkType } from '@renderer/types/chunk'
@@ -414,7 +414,7 @@ export async function retrieveVideo(params: RetrieveVideoParams): Promise<Retrie
   return ai.retrieveVideo(params)
 }
 
-export async function retrieveVideoContent(params: RetrieveVideoParams): Promise<RetrieveVideoContentResult> {
+export async function retrieveVideoContent(params: RetrieveVideoContentParams): Promise<RetrieveVideoContentResult> {
   const ai = new AiProviderNew(params.provider)
   return ai.retrieveVideoContent(params)
 }

@@ -5,7 +5,7 @@ import { isDedicatedImageGenerationModel, isFunctionCallingModel } from '@render
 import { getProviderByModel } from '@renderer/services/AssistantService'
 import { withSpanResult } from '@renderer/services/SpanManagerService'
 import { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
-import type { GenerateImageParams, Model, Provider } from '@renderer/types'
+import type { GenerateImageParams, Model, Provider, RetrieveVideoContentParams } from '@renderer/types'
 import type { RequestOptions, SdkModel } from '@renderer/types/sdk'
 import {
   CreateVideoParams,
@@ -210,7 +210,7 @@ export default class AiProvider {
     }
   }
 
-  public async retrieveVideoContent(params: RetrieveVideoParams): Promise<RetrieveVideoContentResult> {
+  public async retrieveVideoContent(params: RetrieveVideoContentParams): Promise<RetrieveVideoContentResult> {
     if (this.apiClient instanceof OpenAIResponseAPIClient && params.type === 'openai') {
       const response = await this.apiClient.retrieveVideoContent(params)
       return {
