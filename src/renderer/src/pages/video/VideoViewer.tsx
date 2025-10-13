@@ -50,7 +50,9 @@ export const VideoViewer = ({ video, onDownload, onRegenerate }: VideoViewerProp
           </video>
         )}
         {video && video.status === 'failed' && <FailedVideo error={video.error} />}
-        {video && video.status === 'downloaded' && loadSuccess === false && <LoadFailedVideo />}
+        {video && video.status === 'downloaded' && loadSuccess === false && (
+          <LoadFailedVideo onRedownload={onDownload} />
+        )}
       </div>
     </>
   )
@@ -161,7 +163,7 @@ const FailedVideo = ({ error }: { error: VideoFailed['error'] }) => {
   )
 }
 
-const LoadFailedVideo = ({ onRedownload }: { onRedownload?: () => void }) => {
+const LoadFailedVideo = ({ onRedownload }: { onRedownload: () => void }) => {
   const { t } = useTranslation()
   return (
     <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
@@ -169,9 +171,7 @@ const LoadFailedVideo = ({ onRedownload }: { onRedownload?: () => void }) => {
       <span className="font-bold text-2xl">{t('video.error.load.message')}</span>
       <span>{t('video.error.load.reason')}</span>
       <div className="my-2 flex justify-between gap-2">
-        <Button onPress={() => onRedownload?.() || window.toast.info('Not implemented')}>
-          {t('common.redownload')}
-        </Button>
+        <Button onPress={onRedownload}>{t('common.redownload')}</Button>
       </div>
     </div>
   )
