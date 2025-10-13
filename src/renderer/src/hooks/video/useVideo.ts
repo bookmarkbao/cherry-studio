@@ -1,7 +1,7 @@
-import { useVideos } from './useVideos'
+import { useProviderVideos } from './useProviderVideos'
 
 export const useVideo = (providerId: string, id: string) => {
-  const { videos } = useVideos(providerId)
+  const { videos } = useProviderVideos(providerId)
   const video = videos.find((v) => v.id === id)
   return video
 }
