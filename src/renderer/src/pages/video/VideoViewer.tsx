@@ -9,9 +9,9 @@ import {
   Spinner,
   useDisclosure
 } from '@heroui/react'
-import { Video } from '@renderer/types/video'
+import { Video, VideoFailed } from '@renderer/types/video'
 import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export interface VideoViewerProps {
@@ -21,49 +21,14 @@ export interface VideoViewerProps {
 export const VideoViewer = ({ video }: VideoViewerProps) => {
   const { t } = useTranslation()
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
-  const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
       <div className="flex h-full w-full items-center justify-center rounded-2xl bg-foreground-200">
         {video === undefined && t('video.undefined')}
-        {video && video.status === 'queued' && (
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl">
-            <Spinner variant="dots" />
-            <span>{t('video.status.queued')}</span>
-          </div>
-        )}
-        {video && video.status === 'in_progress' && (
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl">
-            <Progress
-              label={t('video.status.in_progress')}
-              aria-label={t('video.status.in_progress')}
-              className="max-w-md"
-              color="primary"
-              showValueLabel={true}
-              size="md"
-              value={video.progress}
-            />
-          </div>
-        )}
-        {video && video.status === 'completed' && (
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-success-200">
-            <CheckCircleIcon size={64} className="text-success" />
-            <span className="font-bold text-2xl">{t('video.status.completed')}</span>
-          </div>
-        )}
-        {video && video.status === 'downloading' && (
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl">
-            <Progress
-              label={t('video.status.downloading')}
-              aria-label={t('video.status.downloading')}
-              className="max-w-md"
-              color="primary"
-              showValueLabel={true}
-              size="md"
-              value={video.progress}
-            />
-          </div>
-        )}
+        {video && video.status === 'queued' && <QueuedVideo />}
+        {video && video.status === 'in_progress' && <InProgressVideo progress={video.progress} />}
+        {video && video.status === 'completed' && <CompletedVideo />}
+        {video && video.status === 'downloading' && <DownloadingVideo progress={video.progress} />}
         {video && video.status === 'downloaded' && loadSuccess !== false && (
           <video
             controls
@@ -73,41 +38,111 @@ export const VideoViewer = ({ video }: VideoViewerProps) => {
             <source src="video.mp4" type="video/mp4" />
           </video>
         )}
-        {video && video.status === 'failed' && (
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
-            <CircleXIcon size={64} className="fill-danger text-danger-200" />
-            <span className="font-bold text-2xl">{t('video.status.failed')}</span>
-            <div className="my-2 flex justify-between gap-2">
-              <Button onPress={onOpen}>{t('common.detail')}</Button>
-              <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalBody>
-                  <ModalContent>
-                    <div className="p-4">
-                      {video.error === null ? (
-                        <Alert color="danger" title={t('error.unknown')} />
-                      ) : (
-                        <Alert color="danger" title={video.error.code} description={video.error.message} />
-                      )}
-                    </div>
-                  </ModalContent>
-                </ModalBody>
-                <ModalFooter></ModalFooter>
-              </Modal>
-              <Button onPress={() => window.toast.info('Not implemented')}>{t('common.retry')}</Button>
-            </div>
-          </div>
-        )}
-        {video && video.status === 'downloaded' && loadSuccess === false && (
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
-            <CircleXIcon size={64} className="fill-danger text-danger-200" />
-            <span className="font-bold text-2xl">{t('video.error.load.message')}</span>
-            <span>{t('video.error.load.reason')}</span>
-            <div className="my-2 flex justify-between gap-2">
-              <Button onPress={() => window.toast.info('Not implemented')}>{t('common.redownload')}</Button>
-            </div>
-          </div>
-        )}
+        {video && video.status === 'failed' && <FailedVideo error={video.error} />}
+        {video && video.status === 'downloaded' && loadSuccess === false && <LoadFailedVideo />}
       </div>
     </>
+  )
+}
+
+const QueuedVideo = () => {
+  const { t } = useTranslation()
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl">
+      <Spinner variant="dots" />
+      <span>{t('video.status.queued')}</span>
+    </div>
+  )
+}
+
+const InProgressVideo = ({ progress }: { progress: number }) => {
+  const { t } = useTranslation()
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl">
+      <Progress
+        label={t('video.status.in_progress')}
+        aria-label={t('video.status.in_progress')}
+        className="max-w-md"
+        color="primary"
+        showValueLabel={true}
+        size="md"
+        value={progress}
+      />
+    </div>
+  )
+}
+
+const CompletedVideo = () => {
+  const { t } = useTranslation()
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-success-200">
+      <CheckCircleIcon size={64} className="text-success" />
+      <span className="font-bold text-2xl">{t('video.status.completed')}</span>
+    </div>
+  )
+}
+
+const DownloadingVideo = ({ progress }: { progress?: number }) => {
+  const { t } = useTranslation()
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl">
+      <Progress
+        label={t('video.status.downloading')}
+        aria-label={t('video.status.downloading')}
+        className="max-w-md"
+        color="primary"
+        showValueLabel={true}
+        size="md"
+        value={progress}
+      />
+    </div>
+  )
+}
+
+const FailedVideo = ({ error }: { error: VideoFailed['error'] }) => {
+  const { t } = useTranslation()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const alert = useMemo(() => {
+    if (error === null) {
+      return <Alert color="danger" title={t('error.unknown')} />
+    } else {
+      return <Alert color="danger" title={error.code} description={error.message} />
+    }
+  }, [error, t])
+
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
+      <CircleXIcon size={64} className="fill-danger text-danger-200" />
+      <span className="font-bold text-2xl">{t('video.status.failed')}</span>
+      <div className="my-2 flex justify-between gap-2">
+        <Button onPress={onOpen}>{t('common.detail')}</Button>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalBody>
+            <ModalContent>
+              <div className="p-4">{alert}</div>
+            </ModalContent>
+          </ModalBody>
+          <ModalFooter></ModalFooter>
+        </Modal>
+        <Button onPress={() => window.toast.info('Not implemented')}>{t('common.retry')}</Button>
+      </div>
+    </div>
+  )
+}
+
+const LoadFailedVideo = ({ onRedownload }: { onRedownload?: () => void }) => {
+  const { t } = useTranslation()
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
+      <CircleXIcon size={64} className="fill-danger text-danger-200" />
+      <span className="font-bold text-2xl">{t('video.error.load.message')}</span>
+      <span>{t('video.error.load.reason')}</span>
+      <div className="my-2 flex justify-between gap-2">
+        <Button onPress={() => onRedownload?.() || window.toast.info('Not implemented')}>
+          {t('common.redownload')}
+        </Button>
+      </div>
+    </div>
   )
 }

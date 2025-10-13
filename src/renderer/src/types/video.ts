@@ -49,14 +49,14 @@ export interface VideoDownloading extends VideoBase {
   /** integer percent */
   progress: number
 }
-export interface Videodownloaded extends VideoBase {
+export interface VideoDownloaded extends VideoBase {
   status: 'downloaded'
   thumbnail: string
   /** Managed by fileManager */
   fileId: string
 }
 
-export interface VideoFailed extends VideoBase {
+export interface VideoFailedBase extends VideoBase {
   status: 'failed'
   error: unknown
 }
@@ -65,10 +65,12 @@ export interface OpenAIVideoQueued extends VideoQueued, OpenAIVideoBase {}
 export interface OpenAIVideoInProgress extends VideoInProgress, OpenAIVideoBase {}
 export interface OpenAIVideoCompleted extends VideoCompleted, OpenAIVideoBase {}
 export interface OpenAIVideoDownloading extends VideoDownloading, OpenAIVideoBase {}
-export interface OpenAIVideoDownloaded extends Videodownloaded, OpenAIVideoBase {}
-export interface OpenAIVideoFailed extends VideoFailed, OpenAIVideoBase {
+export interface OpenAIVideoDownloaded extends VideoDownloaded, OpenAIVideoBase {}
+export interface OpenAIVideoFailed extends VideoFailedBase, OpenAIVideoBase {
   error: OpenAI.Videos.Video['error']
 }
+
+export type VideoFailed = OpenAIVideoFailed
 
 export type OpenAIVideo =
   | OpenAIVideoQueued
