@@ -1,4 +1,14 @@
-import { Button, Progress, Spinner } from '@heroui/react'
+import {
+  Alert,
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  Progress,
+  Spinner,
+  useDisclosure
+} from '@heroui/react'
 import { Video } from '@renderer/types/video'
 import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -11,29 +21,9 @@ export interface VideoProps {
 export const VideoViewer = ({ video }: VideoProps) => {
   const { t } = useTranslation()
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
-  // useEffect(() => {
-  //   setVideo(_video)
-  // }, [_video])
+  const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
-      {/* For test */}
-      {/* <RadioGroup
-        label="Status"
-        value={video?.status ?? 'undefined'}
-        onValueChange={(v) => {
-          if (v !== 'undefined') setVideo({ ..._video, status: v as VideoStatus, progress: 60 } as Video)
-          else setVideo(undefined)
-        }}
-        orientation="horizontal"
-        className="absolute z-100 rounded-2xl bg-foreground-100 p-4">
-        <Radio value="undefined">undefined</Radio>
-        <Radio value="queued">queued</Radio>
-        <Radio value="in_progress">in_progress</Radio>
-        <Radio value="completed">completed</Radio>
-        <Radio value="downloading">downloading</Radio>
-        <Radio value="downloaded">downloaded</Radio>
-        <Radio value="failed">failed</Radio>
-      </RadioGroup> */}
       <div className="flex h-full w-full items-center justify-center rounded-2xl bg-foreground-200">
         {video === undefined && t('video.undefined')}
         {video && video.status === 'queued' && (
@@ -88,7 +78,21 @@ export const VideoViewer = ({ video }: VideoProps) => {
             <CircleXIcon size={64} className="fill-danger text-danger-200" />
             <span className="font-bold text-2xl">{t('video.status.failed')}</span>
             <div className="my-2 flex justify-between gap-2">
-              <Button onPress={() => window.toast.info('Not implemented')}>{t('common.detail')}</Button>
+              <Button onPress={onOpen}>{t('common.detail')}</Button>
+              <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalBody>
+                  <ModalContent>
+                    <div className="p-4">
+                      {video.error === null ? (
+                        <Alert color="danger" title={t('error.unknown')} />
+                      ) : (
+                        <Alert color="danger" title={video.error.code} description={video.error.message} />
+                      )}
+                    </div>
+                  </ModalContent>
+                </ModalBody>
+                <ModalFooter></ModalFooter>
+              </Modal>
               <Button onPress={() => window.toast.info('Not implemented')}>{t('common.retry')}</Button>
             </div>
           </div>
