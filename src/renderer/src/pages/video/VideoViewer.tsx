@@ -14,11 +14,17 @@ import { CheckCircleIcon, CircleXIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export interface VideoViewerProps {
-  video?: Video
-}
+export type VideoViewerProps =
+  | {
+      video: undefined
+      onDownload?: never
+    }
+  | {
+      video: Video
+      onDownload: (videoId: string) => void
+    }
 
-export const VideoViewer = ({ video }: VideoViewerProps) => {
+export const VideoViewer = ({ video, onDownload }: VideoViewerProps) => {
   const { t } = useTranslation()
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
   return (
@@ -27,7 +33,7 @@ export const VideoViewer = ({ video }: VideoViewerProps) => {
         {video === undefined && t('video.undefined')}
         {video && video.status === 'queued' && <QueuedVideo />}
         {video && video.status === 'in_progress' && <InProgressVideo progress={video.progress} />}
-        {video && video.status === 'completed' && <CompletedVideo />}
+        {video && video.status === 'completed' && <CompletedVideo onDownload={() => onDownload(video.id)} />}
         {video && video.status === 'downloading' && <DownloadingVideo progress={video.progress} />}
         {video && video.status === 'downloaded' && loadSuccess !== false && (
           <video
@@ -72,12 +78,14 @@ const InProgressVideo = ({ progress }: { progress: number }) => {
   )
 }
 
-const CompletedVideo = () => {
+const CompletedVideo = ({ onDownload }: { onDownload: () => void }) => {
   const { t } = useTranslation()
+
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-success-200">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl bg-success-200">
       <CheckCircleIcon size={64} className="text-success" />
       <span className="font-bold text-2xl">{t('video.status.completed')}</span>
+      <Button onPress={onDownload}>{t('common.download')}</Button>
     </div>
   )
 }

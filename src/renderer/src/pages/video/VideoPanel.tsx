@@ -69,6 +69,10 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     }
   }, [addOpenAIVideo, couldCreateVideo, params, t, video])
 
+  const handleDownloadVideo = (videoId: string) => {
+    window.toast.info('Not implemented')
+  }
+
   const handleUploadFile = useCallback(() => {
     fileInputRef.current?.click()
   }, [])
@@ -114,7 +118,8 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     <div className="flex flex-1 flex-col p-2">
       <div className="m-8 flex-1">
         <Skeleton className="h-full w-full rounded-2xl" classNames={{ content: 'h-full w-full' }} isLoaded={true}>
-          <VideoViewer video={video} />
+          {video && <VideoViewer video={video} onDownload={handleDownloadVideo} />}
+          {!video && <VideoViewer video={video} />}
         </Skeleton>
       </div>
       <div className="relative">
