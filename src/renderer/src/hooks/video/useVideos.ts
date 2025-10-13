@@ -72,7 +72,9 @@ export const useVideos = (providerId: string) => {
   const provider = getProviderById(providerId)
   const fetcher = async () => {
     if (!videos || !provider) return []
-    const openaiVideos = videos.filter((v) => v.type === 'openai')
+    const openaiVideos = videos
+      .filter((v) => v.type === 'openai')
+      .filter((v) => v.status === 'queued' || v.status === 'in_progress')
     const jobs = openaiVideos.map((v) => retrieveVideo({ type: 'openai', videoId: v.id, provider }))
     const result = await Promise.allSettled(jobs)
     return result.filter((p) => p.status === 'fulfilled').map((p) => p.value)
