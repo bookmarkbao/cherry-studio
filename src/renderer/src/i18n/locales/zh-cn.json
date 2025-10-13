@@ -4695,9 +4695,9 @@
     },
     "thumbnail": {
       "error": {
-        "get": "[to be translated]:Failed to get thumbnail"
+        "get": "获取缩略图失败"
       },
-      "get": "[to be translated]:Get thumbnail",
+      "get": "获取缩略图",
       "placeholder": "无缩略图"
     },
     "title": "视频",
