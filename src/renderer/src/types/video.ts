@@ -41,18 +41,20 @@ export interface VideoInProgress extends VideoBase {
 }
 export interface VideoCompleted extends VideoBase {
   readonly status: 'completed'
-  /** When generation completed, firstly try to retrieve thumbnail. */
+  /** Base64 image string. When generation completed, firstly try to retrieve thumbnail. */
   thumbnail: string | null
 }
 
 export interface VideoDownloading extends VideoBase {
   readonly status: 'downloading'
+  /** Base64 image string */
   thumbnail: string | null
   /** integer percent */
   progress: number
 }
 export interface VideoDownloaded extends VideoBase {
   readonly status: 'downloaded'
+  /** Base64 image string */
   thumbnail: string | null
   /** Managed by fileManager */
   fileId: string

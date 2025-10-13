@@ -1,5 +1,5 @@
 import { loggerService } from '@logger'
-import { retrieveVideo, retrieveVideoContent } from '@renderer/services/ApiService'
+import { retrieveVideo } from '@renderer/services/ApiService'
 import { getProviderById } from '@renderer/services/ProviderService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import {
@@ -12,6 +12,8 @@ import {
 import { Video } from '@renderer/types/video'
 import { useCallback, useEffect, useRef } from 'react'
 import useSWR from 'swr'
+
+import { useRetrieveThumbnail } from './useRetrieveThumbnail'
 
 const logger = loggerService.withContext('useVideo')
 
@@ -80,6 +82,7 @@ export const useVideos = (providerId: string) => {
     return result.filter((p) => p.status === 'fulfilled').map((p) => p.value)
   }
   const { data, error } = useSWR('video/openai/videos', fetcher, { refreshInterval: 3000 })
+  const retrieveThumbnail = useRetrieveThumbnail()
   useEffect(() => {
     if (error) {
       logger.error('Failed to fetch video status updates', error)
@@ -110,26 +113,33 @@ export const useVideos = (providerId: string) => {
             })
           }
           break
-        case 'completed':
-          // Only update it when in_progress/queued -> completed
+        case 'completed': {
           if (storeVideo.status === 'in_progress' || storeVideo.status === 'queued') {
-            setVideo({ ...storeVideo, status: 'completed', thumbnail: null, metadata: retrievedVideo })
-            // try to request thumbnail here.
-            retrieveVideoContent({
-              type: 'openai',
-              provider,
-              videoId: retrievedVideo.id,
-              query: { variant: 'thumbnail' }
-            })
-              .then((v) => {
-                // TODO: this is a iamge/webp type response. save it somewhere.
-                logger.debug('thumbnail resposne', v.response)
+            const newVideo = { ...storeVideo, status: 'completed', thumbnail: null, metadata: retrievedVideo } as const
+            setVideo(newVideo)
+            // Try to get thumbnail
+            retrieveThumbnail(newVideo)
+              .then((thumbnail) => {
+                const latestVideo = videosRef.current?.find((v) => v.id === newVideo.id)
+                if (
+                  thumbnail !== null &&
+                  latestVideo &&
+                  latestVideo.status !== 'queued' &&
+                  latestVideo.status !== 'in_progress' &&
+                  latestVideo.status !== 'failed'
+                ) {
+                  setVideo({
+                    ...latestVideo,
+                    thumbnail
+                  })
+                }
               })
               .catch((e) => {
-                logger.error(`Failed to get thumbnail for video ${retrievedVideo.id}`, e as Error)
+                logger.error('Failed to get thumbnail', e as Error)
               })
           }
           break
+        }
         case 'failed':
           setVideo({
             ...storeVideo,
