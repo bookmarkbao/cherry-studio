@@ -5,7 +5,14 @@ import { isDedicatedImageGenerationModel, isFunctionCallingModel } from '@render
 import { getProviderByModel } from '@renderer/services/AssistantService'
 import { withSpanResult } from '@renderer/services/SpanManagerService'
 import { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
-import type { GenerateImageParams, Model, Provider, RetrieveVideoContentParams } from '@renderer/types'
+import type {
+  DeleteVideoParams,
+  DeleteVideoResult,
+  GenerateImageParams,
+  Model,
+  Provider,
+  RetrieveVideoContentParams
+} from '@renderer/types'
 import type { RequestOptions, SdkModel } from '@renderer/types/sdk'
 import {
   CreateVideoParams,
@@ -219,6 +226,18 @@ export default class AiProvider {
       }
     } else {
       throw new Error('Video generation is not supported by this provider')
+    }
+  }
+
+  public async deleteVideo(params: DeleteVideoParams): Promise<DeleteVideoResult> {
+    if (this.apiClient instanceof OpenAIResponseAPIClient && params.type === 'openai') {
+      const result = await this.apiClient.deleteVideo(params)
+      return {
+        type: 'openai',
+        result
+      }
+    } else {
+      throw new Error('Video deletion is not supported by this provider')
     }
   }
 

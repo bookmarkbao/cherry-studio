@@ -10,6 +10,7 @@ import {
   Spinner,
   useDisclosure
 } from '@heroui/react'
+import { usePending } from '@renderer/hooks/usePending'
 import FileManager from '@renderer/services/FileManager'
 import { Video, VideoDownloaded, VideoFailed } from '@renderer/types/video'
 import dayjs from 'dayjs'
@@ -33,6 +34,8 @@ export type VideoViewerProps =
 export const VideoViewer = ({ video, onDownload, onRegenerate }: VideoViewerProps) => {
   const { t } = useTranslation()
   const [loadSuccess, setLoadSuccess] = useState<boolean | undefined>(undefined)
+  const { pendingMap } = usePending()
+  const isPending = video ? pendingMap[video.id] : false
   useEffect(() => {
     setLoadSuccess(undefined)
   }, [video?.id])
@@ -43,7 +46,7 @@ export const VideoViewer = ({ video, onDownload, onRegenerate }: VideoViewerProp
         {video && video.status === 'queued' && <QueuedVideo />}
         {video && video.status === 'in_progress' && <InProgressVideo progress={video.progress} />}
         {video && video.status === 'completed' && (
-          <CompletedVideo video={video} onDownload={onDownload} onRegenerate={onRegenerate} />
+          <CompletedVideo video={video} isDisabled={isPending} onDownload={onDownload} onRegenerate={onRegenerate} />
         )}
         {video && video.status === 'downloading' && <DownloadingVideo progress={video.progress} />}
         {video && video.status === 'downloaded' && loadSuccess !== false && (
@@ -51,7 +54,7 @@ export const VideoViewer = ({ video, onDownload, onRegenerate }: VideoViewerProp
         )}
         {video && video.status === 'failed' && <FailedVideo error={video.error} />}
         {video && video.status === 'downloaded' && loadSuccess === false && (
-          <LoadFailedVideo onRedownload={onDownload} />
+          <LoadFailedVideo isDisabled={isPending} onRedownload={onDownload} />
         )}
       </div>
     </>
@@ -87,10 +90,12 @@ const InProgressVideo = ({ progress }: { progress: number }) => {
 
 const CompletedVideo = ({
   video,
+  isDisabled,
   onDownload,
   onRegenerate
 }: {
   video: Video
+  isDisabled?: boolean
   onDownload: () => void
   onRegenerate: () => void
 }) => {
@@ -101,7 +106,9 @@ const CompletedVideo = ({
       <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl bg-warning-200">
         <Clock9Icon size={64} className="text-warning" />
         <span className="font-bold text-2xl">{t('video.expired')}</span>
-        <Button onPress={onRegenerate}>{t('common.regenerate')}</Button>
+        <Button onPress={onRegenerate} isDisabled={isDisabled}>
+          {t('common.regenerate')}
+        </Button>
       </div>
     )
   }
@@ -109,7 +116,9 @@ const CompletedVideo = ({
     <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl bg-success-200">
       <CheckCircleIcon size={64} className="text-success" />
       <span className="font-bold text-2xl">{t('video.status.completed')}</span>
-      <Button onPress={onDownload}>{t('common.download')}</Button>
+      <Button onPress={onDownload} isDisabled={isDisabled}>
+        {t('common.download')}
+      </Button>
     </div>
   )
 }
@@ -163,7 +172,7 @@ const FailedVideo = ({ error }: { error: VideoFailed['error'] }) => {
   )
 }
 
-const LoadFailedVideo = ({ onRedownload }: { onRedownload: () => void }) => {
+const LoadFailedVideo = ({ isDisabled, onRedownload }: { isDisabled?: boolean; onRedownload: () => void }) => {
   const { t } = useTranslation()
   return (
     <div className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-danger-200">
@@ -171,7 +180,9 @@ const LoadFailedVideo = ({ onRedownload }: { onRedownload: () => void }) => {
       <span className="font-bold text-2xl">{t('video.error.load.message')}</span>
       <span>{t('video.error.load.reason')}</span>
       <div className="my-2 flex justify-between gap-2">
-        <Button onPress={onRedownload}>{t('common.redownload')}</Button>
+        <Button onPress={onRedownload} isDisabled={isDisabled}>
+          {t('common.redownload')}
+        </Button>
       </div>
     </div>
   )

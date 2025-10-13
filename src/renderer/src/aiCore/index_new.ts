@@ -12,7 +12,15 @@ import { loggerService } from '@logger'
 import { getEnableDeveloperMode } from '@renderer/hooks/useSettings'
 import { addSpan, endSpan } from '@renderer/services/SpanManagerService'
 import { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
-import type { Assistant, GenerateImageParams, Model, Provider, RetrieveVideoContentParams } from '@renderer/types'
+import type {
+  Assistant,
+  DeleteVideoParams,
+  DeleteVideoResult,
+  GenerateImageParams,
+  Model,
+  Provider,
+  RetrieveVideoContentParams
+} from '@renderer/types'
 import type { AiSdkModel, StreamTextParams } from '@renderer/types/aiCoreTypes'
 import {
   CreateVideoParams,
@@ -526,6 +534,13 @@ export default class ModernAiProvider {
    */
   public async retrieveVideoContent(params: RetrieveVideoContentParams): Promise<RetrieveVideoContentResult> {
     return this.legacyProvider.retrieveVideoContent(params)
+  }
+
+  /**
+   * We manually implement this method before aisdk supports it well
+   */
+  public async deleteVideo(params: DeleteVideoParams): Promise<DeleteVideoResult> {
+    return this.legacyProvider.deleteVideo(params)
   }
 
   public getBaseURL(): string {

@@ -2,10 +2,14 @@
 
 import { Divider } from '@heroui/react'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
+import { usePending } from '@renderer/hooks/usePending'
 import { useProvider } from '@renderer/hooks/useProvider'
-import { useVideos } from '@renderer/hooks/video/useVideos'
+import { useProviderVideos } from '@renderer/hooks/video/useProviderVideos'
+import { useVideoThumbnail } from '@renderer/hooks/video/useVideoThumbnail'
+import { deleteVideo } from '@renderer/services/ApiService'
 import { SystemProviderIds } from '@renderer/types'
 import { CreateVideoParams } from '@renderer/types/video'
+import { getErrorMessage } from '@renderer/utils'
 import { deepUpdate } from '@renderer/utils/deepUpdate'
 import { isVideoModel } from '@renderer/utils/model/video'
 import { DeepPartial } from 'ai'
@@ -32,7 +36,12 @@ export const VideoPage = () => {
     },
     options: {}
   })
+  const { videos, removeVideo } = useProviderVideos(providerId)
+  // const activeVideo = useMemo(() => mockVideos.find((v) => v.id === activeVideoId), [activeVideoId])
   const [activeVideoId, setActiveVideoId] = useState<string>()
+  const activeVideo = useMemo(() => videos.find((v) => v.id === activeVideoId), [activeVideoId, videos])
+  const { setPending } = usePending()
+  const { removeThumbnail } = useVideoThumbnail()
 
   const updateParams = useCallback((update: DeepPartial<Omit<CreateVideoParams, 'type'>>) => {
     setParams((prev) => deepUpdate<CreateVideoParams>(prev, update))
@@ -47,9 +56,55 @@ export const VideoPage = () => {
     [updateParams]
   )
 
-  const { videos } = useVideos(providerId)
-  // const activeVideo = useMemo(() => mockVideos.find((v) => v.id === activeVideoId), [activeVideoId])
-  const activeVideo = useMemo(() => videos.find((v) => v.id === activeVideoId), [activeVideoId, videos])
+  const afterDeleteVideo = useCallback(
+    (id: string) => {
+      removeVideo(id)
+      removeThumbnail(id)
+    },
+    [removeThumbnail, removeVideo]
+  )
+
+  const handleDeleteVideo = useCallback(
+    async (id: string) => {
+      switch (provider.type) {
+        case 'openai-response':
+          try {
+            setPending(id, true)
+            const promise = deleteVideo({
+              type: 'openai',
+              videoId: id,
+              provider
+            })
+            window.toast.loading({
+              title: t('common.deleting'),
+              promise
+            })
+            const result = await promise
+            if (result.result.deleted) {
+              afterDeleteVideo(id)
+            } else {
+              window.toast.error(t('error.delete.failed'))
+            }
+          } catch (e) {
+            if (e instanceof Error && e.message.includes('404')) {
+              window.toast.warning({
+                title: t('video.delete.error.not_found.title'),
+                description: t('video.delete.error.not_found.description')
+              })
+              afterDeleteVideo(id)
+            } else {
+              window.toast.error({ title: t('error.delete.failed'), description: getErrorMessage(e) })
+            }
+          } finally {
+            setPending(id, undefined)
+          }
+          break
+        default:
+          throw new Error(`Provider type "${provider.type}" is not supported for video deletion`)
+      }
+    },
+    [afterDeleteVideo, provider, setPending, t]
+  )
 
   return (
     <div className="flex flex-1 flex-col">
@@ -73,7 +128,12 @@ export const VideoPage = () => {
         <VideoPanel provider={provider} params={params} updateParams={updateParams} video={activeVideo} />
         <Divider orientation="vertical" />
         {/* Video list */}
-        <VideoList videos={videos} activeVideoId={activeVideoId} setActiveVideoId={setActiveVideoId} />
+        <VideoList
+          videos={videos}
+          activeVideoId={activeVideoId}
+          setActiveVideoId={setActiveVideoId}
+          onDelete={handleDeleteVideo}
+        />
       </div>
     </div>
   )

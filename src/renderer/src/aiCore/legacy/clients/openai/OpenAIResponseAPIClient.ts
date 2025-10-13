@@ -36,7 +36,12 @@ import {
   OpenAIResponseSdkTool,
   OpenAIResponseSdkToolCall
 } from '@renderer/types/sdk'
-import { CreateVideoParams, RetrieveVideoContentParams, RetrieveVideoParams } from '@renderer/types/video'
+import {
+  CreateVideoParams,
+  DeleteVideoParams,
+  RetrieveVideoContentParams,
+  RetrieveVideoParams
+} from '@renderer/types/video'
 import { addImageFileToContents } from '@renderer/utils/formats'
 import {
   isSupportedToolUse,
@@ -166,6 +171,11 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
   public async retrieveVideoContent(params: RetrieveVideoContentParams): Promise<Response> {
     const sdk = await this.getSdkInstance()
     return sdk.videos.downloadContent(params.videoId, params.query, params.options)
+  }
+
+  public async deleteVideo(params: DeleteVideoParams): Promise<OpenAI.Videos.VideoDeleteResponse> {
+    const sdk = await this.getSdkInstance()
+    return sdk.videos.delete(params.videoId, params.options)
   }
 
   private async handlePdfFile(file: FileMetadata): Promise<OpenAI.Responses.ResponseInputFile | undefined> {

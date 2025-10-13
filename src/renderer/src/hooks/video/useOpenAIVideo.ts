@@ -1,19 +1,23 @@
 import { retrieveVideo } from '@renderer/services/ApiService'
-import { SystemProviderIds } from '@renderer/types'
 import useSWR, { SWRConfiguration, useSWRConfig } from 'swr'
 
 import { useProvider } from '../useProvider'
 import { useVideo } from './useVideo'
 
-export const useOpenAIVideo = (id: string) => {
-  const providerId = SystemProviderIds.openai
-  const { provider: openai } = useProvider(providerId)
+export const useOpenAIVideo = (providerId: string, id: string) => {
+  const { provider } = useProvider(providerId)
   const fetcher = async () => {
-    return retrieveVideo({
-      type: 'openai',
-      videoId: id,
-      provider: openai
-    })
+    switch (provider.type) {
+      case 'openai-response':
+        return retrieveVideo({
+          type: 'openai',
+          videoId: id,
+          provider
+        })
+
+      default:
+        throw new Error(`Unsupported provider type: ${provider.type}`)
+    }
   }
   const video = useVideo(providerId, id)
   let options: SWRConfiguration = {}

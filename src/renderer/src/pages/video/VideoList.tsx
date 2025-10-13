@@ -7,13 +7,14 @@ export type VideoListProps = {
   videos: Video[]
   activeVideoId?: string
   setActiveVideoId: (id: string | undefined) => void
+  onDelete: (id: string) => void
 }
 
-export const VideoList = ({ videos, activeVideoId, setActiveVideoId }: VideoListProps) => {
+export const VideoList = ({ videos, activeVideoId, setActiveVideoId, onDelete }: VideoListProps) => {
   return (
-    <div className="w-40 space-y-3 overflow-auto p-2">
+    <div className="flex w-40 flex-col gap-1 space-y-3 overflow-auto p-2">
       <div
-        className="group relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
+        className="group relative flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
         onClick={() => setActiveVideoId(undefined)}>
         <PlusIcon size={24} />
       </div>
@@ -24,6 +25,7 @@ export const VideoList = ({ videos, activeVideoId, setActiveVideoId }: VideoList
           video={video}
           isActive={activeVideoId === video.id}
           onClick={() => setActiveVideoId(video.id)}
+          onDelete={() => onDelete(video.id)}
         />
       ))}
     </div>

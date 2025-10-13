@@ -970,6 +970,7 @@
     "delete_confirm": "Are you sure you want to delete?",
     "delete_failed": "Failed to delete",
     "delete_success": "Deleted successfully",
+    "deleting": "Deleting...",
     "description": "Description",
     "detail": "Detail",
     "disabled": "Disabled",
@@ -1087,6 +1088,9 @@
     },
     "content": "Content",
     "data": "Data",
+    "delete": {
+      "failed": "Failed to delete."
+    },
     "detail": "Error Details",
     "details": "Details",
     "errors": "Errors",
@@ -4650,6 +4654,14 @@
     "title": "Update"
   },
   "video": {
+    "delete": {
+      "error": {
+        "not_found": {
+          "description": "The video was not found remotely. It will only be deleted locally.",
+          "title": "Video not found."
+        }
+      }
+    },
     "error": {
       "create": "Failed to create video",
       "download": "Failed to download video.",

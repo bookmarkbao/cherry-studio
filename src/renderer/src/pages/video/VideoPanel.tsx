@@ -1,7 +1,8 @@
 import { Button, cn, Image, Skeleton, Textarea, Tooltip } from '@heroui/react'
 import { loggerService } from '@logger'
+import { usePending } from '@renderer/hooks/usePending'
 import { useAddOpenAIVideo } from '@renderer/hooks/video/useAddOpenAIVideo'
-import { useVideos } from '@renderer/hooks/video/useVideos'
+import { useProviderVideos } from '@renderer/hooks/video/useProviderVideos'
 import { createVideo, retrieveVideoContent } from '@renderer/services/ApiService'
 import FileManager from '@renderer/services/FileManager'
 import { FileTypes, Provider, VideoFileMetadata } from '@renderer/types'
@@ -13,7 +14,7 @@ import dayjs from 'dayjs'
 import { isEmpty } from 'lodash'
 import { ArrowUp, CircleXIcon, ImageIcon } from 'lucide-react'
 import mime from 'mime-types'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { VideoViewer } from './VideoViewer'
@@ -30,20 +31,20 @@ const logger = loggerService.withContext('VideoPanel')
 export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanelProps) => {
   const { t } = useTranslation()
   const addOpenAIVideo = useAddOpenAIVideo(provider.id)
-  const { setVideo } = useVideos(provider.id)
+  const { setVideo } = useProviderVideos(provider.id)
 
-  const [isProcessing, setIsProcessing] = useState(false)
+  const { pendingMap, setPending: setPendingById } = usePending()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const inputReference = params.params.input_reference
 
   const couldCreateVideo = useMemo(
     () =>
-      !isProcessing &&
       !isEmpty(params.params.prompt) &&
       video?.status !== 'queued' &&
       video?.status !== 'downloading' &&
-      video?.status !== 'in_progress',
-    [isProcessing, params.params.prompt, video?.status]
+      video?.status !== 'in_progress' &&
+      (video === undefined || pendingMap[video.id] !== true),
+    [params.params.prompt, pendingMap, video]
   )
 
   useEffect(() => {
@@ -54,9 +55,19 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     }
   }, [updateParams, video])
 
+  const isPending = video ? pendingMap[video.id] : false
+  const setPending = useCallback(
+    (value: boolean) => {
+      if (video) {
+        setPendingById(video.id, value ? value : undefined)
+      }
+    },
+    [setPendingById, video]
+  )
+
   const handleCreateVideo = useCallback(async () => {
     if (!couldCreateVideo) return
-    setIsProcessing(true)
+    setPending(true)
     try {
       if (video === undefined) {
         const result = await createVideo(params)
@@ -75,9 +86,9 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     } catch (e) {
       window.toast.error({ title: t('video.error.create'), description: getErrorMessage(e), timeout: 5000 })
     } finally {
-      setIsProcessing(false)
+      setPending(false)
     }
-  }, [addOpenAIVideo, couldCreateVideo, params, t, video])
+  }, [addOpenAIVideo, couldCreateVideo, params, setPending, t, video])
 
   const handleRegenerateVideo = useCallback(() => {
     window.toast.info('Not implemented')
@@ -208,13 +219,13 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
             startContent={<ImageIcon size={16} className={cn(inputReference ? 'text-primary' : undefined)} />}
             isIconOnly
             className="h-6 w-6 min-w-0"
-            isDisabled={isProcessing}
+            isDisabled={isPending}
             onPress={handleUploadFile}
           />
         </Tooltip>
       </>
     )
-  }, [handleUploadFile, isProcessing, inputReference, t, updateParams])
+  }, [handleUploadFile, inputReference, isPending, t, updateParams])
 
   return (
     <div className="flex flex-1 flex-col p-2">
@@ -231,7 +242,7 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
           value={params.params.prompt}
           onValueChange={setPrompt}
           isClearable
-          isDisabled={isProcessing}
+          isDisabled={isPending}
           classNames={{ inputWrapper: 'pb-8' }}
           onKeyDown={(e: React.KeyboardEvent) => {
             if (e.key === 'Enter') {
@@ -274,7 +285,7 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
               radius="full"
               isIconOnly
               isDisabled={!couldCreateVideo}
-              isLoading={isProcessing}
+              isLoading={isPending}
               className="h-6 w-6 min-w-0"
               onPress={handleCreateVideo}>
               <ArrowUp size={16} className="text-primary-foreground" />

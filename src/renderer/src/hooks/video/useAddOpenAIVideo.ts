@@ -1,10 +1,10 @@
 import OpenAI from '@cherrystudio/openai'
 import { useCallback } from 'react'
 
-import { useVideos } from './useVideos'
+import { useProviderVideos } from './useProviderVideos'
 
 export const useAddOpenAIVideo = (providerId: string) => {
-  const { addVideo } = useVideos(providerId)
+  const { addVideo } = useProviderVideos(providerId)
 
   const addOpenAIVideo = useCallback(
     (video: OpenAI.Videos.Video, prompt: string) => {
