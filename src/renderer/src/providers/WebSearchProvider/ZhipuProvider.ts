@@ -1,6 +1,6 @@
 import { loggerService } from '@logger'
 import { WebSearchState } from '@renderer/store/websearch'
-import { WebSearchProvider, WebSearchProviderResponse } from '@renderer/types'
+import { ProviderSpecificParams, WebSearchProvider, WebSearchProviderResponse } from '@renderer/types'
 
 import BaseWebSearchProvider from './BaseWebSearchProvider'
 
@@ -46,7 +46,8 @@ export default class ZhipuProvider extends BaseWebSearchProvider {
   public async search(
     query: string,
     websearch: WebSearchState,
-    httpOptions?: RequestInit
+    httpOptions?: RequestInit,
+    _providerParams?: ProviderSpecificParams
   ): Promise<WebSearchProviderResponse> {
     try {
       if (!query.trim()) {

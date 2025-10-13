@@ -10,6 +10,7 @@ import {
   KnowledgeBase,
   KnowledgeItem,
   KnowledgeReference,
+  ProviderSpecificParams,
   WebSearchProvider,
   WebSearchProviderResponse,
   WebSearchProviderResult,
@@ -161,13 +162,17 @@ class WebSearchService {
    * @public
    * @param provider 搜索提供商
    * @param query 搜索查询
+   * @param httpOptions HTTP选项（包含signal等）
+   * @param spanId Span ID用于追踪
+   * @param providerParams Provider特定参数（如Exa的category、Tavily的searchDepth等）
    * @returns 搜索响应
    */
   public async search(
     provider: WebSearchProvider,
     query: string,
     httpOptions?: RequestInit,
-    spanId?: string
+    spanId?: string,
+    providerParams?: ProviderSpecificParams
   ): Promise<WebSearchProviderResponse> {
     const websearch = this.getWebSearchState()
     const webSearchEngine = new WebSearchEngineProvider(provider, spanId)
@@ -178,7 +183,7 @@ class WebSearchService {
       formattedQuery = `today is ${dayjs().format('YYYY-MM-DD')} \r\n ${query}`
     }
 
-    return await webSearchEngine.search(formattedQuery, websearch, httpOptions)
+    return await webSearchEngine.search(formattedQuery, websearch, httpOptions, providerParams)
   }
 
   /**
@@ -424,6 +429,8 @@ class WebSearchService {
    * @param webSearchProvider - 要使用的网络搜索提供商
    * @param extractResults - 包含搜索问题和链接的提取结果对象
    * @param requestId - 唯一的请求标识符，用于状态跟踪和资源管理
+   * @param externalSignal - 可选的 AbortSignal 用于取消请求
+   * @param providerParams - 可选的 Provider 特定参数（如 Exa 的 category、Tavily 的 searchDepth 等）
    *
    * @returns 包含搜索结果的响应对象
    */
@@ -431,7 +438,8 @@ class WebSearchService {
     webSearchProvider: WebSearchProvider,
     extractResults: ExtractResults,
     requestId: string,
-    externalSignal?: AbortSignal
+    externalSignal?: AbortSignal,
+    providerParams?: ProviderSpecificParams
   ): Promise<WebSearchProviderResponse> {
     // 重置状态
     await this.setWebSearchStatus(requestId, { phase: 'default' })
@@ -474,8 +482,9 @@ class WebSearchService {
       return { query: 'summaries', results: contents }
     }
 
+    // 执行搜索
     const searchPromises = questions.map((q) =>
-      this.search(webSearchProvider, q, { signal }, span?.spanContext().spanId)
+      this.search(webSearchProvider, q, { signal }, span?.spanContext().spanId, providerParams)
     )
     const searchResults = await Promise.allSettled(searchPromises)
 

@@ -1,7 +1,7 @@
 import { SearxngClient } from '@agentic/searxng'
 import { loggerService } from '@logger'
 import { WebSearchState } from '@renderer/store/websearch'
-import { WebSearchProvider, WebSearchProviderResponse } from '@renderer/types'
+import { ProviderSpecificParams, WebSearchProvider, WebSearchProviderResponse } from '@renderer/types'
 import { fetchWebContent, noContent } from '@renderer/utils/fetch'
 import axios from 'axios'
 import ky from 'ky'
@@ -98,7 +98,8 @@ export default class SearxngProvider extends BaseWebSearchProvider {
   public async search(
     query: string,
     websearch: WebSearchState,
-    httpOptions?: RequestInit
+    httpOptions?: RequestInit,
+    _providerParams?: ProviderSpecificParams
   ): Promise<WebSearchProviderResponse> {
     try {
       if (!query) {

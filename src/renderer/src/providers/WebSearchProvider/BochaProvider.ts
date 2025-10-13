@@ -1,6 +1,6 @@
 import { loggerService } from '@logger'
 import { WebSearchState } from '@renderer/store/websearch'
-import { WebSearchProvider, WebSearchProviderResponse } from '@renderer/types'
+import { ProviderSpecificParams, WebSearchProvider, WebSearchProviderResponse } from '@renderer/types'
 import { BochaSearchParams, BochaSearchResponse } from '@renderer/utils/bocha'
 
 import BaseWebSearchProvider from './BaseWebSearchProvider'
@@ -21,7 +21,8 @@ export default class BochaProvider extends BaseWebSearchProvider {
   public async search(
     query: string,
     websearch: WebSearchState,
-    httpOptions?: RequestInit
+    httpOptions?: RequestInit,
+    _providerParams?: ProviderSpecificParams
   ): Promise<WebSearchProviderResponse> {
     try {
       if (!query.trim()) {

@@ -58,6 +58,8 @@ const ChooseTool = (
     switch (toolName) {
       case 'web_search':
       case 'web_search_preview':
+      case 'exa_search':
+      case 'tavily_search':
         return toolType === 'provider' ? null : <MessageWebSearchToolTitle toolResponse={toolResponse} />
       case 'knowledge_search':
         return <MessageKnowledgeSearchToolTitle toolResponse={toolResponse} />
