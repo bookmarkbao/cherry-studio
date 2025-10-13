@@ -15,7 +15,7 @@ import dayjs from 'dayjs'
 import { isEmpty } from 'lodash'
 import { ArrowUp, CircleXIcon, ImageIcon } from 'lucide-react'
 import mime from 'mime-types'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { VideoViewer } from './VideoViewer'
@@ -25,16 +25,18 @@ export type VideoPanelProps = {
   video?: Video
   params: CreateVideoParams
   updateParams: (upadte: DeepPartial<Omit<CreateVideoParams, 'type'>>) => void
+  setActiveVideoId: (id: string) => void
 }
 
 const logger = loggerService.withContext('VideoPanel')
 
-export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanelProps) => {
+export const VideoPanel = ({ provider, video, params, updateParams, setActiveVideoId }: VideoPanelProps) => {
   const { t } = useTranslation()
   const addOpenAIVideo = useAddOpenAIVideo(provider.id)
   const { setVideo } = useProviderVideos(provider.id)
 
   const { pendingMap, setPending: setPendingById } = usePending()
+  const [isProcessing, setIsProcessing] = useState<boolean | undefined>()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const inputReference = params.params.input_reference
 
@@ -56,11 +58,13 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
     }
   }, [updateParams, video])
 
-  const isPending = video ? pendingMap[video.id] : false
+  const isPending = (video ? pendingMap[video.id] : false) || isProcessing
   const setPending = useCallback(
     (value: boolean) => {
       if (video) {
         setPendingById(video.id, value ? value : undefined)
+      } else {
+        setIsProcessing(value)
       }
     },
     [setPendingById, video]
@@ -80,6 +84,7 @@ export const VideoPanel = ({ provider, video, params, updateParams }: VideoPanel
           default:
             logger.error(`Invalid video type ${result.type}.`)
         }
+        setActiveVideoId(result.video.id)
       } else {
         // TODO: remix video
         window.toast.info('Remix video is not implemented.')
