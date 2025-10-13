@@ -4694,6 +4694,10 @@
       "queued": "Queued"
     },
     "thumbnail": {
+      "error": {
+        "get": "Failed to get thumbnail"
+      },
+      "get": "Get thumbnail",
       "placeholder": "No thumbnail"
     },
     "title": "Video",

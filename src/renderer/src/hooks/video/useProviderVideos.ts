@@ -4,7 +4,9 @@ import { getProviderById } from '@renderer/services/ProviderService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { addVideoAction, setVideoAction, setVideosAction, updateVideoAction } from '@renderer/store/video'
 import { Video } from '@renderer/types/video'
+import { getErrorMessage } from '@renderer/utils'
 import { useCallback, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
 import { useVideos } from './useVideos'
@@ -17,10 +19,18 @@ export const useProviderVideos = (providerId: string) => {
   const videos = useAppSelector((state) => state.video.videoMap[providerId])
   const videosRef = useRef(videos)
   const dispatch = useAppDispatch()
+  const { t } = useTranslation()
 
   useEffect(() => {
     videosRef.current = videos
   }, [videos])
+
+  const getVideo = useCallback(
+    (id: string) => {
+      return videos?.find((v) => v.id === id)
+    },
+    [videos]
+  )
 
   const addVideo = useCallback(
     (video: Video) => {
@@ -70,12 +80,16 @@ export const useProviderVideos = (providerId: string) => {
   const provider = getProviderById(providerId)
   const fetcher = async () => {
     if (!videos || !provider) return []
-    const openaiVideos = videos
-      .filter((v) => v.type === 'openai')
-      .filter((v) => v.status === 'queued' || v.status === 'in_progress')
-    const jobs = openaiVideos.map((v) => retrieveVideo({ type: 'openai', videoId: v.id, provider }))
-    const result = await Promise.allSettled(jobs)
-    return result.filter((p) => p.status === 'fulfilled').map((p) => p.value)
+    if (provider.type === 'openai-response') {
+      const openaiVideos = videos
+        .filter((v) => v.type === 'openai')
+        .filter((v) => v.status === 'queued' || v.status === 'in_progress')
+      const jobs = openaiVideos.map((v) => retrieveVideo({ type: 'openai', videoId: v.id, provider }))
+      const result = await Promise.allSettled(jobs)
+      return result.filter((p) => p.status === 'fulfilled').map((p) => p.value)
+    } else {
+      throw new Error(`Provider type ${provider.type} is not supported for video status polling`)
+    }
   }
   const { data, error } = useSWR('video/openai/videos', fetcher, { refreshInterval: 3000 })
   const { retrieveThumbnail } = useVideoThumbnail()
@@ -132,6 +146,7 @@ export const useProviderVideos = (providerId: string) => {
               })
               .catch((e) => {
                 logger.error('Failed to get thumbnail', e as Error)
+                window.toast.error({ title: t('video.thumbnail.error.get'), description: getErrorMessage(e) })
               })
           }
           break
@@ -149,6 +164,7 @@ export const useProviderVideos = (providerId: string) => {
 
   return {
     videos: videos ?? [],
+    getVideo,
     addVideo,
     updateVideo,
     setVideos,

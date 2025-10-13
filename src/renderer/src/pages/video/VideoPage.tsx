@@ -36,12 +36,12 @@ export const VideoPage = () => {
     },
     options: {}
   })
-  const { videos, removeVideo } = useProviderVideos(providerId)
+  const { videos, removeVideo, getVideo, updateVideo } = useProviderVideos(providerId)
   // const activeVideo = useMemo(() => mockVideos.find((v) => v.id === activeVideoId), [activeVideoId])
   const [activeVideoId, setActiveVideoId] = useState<string>()
   const activeVideo = useMemo(() => videos.find((v) => v.id === activeVideoId), [activeVideoId, videos])
   const { setPending } = usePending()
-  const { removeThumbnail } = useVideoThumbnail()
+  const { removeThumbnail, retrieveThumbnail } = useVideoThumbnail()
 
   const updateParams = useCallback((update: DeepPartial<Omit<CreateVideoParams, 'type'>>) => {
     setParams((prev) => deepUpdate<CreateVideoParams>(prev, update))
@@ -106,6 +106,25 @@ export const VideoPage = () => {
     [afterDeleteVideo, provider, setPending, t]
   )
 
+  const handleGetThumbnail = useCallback(
+    async (id: string) => {
+      const video = getVideo(id)
+      if (video && video.thumbnail === null) {
+        try {
+          const promise = retrieveThumbnail(video)
+          window.toast.loading({ title: t('video.thumbnail.get'), promise })
+          const thumbnail = await promise
+          if (thumbnail) {
+            updateVideo({ id: video.id, thumbnail })
+          }
+        } catch (e) {
+          window.toast.error({ title: t('video.thumbnail.error.get'), description: getErrorMessage(e) })
+        }
+      }
+    },
+    [getVideo, retrieveThumbnail, t, updateVideo]
+  )
+
   return (
     <div className="flex flex-1 flex-col">
       <Navbar>
@@ -133,6 +152,7 @@ export const VideoPage = () => {
           activeVideoId={activeVideoId}
           setActiveVideoId={setActiveVideoId}
           onDelete={handleDeleteVideo}
+          onGetThumbnail={handleGetThumbnail}
         />
       </div>
     </div>

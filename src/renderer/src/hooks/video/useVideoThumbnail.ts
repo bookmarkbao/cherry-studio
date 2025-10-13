@@ -15,7 +15,7 @@ export const useVideoThumbnail = () => {
   }, [])
 
   const retrieveThumbnail = useCallback(
-    async (video: Video): Promise<string | null> => {
+    async (video: Video): Promise<string> => {
       const provider = getProviderById(video.providerId)
       if (!provider) {
         throw new Error(`Provider not found for id ${video.providerId}`)
@@ -66,10 +66,10 @@ export const useVideoThumbnail = () => {
         return base64
       } catch (e) {
         logger.error(`Failed to get thumbnail for video ${video.id}`, e as Error)
+        throw e
       } finally {
         pendingSet.delete(thumbnailKey)
       }
-      return null
     },
     [getThumbnailKey]
   )

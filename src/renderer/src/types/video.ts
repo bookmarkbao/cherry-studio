@@ -34,12 +34,14 @@ interface OpenAIVideoBase {
 
 export interface VideoQueued extends VideoBase {
   readonly status: 'queued'
+  thumbnail?: never
 }
 
 export interface VideoInProgress extends VideoBase {
   readonly status: 'in_progress'
   /** integer percent */
   progress: number
+  thumbnail?: never
 }
 export interface VideoCompleted extends VideoBase {
   readonly status: 'completed'

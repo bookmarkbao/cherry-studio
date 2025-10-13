@@ -2,19 +2,21 @@ import { cn, Progress, Spinner } from '@heroui/react'
 import { DeleteIcon } from '@renderer/components/Icons'
 import { Video } from '@renderer/types/video'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@renderer/ui/context-menu'
-import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon } from 'lucide-react'
+import { CheckCircleIcon, CircleXIcon, ClockIcon, DownloadIcon, ImageDownIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export const VideoListItem = ({
   video,
   isActive,
   onClick,
-  onDelete
+  onDelete,
+  onGetThhumbnail
 }: {
   video: Video
   isActive: boolean
   onClick: () => void
   onDelete: () => void
+  onGetThhumbnail: () => void
 }) => {
   const { t } = useTranslation()
 
@@ -140,6 +142,12 @@ export const VideoListItem = ({
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
+        {video.thumbnail === null && (
+          <ContextMenuItem onSelect={onGetThhumbnail}>
+            <ImageDownIcon />
+            <span>{t('video.thumbnail.get')}</span>
+          </ContextMenuItem>
+        )}
         <ContextMenuItem onSelect={onDelete}>
           <DeleteIcon className="text-danger" />
           <span className="text-danger">{t('common.delete')}</span>
