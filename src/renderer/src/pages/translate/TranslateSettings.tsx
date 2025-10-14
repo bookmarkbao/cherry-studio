@@ -1,4 +1,5 @@
 import { Button, ColFlex, Flex, HelpTooltip, RowFlex, Switch, Tooltip } from '@cherrystudio/ui'
+import { usePreference } from '@data/hooks/usePreference'
 import LanguageSelect from '@renderer/components/LanguageSelect'
 import db from '@renderer/databases'
 import useTranslate from '@renderer/hooks/useTranslate'
@@ -41,8 +42,8 @@ const TranslateSettings: FC<{
 }) => {
   const { t } = useTranslation()
   const [localPair, setLocalPair] = useState<[TranslateLanguage, TranslateLanguage]>(bidirectionalPair)
-  const { getLanguageByLangcode, settings, updateSettings } = useTranslate()
-  const { autoCopy } = settings
+  const { getLanguageByLangcode } = useTranslate()
+  const [autoCopy, setAutoCopy] = usePreference('translate.settings.auto_copy')
 
   useEffect(() => {
     setLocalPair(bidirectionalPair)
@@ -83,7 +84,7 @@ const TranslateSettings: FC<{
               isSelected={autoCopy}
               color="primary"
               onValueChange={(isSelected) => {
-                updateSettings({ autoCopy: isSelected })
+                setAutoCopy(isSelected)
               }}
             />
           </RowFlex>

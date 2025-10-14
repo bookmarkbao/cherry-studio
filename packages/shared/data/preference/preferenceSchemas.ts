@@ -395,6 +395,8 @@ export interface PreferenceSchemas {
     'topic.tab.show': boolean
     // redux/settings/showTopicTime
     'topic.tab.show_time': boolean
+    // redux/translate/settings
+    'translate.settings.auto_copy': boolean
     // redux/settings/customCss
     'ui.custom_css': string
     // redux/settings/navbarPosition
@@ -654,6 +656,7 @@ export const DefaultPreferences: PreferenceSchemas = {
     'topic.tab.pin_to_top': false,
     'topic.tab.show': true,
     'topic.tab.show_time': false,
+    'translate.settings.auto_copy': false,
     'ui.custom_css': '',
     'ui.navbar.position': 'top',
     'ui.sidebar.icons.invisible': [],
