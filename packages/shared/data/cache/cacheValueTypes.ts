@@ -1,4 +1,4 @@
-import type { MinAppType, Topic, WebSearchStatus } from '@types'
+import type { MinAppType, Topic, TranslateLanguageCode, WebSearchStatus } from '@types'
 import type { UpdateInfo } from 'builder-util-runtime'
 
 export type CacheAppUpdateState = {
@@ -25,3 +25,8 @@ export type CacheTranslating =
       isTranslating: false
       abortKey: null
     }
+export type CacheTranslateBidirectional = {
+  enabled: boolean
+  origin: TranslateLanguageCode
+  target: TranslateLanguageCode
+}

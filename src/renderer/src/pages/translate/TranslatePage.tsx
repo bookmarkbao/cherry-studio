@@ -69,18 +69,15 @@ const TranslatePage: FC = () => {
   const [isDetecting, setIsDetecting] = useCache('translate.detecting')
   const [translatingState, setTranslatingState] = useCache('translate.translating')
   const { isTranslating, abortKey } = translatingState
+  const [bidirectional, setBidirectional] = useCache('translate.bidirectional')
+  const { enabled: isBidirectional } = bidirectional
 
   // states
   const [renderedMarkdown, setRenderedMarkdown] = useState<string>('')
   const [copied, setCopied] = useTemporaryValue(false, 2000)
   const [historyDrawerVisible, setHistoryDrawerVisible] = useState(false)
   const [isScrollSyncEnabled, setIsScrollSyncEnabled] = useState(false)
-  const [isBidirectional, setIsBidirectional] = useState(false)
   const [enableMarkdown, setEnableMarkdown] = useState(false)
-  const [bidirectionalPair, setBidirectionalPair] = useState<[TranslateLanguage, TranslateLanguage]>([
-    LanguagesEnum.enUS,
-    LanguagesEnum.zhCN
-  ])
   const [settingsVisible, setSettingsVisible] = useState(false)
   const [detectedLanguage, setDetectedLanguage] = useState<TranslateLanguage | null>(null)
   const [sourceLanguage, setSourceLanguage] = useState<TranslateLanguage | 'auto'>(_sourceLanguage)
@@ -149,12 +146,11 @@ const TranslatePage: FC = () => {
       !text.trim() ||
       (sourceLanguage !== 'auto' && sourceLanguage.langCode === UNKNOWN.langCode) ||
       targetLanguage.langCode === UNKNOWN.langCode ||
-      (isBidirectional &&
-        (bidirectionalPair[0].langCode === UNKNOWN.langCode || bidirectionalPair[1].langCode === UNKNOWN.langCode)) ||
+      (isBidirectional && (bidirectional.origin === UNKNOWN.langCode || bidirectional.target === UNKNOWN.langCode)) ||
       isProcessing ||
       isDetecting
     )
-  }, [bidirectionalPair, isBidirectional, isDetecting, isProcessing, sourceLanguage, targetLanguage.langCode, text])
+  }, [bidirectional, isBidirectional, isDetecting, isProcessing, sourceLanguage, targetLanguage.langCode, text])
 
   // 控制翻译按钮，翻译前进行校验
   const onTranslate = useCallback(async () => {
@@ -184,7 +180,7 @@ const TranslatePage: FC = () => {
     }
 
     try {
-      const result = determineTargetLanguage(actualSourceLanguage, targetLanguage, isBidirectional, bidirectionalPair)
+      const result = determineTargetLanguage(actualSourceLanguage.langCode, targetLanguage.langCode, bidirectional)
       if (!result.success) {
         let errorMessage = ''
         if (result.errorType === 'same_language') {
@@ -197,7 +193,8 @@ const TranslatePage: FC = () => {
         return
       }
 
-      const actualTargetLanguage = result.language as TranslateLanguage
+      const actualTargetLanguage = getLanguageByLangcode(result.language)
+
       if (isBidirectional) {
         setTargetLanguage(actualTargetLanguage)
       }
@@ -230,7 +227,7 @@ const TranslatePage: FC = () => {
     }
   }, [
     autoCopy,
-    bidirectionalPair,
+    bidirectional,
     couldTranslate,
     getLanguageByLangcode,
     isBidirectional,
@@ -252,12 +249,6 @@ const TranslatePage: FC = () => {
       return
     }
     abortCompletion(abortKey)
-  }
-
-  // 控制双向翻译切换
-  const toggleBidirectional = (value: boolean) => {
-    setIsBidirectional(value)
-    db.settings.put({ id: 'translate:bidirectional:enabled', value })
   }
 
   // 控制历史记录点击
@@ -334,32 +325,6 @@ const TranslatePage: FC = () => {
       sourceLang &&
         setSourceLanguage(sourceLang.value === 'auto' ? sourceLang.value : getLanguageByLangcode(sourceLang.value))
 
-      const bidirectionalPairSetting = await db.settings.get({ id: 'translate:bidirectional:pair' })
-      if (bidirectionalPairSetting) {
-        const langPair = bidirectionalPairSetting.value
-        let source: undefined | TranslateLanguage
-        let target: undefined | TranslateLanguage
-
-        if (Array.isArray(langPair) && langPair.length === 2 && langPair[0] !== langPair[1]) {
-          source = getLanguageByLangcode(langPair[0])
-          target = getLanguageByLangcode(langPair[1])
-        }
-
-        if (source && target) {
-          setBidirectionalPair([source, target])
-        } else {
-          const defaultPair: [TranslateLanguage, TranslateLanguage] = [LanguagesEnum.enUS, LanguagesEnum.zhCN]
-          setBidirectionalPair(defaultPair)
-          db.settings.put({
-            id: 'translate:bidirectional:pair',
-            value: [defaultPair[0].langCode, defaultPair[1].langCode]
-          })
-        }
-      }
-
-      const bidirectionalSetting = await db.settings.get({ id: 'translate:bidirectional:enabled' })
-      setIsBidirectional(bidirectionalSetting ? bidirectionalSetting.value : false)
-
       const scrollSyncSetting = await db.settings.get({ id: 'translate:scroll:sync' })
       setIsScrollSyncEnabled(scrollSyncSetting ? scrollSyncSetting.value : false)
 
@@ -383,8 +348,8 @@ const TranslatePage: FC = () => {
 
   // 获取目标语言显示
   const getLanguageDisplay = () => {
-    try {
-      if (isBidirectional) {
+    if (isBidirectional) {
+      try {
         return (
           <Flex className="min-w-40 items-center">
             <BidirectionalLanguageDisplay>
@@ -392,10 +357,14 @@ const TranslatePage: FC = () => {
             </BidirectionalLanguageDisplay>
           </Flex>
         )
+      } catch (error) {
+        logger.error('Error getting language display:', error as Error)
+        setBidirectional({
+          enabled: true,
+          origin: LanguagesEnum.enUS.langCode,
+          target: LanguagesEnum.zhCN.langCode
+        })
       }
-    } catch (error) {
-      logger.error('Error getting language display:', error as Error)
-      setBidirectionalPair([LanguagesEnum.enUS, LanguagesEnum.zhCN])
     }
 
     return (
@@ -766,12 +735,8 @@ const TranslatePage: FC = () => {
         onClose={() => setSettingsVisible(false)}
         isScrollSyncEnabled={isScrollSyncEnabled}
         setIsScrollSyncEnabled={setIsScrollSyncEnabled}
-        isBidirectional={isBidirectional}
-        setIsBidirectional={toggleBidirectional}
         enableMarkdown={enableMarkdown}
         setEnableMarkdown={setEnableMarkdown}
-        bidirectionalPair={bidirectionalPair}
-        setBidirectionalPair={setBidirectionalPair}
         translateModel={translateModel}
       />
     </Container>

@@ -32,6 +32,7 @@ export type UseCacheSchema = {
   'translate.output': string
   'translate.detecting': boolean
   'translate.translating': CacheValueTypes.CacheTranslating
+  'translate.bidirectional': CacheValueTypes.CacheTranslateBidirectional
 
   // Test keys (for dataRefactorTest window)
   // TODO: remove after testing
@@ -83,6 +84,11 @@ export const DefaultUseCache: UseCacheSchema = {
   'translate.output': '',
   'translate.detecting': false,
   'translate.translating': { isTranslating: false, abortKey: null },
+  'translate.bidirectional': {
+    enabled: false,
+    origin: 'en-us',
+    target: 'zh-cn'
+  },
 
   // Test keys (for dataRefactorTest window)
   // TODO: remove after testing

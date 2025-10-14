@@ -1,12 +1,12 @@
 import { Button, ColFlex, Flex, HelpTooltip, RowFlex, Switch, Tooltip } from '@cherrystudio/ui'
+import { useCache } from '@data/hooks/useCache'
 import { usePreference } from '@data/hooks/usePreference'
 import LanguageSelect from '@renderer/components/LanguageSelect'
 import db from '@renderer/databases'
-import useTranslate from '@renderer/hooks/useTranslate'
-import type { Model, TranslateLanguage } from '@renderer/types'
+import type { Model } from '@renderer/types'
 import { Modal, Radio, Space } from 'antd'
 import type { FC } from 'react'
-import { memo, useEffect, useState } from 'react'
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import TranslateSettingsPopup from '../settings/TranslateSettingsPopup/TranslateSettingsPopup'
@@ -17,35 +17,15 @@ const TranslateSettings: FC<{
   onClose: () => void
   isScrollSyncEnabled: boolean
   setIsScrollSyncEnabled: (value: boolean) => void
-  isBidirectional: boolean
-  setIsBidirectional: (value: boolean) => void
   enableMarkdown: boolean
   setEnableMarkdown: (value: boolean) => void
-  bidirectionalPair: [TranslateLanguage, TranslateLanguage]
-  setBidirectionalPair: (value: [TranslateLanguage, TranslateLanguage]) => void
   translateModel: Model | undefined
-}> = ({
-  visible,
-  onClose,
-  isScrollSyncEnabled,
-  setIsScrollSyncEnabled,
-  isBidirectional,
-  setIsBidirectional,
-  enableMarkdown,
-  setEnableMarkdown,
-  bidirectionalPair,
-  setBidirectionalPair
-}) => {
+}> = ({ visible, onClose, isScrollSyncEnabled, setIsScrollSyncEnabled, enableMarkdown, setEnableMarkdown }) => {
   const { t } = useTranslation()
-  const [localPair, setLocalPair] = useState<[TranslateLanguage, TranslateLanguage]>(bidirectionalPair)
-  const { getLanguageByLangcode } = useTranslate()
   const [autoCopy, setAutoCopy] = usePreference('translate.settings.auto_copy')
   const [autoDetectionMethod, setAutoDetectionMethod] = usePreference('translate.settings.auto_detection_method')
-
-  useEffect(() => {
-    setLocalPair(bidirectionalPair)
-  }, [bidirectionalPair, visible])
-
+  const [bidirectional, setBidirectional] = useCache('translate.bidirectional')
+  const { enabled: isBidirectional } = bidirectional
   const onMoreSetting = () => {
     onClose()
     TranslateSettingsPopup.show()
@@ -146,7 +126,7 @@ const TranslateSettings: FC<{
               isSelected={isBidirectional}
               color="primary"
               onValueChange={(isSelected) => {
-                setIsBidirectional(isSelected)
+                setBidirectional({ ...bidirectional, enabled: isSelected })
                 // 双向翻译设置不需要持久化，它只是界面状态
               }}
             />
@@ -156,36 +136,32 @@ const TranslateSettings: FC<{
               <Flex className="items-center justify-between gap-2.5">
                 <LanguageSelect
                   style={{ flex: 1 }}
-                  value={localPair[0].langCode}
+                  value={bidirectional.origin}
                   onChange={(value) => {
-                    const newPair: [TranslateLanguage, TranslateLanguage] = [getLanguageByLangcode(value), localPair[1]]
-                    if (newPair[0] === newPair[1]) {
+                    if (value === bidirectional.target) {
                       window.toast.warning(t('translate.language.same'))
                       return
                     }
-                    setLocalPair(newPair)
-                    setBidirectionalPair(newPair)
-                    db.settings.put({
-                      id: 'translate:bidirectional:pair',
-                      value: [newPair[0].langCode, newPair[1].langCode]
+                    setBidirectional({
+                      ...bidirectional,
+                      origin: value,
+                      target: bidirectional.target
                     })
                   }}
                 />
                 <span>⇆</span>
                 <LanguageSelect
                   style={{ flex: 1 }}
-                  value={localPair[1].langCode}
+                  value={bidirectional.target}
                   onChange={(value) => {
-                    const newPair: [TranslateLanguage, TranslateLanguage] = [localPair[0], getLanguageByLangcode(value)]
-                    if (newPair[0] === newPair[1]) {
+                    if (bidirectional.origin === value) {
                       window.toast.warning(t('translate.language.same'))
                       return
                     }
-                    setLocalPair(newPair)
-                    setBidirectionalPair(newPair)
-                    db.settings.put({
-                      id: 'translate:bidirectional:pair',
-                      value: [newPair[0].langCode, newPair[1].langCode]
+                    setBidirectional({
+                      ...bidirectional,
+                      origin: bidirectional.origin,
+                      target: value
                     })
                   }}
                 />
