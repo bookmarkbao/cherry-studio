@@ -58,7 +58,7 @@ const TranslatePage: FC = () => {
   // hooks
   const { t } = useTranslation()
   const { translateModel, setTranslateModel } = useDefaultModel()
-  const { prompt, getLanguageByLangcode } = useTranslate()
+  const { prompt, getLanguageByLangcode, getLanguageLabel } = useTranslate()
   const [autoCopy] = usePreference('translate.settings.auto_copy')
   const { shikiMarkdownIt } = useCodeStyle()
   const { onSelectFile, selecting, clearFiles } = useFiles({ extensions: [...imageExts, ...textExts] })
@@ -261,17 +261,15 @@ const TranslatePage: FC = () => {
   }
 
   // 控制历史记录点击
-  const onHistoryItemClick = (
-    history: TranslateHistory & { _sourceLanguage: TranslateLanguage; _targetLanguage: TranslateLanguage }
-  ) => {
+  const onHistoryItemClick = (history: TranslateHistory) => {
     setText(history.sourceText)
     setOutput(history.targetText)
-    if (history._sourceLanguage === UNKNOWN) {
+    if (history.sourceLanguage === UNKNOWN.langCode) {
       setSourceLanguage('auto')
     } else {
-      setSourceLanguage(history._sourceLanguage)
+      setSourceLanguage(getLanguageByLangcode(history.sourceLanguage))
     }
-    setTargetLanguage(history._targetLanguage)
+    setTargetLanguage(getLanguageByLangcode(history.targetLanguage))
     setHistoryDrawerVisible(false)
   }
 
@@ -390,7 +388,7 @@ const TranslatePage: FC = () => {
         return (
           <Flex className="min-w-40 items-center">
             <BidirectionalLanguageDisplay>
-              {`${bidirectionalPair[0].label()} ⇆ ${bidirectionalPair[1].label()}`}
+              {`${getLanguageLabel(bidirectional.origin)} ⇆ ${getLanguageLabel(bidirectional.target)}`}
             </BidirectionalLanguageDisplay>
           </Flex>
         )
@@ -656,7 +654,7 @@ const TranslatePage: FC = () => {
                 {
                   value: 'auto',
                   label: detectedLanguage
-                    ? `${t('translate.detected.language')} (${detectedLanguage.label()})`
+                    ? `${t('translate.detected.language')} (${getLanguageLabel(detectedLanguage.langCode)})`
                     : t('translate.detected.language')
                 }
               ]}

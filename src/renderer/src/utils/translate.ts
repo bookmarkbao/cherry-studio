@@ -251,7 +251,6 @@ export const getTranslateOptions = async () => {
     // 转换为Language类型
     const transformedCustomLangs: TranslateLanguage[] = customLanguages.map((item) => ({
       value: item.value,
-      label: () => item.value,
       emoji: item.emoji,
       langCode: item.langCode
     }))

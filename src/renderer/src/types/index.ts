@@ -485,7 +485,6 @@ export type TranslateLanguageCode = string
 export type TranslateLanguage = {
   value: string
   langCode: TranslateLanguageCode
-  label: () => string
   emoji: string
 }
 

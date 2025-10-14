@@ -1,10 +1,12 @@
 import { usePreference } from '@data/hooks/usePreference'
 import { loggerService } from '@logger'
 import { builtinLanguages, UNKNOWN } from '@renderer/config/translate'
-import type { TranslateLanguage } from '@renderer/types'
+import type { TranslateLanguageCode } from '@renderer/types'
+import { type TranslateLanguage } from '@renderer/types'
 import { runAsyncFunction } from '@renderer/utils'
 import { getTranslateOptions } from '@renderer/utils/translate'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const logger = loggerService.withContext('useTranslate')
 
@@ -16,6 +18,7 @@ const logger = loggerService.withContext('useTranslate')
  * - getLanguageByLangcode: 通过语言代码获取语言对象
  */
 export default function useTranslate() {
+  const { t } = useTranslation()
   const [prompt] = usePreference('feature.translate.model_prompt')
   const [translateLanguages, setTranslateLanguages] = useState<TranslateLanguage[]>(builtinLanguages)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -46,9 +49,53 @@ export default function useTranslate() {
     [isLoaded, translateLanguages]
   )
 
+  const labelMap: Record<string, string> = useMemo(
+    () => ({
+      'zh-cn': t('languages.chinese'),
+      'zh-tw': t('languages.chinese-traditional'),
+      'ja-jp': t('languages.japanese'),
+      'ko-kr': t('languages.korean'),
+      'en-us': t('languages.english'),
+      'fr-fr': t('languages.french'),
+      'de-de': t('languages.german'),
+      'it-it': t('languages.italian'),
+      'es-es': t('languages.spanish'),
+      'pt-pt': t('languages.portuguese'),
+      'ru-ru': t('languages.russian'),
+      'pl-pl': t('languages.polish'),
+      'ar-ar': t('languages.arabic'),
+      'tr-tr': t('languages.turkish'),
+      'th-th': t('languages.thai'),
+      'vi-vn': t('languages.vietnamese'),
+      'id-id': t('languages.indonesian'),
+      'ur-pk': t('languages.urdu'),
+      'ms-my': t('languages.malay'),
+      'uk-ua': t('languages.ukrainian'),
+      unknown: t('common.unknown')
+    }),
+    [t]
+  )
+
+  const getLanguageLabel = useCallback(
+    (code: TranslateLanguageCode) => {
+      const label = labelMap[code]
+      if (label) {
+        return label
+      } else if (isLoaded) {
+        const language = getLanguageByLangcode(code)
+        return language.value
+      } else {
+        return t('common.unknown')
+      }
+    },
+    [getLanguageByLangcode, isLoaded, labelMap, t]
+  )
+
   return {
     prompt,
+    isLoaded,
     translateLanguages,
-    getLanguageByLangcode
+    getLanguageByLangcode,
+    getLanguageLabel
   }
 }
