@@ -59,11 +59,16 @@ const TranslatePage: FC = () => {
   const { t } = useTranslation()
   const { translateModel, setTranslateModel } = useDefaultModel()
   const { prompt, getLanguageByLangcode, getLanguageLabel } = useTranslate()
-  const [autoCopy] = usePreference('translate.settings.auto_copy')
   const { shikiMarkdownIt } = useCodeStyle()
   const { onSelectFile, selecting, clearFiles } = useFiles({ extensions: [...imageExts, ...textExts] })
   const { ocr } = useOcr()
   const { setTimeoutTimer } = useTimer()
+
+  // Preferences
+  const [autoCopy] = usePreference('translate.settings.auto_copy')
+  const [enableMarkdown, setEnableMarkdown] = usePreference('translate.settings.enable_markdown')
+
+  // Cache
   const [text, setText] = useCache('translate.input')
   const [output, setOutput] = useCache('translate.output')
   const [isDetecting, setIsDetecting] = useCache('translate.detecting')
@@ -77,7 +82,6 @@ const TranslatePage: FC = () => {
   const [copied, setCopied] = useTemporaryValue(false, 2000)
   const [historyDrawerVisible, setHistoryDrawerVisible] = useState(false)
   const [isScrollSyncEnabled, setIsScrollSyncEnabled] = useState(false)
-  const [enableMarkdown, setEnableMarkdown] = useState(false)
   const [settingsVisible, setSettingsVisible] = useState(false)
   const [detectedLanguage, setDetectedLanguage] = useState<TranslateLanguage | null>(null)
   const [sourceLanguage, setSourceLanguage] = useState<TranslateLanguage | 'auto'>(_sourceLanguage)
@@ -327,9 +331,6 @@ const TranslatePage: FC = () => {
 
       const scrollSyncSetting = await db.settings.get({ id: 'translate:scroll:sync' })
       setIsScrollSyncEnabled(scrollSyncSetting ? scrollSyncSetting.value : false)
-
-      const markdownSetting = await db.settings.get({ id: 'translate:markdown:enabled' })
-      setEnableMarkdown(markdownSetting ? markdownSetting.value : false)
     })
   }, [getLanguageByLangcode])
 
@@ -735,8 +736,6 @@ const TranslatePage: FC = () => {
         onClose={() => setSettingsVisible(false)}
         isScrollSyncEnabled={isScrollSyncEnabled}
         setIsScrollSyncEnabled={setIsScrollSyncEnabled}
-        enableMarkdown={enableMarkdown}
-        setEnableMarkdown={setEnableMarkdown}
         translateModel={translateModel}
       />
     </Container>

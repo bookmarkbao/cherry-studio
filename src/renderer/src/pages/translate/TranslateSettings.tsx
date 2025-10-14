@@ -17,13 +17,12 @@ const TranslateSettings: FC<{
   onClose: () => void
   isScrollSyncEnabled: boolean
   setIsScrollSyncEnabled: (value: boolean) => void
-  enableMarkdown: boolean
-  setEnableMarkdown: (value: boolean) => void
   translateModel: Model | undefined
-}> = ({ visible, onClose, isScrollSyncEnabled, setIsScrollSyncEnabled, enableMarkdown, setEnableMarkdown }) => {
+}> = ({ visible, onClose, isScrollSyncEnabled, setIsScrollSyncEnabled }) => {
   const { t } = useTranslation()
   const [autoCopy, setAutoCopy] = usePreference('translate.settings.auto_copy')
   const [autoDetectionMethod, setAutoDetectionMethod] = usePreference('translate.settings.auto_detection_method')
+  const [enableMarkdown, setEnableMarkdown] = usePreference('translate.settings.enable_markdown')
   const [bidirectional, setBidirectional] = useCache('translate.bidirectional')
   const { enabled: isBidirectional } = bidirectional
   const onMoreSetting = () => {
@@ -48,7 +47,6 @@ const TranslateSettings: FC<{
               isSelected={enableMarkdown}
               onValueChange={(checked) => {
                 setEnableMarkdown(checked)
-                db.settings.put({ id: 'translate:markdown:enabled', value: checked })
               }}
             />
           </Flex>
