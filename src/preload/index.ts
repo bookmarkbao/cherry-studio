@@ -1,5 +1,4 @@
 import { electronAPI } from '@electron-toolkit/preload'
-import type { JsExecutionResult } from '@main/services/workers/JsWorker'
 import { SpanEntity, TokenUsage } from '@mcp-trace/trace-core'
 import { SpanContext } from '@opentelemetry/api'
 import { TerminalConfig, UpgradeChannel } from '@shared/config/constant'
@@ -347,8 +346,7 @@ const api = {
       ipcRenderer.invoke(IpcChannel.Python_Execute, script, context, timeout)
   },
   js: {
-    execute: (code: string, timeout?: number): Promise<JsExecutionResult> =>
-      ipcRenderer.invoke(IpcChannel.Js_Execute, code, timeout)
+    execute: (code: string, timeout?: number) => ipcRenderer.invoke(IpcChannel.Js_Execute, code, timeout)
   },
   shell: {
     openExternal: (url: string, options?: Electron.OpenExternalOptions) => shell.openExternal(url, options)
