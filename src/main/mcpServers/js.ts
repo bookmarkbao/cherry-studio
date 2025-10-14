@@ -3,7 +3,7 @@ import { loggerService } from '@logger'
 import { jsService } from '@main/services/JsService'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types'
-import { z } from 'zod'
+import * as z from 'zod'
 
 const TOOL_NAME = 'run_javascript_code'
 const DEFAULT_TIMEOUT = 60_000
