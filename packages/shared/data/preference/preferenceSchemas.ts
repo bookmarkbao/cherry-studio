@@ -400,6 +400,7 @@ export interface PreferenceSchemas {
     // indexedDB/translate
     'translate.settings.auto_detection_method': PreferenceTypes.AutoDetectionMethod
     'translate.settings.enable_markdown': boolean
+    'translate.settings.scroll_sync': boolean
     // redux/settings/customCss
     'ui.custom_css': string
     // redux/settings/navbarPosition
@@ -662,6 +663,7 @@ export const DefaultPreferences: PreferenceSchemas = {
     'translate.settings.auto_copy': false,
     'translate.settings.auto_detection_method': 'franc',
     'translate.settings.enable_markdown': false,
+    'translate.settings.scroll_sync': false,
     'ui.custom_css': '',
     'ui.navbar.position': 'top',
     'ui.sidebar.icons.invisible': [],

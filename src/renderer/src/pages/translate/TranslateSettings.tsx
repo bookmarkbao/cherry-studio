@@ -2,7 +2,6 @@ import { Button, ColFlex, Flex, HelpTooltip, RowFlex, Switch, Tooltip } from '@c
 import { useCache } from '@data/hooks/useCache'
 import { usePreference } from '@data/hooks/usePreference'
 import LanguageSelect from '@renderer/components/LanguageSelect'
-import db from '@renderer/databases'
 import type { Model } from '@renderer/types'
 import { Modal, Radio, Space } from 'antd'
 import type { FC } from 'react'
@@ -11,18 +10,16 @@ import { useTranslation } from 'react-i18next'
 
 import TranslateSettingsPopup from '../settings/TranslateSettingsPopup/TranslateSettingsPopup'
 
-// TODO: Just don't send so many props. Migrate them to redux.
 const TranslateSettings: FC<{
   visible: boolean
   onClose: () => void
-  isScrollSyncEnabled: boolean
-  setIsScrollSyncEnabled: (value: boolean) => void
   translateModel: Model | undefined
-}> = ({ visible, onClose, isScrollSyncEnabled, setIsScrollSyncEnabled }) => {
+}> = ({ visible, onClose }) => {
   const { t } = useTranslation()
   const [autoCopy, setAutoCopy] = usePreference('translate.settings.auto_copy')
   const [autoDetectionMethod, setAutoDetectionMethod] = usePreference('translate.settings.auto_detection_method')
   const [enableMarkdown, setEnableMarkdown] = usePreference('translate.settings.enable_markdown')
+  const [isScrollSyncEnabled, setIsScrollSyncEnabled] = usePreference('translate.settings.scroll_sync')
   const [bidirectional, setBidirectional] = useCache('translate.bidirectional')
   const { enabled: isBidirectional } = bidirectional
   const onMoreSetting = () => {
@@ -73,7 +70,6 @@ const TranslateSettings: FC<{
               color="primary"
               onValueChange={(isSelected) => {
                 setIsScrollSyncEnabled(isSelected)
-                db.settings.put({ id: 'translate:scroll:sync', value: isSelected })
               }}
             />
           </Flex>

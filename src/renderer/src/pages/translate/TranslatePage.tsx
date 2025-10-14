@@ -66,7 +66,8 @@ const TranslatePage: FC = () => {
 
   // Preferences
   const [autoCopy] = usePreference('translate.settings.auto_copy')
-  const [enableMarkdown, setEnableMarkdown] = usePreference('translate.settings.enable_markdown')
+  const [enableMarkdown] = usePreference('translate.settings.enable_markdown')
+  const [isScrollSyncEnabled] = usePreference('translate.settings.scroll_sync')
 
   // Cache
   const [text, setText] = useCache('translate.input')
@@ -81,7 +82,6 @@ const TranslatePage: FC = () => {
   const [renderedMarkdown, setRenderedMarkdown] = useState<string>('')
   const [copied, setCopied] = useTemporaryValue(false, 2000)
   const [historyDrawerVisible, setHistoryDrawerVisible] = useState(false)
-  const [isScrollSyncEnabled, setIsScrollSyncEnabled] = useState(false)
   const [settingsVisible, setSettingsVisible] = useState(false)
   const [detectedLanguage, setDetectedLanguage] = useState<TranslateLanguage | null>(null)
   const [sourceLanguage, setSourceLanguage] = useState<TranslateLanguage | 'auto'>(_sourceLanguage)
@@ -328,9 +328,6 @@ const TranslatePage: FC = () => {
       const sourceLang = await db.settings.get({ id: 'translate:source:language' })
       sourceLang &&
         setSourceLanguage(sourceLang.value === 'auto' ? sourceLang.value : getLanguageByLangcode(sourceLang.value))
-
-      const scrollSyncSetting = await db.settings.get({ id: 'translate:scroll:sync' })
-      setIsScrollSyncEnabled(scrollSyncSetting ? scrollSyncSetting.value : false)
     })
   }, [getLanguageByLangcode])
 
@@ -734,8 +731,6 @@ const TranslatePage: FC = () => {
       <TranslateSettings
         visible={settingsVisible}
         onClose={() => setSettingsVisible(false)}
-        isScrollSyncEnabled={isScrollSyncEnabled}
-        setIsScrollSyncEnabled={setIsScrollSyncEnabled}
         translateModel={translateModel}
       />
     </Container>

@@ -30,7 +30,7 @@ const ITEM_HEIGHT = 160
 
 const TranslateHistoryList: FC<TranslateHistoryProps> = ({ isOpen, onHistoryItemClick, onClose }) => {
   const { t } = useTranslation()
-  const { getLanguageByLangcode, getLanguageLabel } = useTranslate()
+  const { getLanguageLabel } = useTranslate()
   const _translateHistory = useLiveQuery(() => db.translate_history.orderBy('createdAt').reverse().toArray(), [])
   const [search, setSearch] = useState('')
   const [displayedHistory, setDisplayedHistory] = useState<TranslateHistory[]>([])
