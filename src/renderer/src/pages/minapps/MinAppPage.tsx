@@ -28,7 +28,9 @@ const MinAppPage: FC = () => {
   const navigate = useNavigate()
 
   // Remember the initial navbar position when component mounts
-  const initialIsTopNavbar = useRef<boolean>(isTopNavbar)
+  // It's immutable state
+  const [initialIsTopNavbar] = useState<boolean>(isTopNavbar)
+  const initialIsTopNavbarRef = useRef<boolean>(initialIsTopNavbar)
   const hasRedirected = useRef<boolean>(false)
 
   // Initialize TabsService with cache reference
@@ -40,8 +42,8 @@ const MinAppPage: FC = () => {
 
   // Debug: track navbar position changes
   useEffect(() => {
-    if (initialIsTopNavbar.current !== isTopNavbar) {
-      logger.debug(`NavBar position changed from ${initialIsTopNavbar.current} to ${isTopNavbar}`)
+    if (initialIsTopNavbarRef.current !== isTopNavbar) {
+      logger.debug(`NavBar position changed from ${initialIsTopNavbarRef.current} to ${isTopNavbar}`)
     }
   }, [isTopNavbar])
 
@@ -69,7 +71,7 @@ const MinAppPage: FC = () => {
 
     // For sidebar navigation, redirect to apps list and open popup
     // Only check once and only if we haven't already redirected
-    if (!initialIsTopNavbar.current && !hasRedirected.current) {
+    if (!initialIsTopNavbarRef.current && !hasRedirected.current) {
       hasRedirected.current = true
       navigate('/apps')
       // Open popup after navigation
@@ -80,11 +82,11 @@ const MinAppPage: FC = () => {
     }
 
     // For top navbar mode, integrate with cache system
-    if (initialIsTopNavbar.current) {
+    if (initialIsTopNavbarRef.current) {
       // 无论是否已在缓存，都调用以确保 currentMinappId 同步到路由切换的新 appId
       openMinappKeepAlive(app)
     }
-  }, [app, navigate, openMinappKeepAlive, initialIsTopNavbar])
+  }, [app, navigate, openMinappKeepAlive])
 
   // -------------- 新的 Tab Shell 逻辑 --------------
   // 注意：Hooks 必须在任何 return 之前调用，因此提前定义，并在内部判空
@@ -160,7 +162,7 @@ const MinAppPage: FC = () => {
   }, [app, isReady])
 
   // 如果条件不满足，提前返回（所有 hooks 已调用）
-  if (!app || !initialIsTopNavbar.current) {
+  if (!app || !initialIsTopNavbar) {
     return null
   }
 
