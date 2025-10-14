@@ -41,13 +41,19 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
   const [isContented, setIsContented] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [contentToCopy, setContentToCopy] = useState('')
+  const [topic, setTopic] = useState<Topic | null>(null)
   const { getLanguageByLangcode } = useTranslate()
 
   // Use useRef for values that shouldn't trigger re-renders
   const initialized = useRef(false)
   const assistantRef = useRef<Assistant | null>(null)
-  const topicRef = useRef<Topic | null>(null)
+  const topicRef = useRef<Topic | null>(topic)
   const askId = useRef('')
+
+  // update ref
+  useEffect(() => {
+    topicRef.current = topic
+  }, [topic])
 
   useEffect(() => {
     runAsyncFunction(async () => {
@@ -147,7 +153,7 @@ const ActionTranslate: FC<Props> = ({ action, scrollToBottom }) => {
     fetchResult()
   }, [fetchResult])
 
-  const allMessages = useTopicMessages(topicRef.current?.id || '')
+  const allMessages = useTopicMessages(topic?.id || '')
 
   const messageContent = useMemo(() => {
     const assistantMessages = allMessages.filter((message) => message.role === 'assistant')
