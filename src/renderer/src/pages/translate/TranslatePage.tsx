@@ -22,13 +22,7 @@ import { estimateTextTokens } from '@renderer/services/TokenService'
 import { saveTranslateHistory, translateText } from '@renderer/services/TranslateService'
 // import { setTranslateAbortKey, setTranslating as setTranslatingAction } from '@renderer/store/runtime'
 import type { FileMetadata, SupportedOcrFile } from '@renderer/types'
-import {
-  type AutoDetectionMethod,
-  isSupportedOcrFile,
-  type Model,
-  type TranslateHistory,
-  type TranslateLanguage
-} from '@renderer/types'
+import { isSupportedOcrFile, type Model, type TranslateHistory, type TranslateLanguage } from '@renderer/types'
 import { getFileExtension, isTextFile, runAsyncFunction } from '@renderer/utils'
 import { abortCompletion } from '@renderer/utils/abortController'
 import { isAbortError } from '@renderer/utils/error'
@@ -91,7 +85,6 @@ const TranslatePage: FC = () => {
   const [detectedLanguage, setDetectedLanguage] = useState<TranslateLanguage | null>(null)
   const [sourceLanguage, setSourceLanguage] = useState<TranslateLanguage | 'auto'>(_sourceLanguage)
   const [targetLanguage, setTargetLanguage] = useState<TranslateLanguage>(_targetLanguage)
-  const [autoDetectionMethod, setAutoDetectionMethod] = useState<AutoDetectionMethod>('franc')
   const [isProcessing, setIsProcessing] = useState(false)
 
   // ref
@@ -374,28 +367,8 @@ const TranslatePage: FC = () => {
 
       const markdownSetting = await db.settings.get({ id: 'translate:markdown:enabled' })
       setEnableMarkdown(markdownSetting ? markdownSetting.value : false)
-
-      const autoDetectionMethodSetting = await db.settings.get({ id: 'translate:detect:method' })
-
-      if (autoDetectionMethodSetting) {
-        setAutoDetectionMethod(autoDetectionMethodSetting.value)
-      } else {
-        setAutoDetectionMethod('franc')
-        db.settings.put({ id: 'translate:detect:method', value: 'franc' })
-      }
     })
   }, [getLanguageByLangcode])
-
-  // 控制设置同步
-  const updateAutoDetectionMethod = async (method: AutoDetectionMethod) => {
-    try {
-      await db.settings.put({ id: 'translate:detect:method', value: method })
-      setAutoDetectionMethod(method)
-    } catch (e) {
-      logger.error('Failed to update auto detection method setting.', e as Error)
-      window.toast.error(t('translate.error.detect.update_setting') + formatErrorMessage(e))
-    }
-  }
 
   // 控制Enter触发翻译
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -802,8 +775,6 @@ const TranslatePage: FC = () => {
         bidirectionalPair={bidirectionalPair}
         setBidirectionalPair={setBidirectionalPair}
         translateModel={translateModel}
-        autoDetectionMethod={autoDetectionMethod}
-        setAutoDetectionMethod={updateAutoDetectionMethod}
       />
     </Container>
   )

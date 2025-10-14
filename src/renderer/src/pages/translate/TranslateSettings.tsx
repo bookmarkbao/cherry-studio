@@ -3,7 +3,7 @@ import { usePreference } from '@data/hooks/usePreference'
 import LanguageSelect from '@renderer/components/LanguageSelect'
 import db from '@renderer/databases'
 import useTranslate from '@renderer/hooks/useTranslate'
-import type { AutoDetectionMethod, Model, TranslateLanguage } from '@renderer/types'
+import type { Model, TranslateLanguage } from '@renderer/types'
 import { Modal, Radio, Space } from 'antd'
 import type { FC } from 'react'
 import { memo, useEffect, useState } from 'react'
@@ -24,8 +24,6 @@ const TranslateSettings: FC<{
   bidirectionalPair: [TranslateLanguage, TranslateLanguage]
   setBidirectionalPair: (value: [TranslateLanguage, TranslateLanguage]) => void
   translateModel: Model | undefined
-  autoDetectionMethod: AutoDetectionMethod
-  setAutoDetectionMethod: (method: AutoDetectionMethod) => void
 }> = ({
   visible,
   onClose,
@@ -36,14 +34,13 @@ const TranslateSettings: FC<{
   enableMarkdown,
   setEnableMarkdown,
   bidirectionalPair,
-  setBidirectionalPair,
-  autoDetectionMethod,
-  setAutoDetectionMethod
+  setBidirectionalPair
 }) => {
   const { t } = useTranslation()
   const [localPair, setLocalPair] = useState<[TranslateLanguage, TranslateLanguage]>(bidirectionalPair)
   const { getLanguageByLangcode } = useTranslate()
   const [autoCopy, setAutoCopy] = usePreference('translate.settings.auto_copy')
+  const [autoDetectionMethod, setAutoDetectionMethod] = usePreference('translate.settings.auto_detection_method')
 
   useEffect(() => {
     setLocalPair(bidirectionalPair)
