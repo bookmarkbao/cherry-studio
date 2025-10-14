@@ -20,8 +20,9 @@ export interface TracePageProp {
 
 export const TracePage: React.FC<TracePageProp> = ({ topicId, traceId, modelName, reload = false }) => {
   const [spans, setSpans] = useState<TraceModal[]>([])
-  const [selectNode, setSelectNode] = useState<TraceModal | null>(null)
-  const showList = useMemo(() => selectNode === null, [selectNode])
+  const [selectNodeId, setSelectNodeId] = useState<string | null>(null)
+  const selectNode = useMemo(() => (selectNodeId ? findNodeById(spans, selectNodeId) : null), [selectNodeId, spans])
+  const showList = useMemo(() => selectNodeId === null || !selectNode, [selectNode, selectNodeId])
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const { t } = useTranslation()
 
@@ -56,14 +57,11 @@ export const TracePage: React.FC<TracePageProp> = ({ topicId, traceId, modelName
   }, [topicId, traceId, modelName])
 
   const handleNodeClick = (nodeId: string) => {
-    const latestNode = findNodeById(spans, nodeId)
-    if (latestNode) {
-      setSelectNode(latestNode)
-    }
+    setSelectNodeId(nodeId)
   }
 
   const handleShowList = () => {
-    setSelectNode(null)
+    setSelectNodeId(null)
   }
 
   useEffect(() => {
@@ -92,17 +90,6 @@ export const TracePage: React.FC<TracePageProp> = ({ topicId, traceId, modelName
       }
     }
   }, [getTraceData, traceId, topicId, reload])
-
-  useEffect(() => {
-    if (selectNode) {
-      const latest = findNodeById(spans, selectNode.id)
-      if (!latest) {
-        setSelectNode(null)
-      } else if (latest !== selectNode) {
-        setSelectNode(latest)
-      }
-    }
-  }, [spans, selectNode])
 
   return (
     <div className="trace-window">
