@@ -7,7 +7,7 @@ import TabsService from '@renderer/services/TabsService'
 import { getWebviewLoaded, onWebviewStateChange, setWebviewLoaded } from '@renderer/utils/webviewStateManager'
 import { Avatar } from 'antd'
 import { WebviewTag } from 'electron'
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import BeatLoader from 'react-spinners/BeatLoader'
 import styled from 'styled-components'
@@ -144,7 +144,10 @@ const MinAppPage: FC = () => {
     if (!app) return
     if (getWebviewLoaded(app.id)) {
       // 已经加载
-      if (!isReady) setIsReady(true)
+      if (!isReady)
+        startTransition(() => {
+          setIsReady(true)
+        })
       return
     }
     let mounted = true
