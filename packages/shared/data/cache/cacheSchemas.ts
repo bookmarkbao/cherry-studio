@@ -1,3 +1,5 @@
+import type { TranslateLanguageCode } from '@types'
+
 import type * as CacheValueTypes from './cacheValueTypes'
 
 /**
@@ -28,6 +30,8 @@ export type UseCacheSchema = {
   'topic.newly_renamed': string[]
 
   // Translate state
+  'translate.lang.source': TranslateLanguageCode | 'auto'
+  'translate.lang.target': TranslateLanguageCode
   'translate.input': string
   'translate.output': string
   'translate.detecting': boolean
@@ -80,6 +84,8 @@ export const DefaultUseCache: UseCacheSchema = {
   'topic.newly_renamed': [],
 
   // Translate state
+  'translate.lang.source': 'auto',
+  'translate.lang.target': 'zh-cn',
   'translate.input': '',
   'translate.output': '',
   'translate.detecting': false,
