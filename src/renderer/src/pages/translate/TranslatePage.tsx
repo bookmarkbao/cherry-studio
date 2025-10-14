@@ -100,7 +100,6 @@ const TranslatePage: FC = () => {
   // 控制翻译模型切换
   const handleModelChange = (model: Model) => {
     setTranslateModel(model)
-    db.settings.put({ id: 'translate:model', value: model.id })
   }
 
   // 控制复制行为
