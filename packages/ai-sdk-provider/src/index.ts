@@ -155,9 +155,8 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
       })
     })
 
-  const createGeminiModel = (modelId: string) => {
-    const _modelId = modelId.replace('google/', '')
-    return new GoogleGenerativeAILanguageModel(_modelId, {
+  const createGeminiModel = (modelId: string) =>
+    new GoogleGenerativeAILanguageModel(modelId, {
       provider: `${CHERRYIN_PROVIDER_NAME}.gemini`,
       baseURL: geminiBaseURL,
       headers: () => {
@@ -172,7 +171,6 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
       generateId: () => `${CHERRYIN_PROVIDER_NAME}-${Date.now()}`,
       supportedUrls: () => ({})
     })
-  }
 
   const createChatModel = (modelId: string, settings: OpenAIProviderSettings = {}) => {
     if (isAnthropicModel(modelId)) {

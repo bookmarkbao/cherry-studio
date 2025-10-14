@@ -168,18 +168,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/google@npm:^2.0.23":
-  version: 2.0.23
-  resolution: "@ai-sdk/google@npm:2.0.23"
-  dependencies:
-    "@ai-sdk/provider": "npm:2.0.0"
-    "@ai-sdk/provider-utils": "npm:3.0.12"
-  peerDependencies:
-    zod: ^3.25.76 || ^4.1.8
-  checksum: 10c0/402b78f392196c3e23c75cc35fc1d701f9521b57aace2fb1bbae6a0d57bbb3894a778b0485305bd6674998403e44c3883dca2416f2d48377722351debead9f11
-  languageName: node
-  linkType: hard
-
 "@ai-sdk/google@patch:@ai-sdk/google@npm%3A2.0.20#~/.yarn/patches/@ai-sdk-google-npm-2.0.20-b9102f9d54.patch":
   version: 2.0.20
   resolution: "@ai-sdk/google@patch:@ai-sdk/google@npm%3A2.0.20#~/.yarn/patches/@ai-sdk-google-npm-2.0.20-b9102f9d54.patch::version=2.0.20&hash=1f2ccb"
@@ -2471,7 +2459,6 @@ __metadata:
     "@ai-sdk/provider": "npm:^2.0.0"
     "@ai-sdk/provider-utils": "npm:^3.0.12"
     "@ai-sdk/xai": "npm:^2.0.26"
-    "@cherrystudio/ai-sdk-provider": "workspace:*"
     tsdown: "npm:^0.12.9"
     typescript: "npm:^5.0.0"
     vitest: "npm:^3.2.4"
@@ -2481,12 +2468,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@cherrystudio/ai-sdk-provider@workspace:*, @cherrystudio/ai-sdk-provider@workspace:packages/ai-sdk-provider":
+"@cherrystudio/ai-sdk-provider@workspace:packages/ai-sdk-provider":
   version: 0.0.0-use.local
   resolution: "@cherrystudio/ai-sdk-provider@workspace:packages/ai-sdk-provider"
   dependencies:
     "@ai-sdk/anthropic": "npm:^2.0.27"
-    "@ai-sdk/google": "npm:^2.0.23"
     "@ai-sdk/openai": "npm:^2.0.52"
     "@ai-sdk/provider": "npm:^2.0.0"
     "@ai-sdk/provider-utils": "npm:^3.0.12"
