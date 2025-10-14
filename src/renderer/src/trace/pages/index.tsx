@@ -3,7 +3,7 @@ import './Trace.css'
 import { SpanEntity } from '@mcp-trace/trace-core'
 import { TraceModal } from '@renderer/trace/pages/TraceModel'
 import { Divider } from 'antd/lib'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { findNodeById, mergeTraceModals, updatePercentAndStart } from '../utils'
@@ -21,7 +21,7 @@ export interface TracePageProp {
 export const TracePage: React.FC<TracePageProp> = ({ topicId, traceId, modelName, reload = false }) => {
   const [spans, setSpans] = useState<TraceModal[]>([])
   const [selectNode, setSelectNode] = useState<TraceModal | null>(null)
-  const [showList, setShowList] = useState(true)
+  const showList = useMemo(() => selectNode === null, [selectNode])
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const { t } = useTranslation()
 
@@ -59,12 +59,10 @@ export const TracePage: React.FC<TracePageProp> = ({ topicId, traceId, modelName
     const latestNode = findNodeById(spans, nodeId)
     if (latestNode) {
       setSelectNode(latestNode)
-      setShowList(false)
     }
   }
 
   const handleShowList = () => {
-    setShowList(true)
     setSelectNode(null)
   }
 
@@ -99,7 +97,6 @@ export const TracePage: React.FC<TracePageProp> = ({ topicId, traceId, modelName
     if (selectNode) {
       const latest = findNodeById(spans, selectNode.id)
       if (!latest) {
-        setShowList(true)
         setSelectNode(null)
       } else if (latest !== selectNode) {
         setSelectNode(latest)
