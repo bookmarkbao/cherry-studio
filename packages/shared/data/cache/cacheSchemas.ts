@@ -27,6 +27,12 @@ export type UseCacheSchema = {
   'topic.renaming': string[]
   'topic.newly_renamed': string[]
 
+  // Translate state
+  'translate.input': string
+  'translate.output': string
+  'translate.detecting': boolean
+  'translate.translating': CacheValueTypes.CacheTranslating
+
   // Test keys (for dataRefactorTest window)
   // TODO: remove after testing
   'test-hook-memory-1': string
@@ -71,6 +77,12 @@ export const DefaultUseCache: UseCacheSchema = {
   'topic.active': null,
   'topic.renaming': [],
   'topic.newly_renamed': [],
+
+  // Translate state
+  'translate.input': '',
+  'translate.output': '',
+  'translate.detecting': false,
+  'translate.translating': { isTranslating: false, abortKey: null },
 
   // Test keys (for dataRefactorTest window)
   // TODO: remove after testing

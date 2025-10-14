@@ -16,3 +16,12 @@ export type CacheActiveSearches = Record<string, WebSearchStatus>
 // The actual type checking will be done at runtime by the cache system
 export type CacheMinAppType = MinAppType
 export type CacheTopic = Topic
+export type CacheTranslating =
+  | {
+      isTranslating: true
+      abortKey: string
+    }
+  | {
+      isTranslating: false
+      abortKey: null
+    }
