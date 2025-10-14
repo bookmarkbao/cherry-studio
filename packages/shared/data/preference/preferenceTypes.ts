@@ -1,3 +1,4 @@
+import type { TranslateLanguageCode } from '@types'
 import * as z from 'zod'
 
 import type { PreferenceSchemas } from './preferenceSchemas'
@@ -92,4 +93,8 @@ const AutoDetectionMethodSchema = z.enum(['franc', 'llm', 'auto'])
 export type AutoDetectionMethod = z.infer<typeof AutoDetectionMethodSchema>
 export const isAutoDetectionMethod = (method: string): method is AutoDetectionMethod => {
   return AutoDetectionMethodSchema.safeParse(method).success
+}
+export type TargetLangs = {
+  target: TranslateLanguageCode
+  alter: TranslateLanguageCode
 }
