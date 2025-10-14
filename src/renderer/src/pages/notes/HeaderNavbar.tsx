@@ -9,7 +9,7 @@ import { findNode } from '@renderer/services/NotesTreeService'
 import { Dropdown, Input, Tooltip } from 'antd'
 import { t } from 'i18next'
 import { MoreHorizontal, PanelLeftClose, PanelRightClose, Star } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { menuItems } from './MenuConfig'
@@ -138,7 +138,7 @@ const HeaderNavbar = ({ notesTree, getCurrentNoteContent, onToggleStar, onExpand
   // 同步标题值
   useEffect(() => {
     if (activeNode?.type === 'file') {
-      setTitleValue(activeNode.name.replace('.md', ''))
+      startTransition(() => setTitleValue(activeNode.name.replace('.md', '')))
     }
   }, [activeNode])
 
