@@ -55,6 +55,14 @@ export const NEW_PROVIDER_CONFIGS: ProviderConfig[] = [
     creatorFunctionName: 'createPerplexity',
     supportsImageGeneration: false,
     aliases: ['perplexity']
+  },
+  {
+    id: 'cherryin',
+    name: 'CherryIN',
+    import: () => import('@cherrystudio/ai-sdk-provider'),
+    creatorFunctionName: 'createCherryIn',
+    supportsImageGeneration: true,
+    aliases: ['cherryin']
   }
 ] as const
 
