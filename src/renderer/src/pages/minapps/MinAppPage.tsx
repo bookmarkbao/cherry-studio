@@ -88,7 +88,12 @@ const MinAppPage: FC = () => {
 
   // -------------- 新的 Tab Shell 逻辑 --------------
   // 注意：Hooks 必须在任何 return 之前调用，因此提前定义，并在内部判空
-  const webviewRef = useRef<WebviewTag | null>(null)
+  const [webview, setWebview] = useState<WebviewTag | null>(null)
+  const webviewRef = useRef<WebviewTag | null>(webview)
+  useEffect(() => {
+    webviewRef.current = webview
+  }, [webview])
+
   const [isReady, setIsReady] = useState<boolean>(() => (app ? getWebviewLoaded(app.id) : false))
   const [currentUrl, setCurrentUrl] = useState<string | null>(app?.url ?? null)
 
@@ -103,7 +108,7 @@ const MinAppPage: FC = () => {
 
     if (webviewRef.current === el) return true // 已附着
 
-    webviewRef.current = el
+    setWebview(el)
     const handleInPageNav = (e: any) => setCurrentUrl(e.url)
     el.addEventListener('did-navigate-in-page', handleInPageNav)
     webviewCleanupRef.current = () => {
@@ -185,7 +190,7 @@ const MinAppPage: FC = () => {
           onOpenDevTools={handleOpenDevTools}
         />
       </ToolbarWrapper>
-      <WebviewSearch webviewRef={webviewRef} isWebviewReady={isReady} appId={app.id} />
+      <WebviewSearch activeWebview={webview} isWebviewReady={isReady} appId={app.id} />
       {!isReady && (
         <LoadingMask>
           <Avatar src={app.logo} size={60} style={{ border: '1px solid var(--color-border)' }} />
