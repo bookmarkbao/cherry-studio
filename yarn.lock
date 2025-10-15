@@ -102,6 +102,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ai-sdk/anthropic@npm:^2.0.29":
+  version: 2.0.29
+  resolution: "@ai-sdk/anthropic@npm:2.0.29"
+  dependencies:
+    "@ai-sdk/provider": "npm:2.0.0"
+    "@ai-sdk/provider-utils": "npm:3.0.12"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10c0/98ac23a429a9bf254e9d81e6f913b0f846406d997768e35f73c5b8133ec76f2c2bc7fcb38eec9a0141a7d4ad2a37df070342b48bd1e56e607409375a1e6be7c9
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/azure@npm:^2.0.49":
   version: 2.0.49
   resolution: "@ai-sdk/azure@npm:2.0.49"
@@ -165,6 +177,18 @@ __metadata:
   peerDependencies:
     zod: ^3.25.76 || ^4.1.8
   checksum: 10c0/9c73bb67061673b16f0996c85bf4e79ab9968c8a203c4f9731bf569e45960db88950dfc227aca69661ea805d381b285697ba1763faa03a38c01b86e6d2e90629
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/google@npm:^2.0.23":
+  version: 2.0.23
+  resolution: "@ai-sdk/google@npm:2.0.23"
+  dependencies:
+    "@ai-sdk/provider": "npm:2.0.0"
+    "@ai-sdk/provider-utils": "npm:3.0.12"
+  peerDependencies:
+    zod: ^3.25.76 || ^4.1.8
+  checksum: 10c0/402b78f392196c3e23c75cc35fc1d701f9521b57aace2fb1bbae6a0d57bbb3894a778b0485305bd6674998403e44c3883dca2416f2d48377722351debead9f11
   languageName: node
   linkType: hard
 
@@ -2459,6 +2483,7 @@ __metadata:
     "@ai-sdk/provider": "npm:^2.0.0"
     "@ai-sdk/provider-utils": "npm:^3.0.12"
     "@ai-sdk/xai": "npm:^2.0.26"
+    "@cherrystudio/ai-sdk-provider": "workspace:*"
     tsdown: "npm:^0.12.9"
     typescript: "npm:^5.0.0"
     vitest: "npm:^3.2.4"
@@ -2468,11 +2493,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@cherrystudio/ai-sdk-provider@workspace:packages/ai-sdk-provider":
+"@cherrystudio/ai-sdk-provider@workspace:*, @cherrystudio/ai-sdk-provider@workspace:packages/ai-sdk-provider":
   version: 0.0.0-use.local
   resolution: "@cherrystudio/ai-sdk-provider@workspace:packages/ai-sdk-provider"
   dependencies:
-    "@ai-sdk/anthropic": "npm:^2.0.27"
+    "@ai-sdk/anthropic": "npm:^2.0.29"
+    "@ai-sdk/google": "npm:^2.0.23"
     "@ai-sdk/openai": "npm:^2.0.52"
     "@ai-sdk/provider": "npm:^2.0.0"
     "@ai-sdk/provider-utils": "npm:^3.0.12"
