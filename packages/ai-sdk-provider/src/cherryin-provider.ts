@@ -176,13 +176,12 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
     if (isGeminiModel(modelId)) {
       return createGeminiModel(modelId)
     }
-    console.log('createChatModel', DEFAULT_CHERRYIN_BASE_URL)
     return new OpenAIChatLanguageModel(modelId, {
       provider: `${CHERRYIN_PROVIDER_NAME}.chat`,
       url,
       headers: () => ({
         ...getJsonHeaders(),
-        ...(settings.headers ?? {})
+        ...settings.headers
       }),
       fetch
     })
@@ -194,7 +193,7 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
       url,
       headers: () => ({
         ...getJsonHeaders(),
-        ...(settings.headers ?? {})
+        ...settings.headers
       }),
       fetch
     })
@@ -205,7 +204,7 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
       url,
       headers: () => ({
         ...getJsonHeaders(),
-        ...(settings.headers ?? {})
+        ...settings.headers
       }),
       fetch
     })
@@ -226,7 +225,7 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
       url,
       headers: () => ({
         ...getJsonHeaders(),
-        ...(settings.headers ?? {})
+        ...settings.headers
       }),
       fetch
     })
