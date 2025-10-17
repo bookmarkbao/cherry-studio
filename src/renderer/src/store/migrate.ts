@@ -2670,6 +2670,20 @@ const migrateConfig = {
   },
   '163': (state: RootState) => {
     try {
+      addOcrProvider(state, BUILTIN_OCR_PROVIDERS_MAP.ovocr)
+      state.llm.providers.forEach((provider) => {
+        if (provider.id === 'cherryin') {
+          provider.anthropicApiHost = 'https://open.cherryin.net'
+        }
+      })
+      return state
+    } catch (error) {
+      logger.error('migrate 163 error', error as Error)
+      return state
+    }
+  },
+  '164': (state: RootState) => {
+    try {
       if (state.settings && state.settings.sidebarIcons) {
         if (!state.settings.sidebarIcons.visible.includes('video')) {
           state.settings.sidebarIcons.visible = [...state.settings.sidebarIcons.visible, 'video']
@@ -2678,7 +2692,7 @@ const migrateConfig = {
       state.video.videoMap = {}
       return state
     } catch (error) {
-      logger.error('migrate 161 error', error as Error)
+      logger.error('migrate 164 error', error as Error)
       return state
     }
   }
