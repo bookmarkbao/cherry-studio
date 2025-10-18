@@ -81,6 +81,7 @@ const ButtonContent = styled.div`
 const ModelName = styled.span`
   font-weight: 500;
   margin-right: -2px;
+  font-size: 12px;
 `
 
 export default SelectModelButton

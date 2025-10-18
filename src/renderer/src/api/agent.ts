@@ -6,6 +6,7 @@ import type {
   ApiModelsResponse,
   CreateAgentRequest,
   CreateAgentResponse,
+  CreateAgentSessionResponse,
   CreateSessionForm,
   CreateSessionRequest,
   GetAgentResponse,
@@ -22,6 +23,7 @@ import {
   AgentServerErrorSchema,
   ApiModelsResponseSchema,
   CreateAgentResponseSchema,
+  CreateAgentSessionResponseSchema,
   GetAgentResponseSchema,
   GetAgentSessionResponseSchema,
   ListAgentSessionsResponseSchema,
@@ -174,12 +176,12 @@ export class AgentApiClient {
     }
   }
 
-  public async createSession(agentId: string, session: CreateSessionForm): Promise<GetAgentSessionResponse> {
+  public async createSession(agentId: string, session: CreateSessionForm): Promise<CreateAgentSessionResponse> {
     const url = this.getSessionPaths(agentId).base
     try {
       const payload = session satisfies CreateSessionRequest
       const response = await this.axios.post(url, payload)
-      const data = GetAgentSessionResponseSchema.parse(response.data)
+      const data = CreateAgentSessionResponseSchema.parse(response.data)
       return data
     } catch (error) {
       throw processError(error, 'Failed to add session.')

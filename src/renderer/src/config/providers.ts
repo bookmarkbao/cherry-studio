@@ -55,7 +55,7 @@ import VoyageAIProviderLogo from '@renderer/assets/images/providers/voyageai.png
 import XirangProviderLogo from '@renderer/assets/images/providers/xirang.png'
 import ZeroOneProviderLogo from '@renderer/assets/images/providers/zero-one.png'
 import ZhipuProviderLogo from '@renderer/assets/images/providers/zhipu.png'
-import type { AtLeast, Model, Provider, ProviderType, SystemProvider, SystemProviderId } from '@renderer/types'
+import type { AtLeast, Provider, ProviderType, SystemProvider, SystemProviderId } from '@renderer/types'
 import { isSystemProvider, OpenAIServiceTiers } from '@renderer/types'
 
 import { TOKENFLUX_HOST } from './constant'
@@ -80,6 +80,7 @@ export const SYSTEM_PROVIDERS_CONFIG: Record<SystemProviderId, SystemProvider> =
     type: 'openai',
     apiKey: '',
     apiHost: 'https://open.cherryin.net',
+    anthropicApiHost: 'https://open.cherryin.net',
     models: [],
     isSystem: true,
     enabled: true
@@ -101,7 +102,6 @@ export const SYSTEM_PROVIDERS_CONFIG: Record<SystemProviderId, SystemProvider> =
     apiKey: '',
     apiHost: 'https://aihubmix.com',
     anthropicApiHost: 'https://aihubmix.com/anthropic',
-    isAnthropicModel: (m: Model) => m.id.includes('claude'),
     models: SYSTEM_MODELS.aihubmix,
     isSystem: true,
     enabled: false

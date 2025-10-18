@@ -1,4 +1,4 @@
-import { Button, Popover, PopoverContent, PopoverTrigger } from '@heroui/react'
+import { Button, Popover, PopoverContent, PopoverTrigger, useDisclosure } from '@heroui/react'
 import { AgentModal } from '@renderer/components/Popups/agent/AgentModal'
 import { Bot, MessageSquare } from 'lucide-react'
 import type { FC } from 'react'
@@ -14,7 +14,7 @@ interface UnifiedAddButtonProps {
 const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant }) => {
   const { t } = useTranslation()
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const [isAgentModalOpen, setIsAgentModalOpen] = useState(false)
+  const { isOpen: isAgentModalOpen, onOpen: onAgentModalOpen, onClose: onAgentModalClose } = useDisclosure()
 
   const handleAddAssistant = () => {
     setIsPopoverOpen(false)
@@ -23,7 +23,7 @@ const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant }) => {
 
   const handleAddAgent = () => {
     setIsPopoverOpen(false)
-    setIsAgentModalOpen(true)
+    onAgentModalOpen()
   }
 
   return (
@@ -54,7 +54,7 @@ const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant }) => {
         </PopoverContent>
       </Popover>
 
-      <AgentModal isOpen={isAgentModalOpen} onClose={() => setIsAgentModalOpen(false)} />
+      <AgentModal isOpen={isAgentModalOpen} onClose={onAgentModalClose} />
     </div>
   )
 }

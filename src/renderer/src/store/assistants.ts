@@ -194,8 +194,7 @@ const assistantsSlice = createSlice({
       })
     },
     addAssistantPreset: (state, action: PayloadAction<AssistantPreset>) => {
-      // @ts-ignore ts-2589 false positive
-      state.agents.push(action.payload)
+      state.presets.push(action.payload)
     },
     removeAssistantPreset: (state, action: PayloadAction<{ id: string }>) => {
       state.presets = state.presets.filter((c) => c.id !== action.payload.id)
