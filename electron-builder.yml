@@ -125,21 +125,61 @@ afterSign: scripts/notarize.js
 artifactBuildCompleted: scripts/artifact-build-completed.js
 releaseInfo:
   releaseNotes: |
-    What's New in v1.6.3
+    <!--LANG:en-->
+    What's New in v1.7.0-beta.2
 
-    Features:
-    - Notes: Add spell-check control, automatic table line wrapping, export functionality, and LLM-based renaming
-    - UI: Expand topic rename clickable area, add middle-click tab closing, remove redundant scrollbars, fix message menubar overflow
-    - Editor: Add read-only extension support, make TextFilePreview read-only but copyable
-    - Models: Update support for DeepSeek v3.2, Claude 4.5, GLM 4.6, Gemini regex, and vision models
-    - Code Tools: Add GitHub Copilot CLI integration
+    New Features:
+    - Session Settings: Manage session-specific settings and model configurations independently
+    - Notes Full-Text Search: Search across all notes with match highlighting
+    - Built-in DiDi MCP Server: Integration with DiDi ride-hailing services (China only)
+    - Intel OV OCR: Hardware-accelerated OCR using Intel NPU
+    - Auto-start API Server: Automatically starts when agents exist
+
+    Improvements:
+    - Agent model selection now requires explicit user choice
+    - Added Mistral AI provider support
+    - Added NewAPI generic provider support
+    - Improved navbar layout consistency across different modes
+    - Enhanced chat component responsiveness
+    - Better code block display on small screens
+    - Updated OVMS to 2025.3 official release
+    - Added Greek language support
 
     Bug Fixes:
-    - Fix migration for missing providers
-    - Fix forked topic retaining old name after rename
-    - Restore first token latency reporting in metrics
-    - Fix UI scrollbar and overflow issues
+    - Fixed GitHub Copilot gpt-5-codex streaming issues
+    - Fixed assistant creation failures
+    - Fixed translate auto-copy functionality
+    - Fixed miniapps external link opening
+    - Fixed message layout and overflow issues
+    - Fixed API key parsing to preserve spaces
+    - Fixed agent display in different navbar layouts
 
-    Technical Updates:
-    - Upgrade to Electron 37.6.0
-    - Update dependencies across packages
+    <!--LANG:zh-CN-->
+    v1.7.0-beta.2 新特性
+
+    新功能:
+    - 会话设置：独立管理会话特定的设置和模型配置
+    - 笔记全文搜索：跨所有笔记搜索并高亮匹配内容
+    - 内置滴滴 MCP 服务器：集成滴滴打车服务(仅限中国地区)
+    - Intel OV OCR：使用 Intel NPU 的硬件加速 OCR
+    - 自动启动 API 服务器：当存在 Agent 时自动启动
+
+    改进:
+    - Agent 模型选择现在需要用户显式选择
+    - 添加 Mistral AI 提供商支持
+    - 添加 NewAPI 通用提供商支持
+    - 改进不同模式下的导航栏布局一致性
+    - 增强聊天组件响应式设计
+    - 优化小屏幕代码块显示
+    - 更新 OVMS 至 2025.3 正式版
+    - 添加希腊语支持
+
+    问题修复:
+    - 修复 GitHub Copilot gpt-5-codex 流式传输问题
+    - 修复助手创建失败
+    - 修复翻译自动复制功能
+    - 修复小程序外部链接打开
+    - 修复消息布局和溢出问题
+    - 修复 API 密钥解析以保留空格
+    - 修复不同导航栏布局中的 Agent 显示
+    <!--LANG:END-->
