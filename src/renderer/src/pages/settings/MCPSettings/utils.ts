@@ -17,7 +17,7 @@ export const MCPRoutes = {
   tokenflux: '/settings/mcp/tokenflux',
   lanyun: '/settings/mcp/lanyun',
   '302ai': '/settings/mcp/302ai',
-  bailian: '/settings/mcp/bailian',
+  bailian: '/settings/mcp/bailian'
 } as const
 
 /**

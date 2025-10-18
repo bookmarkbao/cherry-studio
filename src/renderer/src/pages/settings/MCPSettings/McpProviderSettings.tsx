@@ -1,7 +1,7 @@
-import { Flex, RowFlex } from '@cherrystudio/ui'
+import { Button, Flex, RowFlex } from '@cherrystudio/ui'
 import { useMCPServers } from '@renderer/hooks/useMCPServers'
 import type { MCPServer } from '@renderer/types'
-import { Button, Divider, Input, Space } from 'antd'
+import { Divider, Input, Space } from 'antd'
 import Link from 'antd/es/typography/Link'
 import { SquareArrowOutUpRight } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
@@ -17,7 +17,7 @@ interface Props {
 }
 
 const McpProviderSettings: React.FC<Props> = ({ provider, existingServers }) => {
-  const { addMCPServer, updateMCPServer } = useMCPServers()
+  const { addMCPServer } = useMCPServers()
   const [isFetching, setIsFetching] = useState(false)
   const [token, setToken] = useState<string>('')
   const [availableServers, setAvailableServers] = useState<MCPServer[]>([])
@@ -64,11 +64,13 @@ const McpProviderSettings: React.FC<Props> = ({ provider, existingServers }) => 
           <ProviderName>{provider.name}</ProviderName>
           {provider.discoverUrl && (
             <Link target="_blank" href={provider.discoverUrl} style={{ display: 'flex' }}>
-              <Button type="text" size="small" icon={<SquareArrowOutUpRight size={14} />} />
+              <Button variant="flat" size="sm">
+                <SquareArrowOutUpRight size={14} />
+              </Button>
             </Link>
           )}
         </Flex>
-        <Button type="primary" onClick={handleFetch} loading={isFetching} disabled={isFetchDisabled}>
+        <Button variant="solid" onClick={handleFetch} isLoading={isFetching} isDisabled={isFetchDisabled}>
           {t('settings.mcp.fetch.button', 'Fetch Servers')}
         </Button>
       </ProviderHeader>
@@ -105,19 +107,18 @@ const McpProviderSettings: React.FC<Props> = ({ provider, existingServers }) => 
                   <ServerDescription>{server.description}</ServerDescription>
                 </ServerInfo>
                 {(() => {
-                  const isAlreadyAdded = existingServers.some(existing => existing.id === server.id)
+                  const isAlreadyAdded = existingServers.some((existing) => existing.id === server.id)
                   return (
                     <Button
-                      type={isAlreadyAdded ? 'default' : 'primary'}
-                      size="small"
+                      variant={isAlreadyAdded ? 'bordered' : 'solid'}
+                      size="sm"
                       disabled={isAlreadyAdded}
                       onClick={() => {
                         if (!isAlreadyAdded) {
                           addMCPServer(server)
                           window.toast.success(t('settings.mcp.server.added', 'MCP server added'))
                         }
-                      }}
-                    >
+                      }}>
                       {isAlreadyAdded ? t('settings.mcp.server.added', 'Added') : t('settings.mcp.add.server', 'Add')}
                     </Button>
                   )

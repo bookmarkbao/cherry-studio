@@ -1,9 +1,10 @@
+import type { MCPServer } from '@renderer/types'
+
 import { getAI302Token, saveAI302Token, syncAi302Servers } from './302ai'
 import { getBailianToken, saveBailianToken, syncBailianServers } from './bailian'
 import { getTokenLanYunToken, LANYUN_KEY_HOST, saveTokenLanYunToken, syncTokenLanYunServers } from './lanyun'
 import { getModelScopeToken, MODELSCOPE_HOST, saveModelScopeToken, syncModelScopeServers } from './modelscope'
 import { getTokenFluxToken, saveTokenFluxToken, syncTokenFluxServers, TOKENFLUX_HOST } from './tokenflux'
-import type { MCPServer } from '@renderer/types'
 
 export interface ProviderConfig {
   key: string
