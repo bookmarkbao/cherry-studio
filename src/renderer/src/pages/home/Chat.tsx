@@ -204,7 +204,10 @@ const Chat: FC<Props> = (props) => {
           }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           style={{ flex: 1, display: 'flex', minWidth: 0 }}>
-          <Main ref={mainRef} id="chat-main" style={{ maxWidth: chatMaxWidth, height: mainHeight }}>
+          <Main
+            ref={mainRef}
+            id="chat-main"
+            style={{ maxWidth: chatMaxWidth, width: chatMaxWidth, height: mainHeight }}>
             <QuickPanelProvider>
               <ChatNavbar
                 activeAssistant={props.assistant}

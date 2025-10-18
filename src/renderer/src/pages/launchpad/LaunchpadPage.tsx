@@ -1,6 +1,6 @@
+import { usePreference } from '@data/hooks/usePreference'
 import App from '@renderer/components/MinApp/MinApp'
 import { useMinapps } from '@renderer/hooks/useMinapps'
-import { useSettings } from '@renderer/hooks/useSettings'
 import { Code, FileSearch, Folder, Languages, LayoutGrid, NotepadText, Palette, Sparkle } from 'lucide-react'
 import type { FC } from 'react'
 import { useMemo } from 'react'
@@ -11,7 +11,7 @@ import styled from 'styled-components'
 const LaunchpadPage: FC = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { defaultPaintingProvider } = useSettings()
+  const [defaultPaintingProvider] = usePreference('topic.position')
   const { pinned, openedKeepAliveMinapps } = useMinapps()
 
   const appMenuItems = [
