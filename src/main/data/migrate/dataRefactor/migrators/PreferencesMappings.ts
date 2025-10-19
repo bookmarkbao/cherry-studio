@@ -8,6 +8,8 @@
  * === AUTO-GENERATED CONTENT START ===
  */
 
+import type { PreferenceSchemas } from '@shared/data/preference/preferenceSchemas'
+
 /**
  * ElectronStore映射关系 - 简单一层结构
  *
@@ -252,6 +254,8 @@ export const REDUX_STORE_MAPPINGS = {
     },
     {
       originalKey: 'mathEngine',
+      // TODO
+      // @ts-expect-error check how to fix it later
       targetKey: 'chat.message.math_engine'
     },
     {
@@ -336,6 +340,8 @@ export const REDUX_STORE_MAPPINGS = {
     },
     {
       originalKey: 'topicNamingPrompt',
+      // TODO
+      // @ts-expect-error check how to fix it later
       targetKey: 'topic.naming.prompt'
     },
     {
@@ -664,6 +670,8 @@ export const REDUX_STORE_MAPPINGS = {
     },
     {
       originalKey: 'nutstoreSyncState',
+      // TODO
+      // @ts-expect-error check how to fix it later
       targetKey: 'data.backup.nutstore.sync_state'
     },
     {
@@ -737,7 +745,10 @@ export const REDUX_STORE_MAPPINGS = {
       targetKey: 'shortcut.app.exit_fullscreen'
     }
   ]
-} as const satisfies Record<string, Array<{ originalKey: string; targetKey: string }>>
+} as const satisfies Record<
+  string,
+  Array<{ originalKey: string; targetKey: keyof PreferenceSchemas[keyof PreferenceSchemas] }>
+>
 
 // === AUTO-GENERATED CONTENT END ===
 
