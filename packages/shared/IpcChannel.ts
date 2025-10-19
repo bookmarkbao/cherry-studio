@@ -369,7 +369,6 @@ export enum IpcChannel {
 
   // OCR
   OCR_Ocr = 'ocr:ocr',
-  OCR_ListProviders = 'ocr:list-providers',
 
   // OVMS
   Ovms_AddModel = 'ovms:add-model',
