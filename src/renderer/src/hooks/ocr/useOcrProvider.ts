@@ -1,106 +1,35 @@
-import { usePreference } from '@data/hooks/usePreference'
-import { loggerService } from '@logger'
-import type {
-  BuiltinOcrProviderId,
-  OcrOvConfig,
-  OcrOvProvider,
-  OcrPpocrConfig,
-  OcrPpocrProvider,
-  OcrSystemConfig,
-  OcrSystemProvider,
-  OcrTesseractConfig,
-  OcrTesseractProvider
-} from '@renderer/types'
-import { BUILTIN_OCR_PROVIDERS_MAP } from '@shared/config/ocr'
-import { merge } from 'lodash'
-import { useCallback, useMemo } from 'react'
+import { useMutation, useQuery } from '@data/hooks/useDataApi'
+import type { OcrProviderConfig } from '@renderer/types'
+import { getErrorMessage } from '@renderer/utils'
+import type { ConcreteApiPaths } from '@shared/data/api'
+import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
-const logger = loggerService.withContext('useOcrProvider')
+// const logger = loggerService.withContext('useOcrProvider')
 
-const PROVIDER_REGISTRY = {
-  ovocr: null as unknown as OcrOvProvider,
-  paddleocr: null as unknown as OcrPpocrProvider,
-  system: null as unknown as OcrSystemProvider,
-  tesseract: null as unknown as OcrTesseractProvider
-}
+export const useOcrProvider = (id: string) => {
+  const { t } = useTranslation()
 
-const CONFIG_REGISTRY = {
-  ovocr: null as unknown as OcrOvConfig,
-  paddleocr: null as unknown as OcrPpocrConfig,
-  system: null as unknown as OcrSystemConfig,
-  tesseract: null as unknown as OcrTesseractConfig
-} as const
-
-type ProviderMap = typeof PROVIDER_REGISTRY
-
-type ConfigMap = typeof CONFIG_REGISTRY
-
-type TProvider<T extends BuiltinOcrProviderId> = ProviderMap[T]
-
-type TConfig<T extends BuiltinOcrProviderId> = ConfigMap[T]
-
-type UseOcrProviderReturn<T extends BuiltinOcrProviderId> = {
-  provider: TProvider<T>
-  config: TConfig<T>
-  updateConfig: (update: Partial<TConfig<T>>) => void
-}
-
-export const useOcrProvider = <T extends BuiltinOcrProviderId>(id: T): UseOcrProviderReturn<T> => {
-  const provider = useMemo(() => {
-    switch (id) {
-      case 'ovocr':
-        return BUILTIN_OCR_PROVIDERS_MAP.ovocr
-      case 'paddleocr':
-        return BUILTIN_OCR_PROVIDERS_MAP.paddleocr
-      case 'system':
-        return BUILTIN_OCR_PROVIDERS_MAP.system
-      case 'tesseract':
-        return BUILTIN_OCR_PROVIDERS_MAP.tesseract
-    }
-  }, [id])
-  const [ovConfig, setOvConfig] = usePreference('ocr.provider.config.ovocr')
-  const [ppConfig, setPpConfig] = usePreference('ocr.provider.config.paddleocr')
-  const [sysConfig, setSysConfig] = usePreference('ocr.provider.config.system')
-  const [tesConfig, setTesConfig] = usePreference('ocr.provider.config.tesseract')
-
-  const config = useMemo(() => {
-    switch (id) {
-      case 'ovocr':
-        return ovConfig
-      case 'paddleocr':
-        return ppConfig
-      case 'system':
-        return sysConfig
-      case 'tesseract':
-        return tesConfig
-    }
-  }, [id, ovConfig, ppConfig, sysConfig, tesConfig])
+  const path: ConcreteApiPaths = `/ocr/providers/${id}`
+  const { data: provider, loading, error } = useQuery(path, undefined)
+  const { mutate, loading: mutating } = useMutation('PATCH', path)
 
   const updateConfig = useCallback(
-    (update: Partial<TConfig<T>>) => {
-      switch (id) {
-        case 'ovocr':
-          setOvConfig(merge({}, ovConfig, update))
-          break
-        case 'paddleocr':
-          setPpConfig(merge({}, ppConfig, update))
-          break
-        case 'system':
-          setSysConfig(merge({}, sysConfig, update))
-          break
-        case 'tesseract':
-          setTesConfig(merge({}, tesConfig, update))
-          break
-        default:
-          logger.warn(`Unsupported OCR provider id: ${id}`)
+    async (update: Partial<OcrProviderConfig>) => {
+      try {
+        await mutate({ body: update })
+      } catch (e) {
+        window.toast.error({ title: t('ocr.provider.config.patch.error.failed'), description: getErrorMessage(e) })
       }
     },
-    [id, ovConfig, ppConfig, setOvConfig, setPpConfig, setSysConfig, setTesConfig, sysConfig, tesConfig]
+    [mutate, t]
   )
 
   return {
     provider,
-    config,
+    loading,
+    mutating,
+    error,
     updateConfig
-  } as UseOcrProviderReturn<T>
+  }
 }
