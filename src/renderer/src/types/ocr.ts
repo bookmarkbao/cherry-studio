@@ -25,10 +25,12 @@ export const OcrProviderCapabilities = {
   // pdf: 'pdf'
 } as const
 
-export type OcrProviderCapability = keyof typeof OcrProviderCapabilities
+export const OcrProviderCapabilitySchema = z.enum(['image'])
+
+export type OcrProviderCapability = z.infer<typeof OcrProviderCapabilitySchema>
 
 export const isOcrProviderCapability = (cap: string): cap is OcrProviderCapability => {
-  return Object.hasOwn(OcrProviderCapabilities, cap)
+  return OcrProviderCapabilitySchema.safeParse(cap).success
 }
 
 export type OcrProviderCapabilityRecord = Partial<Record<OcrProviderCapability, boolean>>
