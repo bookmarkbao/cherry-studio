@@ -872,7 +872,7 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   )
 
   // OCR
-  ipcMain.handle(IpcChannel.OCR_ocr, (_, file: SupportedOcrFile, provider: OcrProvider) =>
+  ipcMain.handle(IpcChannel.OCR_Ocr, (_, file: SupportedOcrFile, provider: OcrProvider) =>
     ocrService.ocr(file, provider)
   )
   ipcMain.handle(IpcChannel.OCR_ListProviders, () => ocrService.listProviderIds())
