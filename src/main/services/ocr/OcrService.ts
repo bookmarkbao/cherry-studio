@@ -11,6 +11,7 @@ import type {
 } from '@types'
 import { BuiltinOcrProviderIds } from '@types'
 import { eq } from 'drizzle-orm'
+import { merge } from 'lodash'
 
 import type { OcrBaseService } from './builtin/OcrBaseService'
 import { ovOcrService } from './builtin/OvOcrService'
@@ -84,7 +85,18 @@ export class OcrService {
     if (providers.length == 0) {
       throw new Error(`OCR provider ${update.id} not found`)
     }
-    return { data: providers[0] }
+    const config = providers[0].config
+    const newConfig = merge({}, config, update.config)
+    const [updated] = await dbService
+      .getDb()
+      .update(ocrProviderTable)
+      .set({
+        name: update.name,
+        config: newConfig
+      })
+      .where(eq(ocrProviderTable.id, update.id))
+      .returning()
+    return { data: updated }
   }
 
   public async ocr(file: SupportedOcrFile, params: OcrParams): Promise<OcrResult> {
