@@ -10,21 +10,12 @@ import { useOcrImageProvider } from './useOcrImageProvider'
 
 const logger = loggerService.withContext('useOcr')
 
+const isProviderAvailable = (provider: ImageOcrProvider | undefined): provider is ImageOcrProvider =>
+  provider !== undefined
+
 export const useOcr = () => {
   const { t } = useTranslation()
   const { imageProvider } = useOcrImageProvider()
-
-  const isProviderAvailable = useCallback(
-    (provider: ImageOcrProvider | undefined): provider is ImageOcrProvider => {
-      if (!provider) {
-        window.toast.error(t('ocr.error.provider.not_found'))
-        return false
-      } else {
-        return true
-      }
-    },
-    [t]
-  )
 
   /**
    * 对图片文件进行OCR识别
@@ -38,10 +29,10 @@ export const useOcr = () => {
         logger.debug('ocrImage', { config: imageProvider.config })
         return OcrService.ocr(image, imageProvider)
       } else {
-        throw new Error(t('ocr.error.provider.not_image_provider'))
+        throw new Error(t('ocr.error.provider.'))
       }
     },
-    [imageProvider, isProviderAvailable, t]
+    [imageProvider, t]
   )
 
   /**
