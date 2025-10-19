@@ -16,6 +16,7 @@ export class OcrService {
   private registry: Map<string, OcrBaseService> = new Map()
 
   constructor() {
+    // TODO: Ensure builtin providers are in db.
     // Register built-in providers
     this.register(BuiltinOcrProviderIds.tesseract, tesseractService)
 
