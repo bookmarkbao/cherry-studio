@@ -3,6 +3,7 @@
 import type {
   GetOcrProviderResponse,
   ListOcrProvidersResponse,
+  OcrProviderId,
   PatchOcrProviderRequest,
   PatchOcrProviderResponse
 } from '@types'
@@ -366,6 +367,7 @@ export interface ApiSchemas {
 
   '/ocr/providers/:id': {
     GET: {
+      params: { id: OcrProviderId }
       response: GetOcrProviderResponse
     }
     PATCH: {

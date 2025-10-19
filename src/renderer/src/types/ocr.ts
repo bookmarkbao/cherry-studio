@@ -82,6 +82,9 @@ export const OcrProviderConfigSchema = OcrProviderBaseConfigSchema.loose()
 export type OcrProviderConfig = z.infer<typeof OcrProviderConfigSchema>
 
 const OcrProviderIdSchema = z.string()
+
+export type OcrProviderId = z.infer<typeof OcrProviderIdSchema>
+
 const OcrProviderNameSchema = z.string()
 
 export const OcrProviderSchema = z.object({
