@@ -6,13 +6,13 @@ import { formatErrorMessage } from '@renderer/utils/error'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useOcrProviders } from './useOcrProviders'
+import { useOcrImageProvider } from './useOcrImageProvider'
 
 const logger = loggerService.withContext('useOcr')
 
 export const useOcr = () => {
   const { t } = useTranslation()
-  const { imageProvider } = useOcrProviders()
+  const { imageProvider } = useOcrImageProvider()
 
   const isProviderAvailable = useCallback(
     (provider: ImageOcrProvider | undefined): provider is ImageOcrProvider => {

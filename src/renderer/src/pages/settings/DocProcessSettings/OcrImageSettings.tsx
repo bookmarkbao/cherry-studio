@@ -2,6 +2,7 @@ import { Alert, Skeleton } from '@heroui/react'
 import { loggerService } from '@logger'
 import { ErrorTag } from '@renderer/components/Tags/ErrorTag'
 import { isMac, isWin } from '@renderer/config/constant'
+import { useOcrImageProvider } from '@renderer/hooks/ocr/useOcrImageProvider'
 import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProviders'
 import type { ImageOcrProvider } from '@renderer/types'
 import { BuiltinOcrProviderIds, isImageOcrProvider } from '@renderer/types'
@@ -17,7 +18,8 @@ const logger = loggerService.withContext('OcrImageSettings')
 
 const OcrImageSettings = () => {
   const { t } = useTranslation()
-  const { providers, imageProvider, getOcrProviderName, setImageProviderId } = useOcrProviders()
+  const { providers, getOcrProviderName } = useOcrProviders()
+  const { imageProvider, setImageProviderId } = useOcrImageProvider()
   const fetcher = useCallback(() => {
     return window.api.ocr.listProviders()
   }, [])

@@ -1,10 +1,10 @@
-import { usePreference } from '@data/hooks/usePreference'
+import { useQuery } from '@data/hooks/useDataApi'
 import { loggerService } from '@logger'
 import { getBuiltinOcrProviderLabel } from '@renderer/i18n/label'
-import { useAppSelector } from '@renderer/store'
 import { addOcrProvider, removeOcrProvider } from '@renderer/store/ocr'
 import type { OcrProvider } from '@renderer/types'
-import { isBuiltinOcrProvider, isBuiltinOcrProviderId, isImageOcrProvider } from '@renderer/types'
+import { isBuiltinOcrProvider, isBuiltinOcrProviderId } from '@renderer/types'
+import { BUILTIN_OCR_PROVIDERS } from '@shared/config/ocr'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -12,13 +12,11 @@ import { useDispatch } from 'react-redux'
 const logger = loggerService.withContext('useOcrProviders')
 
 export const useOcrProviders = () => {
-  // TODO: migrate to useQuery
-  const providers = useAppSelector((state) => state.ocr.providers)
-  const imageProviders = providers.filter(isImageOcrProvider)
-  const [imageProviderId, setImageProviderId] = usePreference('ocr.settings.image_provider_id')
-  const imageProvider = useMemo(() => {
-    return imageProviders.find((p) => p.id === imageProviderId)
-  }, [imageProviderId, imageProviders])
+  const { data: validProviderIds, loading, error } = useQuery('/ocr/providers')
+  const providers = useMemo(
+    () => BUILTIN_OCR_PROVIDERS.filter((p) => validProviderIds?.includes(p.id)),
+    [validProviderIds]
+  )
   const dispatch = useDispatch()
   const { t } = useTranslation()
 
@@ -62,10 +60,10 @@ export const useOcrProviders = () => {
 
   return {
     providers,
-    imageProvider,
+    loading,
+    error,
     addProvider,
     removeProvider,
-    setImageProviderId,
     getOcrProviderName
   }
 }

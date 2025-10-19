@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { useTheme } from '@renderer/context/ThemeProvider'
-import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProviders'
+import { useOcrImageProvider } from '@renderer/hooks/ocr/useOcrImageProvider'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -21,7 +21,7 @@ import OcrProviderSettings from './OcrProviderSettings'
 const OcrSettings: FC = () => {
   const { t } = useTranslation()
   const { theme: themeMode } = useTheme()
-  const { imageProvider: provider } = useOcrProviders()
+  const { imageProvider: provider } = useOcrImageProvider()
   // const [activeTab, setActiveTab] = useState<Tab>('image')
   // const provider = useMemo(() => {
   //   switch (activeTab) {
