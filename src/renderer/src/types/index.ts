@@ -7,6 +7,8 @@ import type { CSSProperties } from 'react'
 export * from './file'
 export * from './note'
 
+import * as z from 'zod'
+
 import type { StreamTextParams } from './aiCoreTypes'
 import type { Chunk } from './chunk'
 import type { FileMetadata } from './file'
@@ -480,9 +482,14 @@ export type GenerateImageResponse = {
   images: string[]
 }
 
-// 为了支持自定义语言，设置为string别名
-/** zh-cn, en-us, etc. */
-export type TranslateLanguageCode = string
+/**
+ * Language code pattern used for translation features.
+ * Examples: "zh-cn", "en-us", "fr-fr", etc.
+ * Must be lowercase and follow the format: 2-3 letter language code
+ * followed by a hyphen and 2-letter region code.
+ */
+export const TranslateLanguageCodeSchema = z.string().regex(/^[a-z]{2,3}(-[a-z]{2-3})$/)
+export type TranslateLanguageCode = z.infer<typeof TranslateLanguageCodeSchema>
 
 // langCode应当能够唯一确认一种语言
 export type TranslateLanguage = {

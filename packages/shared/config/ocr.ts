@@ -1,13 +1,9 @@
 import type {
   BuiltinOcrProvider,
   BuiltinOcrProviderId,
-  OcrOvConfig,
   OcrOvProvider,
-  OcrPpocrConfig,
   OcrPpocrProvider,
-  OcrSystemConfig,
   OcrSystemProvider,
-  OcrTesseractConfig,
   OcrTesseractProvider,
   TesseractLangCode,
   TranslateLanguageCode
@@ -18,6 +14,14 @@ export const tesseract: OcrTesseractProvider = {
   name: 'Tesseract',
   capabilities: {
     image: true
+  },
+  config: {
+    langs: {
+      chi_sim: true,
+      chi_tra: true,
+      eng: true
+    },
+    enabled: false
   }
 } as const
 
@@ -27,6 +31,10 @@ export const systemOcr: OcrSystemProvider = {
   capabilities: {
     image: true
     // pdf: true
+  },
+  config: {
+    langs: ['en-us'],
+    enabled: false
   }
 } as const satisfies OcrSystemProvider
 
@@ -36,7 +44,8 @@ export const ppocrOcr: OcrPpocrProvider = {
   capabilities: {
     image: true
     // pdf: true
-  }
+  },
+  config: { apiUrl: '', enabled: false }
 } as const
 
 export const ovOcr: OcrOvProvider = {
@@ -45,34 +54,20 @@ export const ovOcr: OcrOvProvider = {
   capabilities: {
     image: true
     // pdf: true
+  },
+  config: {
+    enabled: false
   }
 } as const satisfies OcrOvProvider
 
-export const BUILTIN_OCR_PROVIDER_CONFIG_MAP = {
-  tesseract: {
-    langs: {
-      chi_sim: true,
-      chi_tra: true,
-      eng: true
-    }
-  } satisfies OcrTesseractConfig,
-  system: {
-    langs: ['en-us']
-  } satisfies OcrSystemConfig,
-  paddleocr: {
-    apiUrl: ''
-  } satisfies OcrPpocrConfig,
-  ovocr: {} satisfies OcrOvConfig
-} as const satisfies Record<BuiltinOcrProviderId, any>
-
-export const BUILTIN_OCR_PROVIDERS_MAP = {
+export const INITIAL_BUILTIN_OCR_PROVIDER_MAP = {
   tesseract,
   system: systemOcr,
   paddleocr: ppocrOcr,
   ovocr: ovOcr
 } as const satisfies Record<BuiltinOcrProviderId, BuiltinOcrProvider>
 
-export const BUILTIN_OCR_PROVIDERS: BuiltinOcrProvider[] = Object.values(BUILTIN_OCR_PROVIDERS_MAP)
+export const BUILTIN_OCR_PROVIDERS: BuiltinOcrProvider[] = Object.values(INITIAL_BUILTIN_OCR_PROVIDER_MAP)
 
 export const TESSERACT_LANG_MAP: Record<TranslateLanguageCode, TesseractLangCode> = {
   'af-za': 'afr',

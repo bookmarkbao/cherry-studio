@@ -36,9 +36,8 @@ export const ocrProviderTable = sqliteTable(
      * Since this is a polymorphic field, both frontend and backend must validate
      * that the structure matches the expected schema for the corresponding provider type
      * before saving.
-     * This field is nullable because `config` in the `OcrProvider` type is optional.
      */
-    config: text('config', { mode: 'json' }).$type<OcrProviderConfig>(),
+    config: text('config', { mode: 'json' }).$type<OcrProviderConfig>().notNull(),
 
     /** Timestamps. May not useful. */
     ...createUpdateTimestamps

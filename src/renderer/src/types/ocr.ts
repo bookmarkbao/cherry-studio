@@ -2,7 +2,7 @@ import type Tesseract from 'tesseract.js'
 import * as z from 'zod'
 
 import type { FileMetadata, ImageFileMetadata, TranslateLanguageCode } from '.'
-import { isImageFileMetadata } from '.'
+import { isImageFileMetadata, TranslateLanguageCodeSchema } from '.'
 
 export const BuiltinOcrProviderIds = {
   tesseract: 'tesseract',
@@ -72,33 +72,23 @@ export const isOcrProviderApiConfig = (config: unknown): config is OcrProviderAp
  * Extend this type to define provider-specific config types.
  */
 export const OcrProviderBaseConfigSchema = z.object({
-  /** Not used for now. Could safely remove. */
-  api: OcrProviderApiConfigSchema.optional(),
-  /** Not used for now. Could safely remove. */
-  models: z.array(OcrModelSchema).optional(),
-  /** Not used for now. Could safely remove. */
-  enabled: z.boolean().optional()
+  enabled: z.boolean().default(false)
 })
 
 export type OcrProviderBaseConfig = z.infer<typeof OcrProviderBaseConfigSchema>
 
-export type OcrProviderConfig =
-  | OcrApiProviderConfig
-  | OcrTesseractConfig
-  | OcrSystemConfig
-  | OcrPpocrConfig
-  | OcrOvConfig
+export const OcrProviderConfigSchema = OcrProviderBaseConfigSchema.loose()
+
+export type OcrProviderConfig = z.infer<typeof OcrProviderConfigSchema>
 
 export const OcrProviderSchema = z.object({
   id: z.string(),
   name: z.string(),
-  capabilities: OcrProviderCapabilityRecordSchema
+  capabilities: OcrProviderCapabilityRecordSchema,
+  config: OcrProviderConfigSchema
 })
 
-export type OcrProvider = z.infer<typeof OcrProviderSchema> & {
-  /** @deprecated */
-  config?: OcrProviderBaseConfig
-}
+export type OcrProvider = z.infer<typeof OcrProviderSchema>
 
 export const isOcrProvider = (p: unknown): p is OcrProvider => {
   return OcrProviderSchema.safeParse(p).success
@@ -170,13 +160,18 @@ export type OcrHandler = (file: SupportedOcrFile) => Promise<OcrResult>
 
 export type OcrImageHandler = (file: ImageFileMetadata) => Promise<OcrResult>
 
-// Tesseract Types
-export type OcrTesseractConfig = OcrProviderBaseConfig & {
-  langs?: Partial<Record<TesseractLangCode, boolean>>
-}
+// ==========================================================
+//    Tesseract OCR Types
+// ==========================================================
+export const OcrTesseractConfigSchema = OcrProviderBaseConfigSchema.extend({
+  langs: z.record(TranslateLanguageCodeSchema, z.boolean()).optional()
+})
+
+export type OcrTesseractConfig = z.infer<typeof OcrTesseractConfigSchema>
 
 export type OcrTesseractProvider = {
   id: 'tesseract'
+  config: OcrTesseractConfig
 } & ImageOcrProvider &
   BuiltinOcrProvider
 
@@ -186,13 +181,16 @@ export const isOcrTesseractProvider = (p: OcrProvider): p is OcrTesseractProvide
 
 export type TesseractLangCode = Tesseract.LanguageCode
 
-// System Types
-export type OcrSystemConfig = OcrProviderBaseConfig & {
+// ==========================================================
+//    System OCR Types
+// ==========================================================
+export interface OcrSystemConfig extends OcrProviderBaseConfig {
   langs?: TranslateLanguageCode[]
 }
 
 export type OcrSystemProvider = {
   id: 'system'
+  config: OcrSystemConfig
 } & ImageOcrProvider &
   // PdfOcrProvider &
   BuiltinOcrProvider
@@ -201,14 +199,23 @@ export const isOcrSystemProvider = (p: OcrProvider): p is OcrSystemProvider => {
   return p.id === BuiltinOcrProviderIds.system
 }
 
-// PaddleOCR Types
-export type OcrPpocrConfig = OcrProviderBaseConfig & {
-  apiUrl?: string
-  accessToken?: string
+// ==========================================================
+//    PaddleOCR Types
+// ==========================================================
+export const OcrPpocrConfigSchema = OcrProviderBaseConfigSchema.extend({
+  apiUrl: z.string().optional(),
+  accessToken: z.string().optional()
+})
+
+export type OcrPpocrConfig = z.infer<typeof OcrPpocrConfigSchema>
+
+export const isOcrPpocrConfig = (config: unknown): config is OcrPpocrConfig => {
+  return OcrPpocrConfigSchema.safeParse(config).success
 }
 
 export type OcrPpocrProvider = {
   id: 'paddleocr'
+  config: OcrPpocrConfig
 } & ImageOcrProvider &
   // PdfOcrProvider &
   BuiltinOcrProvider
@@ -217,14 +224,23 @@ export const isOcrPpocrProvider = (p: OcrProvider): p is OcrPpocrProvider => {
   return p.id === BuiltinOcrProviderIds.paddleocr
 }
 
-// OV OCR Types
-export type OcrOvConfig = OcrProviderBaseConfig & {
+// ==========================================================
+//    OV OCR Types
+// ==========================================================
+export const OcrOvConfigSchema = OcrProviderBaseConfigSchema.extend({
   // It's not configurable for now.
-  // langs?: TranslateLanguageCode[]
+  // langs: z.array(TranslateLanguageCodeSchema).optional()
+})
+
+export type OcrOvConfig = z.infer<typeof OcrOvConfigSchema>
+
+export const isOcrOvConfig = (config: unknown): config is OcrOvConfig => {
+  return OcrOvConfigSchema.safeParse(config).success
 }
 
 export type OcrOvProvider = {
   id: 'ovocr'
+  config: OcrOvConfig
 } & ImageOcrProvider &
   // PdfOcrProvider &
   BuiltinOcrProvider
@@ -232,3 +248,18 @@ export type OcrOvProvider = {
 export const isOcrOVProvider = (p: OcrProvider): p is OcrOvProvider => {
   return p.id === BuiltinOcrProviderIds.ovocr
 }
+
+// ==========================================================
+//    Data-API OCR Types (notable)
+// ==========================================================
+
+const TimestampExtendShape = {
+  createdAt: z.number().nullable(),
+  updatedAt: z.number().nullable()
+}
+
+export const ListOcrProvidersResponseSchema = z.object({
+  data: z.array(OcrProviderSchema.extend(TimestampExtendShape))
+})
+
+export type ListOcrProvidersResponse = z.infer<typeof ListOcrProvidersResponseSchema>

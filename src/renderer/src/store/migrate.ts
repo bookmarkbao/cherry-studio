@@ -30,12 +30,12 @@ import type {
   TranslateLanguageCode,
   WebSearchProvider
 } from '@renderer/types'
-import { isBuiltinOcrProvider, isSystemProvider, SystemProviderIds } from '@renderer/types'
+import { isSystemProvider, SystemProviderIds } from '@renderer/types'
 import { getDefaultGroupName, getLeadingEmoji, runAsyncFunction, uuid } from '@renderer/utils'
 import { getDefaultOcrProvider } from '@renderer/utils/ocr'
 import { defaultByPassRules } from '@shared/config/constant'
 import { BUILTIN_OCR_PROVIDERS } from '@shared/config/ocr'
-import { BUILTIN_OCR_PROVIDER_CONFIG_MAP, BUILTIN_OCR_PROVIDERS_MAP } from '@shared/config/ocr'
+import { INITIAL_BUILTIN_OCR_PROVIDER_MAP } from '@shared/config/ocr'
 import { TRANSLATE_PROMPT } from '@shared/config/prompts'
 import { DefaultPreferences } from '@shared/data/preference/preferenceSchemas'
 import { UpgradeChannel } from '@shared/data/preference/preferenceTypes'
@@ -2235,7 +2235,6 @@ const migrateConfig = {
   },
   '137': (state: RootState) => {
     try {
-      // @ts-expect-error old migration
       state.ocr = {
         providers: BUILTIN_OCR_PROVIDERS,
         imageProviderId: getDefaultOcrProvider('image').id
@@ -2249,7 +2248,7 @@ const migrateConfig = {
   },
   '138': (state: RootState) => {
     try {
-      addOcrProvider(state, BUILTIN_OCR_PROVIDERS_MAP.system)
+      addOcrProvider(state, INITIAL_BUILTIN_OCR_PROVIDER_MAP.system)
       return state
     } catch (error) {
       logger.error('migrate 138 error', error as Error)
@@ -2428,7 +2427,7 @@ const migrateConfig = {
   },
   '148': (state: RootState) => {
     try {
-      addOcrProvider(state, BUILTIN_OCR_PROVIDERS_MAP.paddleocr)
+      addOcrProvider(state, INITIAL_BUILTIN_OCR_PROVIDER_MAP.paddleocr)
       return state
     } catch (error) {
       logger.error('migrate 148 error', error as Error)
@@ -2677,7 +2676,7 @@ const migrateConfig = {
   },
   '163': (state: RootState) => {
     try {
-      addOcrProvider(state, BUILTIN_OCR_PROVIDERS_MAP.ovocr)
+      addOcrProvider(state, INITIAL_BUILTIN_OCR_PROVIDER_MAP.ovocr)
       state.llm.providers.forEach((provider) => {
         if (provider.id === 'cherryin') {
           provider.anthropicApiHost = 'https://open.cherryin.net'
@@ -2686,34 +2685,6 @@ const migrateConfig = {
       return state
     } catch (error) {
       logger.error('migrate 163 error', error as Error)
-      return state
-    }
-  },
-  '164': (state: RootState) => {
-    try {
-      state.ocr.providers.forEach((p) => {
-        if (isBuiltinOcrProvider(p)) {
-          switch (p.id) {
-            case 'ovocr':
-              state.ocr.configs.ovocr = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.ovocr
-              break
-            case 'paddleocr':
-              state.ocr.configs.paddleocr = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.paddleocr
-              break
-            case 'system':
-              state.ocr.configs.system = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.system
-              break
-            case 'tesseract':
-              state.ocr.configs.tesseract = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.tesseract
-              break
-            default:
-              logger.warn(`Unknown ocr provider ${p.id}. Skipped.`)
-          }
-        }
-      })
-      return state
-    } catch (error) {
-      logger.error('migrate 164 error', error as Error)
       return state
     }
   }
