@@ -89,12 +89,14 @@ export type OcrProviderConfig =
   | OcrPpocrConfig
   | OcrOvConfig
 
-export type OcrProvider = {
-  id: string
-  name: string
-  capabilities: OcrProviderCapabilityRecord
-  config?: OcrProviderBaseConfig
-}
+export const OcrProviderSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  capabilities: OcrProviderCapabilityRecordSchema,
+  config: OcrProviderBaseConfigSchema.optional()
+})
+
+export type OcrProvider = z.infer<typeof OcrProviderSchema>
 
 export type OcrApiProviderConfig = OcrProviderBaseConfig & {
   api: OcrProviderApiConfig
