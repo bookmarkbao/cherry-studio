@@ -62,9 +62,7 @@ export const BUILTIN_OCR_PROVIDER_CONFIG_MAP = {
   paddleocr: {
     apiUrl: ''
   } satisfies OcrPpocrConfig,
-  ovocr: {
-    langs: ['en-us', 'zh-cn']
-  } satisfies OcrOvConfig
+  ovocr: {} satisfies OcrOvConfig
 } as const satisfies Record<BuiltinOcrProviderId, any>
 
 export const BUILTIN_OCR_PROVIDERS_MAP = {

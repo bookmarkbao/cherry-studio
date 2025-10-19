@@ -204,7 +204,8 @@ export const isOcrPpocrProvider = (p: OcrProvider): p is OcrPpocrProvider => {
 
 // OV OCR Types
 export type OcrOvConfig = OcrProviderBaseConfig & {
-  langs?: TranslateLanguageCode[]
+  // It's not configurable for now.
+  // langs?: TranslateLanguageCode[]
 }
 
 export type OcrOvProvider = {
