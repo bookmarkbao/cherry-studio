@@ -1,5 +1,5 @@
 import { loggerService } from '@logger'
-import type { OcrProvider, OcrResult, SupportedOcrFile } from '@types'
+import type { OcrParams, OcrResult, SupportedOcrFile } from '@types'
 import { BuiltinOcrProviderIds } from '@types'
 
 import type { OcrBaseService } from './builtin/OcrBaseService'
@@ -28,12 +28,12 @@ export class OcrService {
     return Array.from(this.registry.keys())
   }
 
-  public async ocr(file: SupportedOcrFile, provider: OcrProvider): Promise<OcrResult> {
-    const service = this.registry.get(provider.id)
+  public async ocr(file: SupportedOcrFile, params: OcrParams): Promise<OcrResult> {
+    const service = this.registry.get(params.providerId)
     if (!service) {
-      throw new Error(`Provider ${provider.id} is not registered`)
+      throw new Error(`Provider ${params.providerId} is not registered`)
     }
-    return service.ocr(file, provider.config)
+    return service.ocr(file)
   }
 }
 

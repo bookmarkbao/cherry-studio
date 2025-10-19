@@ -104,18 +104,23 @@ export const isOcrProvider = (p: unknown): p is OcrProvider => {
   return OcrProviderSchema.safeParse(p).success
 }
 
-export type OcrApiProviderConfig = OcrProviderBaseConfig & {
-  api: OcrProviderApiConfig
+export const OcrApiProviderConfigSchema = OcrProviderBaseConfigSchema.extend({
+  api: OcrProviderApiConfigSchema
+})
+
+export type OcrApiProviderConfig = z.infer<typeof OcrApiProviderConfigSchema>
+
+export const isOcrApiProviderConfig = (config: unknown): config is OcrApiProviderConfig => {
+  return OcrApiProviderConfigSchema.safeParse(config).success
 }
 
-/** This type is not being used. */
-export type OcrApiProvider = OcrProvider & {
-  config: OcrApiProviderConfig
-}
+export const OcrApiProviderSchema = OcrProviderSchema
 
-/** This function is not being used. */
-export const isOcrApiProvider = (p: OcrProvider): p is OcrApiProvider => {
-  return !!(p.config && p.config.api && isOcrProviderApiConfig(p.config.api))
+/** Currently, there is no API provider yet, but we've left room for expansion. */
+export type OcrApiProvider = z.infer<typeof OcrApiProviderSchema>
+
+export const isOcrApiProvider = (p: unknown): p is OcrApiProvider => {
+  return OcrApiProviderSchema.safeParse(p).success
 }
 
 export type BuiltinOcrProvider = OcrProvider & {
@@ -153,13 +158,17 @@ export const isSupportedOcrFile = (file: FileMetadata): file is SupportedOcrFile
   return isImageFileMetadata(file)
 }
 
+export type OcrParams = {
+  providerId: string
+}
+
 export type OcrResult = {
   text: string
 }
 
-export type OcrHandler = (file: SupportedOcrFile, options?: OcrProviderBaseConfig) => Promise<OcrResult>
+export type OcrHandler = (file: SupportedOcrFile) => Promise<OcrResult>
 
-export type OcrImageHandler = (file: ImageFileMetadata, options?: OcrProviderBaseConfig) => Promise<OcrResult>
+export type OcrImageHandler = (file: ImageFileMetadata) => Promise<OcrResult>
 
 // Tesseract Types
 export type OcrTesseractConfig = OcrProviderBaseConfig & {

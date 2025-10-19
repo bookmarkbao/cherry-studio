@@ -18,7 +18,7 @@ import type {
   AgentPersistedMessage,
   FileMetadata,
   Notification,
-  OcrProvider,
+  OcrParams,
   Provider,
   Shortcut,
   SupportedOcrFile
@@ -872,9 +872,7 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   )
 
   // OCR
-  ipcMain.handle(IpcChannel.OCR_Ocr, (_, file: SupportedOcrFile, provider: OcrProvider) =>
-    ocrService.ocr(file, provider)
-  )
+  ipcMain.handle(IpcChannel.OCR_Ocr, (_, file: SupportedOcrFile, params: OcrParams) => ocrService.ocr(file, params))
 
   // OVMS
   ipcMain.handle(IpcChannel.Ovms_AddModel, (_, modelName: string, modelId: string, modelSource: string, task: string) =>

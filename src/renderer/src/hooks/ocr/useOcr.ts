@@ -26,8 +26,10 @@ export const useOcr = () => {
   const ocrImage = useCallback(
     async (image: ImageFileMetadata) => {
       if (isProviderAvailable(imageProvider)) {
-        logger.debug('ocrImage', { config: imageProvider.config })
-        return OcrService.ocr(image, imageProvider)
+        logger.debug('ocrImage', { provider: imageProvider })
+        return OcrService.ocr(image, {
+          providerId: imageProvider.id
+        })
       } else {
         throw new Error(t('ocr.error.provider.'))
       }
