@@ -2,7 +2,7 @@ import type Tesseract from 'tesseract.js'
 import * as z from 'zod'
 
 import type { FileMetadata, ImageFileMetadata, TranslateLanguageCode } from '.'
-import { isImageFileMetadata, TranslateLanguageCodeSchema } from '.'
+import { isImageFileMetadata, objectValues, TranslateLanguageCodeSchema } from '.'
 
 export const BuiltinOcrProviderIdMap = {
   tesseract: 'tesseract',
@@ -10,6 +10,8 @@ export const BuiltinOcrProviderIdMap = {
   paddleocr: 'paddleocr',
   ovocr: 'ovocr'
 } as const satisfies Record<string, BuiltinOcrProviderId>
+
+export const BuiltinOcrProviderIds = Object.freeze(objectValues(BuiltinOcrProviderIdMap))
 
 export const BuiltinOcrProviderIdSchema = z.enum(['tesseract', 'system', 'paddleocr', 'ovocr'])
 
