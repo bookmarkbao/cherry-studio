@@ -100,14 +100,20 @@ export type OcrProvider = z.infer<typeof OcrProviderSchema> & {
   config?: OcrProviderBaseConfig
 }
 
+export const isOcrProvider = (p: unknown): p is OcrProvider => {
+  return OcrProviderSchema.safeParse(p).success
+}
+
 export type OcrApiProviderConfig = OcrProviderBaseConfig & {
   api: OcrProviderApiConfig
 }
 
+/** This type is not being used. */
 export type OcrApiProvider = OcrProvider & {
   config: OcrApiProviderConfig
 }
 
+/** This function is not being used. */
 export const isOcrApiProvider = (p: OcrProvider): p is OcrApiProvider => {
   return !!(p.config && p.config.api && isOcrProviderApiConfig(p.config.api))
 }
