@@ -1,5 +1,7 @@
+import { dbService } from '@data/db/DbService'
+import { ocrProviderTable } from '@data/db/schemas/ocr/provider'
 import { loggerService } from '@logger'
-import type { OcrParams, OcrResult, SupportedOcrFile } from '@types'
+import type { ListOcrProvidersResponse, OcrParams, OcrResult, SupportedOcrFile } from '@types'
 import { BuiltinOcrProviderIds } from '@types'
 
 import type { OcrBaseService } from './builtin/OcrBaseService'
@@ -28,19 +30,23 @@ export class OcrService {
     }
   }
 
-  register(providerId: string, service: OcrBaseService): void {
+  private register(providerId: string, service: OcrBaseService): void {
     if (this.registry.has(providerId)) {
       logger.warn(`Provider ${providerId} has existing handler. Overwrited.`)
     }
     this.registry.set(providerId, service)
   }
 
-  unregister(providerId: string): void {
+  // @ts-expect-error not used for now, but just keep it.
+  private unregister(providerId: string): void {
     this.registry.delete(providerId)
   }
 
-  public listProviderIds(): string[] {
-    return Array.from(this.registry.keys())
+  public async listProviders(): Promise<ListOcrProvidersResponse> {
+    const registeredKeys = Array.from(this.registry.keys())
+    const providers = await dbService.getDb().select().from(ocrProviderTable)
+
+    return { data: providers.filter((p) => registeredKeys.includes(p.id)) }
   }
 
   public async ocr(file: SupportedOcrFile, params: OcrParams): Promise<OcrResult> {
