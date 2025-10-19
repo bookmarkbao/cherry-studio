@@ -2,7 +2,7 @@
 import { Flex } from '@cherrystudio/ui'
 import { InfoTooltip } from '@cherrystudio/ui'
 import CustomTag from '@renderer/components/Tags/CustomTag'
-import { useOcrProvider } from '@renderer/hooks/useOcrProvider'
+import { useOcrProvider } from '@renderer/hooks/ocr/useOcrProvider'
 import useTranslate from '@renderer/hooks/useTranslate'
 import type { TesseractLangCode } from '@renderer/types'
 import { BuiltinOcrProviderIds, isOcrTesseractProvider } from '@renderer/types'

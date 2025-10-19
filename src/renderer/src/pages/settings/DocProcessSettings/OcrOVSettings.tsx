@@ -1,5 +1,5 @@
 import { Flex } from '@cherrystudio/ui'
-import { useOcrProvider } from '@renderer/hooks/useOcrProvider'
+import { useOcrProvider } from '@renderer/hooks/ocr/useOcrProvider'
 import { BuiltinOcrProviderIds, isOcrOVProvider } from '@renderer/types'
 import { Tag } from 'antd'
 import { useTranslation } from 'react-i18next'

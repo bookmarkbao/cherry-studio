@@ -1,5 +1,5 @@
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
-import { useOcrProvider } from '@renderer/hooks/useOcrProvider'
+import { useOcrProvider } from '@renderer/hooks/ocr/useOcrProvider'
 import { BuiltinOcrProviderIds, isOcrPpocrProvider } from '@renderer/types'
 import { Input } from 'antd'
 import { startTransition, useCallback, useState } from 'react'
