@@ -2053,6 +2053,7 @@
         "existing": "The provider already exists",
         "get_providers": "Failed to get available providers",
         "not_found": "OCR provider does not exist",
+        "not_image_provider": "This provider cannot process image.",
         "update_failed": "Failed to update configuration"
       },
       "unknown": "An error occurred during the OCR process"

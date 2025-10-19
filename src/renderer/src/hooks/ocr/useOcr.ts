@@ -1,18 +1,30 @@
 import { loggerService } from '@logger'
 import * as OcrService from '@renderer/services/ocr/OcrService'
-import type { ImageFileMetadata, SupportedOcrFile } from '@renderer/types'
+import type { ImageFileMetadata, ImageOcrProvider, SupportedOcrFile } from '@renderer/types'
 import { isImageFileMetadata } from '@renderer/types'
 import { formatErrorMessage } from '@renderer/utils/error'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useOcrProviders } from './useOcrProvider'
+import { useOcrProviders } from './useOcrProviders'
 
 const logger = loggerService.withContext('useOcr')
 
 export const useOcr = () => {
   const { t } = useTranslation()
   const { imageProvider } = useOcrProviders()
+
+  const isProviderAvailable = useCallback(
+    (provider: ImageOcrProvider | undefined): provider is ImageOcrProvider => {
+      if (!provider) {
+        window.toast.error(t('ocr.error.provider.not_found'))
+        return false
+      } else {
+        return true
+      }
+    },
+    [t]
+  )
 
   /**
    * 对图片文件进行OCR识别
@@ -22,10 +34,14 @@ export const useOcr = () => {
    */
   const ocrImage = useCallback(
     async (image: ImageFileMetadata) => {
-      logger.debug('ocrImage', { config: imageProvider.config })
-      return OcrService.ocr(image, imageProvider)
+      if (isProviderAvailable(imageProvider)) {
+        logger.debug('ocrImage', { config: imageProvider.config })
+        return OcrService.ocr(image, imageProvider)
+      } else {
+        throw new Error(t('ocr.error.provider.not_image_provider'))
+      }
     },
-    [imageProvider]
+    [imageProvider, isProviderAvailable, t]
   )
 
   /**
