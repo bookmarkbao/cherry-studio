@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { useTheme } from '@renderer/context/ThemeProvider'
-import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProvider'
+import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProviders'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
