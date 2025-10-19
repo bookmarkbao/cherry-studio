@@ -1,12 +1,9 @@
 import { useQuery } from '@data/hooks/useDataApi'
-import { loggerService } from '@logger'
 import { getBuiltinOcrProviderLabel } from '@renderer/i18n/label'
 import type { OcrProvider } from '@renderer/types'
 import { isBuiltinOcrProvider } from '@renderer/types'
 import { BUILTIN_OCR_PROVIDERS } from '@shared/config/ocr'
 import { useMemo } from 'react'
-
-const logger = loggerService.withContext('useOcrProviders')
 
 export const useOcrProviders = () => {
   const { data: validProviderIds, loading, error } = useQuery('/ocr/providers')
