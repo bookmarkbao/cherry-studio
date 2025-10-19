@@ -9,7 +9,7 @@ export const BuiltinOcrProviderIds = {
   system: 'system',
   paddleocr: 'paddleocr',
   ovocr: 'ovocr'
-} as const
+} as const satisfies Record<string, BuiltinOcrProviderId>
 
 export const BuiltinOcrProviderIdSchema = z.enum(['tesseract', 'system', 'paddleocr', 'ovocr'])
 
@@ -23,7 +23,7 @@ export const isBuiltinOcrProviderId = (id: string): id is BuiltinOcrProviderId =
 export const OcrProviderCapabilities = {
   image: 'image'
   // pdf: 'pdf'
-} as const
+} as const satisfies Record<string, OcrProviderCapability>
 
 export const OcrProviderCapabilitySchema = z.enum(['image'])
 
