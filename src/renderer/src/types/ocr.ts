@@ -82,7 +82,12 @@ export const OcrProviderBaseConfigSchema = z.object({
 
 export type OcrProviderBaseConfig = z.infer<typeof OcrProviderBaseConfigSchema>
 
-export type OcrProviderConfig = OcrApiProviderConfig | OcrTesseractConfig | OcrSystemConfig | OcrPpocrConfig
+export type OcrProviderConfig =
+  | OcrApiProviderConfig
+  | OcrTesseractConfig
+  | OcrSystemConfig
+  | OcrPpocrConfig
+  | OcrOvConfig
 
 export type OcrProvider = {
   id: string
