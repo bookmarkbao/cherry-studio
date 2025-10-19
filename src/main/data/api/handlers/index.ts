@@ -212,8 +212,8 @@ export const apiHandlers: ApiImplementation = {
   },
 
   '/ocr/providers': {
-    GET: async () => {
-      return ocrService.listProviders()
+    GET: async ({ query }) => {
+      return ocrService.listProviders(query.registered)
     },
     POST: async ({ body }) => {
       return ocrService.createProvider(body)

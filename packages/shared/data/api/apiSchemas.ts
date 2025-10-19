@@ -360,6 +360,7 @@ export interface ApiSchemas {
 
   '/ocr/providers': {
     GET: {
+      query: { registered?: boolean }
       response: ListOcrProvidersResponse
     }
     POST: {

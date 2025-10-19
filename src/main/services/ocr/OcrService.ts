@@ -13,7 +13,7 @@ import type {
   PutOcrProviderResponse,
   SupportedOcrFile
 } from '@types'
-import { BuiltinOcrProviderIdMap } from '@types'
+import { BuiltinOcrProviderIdMap, BuiltinOcrProviderIds } from '@types'
 import { eq } from 'drizzle-orm'
 import { merge } from 'lodash'
 
@@ -56,17 +56,17 @@ export class OcrService {
     this.registry.delete(providerId)
   }
 
-  public async listProviders(): Promise<ListOcrProvidersResponse> {
-    const registeredKeys = Array.from(this.registry.keys())
+  public async listProviders(registered?: boolean): Promise<ListOcrProvidersResponse> {
     const providers = await dbService.getDb().select().from(ocrProviderTable)
-
-    return { data: providers.filter((p) => registeredKeys.includes(p.id)) }
+    if (registered) {
+      const registeredKeys = Array.from(this.registry.keys())
+      return { data: providers.filter((p) => registeredKeys.includes(p.id)) }
+    } else {
+      return { data: providers }
+    }
   }
 
   public async getProvider(providerId: string) {
-    if (!this.registry.has(providerId)) {
-      throw new Error(`OCR provider ${providerId} is not registered`)
-    }
     const providers = await dbService
       .getDb()
       .select()
@@ -121,6 +121,9 @@ export class OcrService {
   }
 
   public async putProvider(update: PutOcrProviderRequest): Promise<PutOcrProviderResponse> {
+    if (BuiltinOcrProviderIds.some((pid) => pid === update.id)) {
+      throw new Error('Builtin OCR providers cannot be modified with PUT method.')
+    }
     const providers = await dbService
       .getDb()
       .select()
@@ -144,8 +147,8 @@ export class OcrService {
   }
 
   public async deleteProvider(providerId: string): Promise<void> {
-    if (!this.registry.has(providerId)) {
-      throw new Error(`OCR provider ${providerId} is not registered`)
+    if (BuiltinOcrProviderIds.some((pid) => pid === providerId)) {
+      throw new Error('Builtin OCR providers cannot be deleted.')
     }
     const providers = await dbService
       .getDb()
