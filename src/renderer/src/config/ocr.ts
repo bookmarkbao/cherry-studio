@@ -1,10 +1,14 @@
 import type {
   BuiltinOcrProvider,
   BuiltinOcrProviderId,
+  OcrOvConfig,
   OcrOvProvider,
+  OcrPpocrConfig,
   OcrPpocrProvider,
   OcrProviderCapability,
+  OcrSystemConfig,
   OcrSystemProvider,
+  OcrTesseractConfig,
   OcrTesseractProvider,
   TesseractLangCode,
   TranslateLanguageCode
@@ -17,22 +21,12 @@ const tesseract: OcrTesseractProvider = {
   name: 'Tesseract',
   capabilities: {
     image: true
-  },
-  config: {
-    langs: {
-      chi_sim: true,
-      chi_tra: true,
-      eng: true
-    }
   }
 } as const
 
 const systemOcr: OcrSystemProvider = {
   id: 'system',
   name: 'System',
-  config: {
-    langs: isWin ? ['en-us'] : undefined
-  },
   capabilities: {
     image: true
     // pdf: true
@@ -42,9 +36,6 @@ const systemOcr: OcrSystemProvider = {
 const ppocrOcr: OcrPpocrProvider = {
   id: 'paddleocr',
   name: 'PaddleOCR',
-  config: {
-    apiUrl: ''
-  },
   capabilities: {
     image: true
     // pdf: true
@@ -54,14 +45,30 @@ const ppocrOcr: OcrPpocrProvider = {
 const ovOcr: OcrOvProvider = {
   id: 'ovocr',
   name: 'Intel OV(NPU) OCR',
-  config: {
-    langs: isWin ? ['en-us', 'zh-cn'] : undefined
-  },
   capabilities: {
     image: true
     // pdf: true
   }
 } as const satisfies OcrOvProvider
+
+export const BUILTIN_OCR_PROVIDER_CONFIG_MAP = {
+  tesseract: {
+    langs: {
+      chi_sim: true,
+      chi_tra: true,
+      eng: true
+    }
+  } satisfies OcrTesseractConfig,
+  system: {
+    langs: isWin ? ['en-us'] : undefined
+  } satisfies OcrSystemConfig,
+  paddleocr: {
+    apiUrl: ''
+  } satisfies OcrPpocrConfig,
+  ovocr: {
+    langs: isWin ? ['en-us', 'zh-cn'] : undefined
+  } satisfies OcrOvConfig
+} as const satisfies Record<BuiltinOcrProviderId, any>
 
 export const BUILTIN_OCR_PROVIDERS_MAP = {
   tesseract,

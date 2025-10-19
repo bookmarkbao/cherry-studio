@@ -162,7 +162,6 @@ export type OcrTesseractConfig = OcrProviderBaseConfig & {
 
 export type OcrTesseractProvider = {
   id: 'tesseract'
-  config: OcrTesseractConfig
 } & ImageOcrProvider &
   BuiltinOcrProvider
 
@@ -179,7 +178,6 @@ export type OcrSystemConfig = OcrProviderBaseConfig & {
 
 export type OcrSystemProvider = {
   id: 'system'
-  config: OcrSystemConfig
 } & ImageOcrProvider &
   // PdfOcrProvider &
   BuiltinOcrProvider
@@ -196,7 +194,6 @@ export type OcrPpocrConfig = OcrProviderBaseConfig & {
 
 export type OcrPpocrProvider = {
   id: 'paddleocr'
-  config: OcrPpocrConfig
 } & ImageOcrProvider &
   // PdfOcrProvider &
   BuiltinOcrProvider
@@ -212,7 +209,6 @@ export type OcrOvConfig = OcrProviderBaseConfig & {
 
 export type OcrOvProvider = {
   id: 'ovocr'
-  config: OcrOvConfig
 } & ImageOcrProvider &
   // PdfOcrProvider &
   BuiltinOcrProvider

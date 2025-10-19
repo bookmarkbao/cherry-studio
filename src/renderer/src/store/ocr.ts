@@ -1,15 +1,22 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
-import { BUILTIN_OCR_PROVIDERS, DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
-import type { OcrProvider, OcrProviderConfig } from '@renderer/types'
+import { BUILTIN_OCR_PROVIDER_CONFIG_MAP, BUILTIN_OCR_PROVIDERS, DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
+import type { BuiltinOcrProviderId, OcrProvider, OcrProviderConfig } from '@renderer/types'
 
 export interface OcrState {
   providers: OcrProvider[]
+  configs: Record<BuiltinOcrProviderId, OcrProviderConfig>
   imageProviderId: string
 }
 
 const initialState: OcrState = {
   providers: BUILTIN_OCR_PROVIDERS,
+  configs: {
+    tesseract: BUILTIN_OCR_PROVIDER_CONFIG_MAP.tesseract,
+    system: BUILTIN_OCR_PROVIDER_CONFIG_MAP.system,
+    paddleocr: BUILTIN_OCR_PROVIDER_CONFIG_MAP.paddleocr,
+    ovocr: BUILTIN_OCR_PROVIDER_CONFIG_MAP.ovocr
+  },
   imageProviderId: DEFAULT_OCR_PROVIDER.image.id
 }
 

@@ -11,7 +11,12 @@ import {
   isNotSupportedTextDelta,
   SYSTEM_MODELS
 } from '@renderer/config/models'
-import { BUILTIN_OCR_PROVIDERS, BUILTIN_OCR_PROVIDERS_MAP, DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
+import {
+  BUILTIN_OCR_PROVIDER_CONFIG_MAP,
+  BUILTIN_OCR_PROVIDERS,
+  BUILTIN_OCR_PROVIDERS_MAP,
+  DEFAULT_OCR_PROVIDER
+} from '@renderer/config/ocr'
 import {
   isSupportArrayContentProvider,
   isSupportDeveloperRoleProvider,
@@ -31,7 +36,7 @@ import type {
   TranslateLanguageCode,
   WebSearchProvider
 } from '@renderer/types'
-import { isSystemProvider, SystemProviderIds } from '@renderer/types'
+import { isBuiltinOcrProvider, isSystemProvider, SystemProviderIds } from '@renderer/types'
 import { getDefaultGroupName, getLeadingEmoji, runAsyncFunction, uuid } from '@renderer/utils'
 import { defaultByPassRules } from '@shared/config/constant'
 import { TRANSLATE_PROMPT } from '@shared/config/prompts'
@@ -2233,6 +2238,7 @@ const migrateConfig = {
   },
   '137': (state: RootState) => {
     try {
+      // @ts-expect-error old migration
       state.ocr = {
         providers: BUILTIN_OCR_PROVIDERS,
         imageProviderId: DEFAULT_OCR_PROVIDER.image.id
@@ -2683,6 +2689,34 @@ const migrateConfig = {
       return state
     } catch (error) {
       logger.error('migrate 163 error', error as Error)
+      return state
+    }
+  },
+  '164': (state: RootState) => {
+    try {
+      state.ocr.providers.forEach((p) => {
+        if (isBuiltinOcrProvider(p)) {
+          switch (p.id) {
+            case 'ovocr':
+              state.ocr.configs.ovocr = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.ovocr
+              break
+            case 'paddleocr':
+              state.ocr.configs.paddleocr = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.paddleocr
+              break
+            case 'system':
+              state.ocr.configs.system = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.system
+              break
+            case 'tesseract':
+              state.ocr.configs.tesseract = p.config ?? BUILTIN_OCR_PROVIDER_CONFIG_MAP.tesseract
+              break
+            default:
+              logger.warn(`Unknown ocr provider ${p.id}. Skipped.`)
+          }
+        }
+      })
+      return state
+    } catch (error) {
+      logger.error('migrate 164 error', error as Error)
       return state
     }
   }
