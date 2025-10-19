@@ -1959,6 +1959,14 @@
     "rename": "renommer",
     "rename_changed": "En raison de la politique de sécurité, le nom du fichier a été changé de {{original}} à {{final}}",
     "save": "sauvegarder dans les notes",
+    "search": {
+      "both": "[to be translated]:Name+Content",
+      "content": "[to be translated]:Content",
+      "found_results": "[to be translated]:Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
+      "more_matches": "[to be translated]:more matches",
+      "searching": "[to be translated]:Searching...",
+      "show_less": "[to be translated]:Show less"
+    },
     "settings": {
       "data": {
         "apply": "application",
@@ -2053,6 +2061,40 @@
       "not_supported": "Type de fichier non pris en charge {{type}}"
     },
     "processing": "Traitement OCR en cours...",
+    "provider": {
+      "config": {
+        "patch": {
+          "error": {
+            "failed": "[to be translated]:Failed to update config"
+          }
+        }
+      },
+      "create": {
+        "error": {
+          "failed": "[to be translated]:Failed to create provider"
+        }
+      },
+      "delete": {
+        "error": {
+          "failed": "[to be translated]:Failed to delete provider {{provider}}"
+        }
+      },
+      "get": {
+        "error": {
+          "failed": "[to be translated]:Failed to get provider {{provider}}"
+        }
+      },
+      "list": {
+        "error": {
+          "failed": "[to be translated]:Failed to list providers"
+        }
+      },
+      "update": {
+        "error": {
+          "failed": "[to be translated]:Failed to update the provider"
+        }
+      }
+    },
     "warning": {
       "provider": {
         "fallback": "Revenu à {{name}}, ce qui pourrait entraîner des problèmes"
@@ -2107,6 +2149,8 @@
       "install_code_103": "Échec du téléchargement du runtime OVMS",
       "install_code_104": "Échec de la décompression du runtime OVMS",
       "install_code_105": "Échec du nettoyage du runtime OVMS",
+      "install_code_106": "[to be translated]:Failed to create run.bat",
+      "install_code_110": "[to be translated]:Failed to clean old OVMS runtime",
       "run": "Échec de l'exécution d'OVMS :",
       "stop": "Échec de l'arrêt d'OVMS :"
     },

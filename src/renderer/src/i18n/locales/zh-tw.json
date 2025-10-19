@@ -2061,6 +2061,40 @@
       "not_supported": "不支持的文件類型 {{type}}"
     },
     "processing": "OCR 處理中...",
+    "provider": {
+      "config": {
+        "patch": {
+          "error": {
+            "failed": "[to be translated]:Failed to update config"
+          }
+        }
+      },
+      "create": {
+        "error": {
+          "failed": "[to be translated]:Failed to create provider"
+        }
+      },
+      "delete": {
+        "error": {
+          "failed": "[to be translated]:Failed to delete provider {{provider}}"
+        }
+      },
+      "get": {
+        "error": {
+          "failed": "[to be translated]:Failed to get provider {{provider}}"
+        }
+      },
+      "list": {
+        "error": {
+          "failed": "[to be translated]:Failed to list providers"
+        }
+      },
+      "update": {
+        "error": {
+          "failed": "[to be translated]:Failed to update the provider"
+        }
+      }
+    },
     "warning": {
       "provider": {
         "fallback": "已回退到 {{name}}，這可能導致問題"

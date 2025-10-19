@@ -1959,6 +1959,14 @@
     "rename": "μετονομασία",
     "rename_changed": "Λόγω πολιτικής ασφάλειας, το όνομα του αρχείου έχει αλλάξει από {{original}} σε {{final}}",
     "save": "αποθήκευση στις σημειώσεις",
+    "search": {
+      "both": "[to be translated]:Name+Content",
+      "content": "[to be translated]:Content",
+      "found_results": "[to be translated]:Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
+      "more_matches": "[to be translated]:more matches",
+      "searching": "[to be translated]:Searching...",
+      "show_less": "[to be translated]:Show less"
+    },
     "settings": {
       "data": {
         "apply": "εφαρμογή",
@@ -2053,6 +2061,40 @@
       "not_supported": "Μη υποστηριζόμενος τύπος αρχείου {{type}}"
     },
     "processing": "Η επεξεργασία OCR βρίσκεται σε εξέλιξη...",
+    "provider": {
+      "config": {
+        "patch": {
+          "error": {
+            "failed": "[to be translated]:Failed to update config"
+          }
+        }
+      },
+      "create": {
+        "error": {
+          "failed": "[to be translated]:Failed to create provider"
+        }
+      },
+      "delete": {
+        "error": {
+          "failed": "[to be translated]:Failed to delete provider {{provider}}"
+        }
+      },
+      "get": {
+        "error": {
+          "failed": "[to be translated]:Failed to get provider {{provider}}"
+        }
+      },
+      "list": {
+        "error": {
+          "failed": "[to be translated]:Failed to list providers"
+        }
+      },
+      "update": {
+        "error": {
+          "failed": "[to be translated]:Failed to update the provider"
+        }
+      }
+    },
     "warning": {
       "provider": {
         "fallback": "Επαναφέρθηκε στο {{name}}, το οποίο μπορεί να προκαλέσει προβλήματα"
@@ -2107,6 +2149,8 @@
       "install_code_103": "Η λήψη του OVMS runtime απέτυχε",
       "install_code_104": "Η αποσυμπίεση του OVMS runtime απέτυχε",
       "install_code_105": "Ο καθαρισμός του OVMS runtime απέτυχε",
+      "install_code_106": "[to be translated]:Failed to create run.bat",
+      "install_code_110": "[to be translated]:Failed to clean old OVMS runtime",
       "run": "Η εκτέλεση του OVMS απέτυχε:",
       "stop": "Η διακοπή του OVMS απέτυχε:"
     },

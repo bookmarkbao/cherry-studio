@@ -2061,6 +2061,40 @@
       "not_supported": "Unsupported file type {{type}}"
     },
     "processing": "OCR processing...",
+    "provider": {
+      "config": {
+        "patch": {
+          "error": {
+            "failed": "Failed to update config"
+          }
+        }
+      },
+      "create": {
+        "error": {
+          "failed": "Failed to create provider"
+        }
+      },
+      "delete": {
+        "error": {
+          "failed": "Failed to delete provider {{provider}}"
+        }
+      },
+      "get": {
+        "error": {
+          "failed": "Failed to get provider {{provider}}"
+        }
+      },
+      "list": {
+        "error": {
+          "failed": "Failed to list providers"
+        }
+      },
+      "update": {
+        "error": {
+          "failed": "Failed to update the provider"
+        }
+      }
+    },
     "warning": {
       "provider": {
         "fallback": "Reverted to {{name}}, which may cause issues"
