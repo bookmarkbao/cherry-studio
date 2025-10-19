@@ -54,22 +54,16 @@ export type OcrModel = z.infer<typeof OcrModelSchema>
 /**
  * Extend this type to define provider-specefic config types.
  */
-export type OcrProviderApiConfig = {
-  apiKey: string
-  apiHost: string
-  apiVersion?: string
-}
+export const OcrProviderApiConfigSchema = z.object({
+  apiKey: z.string(),
+  apiHost: z.string(),
+  apiVersion: z.string().optional()
+})
+
+export type OcrProviderApiConfig = z.infer<typeof OcrProviderApiConfigSchema>
 
 export const isOcrProviderApiConfig = (config: unknown): config is OcrProviderApiConfig => {
-  return (
-    typeof config === 'object' &&
-    config !== null &&
-    'apiKey' in config &&
-    typeof config.apiKey === 'string' &&
-    'apiHost' in config &&
-    typeof config.apiHost === 'string' &&
-    (!('apiVersion' in config) || typeof config.apiVersion === 'string')
-  )
+  return OcrProviderApiConfigSchema.safeParse(config).success
 }
 
 /**
