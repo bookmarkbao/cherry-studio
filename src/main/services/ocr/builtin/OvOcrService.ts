@@ -15,18 +15,15 @@ const execAsync = promisify(exec)
 
 const PATH_BAT_FILE = path.join(os.homedir(), '.cherrystudio', 'ovms', 'ovocr', 'run.npu.bat')
 
+const isOvAvailable =
+  isWin &&
+  os.cpus()[0].model.toLowerCase().includes('intel') &&
+  os.cpus()[0].model.toLowerCase().includes('ultra') &&
+  fs.existsSync(PATH_BAT_FILE)
+
 export class OvOcrService extends OcrBaseService {
   constructor() {
     super()
-  }
-
-  public isAvailable(): boolean {
-    return (
-      isWin &&
-      os.cpus()[0].model.toLowerCase().includes('intel') &&
-      os.cpus()[0].model.toLowerCase().includes('ultra') &&
-      fs.existsSync(PATH_BAT_FILE)
-    )
   }
 
   private getOvOcrPath(): string {
@@ -126,4 +123,4 @@ export class OvOcrService extends OcrBaseService {
   }
 }
 
-export const ovOcrService = new OvOcrService()
+export const ovOcrService = isOvAvailable ? new OvOcrService() : undefined

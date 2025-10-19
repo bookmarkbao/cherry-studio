@@ -31,4 +31,4 @@ export class SystemOcrService extends OcrBaseService {
   }
 }
 
-export const systemOcrService = new SystemOcrService()
+export const systemOcrService = !isLinux ? new SystemOcrService() : undefined
