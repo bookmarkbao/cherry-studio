@@ -71,14 +71,16 @@ export const isOcrProviderApiConfig = (config: unknown): config is OcrProviderAp
  *
  * Extend this type to define provider-specific config types.
  */
-export type OcrProviderBaseConfig = {
+export const OcrProviderBaseConfigSchema = z.object({
   /** Not used for now. Could safely remove. */
-  api?: OcrProviderApiConfig
+  api: OcrProviderApiConfigSchema.optional(),
   /** Not used for now. Could safely remove. */
-  models?: OcrModel[]
+  models: z.array(OcrModelSchema).optional(),
   /** Not used for now. Could safely remove. */
-  enabled?: boolean
-}
+  enabled: z.boolean().optional()
+})
+
+export type OcrProviderBaseConfig = z.infer<typeof OcrProviderBaseConfigSchema>
 
 export type OcrProviderConfig = OcrApiProviderConfig | OcrTesseractConfig | OcrSystemConfig | OcrPpocrConfig
 
