@@ -744,6 +744,24 @@ export const REDUX_STORE_MAPPINGS = {
       originalKey: 'shortcuts.exit_fullscreen',
       targetKey: 'shortcut.app.exit_fullscreen'
     }
+  ],
+  ocr: [
+    {
+      originalKey: 'ocr.configs.tesseract',
+      targetKey: 'ocr.provider.config.tesseract'
+    },
+    {
+      originalKey: 'ocr.configs.system',
+      targetKey: 'ocr.provider.config.system'
+    },
+    {
+      originalKey: 'ocr.configs.paddleocr',
+      targetKey: 'ocr.provider.config.paddleocr'
+    },
+    {
+      originalKey: 'ocr.configs.ovocr',
+      targetKey: 'ocr.provider.config.ovocr'
+    }
   ]
 } as const satisfies Record<
   string,

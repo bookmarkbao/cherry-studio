@@ -9,8 +9,10 @@
  * === AUTO-GENERATED CONTENT START ===
  */
 
+import { BUILTIN_OCR_PROVIDER_CONFIG_MAP } from '@shared/config/ocr'
 import { TRANSLATE_PROMPT } from '@shared/config/prompts'
 import * as PreferenceTypes from '@shared/data/preference/preferenceTypes'
+import type { OcrOvConfig, OcrPpocrConfig, OcrSystemConfig, OcrTesseractConfig } from '@types'
 
 /* eslint @typescript-eslint/member-ordering: ["error", {
   "interfaces": { "order": "alphabetically" },
@@ -351,6 +353,14 @@ export interface PreferenceSchemas {
     'feature.translate.model_prompt': string
     // redux/settings/targetLanguage
     'feature.translate.target_language': string
+    // redux/ocr/configs/ovocr
+    'ocr.provider.config.ovocr': OcrOvConfig
+    // redux/ocr/configs/paddleocr
+    'ocr.provider.config.paddleocr': OcrPpocrConfig
+    // redux/ocr/configs/system
+    'ocr.provider.config.system': OcrSystemConfig
+    // redux/ocr/configs/tesseract
+    'ocr.provider.config.tesseract': OcrTesseractConfig
     // redux/ocr/imageProviderId
     'ocr.settings.image_provider_id': string | null
     // redux/shortcuts/shortcuts.exit_fullscreen
@@ -614,6 +624,10 @@ export const DefaultPreferences: PreferenceSchemas = {
     'feature.selection.trigger_mode': PreferenceTypes.SelectionTriggerMode.Selected,
     'feature.translate.model_prompt': TRANSLATE_PROMPT,
     'feature.translate.target_language': 'en-us',
+    'ocr.provider.config.ovocr': BUILTIN_OCR_PROVIDER_CONFIG_MAP.ovocr,
+    'ocr.provider.config.paddleocr': BUILTIN_OCR_PROVIDER_CONFIG_MAP.paddleocr,
+    'ocr.provider.config.system': BUILTIN_OCR_PROVIDER_CONFIG_MAP.system,
+    'ocr.provider.config.tesseract': BUILTIN_OCR_PROVIDER_CONFIG_MAP.tesseract,
     'ocr.settings.image_provider_id': null,
     'shortcut.app.exit_fullscreen': { editable: false, enabled: true, key: ['Escape'], system: true },
     'shortcut.app.search_message': {
