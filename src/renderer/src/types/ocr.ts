@@ -1,4 +1,5 @@
 import type Tesseract from 'tesseract.js'
+import * as z from 'zod'
 
 import type { FileMetadata, ImageFileMetadata, TranslateLanguageCode } from '.'
 import { isImageFileMetadata } from '.'
@@ -10,10 +11,12 @@ export const BuiltinOcrProviderIds = {
   ovocr: 'ovocr'
 } as const
 
-export type BuiltinOcrProviderId = keyof typeof BuiltinOcrProviderIds
+export const BuiltinOcrProviderIdSchema = z.enum(['tesseract', 'system', 'paddleocr', 'ovocr'])
+
+export type BuiltinOcrProviderId = z.infer<typeof BuiltinOcrProviderIdSchema>
 
 export const isBuiltinOcrProviderId = (id: string): id is BuiltinOcrProviderId => {
-  return Object.hasOwn(BuiltinOcrProviderIds, id)
+  return BuiltinOcrProviderIdSchema.safeParse(id).success
 }
 
 // extensible
