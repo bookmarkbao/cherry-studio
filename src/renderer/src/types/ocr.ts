@@ -42,12 +42,14 @@ export type OcrProviderCapabilityRecord = z.infer<typeof OcrProviderCapabilityRe
 // while a model belonging to that provider may be limited to processing only one specific file type.
 export type OcrModelCapabilityRecord = OcrProviderCapabilityRecord
 
-export interface OcrModel {
-  id: string
-  name: string
-  providerId: string
-  capabilities: OcrModelCapabilityRecord
-}
+export const OcrModelSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  providerId: z.string(),
+  capabilities: OcrProviderCapabilityRecordSchema
+})
+
+export type OcrModel = z.infer<typeof OcrModelSchema>
 
 /**
  * Extend this type to define provider-specefic config types.
