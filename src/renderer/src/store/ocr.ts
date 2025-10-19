@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
-import { DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
 import type { BuiltinOcrProviderId, OcrProvider, OcrProviderConfig } from '@renderer/types'
+import { getDefaultOcrProvider } from '@renderer/utils/ocr'
 import { BUILTIN_OCR_PROVIDERS } from '@shared/config/ocr'
 import { BUILTIN_OCR_PROVIDER_CONFIG_MAP } from '@shared/config/ocr'
 
@@ -19,7 +19,7 @@ const initialState: OcrState = {
     paddleocr: BUILTIN_OCR_PROVIDER_CONFIG_MAP.paddleocr,
     ovocr: BUILTIN_OCR_PROVIDER_CONFIG_MAP.ovocr
   },
-  imageProviderId: DEFAULT_OCR_PROVIDER.image.id
+  imageProviderId: getDefaultOcrProvider('image').id
 }
 
 const ocrSlice = createSlice({

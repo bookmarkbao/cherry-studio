@@ -11,7 +11,6 @@ import {
   isNotSupportedTextDelta,
   SYSTEM_MODELS
 } from '@renderer/config/models'
-import { DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
 import {
   isSupportArrayContentProvider,
   isSupportDeveloperRoleProvider,
@@ -33,6 +32,7 @@ import type {
 } from '@renderer/types'
 import { isBuiltinOcrProvider, isSystemProvider, SystemProviderIds } from '@renderer/types'
 import { getDefaultGroupName, getLeadingEmoji, runAsyncFunction, uuid } from '@renderer/utils'
+import { getDefaultOcrProvider } from '@renderer/utils/ocr'
 import { defaultByPassRules } from '@shared/config/constant'
 import { BUILTIN_OCR_PROVIDERS } from '@shared/config/ocr'
 import { BUILTIN_OCR_PROVIDER_CONFIG_MAP, BUILTIN_OCR_PROVIDERS_MAP } from '@shared/config/ocr'
@@ -2238,7 +2238,7 @@ const migrateConfig = {
       // @ts-expect-error old migration
       state.ocr = {
         providers: BUILTIN_OCR_PROVIDERS,
-        imageProviderId: DEFAULT_OCR_PROVIDER.image.id
+        imageProviderId: getDefaultOcrProvider('image').id
       }
       state.translate.translateInput = ''
       return state
