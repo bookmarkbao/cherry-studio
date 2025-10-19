@@ -143,6 +143,22 @@ export class OcrService {
     return { data: updated }
   }
 
+  public async deleteProvider(providerId: string): Promise<void> {
+    if (!this.registry.has(providerId)) {
+      throw new Error(`OCR provider ${providerId} is not registered`)
+    }
+    const providers = await dbService
+      .getDb()
+      .select()
+      .from(ocrProviderTable)
+      .where(eq(ocrProviderTable.id, providerId))
+      .limit(1)
+    if (providers.length === 0) {
+      throw new Error(`OCR provider ${providerId} not found`)
+    }
+    await dbService.getDb().delete(ocrProviderTable).where(eq(ocrProviderTable.id, providerId))
+  }
+
   public async ocr(file: SupportedOcrFile, params: OcrParams): Promise<OcrResult> {
     const service = this.registry.get(params.providerId)
     if (!service) {

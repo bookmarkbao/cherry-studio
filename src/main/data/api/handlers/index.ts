@@ -230,8 +230,8 @@ export const apiHandlers: ApiImplementation = {
     PUT: async ({ body }) => {
       return ocrService.putProvider(body)
     },
-    DELETE: async () => {
-      throw new Error('Not implemented')
+    DELETE: async ({ params }) => {
+      return ocrService.deleteProvider(params.id)
     }
   }
 }

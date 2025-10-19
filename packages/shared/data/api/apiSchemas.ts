@@ -382,7 +382,8 @@ export interface ApiSchemas {
       response: PutOcrProviderResponse
     }
     DELETE: {
-      // TODO
+      params: { id: OcrProviderId }
+      response: void
     }
   }
 }
