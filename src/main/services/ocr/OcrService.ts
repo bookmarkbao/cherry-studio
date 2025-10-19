@@ -13,6 +13,21 @@ const logger = loggerService.withContext('OcrService')
 export class OcrService {
   private registry: Map<string, OcrBaseService> = new Map()
 
+  constructor() {
+    // Register built-in providers
+    this.register(BuiltinOcrProviderIds.tesseract, tesseractService)
+
+    if (systemOcrService) {
+      this.register(BuiltinOcrProviderIds.system, systemOcrService)
+    }
+
+    this.register(BuiltinOcrProviderIds.paddleocr, ppocrService)
+
+    if (ovOcrService) {
+      this.register(BuiltinOcrProviderIds.ovocr, ovOcrService)
+    }
+  }
+
   register(providerId: string, service: OcrBaseService): void {
     if (this.registry.has(providerId)) {
       logger.warn(`Provider ${providerId} has existing handler. Overwrited.`)
@@ -38,16 +53,3 @@ export class OcrService {
 }
 
 export const ocrService = new OcrService()
-
-// Register built-in providers
-ocrService.register(BuiltinOcrProviderIds.tesseract, tesseractService)
-
-if (systemOcrService) {
-  ocrService.register(BuiltinOcrProviderIds.system, systemOcrService)
-}
-
-ocrService.register(BuiltinOcrProviderIds.paddleocr, ppocrService)
-
-if (ovOcrService) {
-  ocrService.register(BuiltinOcrProviderIds.ovocr, ovOcrService)
-}
