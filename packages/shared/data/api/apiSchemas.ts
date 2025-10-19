@@ -1,5 +1,7 @@
 // NOTE: Types are defined inline in the schema for simplicity
 // If needed, specific types can be imported from './apiModels'
+import type { OcrProvider } from '@types'
+
 import type { BodyForPath, ConcreteApiPaths, QueryParamsForPath, ResponseForPath } from './apiPaths'
 import type { HttpMethod, PaginatedResponse, PaginationParams } from './apiTypes'
 
@@ -343,6 +345,32 @@ export interface ApiSchemas {
         /** Error information if failed */
         error?: any
       }>
+    }
+  }
+
+  '/ocr/providers': {
+    GET: {
+      response: OcrProvider[]
+    }
+    POST: {
+      body: {
+        // TODO
+      }
+    }
+  }
+
+  '/ocr/providers/:id': {
+    GET: {
+      response: OcrProvider
+    }
+    PATCH: {
+      // TODO
+    }
+    PUT: {
+      // TODO
+    }
+    DELETE: {
+      // TODO
     }
   }
 }

@@ -22,7 +22,7 @@ const OcrImageSettings = () => {
     return window.api.ocr.listProviders()
   }, [])
 
-  const { data: validProviders, isLoading, error } = useSWRImmutable('ocr/providers', fetcher)
+  const { data: validProviders, isLoading, error } = useSWRImmutable('/ocr/providers', fetcher)
 
   const imageProviders = providers.filter((p) => isImageOcrProvider(p))
 

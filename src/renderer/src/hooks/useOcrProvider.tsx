@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux'
 const logger = loggerService.withContext('useOcrProvider')
 
 export const useOcrProviders = () => {
+  // TODO: migrate to useQuery
   const providers = useAppSelector((state) => state.ocr.providers)
   const imageProviders = providers.filter(isImageOcrProvider)
   const [imageProviderId, setImageProviderId] = usePreference('ocr.settings.image_provider_id')

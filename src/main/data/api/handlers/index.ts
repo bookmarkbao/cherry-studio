@@ -12,6 +12,7 @@ import { TestService } from '../services/TestService'
 // Service instances
 const testService = TestService.getInstance()
 
+// Defining all handlers here feels a bit bloated; perhaps we should modularize things?
 /**
  * Complete API handlers implementation
  * Must implement every path+method combination from ApiSchemas
@@ -206,6 +207,32 @@ export const apiHandlers: ApiImplementation = {
         status: 200,
         data: { executed: true, timestamp: new Date().toISOString() }
       }))
+    }
+  },
+
+  '/ocr/providers': {
+    GET: async () => {
+      // We should implement it when user data migration completed.
+      // OcrProvider should be migrate to db, because the data objects contains user settings.
+      throw new Error('Not implemented')
+    },
+    POST: async () => {
+      throw new Error('Not implemented')
+    }
+  },
+
+  '/ocr/providers/:id': {
+    GET: async () => {
+      throw new Error('Not implemented')
+    },
+    PATCH: async () => {
+      throw new Error('Not implemented')
+    },
+    PUT: async () => {
+      throw new Error('Not implemented')
+    },
+    DELETE: async () => {
+      throw new Error('Not implemented')
     }
   }
 }
