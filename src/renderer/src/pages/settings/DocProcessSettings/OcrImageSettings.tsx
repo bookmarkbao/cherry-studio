@@ -5,7 +5,7 @@ import { ErrorTag } from '@renderer/components/Tags/ErrorTag'
 import { isMac, isWin } from '@renderer/config/constant'
 import { useOcrImageProvider } from '@renderer/hooks/ocr/useOcrImageProvider'
 import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProviders'
-import { BuiltinOcrProviderIds, isImageOcrProvider } from '@renderer/types'
+import { BuiltinOcrProviderIdMap, isImageOcrProvider } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils'
 import { Select } from 'antd'
 import { useMemo } from 'react'
@@ -41,7 +41,7 @@ const OcrImageSettings = () => {
     }))
   }, [getOcrProviderName, imageProviders])
 
-  const isSystem = imageProvider?.id === BuiltinOcrProviderIds.system
+  const isSystem = imageProvider?.id === BuiltinOcrProviderIdMap.system
 
   if (!imageProvider) {
     return <Alert color="danger" title={t('ocr.error.provider.not_found')} />

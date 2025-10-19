@@ -6,7 +6,7 @@ import { isMac, isWin } from '@renderer/config/constant'
 import { useOcrProvider } from '@renderer/hooks/ocr/useOcrProvider'
 import useTranslate from '@renderer/hooks/useTranslate'
 import type { TranslateLanguageCode } from '@renderer/types'
-import { BuiltinOcrProviderIds, isOcrSystemProvider } from '@renderer/types'
+import { BuiltinOcrProviderIdMap, isOcrSystemProvider } from '@renderer/types'
 import { Select } from 'antd'
 import { startTransition, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -19,7 +19,7 @@ export const OcrSystemSettings = () => {
   const { t } = useTranslation()
   // 和翻译自定义语言耦合了，应该还ok
   const { translateLanguages } = useTranslate()
-  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.system)
+  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIdMap.system)
 
   if (!isOcrSystemProvider(provider)) {
     throw new Error('Not system provider.')

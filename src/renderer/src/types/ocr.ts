@@ -4,7 +4,7 @@ import * as z from 'zod'
 import type { FileMetadata, ImageFileMetadata, TranslateLanguageCode } from '.'
 import { isImageFileMetadata, TranslateLanguageCodeSchema } from '.'
 
-export const BuiltinOcrProviderIds = {
+export const BuiltinOcrProviderIdMap = {
   tesseract: 'tesseract',
   system: 'system',
   paddleocr: 'paddleocr',
@@ -182,7 +182,7 @@ export type OcrTesseractProvider = {
   BuiltinOcrProvider
 
 export const isOcrTesseractProvider = (p: OcrProvider): p is OcrTesseractProvider => {
-  return p.id === BuiltinOcrProviderIds.tesseract
+  return p.id === BuiltinOcrProviderIdMap.tesseract
 }
 
 export type TesseractLangCode = Tesseract.LanguageCode
@@ -202,7 +202,7 @@ export type OcrSystemProvider = {
   BuiltinOcrProvider
 
 export const isOcrSystemProvider = (p: OcrProvider): p is OcrSystemProvider => {
-  return p.id === BuiltinOcrProviderIds.system
+  return p.id === BuiltinOcrProviderIdMap.system
 }
 
 // ==========================================================
@@ -227,7 +227,7 @@ export type OcrPpocrProvider = {
   BuiltinOcrProvider
 
 export const isOcrPpocrProvider = (p: OcrProvider): p is OcrPpocrProvider => {
-  return p.id === BuiltinOcrProviderIds.paddleocr
+  return p.id === BuiltinOcrProviderIdMap.paddleocr
 }
 
 // ==========================================================
@@ -252,7 +252,7 @@ export type OcrOvProvider = {
   BuiltinOcrProvider
 
 export const isOcrOVProvider = (p: OcrProvider): p is OcrOvProvider => {
-  return p.id === BuiltinOcrProviderIds.ovocr
+  return p.id === BuiltinOcrProviderIdMap.ovocr
 }
 
 // ==========================================================

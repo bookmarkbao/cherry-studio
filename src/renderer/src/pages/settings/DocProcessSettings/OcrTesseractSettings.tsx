@@ -5,7 +5,7 @@ import CustomTag from '@renderer/components/Tags/CustomTag'
 import { useOcrProvider } from '@renderer/hooks/ocr/useOcrProvider'
 import useTranslate from '@renderer/hooks/useTranslate'
 import type { TesseractLangCode } from '@renderer/types'
-import { BuiltinOcrProviderIds, isOcrTesseractProvider } from '@renderer/types'
+import { BuiltinOcrProviderIdMap, isOcrTesseractProvider } from '@renderer/types'
 import { TESSERACT_LANG_MAP } from '@shared/config/ocr'
 import { Select } from 'antd'
 import { useCallback, useMemo, useState } from 'react'
@@ -17,7 +17,7 @@ import { SettingRow, SettingRowTitle } from '..'
 
 export const OcrTesseractSettings = () => {
   const { t } = useTranslation()
-  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.tesseract)
+  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIdMap.tesseract)
 
   if (!isOcrTesseractProvider(provider)) {
     throw new Error('Not tesseract provider.')

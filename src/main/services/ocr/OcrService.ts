@@ -13,7 +13,7 @@ import type {
   PutOcrProviderResponse,
   SupportedOcrFile
 } from '@types'
-import { BuiltinOcrProviderIds } from '@types'
+import { BuiltinOcrProviderIdMap } from '@types'
 import { eq } from 'drizzle-orm'
 import { merge } from 'lodash'
 
@@ -31,16 +31,16 @@ export class OcrService {
   constructor() {
     // TODO: Ensure builtin providers are in db.
     // Register built-in providers
-    this.register(BuiltinOcrProviderIds.tesseract, tesseractService)
+    this.register(BuiltinOcrProviderIdMap.tesseract, tesseractService)
 
     if (systemOcrService) {
-      this.register(BuiltinOcrProviderIds.system, systemOcrService)
+      this.register(BuiltinOcrProviderIdMap.system, systemOcrService)
     }
 
-    this.register(BuiltinOcrProviderIds.paddleocr, ppocrService)
+    this.register(BuiltinOcrProviderIdMap.paddleocr, ppocrService)
 
     if (ovOcrService) {
-      this.register(BuiltinOcrProviderIds.ovocr, ovOcrService)
+      this.register(BuiltinOcrProviderIdMap.ovocr, ovOcrService)
     }
   }
 
