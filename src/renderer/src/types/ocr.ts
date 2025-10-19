@@ -258,8 +258,16 @@ const TimestampExtendShape = {
   updatedAt: z.number().nullable()
 }
 
+const DbOcrProviderSchema = OcrProviderSchema.extend(TimestampExtendShape)
+
 export const ListOcrProvidersResponseSchema = z.object({
-  data: z.array(OcrProviderSchema.extend(TimestampExtendShape))
+  data: z.array(DbOcrProviderSchema)
 })
 
 export type ListOcrProvidersResponse = z.infer<typeof ListOcrProvidersResponseSchema>
+
+export const GetOcrProviderResponseSchema = z.object({
+  data: DbOcrProviderSchema
+})
+
+export type GetOcrProviderResponse = z.infer<typeof GetOcrProviderResponseSchema>

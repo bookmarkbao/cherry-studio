@@ -5,6 +5,7 @@
  * TypeScript will error if any endpoint is missing.
  */
 
+import { ocrService } from '@main/services/ocr/OcrService'
 import type { ApiImplementation } from '@shared/data/api/apiSchemas'
 
 import { TestService } from '../services/TestService'
@@ -212,9 +213,7 @@ export const apiHandlers: ApiImplementation = {
 
   '/ocr/providers': {
     GET: async () => {
-      // We should implement it when user data migration completed.
-      // OcrProvider should be migrate to db, because the data objects contains user settings.
-      throw new Error('Not implemented')
+      return ocrService.listProviders()
     },
     POST: async () => {
       throw new Error('Not implemented')
