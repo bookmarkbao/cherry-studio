@@ -1,16 +1,17 @@
 import { Avatar } from '@cherrystudio/ui'
+import { usePreference } from '@data/hooks/usePreference'
 import { loggerService } from '@logger'
 import IntelLogo from '@renderer/assets/images/providers/intel.png'
 import PaddleocrLogo from '@renderer/assets/images/providers/paddleocr.png'
 import TesseractLogo from '@renderer/assets/images/providers/Tesseract.js.png'
-import { BUILTIN_OCR_PROVIDERS_MAP, DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
+import { BUILTIN_OCR_PROVIDERS_MAP } from '@renderer/config/ocr'
 import { getBuiltinOcrProviderLabel } from '@renderer/i18n/label'
 import { useAppSelector } from '@renderer/store'
-import { addOcrProvider, removeOcrProvider, setImageOcrProviderId, updateOcrProviderConfig } from '@renderer/store/ocr'
-import type { ImageOcrProvider, OcrProvider, OcrProviderConfig } from '@renderer/types'
+import { addOcrProvider, removeOcrProvider, updateOcrProviderConfig } from '@renderer/store/ocr'
+import type { OcrProvider, OcrProviderConfig } from '@renderer/types'
 import { isBuiltinOcrProvider, isBuiltinOcrProviderId, isImageOcrProvider } from '@renderer/types'
 import { FileQuestionMarkIcon, MonitorIcon } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 
@@ -19,8 +20,10 @@ const logger = loggerService.withContext('useOcrProvider')
 export const useOcrProviders = () => {
   const providers = useAppSelector((state) => state.ocr.providers)
   const imageProviders = providers.filter(isImageOcrProvider)
-  const imageProviderId = useAppSelector((state) => state.ocr.imageProviderId)
-  const [imageProvider, setImageProvider] = useState<ImageOcrProvider>(DEFAULT_OCR_PROVIDER.image)
+  const [imageProviderId, setImageProviderId] = usePreference('ocr.settings.image_provider_id')
+  const imageProvider = useMemo(() => {
+    return imageProviders.find((p) => p.id === imageProviderId)
+  }, [imageProviderId, imageProviders])
   const dispatch = useDispatch()
   const { t } = useTranslation()
 
@@ -58,13 +61,6 @@ export const useOcrProviders = () => {
     dispatch(removeOcrProvider(id))
   }
 
-  const setImageProviderId = useCallback(
-    (id: string) => {
-      dispatch(setImageOcrProviderId(id))
-    },
-    [dispatch]
-  )
-
   const getOcrProviderName = (p: OcrProvider) => {
     return isBuiltinOcrProvider(p) ? getBuiltinOcrProviderLabel(p.id) : p.name
   }
@@ -84,21 +80,6 @@ export const useOcrProviders = () => {
     }
     return <FileQuestionMarkIcon size={size} />
   }
-
-  useEffect(() => {
-    const actualImageProvider = imageProviders.find((p) => p.id === imageProviderId)
-    if (!actualImageProvider) {
-      if (isBuiltinOcrProviderId(imageProviderId)) {
-        logger.warn(`Builtin ocr provider ${imageProviderId} not exist. Will add it to providers.`)
-        addProvider(BUILTIN_OCR_PROVIDERS_MAP[imageProviderId])
-      }
-      setImageProviderId(DEFAULT_OCR_PROVIDER.image.id)
-      setImageProvider(DEFAULT_OCR_PROVIDER.image)
-    } else {
-      setImageProviderId(actualImageProvider.id)
-      setImageProvider(actualImageProvider)
-    }
-  }, [addProvider, imageProviderId, imageProviders, setImageProviderId])
 
   return {
     providers,

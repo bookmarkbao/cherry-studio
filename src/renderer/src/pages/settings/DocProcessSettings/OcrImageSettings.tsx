@@ -3,11 +3,11 @@ import { loggerService } from '@logger'
 import { ErrorTag } from '@renderer/components/Tags/ErrorTag'
 import { isMac, isWin } from '@renderer/config/constant'
 import { useOcrProviders } from '@renderer/hooks/useOcrProvider'
-import type { ImageOcrProvider, OcrProvider } from '@renderer/types'
+import type { ImageOcrProvider } from '@renderer/types'
 import { BuiltinOcrProviderIds, isImageOcrProvider } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils'
 import { Select } from 'antd'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWRImmutable from 'swr/immutable'
 
@@ -15,11 +15,7 @@ import { SettingRow, SettingRowTitle } from '..'
 
 const logger = loggerService.withContext('OcrImageSettings')
 
-type Props = {
-  setProvider: (provider: OcrProvider) => void
-}
-
-const OcrImageSettings = ({ setProvider }: Props) => {
+const OcrImageSettings = () => {
   const { t } = useTranslation()
   const { providers, imageProvider, getOcrProviderName, setImageProviderId } = useOcrProviders()
   const fetcher = useCallback(() => {
@@ -30,12 +26,6 @@ const OcrImageSettings = ({ setProvider }: Props) => {
 
   const imageProviders = providers.filter((p) => isImageOcrProvider(p))
 
-  // 挂载时更新外部状态
-  // FIXME: Just keep the imageProvider always valid, so we don't need update it in this component.
-  useEffect(() => {
-    setProvider(imageProvider)
-  }, [imageProvider, setProvider])
-
   const setImageProvider = (id: string) => {
     const provider = imageProviders.find((p) => p.id === id)
     if (!provider) {
@@ -44,7 +34,6 @@ const OcrImageSettings = ({ setProvider }: Props) => {
       return
     }
 
-    setProvider(provider)
     setImageProviderId(id)
   }
 
@@ -62,7 +51,11 @@ const OcrImageSettings = ({ setProvider }: Props) => {
       }))
   }, [getOcrProviderName, imageProviders, platformSupport, validProviders])
 
-  const isSystem = imageProvider.id === BuiltinOcrProviderIds.system
+  const isSystem = imageProvider?.id === BuiltinOcrProviderIds.system
+
+  if (!imageProvider) {
+    return <Alert color="danger" title={t('ocr.error.provider.not_found')} />
+  }
 
   return (
     <>

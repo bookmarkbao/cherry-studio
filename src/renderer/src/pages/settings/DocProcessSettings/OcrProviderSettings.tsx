@@ -18,14 +18,14 @@ import { OcrTesseractSettings } from './OcrTesseractSettings'
 // const logger = loggerService.withContext('OcrTesseractSettings')
 
 type Props = {
-  provider: OcrProvider
+  provider: OcrProvider | undefined
 }
 
 const OcrProviderSettings = ({ provider }: Props) => {
   const { theme: themeMode } = useTheme()
   const { OcrProviderLogo, getOcrProviderName } = useOcrProviders()
 
-  if (!isWin && !isMac && isOcrSystemProvider(provider)) {
+  if (!provider || (!isWin && !isMac && isOcrSystemProvider(provider))) {
     return null
   }
 
