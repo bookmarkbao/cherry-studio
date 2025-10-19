@@ -737,7 +737,7 @@ export const REDUX_STORE_MAPPINGS = {
       targetKey: 'shortcut.app.exit_fullscreen'
     }
   ]
-} as const
+} as const satisfies Record<string, Array<{ originalKey: string; targetKey: string }>>
 
 // === AUTO-GENERATED CONTENT END ===
 
