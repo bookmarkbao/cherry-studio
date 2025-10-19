@@ -1,16 +1,15 @@
-import { Alert, Skeleton } from '@heroui/react'
+import { Skeleton } from '@cherrystudio/ui'
+import { Alert } from '@heroui/react'
 import { loggerService } from '@logger'
 import { ErrorTag } from '@renderer/components/Tags/ErrorTag'
 import { isMac, isWin } from '@renderer/config/constant'
 import { useOcrImageProvider } from '@renderer/hooks/ocr/useOcrImageProvider'
 import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProviders'
-import type { ImageOcrProvider } from '@renderer/types'
 import { BuiltinOcrProviderIds, isImageOcrProvider } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils'
 import { Select } from 'antd'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import useSWRImmutable from 'swr/immutable'
 
 import { SettingRow, SettingRowTitle } from '..'
 
@@ -18,13 +17,8 @@ const logger = loggerService.withContext('OcrImageSettings')
 
 const OcrImageSettings = () => {
   const { t } = useTranslation()
-  const { providers, getOcrProviderName } = useOcrProviders()
+  const { providers, loading, error, getOcrProviderName } = useOcrProviders()
   const { imageProvider, setImageProviderId } = useOcrImageProvider()
-  const fetcher = useCallback(() => {
-    return window.api.ocr.listProviders()
-  }, [])
-
-  const { data: validProviders, isLoading, error } = useSWRImmutable('/ocr/providers', fetcher)
 
   const imageProviders = providers.filter((p) => isImageOcrProvider(p))
 
@@ -41,17 +35,11 @@ const OcrImageSettings = () => {
 
   const platformSupport = isMac || isWin
   const options = useMemo(() => {
-    if (!validProviders) return []
-    const platformFilter = platformSupport ? () => true : (p: ImageOcrProvider) => p.id !== BuiltinOcrProviderIds.system
-    const validFilter = (p: ImageOcrProvider) => validProviders.includes(p.id)
-    return imageProviders
-      .filter(platformFilter)
-      .filter(validFilter)
-      .map((p) => ({
-        value: p.id,
-        label: getOcrProviderName(p)
-      }))
-  }, [getOcrProviderName, imageProviders, platformSupport, validProviders])
+    return imageProviders.map((p) => ({
+      value: p.id,
+      label: getOcrProviderName(p)
+    }))
+  }, [getOcrProviderName, imageProviders])
 
   const isSystem = imageProvider?.id === BuiltinOcrProviderIds.system
 
@@ -63,25 +51,20 @@ const OcrImageSettings = () => {
     <>
       <SettingRow>
         <SettingRowTitle>{t('settings.tool.ocr.image_provider')}</SettingRowTitle>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div className="flex items-center gap-2 self-stretch">
           {!platformSupport && isSystem && <ErrorTag message={t('settings.tool.ocr.error.not_system')} />}
-          <Skeleton isLoaded={!isLoading}>
-            {!error && (
-              <Select
-                value={imageProvider.id}
-                style={{ width: '200px' }}
-                onChange={(id: string) => setImageProvider(id)}
-                options={options}
-              />
-            )}
-            {error && (
-              <Alert
-                color="danger"
-                title={t('ocr.error.provider.get_providers')}
-                description={getErrorMessage(error)}
-              />
-            )}
-          </Skeleton>
+          {loading && <Skeleton className="h-full w-50" />}
+          {!loading && !error && (
+            <Select
+              value={imageProvider.id}
+              className="w-50"
+              onChange={(id: string) => setImageProvider(id)}
+              options={options}
+            />
+          )}
+          {!loading && error && (
+            <Alert color="danger" title={t('ocr.error.provider.get_providers')} description={getErrorMessage(error)} />
+          )}
         </div>
       </SettingRow>
     </>
