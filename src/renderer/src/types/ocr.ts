@@ -33,7 +33,9 @@ export const isOcrProviderCapability = (cap: string): cap is OcrProviderCapabili
   return OcrProviderCapabilitySchema.safeParse(cap).success
 }
 
-export type OcrProviderCapabilityRecord = Partial<Record<OcrProviderCapability, boolean>>
+export const OcrProviderCapabilityRecordSchema = z.partialRecord(OcrProviderCapabilitySchema, z.boolean())
+
+export type OcrProviderCapabilityRecord = z.infer<typeof OcrProviderCapabilityRecordSchema>
 
 // OCR models and providers share the same type definition.
 // A provider can offer capabilities to process multiple file types,
