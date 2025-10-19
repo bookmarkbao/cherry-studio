@@ -215,8 +215,8 @@ export const apiHandlers: ApiImplementation = {
     GET: async () => {
       return ocrService.listProviders()
     },
-    POST: async () => {
-      throw new Error('Not implemented')
+    POST: async ({ body }) => {
+      return ocrService.createProvider(body)
     }
   },
 
@@ -227,8 +227,8 @@ export const apiHandlers: ApiImplementation = {
     PATCH: async ({ body }) => {
       return ocrService.patchProvider(body)
     },
-    PUT: async () => {
-      throw new Error('Not implemented')
+    PUT: async ({ body }) => {
+      return ocrService.putProvider(body)
     },
     DELETE: async () => {
       throw new Error('Not implemented')

@@ -291,3 +291,23 @@ export const PatchOcrProviderResponseSchema = z.object({
 })
 
 export type PatchOcrProviderResponse = z.infer<typeof PatchOcrProviderResponseSchema>
+
+export const CreateOcrProviderRequestSchema = OcrProviderSchema
+
+export type CreateOcrProviderRequest = z.infer<typeof CreateOcrProviderRequestSchema>
+
+export const CreateOcrProviderResponseSchema = z.object({
+  data: DbOcrProviderSchema
+})
+
+export type CreateOcrProviderResponse = z.infer<typeof CreateOcrProviderResponseSchema>
+
+export const PutOcrProviderRequestSchema = OcrProviderSchema
+
+export type PutOcrProviderRequest = z.infer<typeof PutOcrProviderRequestSchema>
+
+export const PutOcrProviderResponseSchema = z.object({
+  data: DbOcrProviderSchema
+})
+
+export type PutOcrProviderResponse = z.infer<typeof PutOcrProviderResponseSchema>

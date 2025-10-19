@@ -2,11 +2,15 @@ import { dbService } from '@data/db/DbService'
 import { ocrProviderTable } from '@data/db/schemas/ocr/provider'
 import { loggerService } from '@logger'
 import type {
+  CreateOcrProviderRequest,
+  CreateOcrProviderResponse,
   ListOcrProvidersResponse,
   OcrParams,
   OcrResult,
   PatchOcrProviderRequest,
   PatchOcrProviderResponse,
+  PutOcrProviderRequest,
+  PutOcrProviderResponse,
   SupportedOcrFile
 } from '@types'
 import { BuiltinOcrProviderIds } from '@types'
@@ -96,6 +100,46 @@ export class OcrService {
       })
       .where(eq(ocrProviderTable.id, update.id))
       .returning()
+    return { data: updated }
+  }
+
+  public async createProvider(create: CreateOcrProviderRequest): Promise<CreateOcrProviderResponse> {
+    const providers = await dbService
+      .getDb()
+      .select()
+      .from(ocrProviderTable)
+      .where(eq(ocrProviderTable.id, create.id))
+      .limit(1)
+
+    if (providers.length > 0) {
+      throw new Error(`OCR provider ${create.id} already exists`)
+    }
+
+    const [created] = await dbService.getDb().insert(ocrProviderTable).values(create).returning()
+
+    return { data: created }
+  }
+
+  public async putProvider(update: PutOcrProviderRequest): Promise<PutOcrProviderResponse> {
+    const providers = await dbService
+      .getDb()
+      .select()
+      .from(ocrProviderTable)
+      .where(eq(ocrProviderTable.id, update.id))
+      .limit(1)
+
+    if (providers.length === 0) {
+      const [created] = await dbService.getDb().insert(ocrProviderTable).values(update).returning()
+      return { data: created }
+    }
+
+    const [updated] = await dbService
+      .getDb()
+      .update(ocrProviderTable)
+      .set(update)
+      .where(eq(ocrProviderTable.id, update.id))
+      .returning()
+
     return { data: updated }
   }
 

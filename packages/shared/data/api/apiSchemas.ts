@@ -1,11 +1,15 @@
 // NOTE: Types are defined inline in the schema for simplicity
 // If needed, specific types can be imported from './apiModels'
 import type {
+  CreateOcrProviderRequest,
+  CreateOcrProviderResponse,
   GetOcrProviderResponse,
   ListOcrProvidersResponse,
   OcrProviderId,
   PatchOcrProviderRequest,
-  PatchOcrProviderResponse
+  PatchOcrProviderResponse,
+  PutOcrProviderRequest,
+  PutOcrProviderResponse
 } from '@types'
 
 import type { BodyForPath, ConcreteApiPaths, QueryParamsForPath, ResponseForPath } from './apiPaths'
@@ -359,9 +363,8 @@ export interface ApiSchemas {
       response: ListOcrProvidersResponse
     }
     POST: {
-      body: {
-        // TODO
-      }
+      body: CreateOcrProviderRequest
+      response: CreateOcrProviderResponse
     }
   }
 
@@ -375,7 +378,8 @@ export interface ApiSchemas {
       response: PatchOcrProviderResponse
     }
     PUT: {
-      // TODO
+      body: PutOcrProviderRequest
+      response: PutOcrProviderResponse
     }
     DELETE: {
       // TODO
