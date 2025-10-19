@@ -11,12 +11,7 @@ import {
   isNotSupportedTextDelta,
   SYSTEM_MODELS
 } from '@renderer/config/models'
-import {
-  BUILTIN_OCR_PROVIDER_CONFIG_MAP,
-  BUILTIN_OCR_PROVIDERS,
-  BUILTIN_OCR_PROVIDERS_MAP,
-  DEFAULT_OCR_PROVIDER
-} from '@renderer/config/ocr'
+import { DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
 import {
   isSupportArrayContentProvider,
   isSupportDeveloperRoleProvider,
@@ -39,6 +34,8 @@ import type {
 import { isBuiltinOcrProvider, isSystemProvider, SystemProviderIds } from '@renderer/types'
 import { getDefaultGroupName, getLeadingEmoji, runAsyncFunction, uuid } from '@renderer/utils'
 import { defaultByPassRules } from '@shared/config/constant'
+import { BUILTIN_OCR_PROVIDERS } from '@shared/config/ocr'
+import { BUILTIN_OCR_PROVIDER_CONFIG_MAP, BUILTIN_OCR_PROVIDERS_MAP } from '@shared/config/ocr'
 import { TRANSLATE_PROMPT } from '@shared/config/prompts'
 import { DefaultPreferences } from '@shared/data/preference/preferenceSchemas'
 import { UpgradeChannel } from '@shared/data/preference/preferenceTypes'
