@@ -9,13 +9,14 @@ export const ocrProviderTable = sqliteTable(
     /**
      * Unique identifier for the provider.
      * For built-in providers, it's 'tesseract', 'system', etc.
-     * For custom providers, it can be any unique string.
+     * For custom providers, it can be any unique string (we typically use UUID v4).
      * As the primary key, it ensures the uniqueness of each provider.
      */
     id: text('id').primaryKey(),
 
     /**
      * Display name of the provider, e.g., "Tesseract OCR".
+     * For built-in providers, this value is used internally and is not exposed to users; the display name shown in the UI is locale-based by i18n.
      * Cannot be null.
      */
     name: text('name').notNull(),
@@ -32,11 +33,14 @@ export const ocrProviderTable = sqliteTable(
      * Provider-specific configuration. This is a polymorphic field, its structure varies by provider type.
      * For example, Tesseract's configuration is entirely different from PaddleOCR's.
      * Storing it as JSON is the most flexible approach to accommodate any configuration structure.
+     * Since this is a polymorphic field, both frontend and backend must validate
+     * that the structure matches the expected schema for the corresponding provider type
+     * before saving.
      * This field is nullable because `config` in the `OcrProvider` type is optional.
      */
     config: text('config', { mode: 'json' }).$type<OcrProviderConfig>(),
 
-    /** Timestamps. */
+    /** Timestamps. May not useful. */
     ...createUpdateTimestamps
   },
   (t) => [index('name').on(t.name)]
