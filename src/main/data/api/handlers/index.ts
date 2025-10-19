@@ -224,8 +224,8 @@ export const apiHandlers: ApiImplementation = {
     GET: async () => {
       throw new Error('Not implemented')
     },
-    PATCH: async () => {
-      throw new Error('Not implemented')
+    PATCH: async ({ body }) => {
+      return ocrService.patchProvider(body)
     },
     PUT: async () => {
       throw new Error('Not implemented')

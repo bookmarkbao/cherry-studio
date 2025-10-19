@@ -81,9 +81,12 @@ export const OcrProviderConfigSchema = OcrProviderBaseConfigSchema.loose()
 
 export type OcrProviderConfig = z.infer<typeof OcrProviderConfigSchema>
 
+const OcrProviderIdSchema = z.string()
+const OcrProviderNameSchema = z.string()
+
 export const OcrProviderSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+  id: OcrProviderIdSchema,
+  name: OcrProviderNameSchema,
   capabilities: OcrProviderCapabilityRecordSchema,
   config: OcrProviderConfigSchema
 })
@@ -271,3 +274,17 @@ export const GetOcrProviderResponseSchema = z.object({
 })
 
 export type GetOcrProviderResponse = z.infer<typeof GetOcrProviderResponseSchema>
+
+export const PatchOcrProviderRequestSchema = z.object({
+  id: OcrProviderIdSchema,
+  name: OcrProviderNameSchema.optional(),
+  config: OcrProviderConfigSchema.partial().optional()
+})
+
+export type PatchOcrProviderRequest = z.infer<typeof PatchOcrProviderRequestSchema>
+
+export const PatchOcrProviderResponseSchema = z.object({
+  data: DbOcrProviderSchema
+})
+
+export type PatchOcrProviderResponse = z.infer<typeof PatchOcrProviderResponseSchema>

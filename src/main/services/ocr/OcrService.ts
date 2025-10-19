@@ -1,8 +1,16 @@
 import { dbService } from '@data/db/DbService'
 import { ocrProviderTable } from '@data/db/schemas/ocr/provider'
 import { loggerService } from '@logger'
-import type { ListOcrProvidersResponse, OcrParams, OcrResult, SupportedOcrFile } from '@types'
+import type {
+  ListOcrProvidersResponse,
+  OcrParams,
+  OcrResult,
+  PatchOcrProviderRequest,
+  PatchOcrProviderResponse,
+  SupportedOcrFile
+} from '@types'
 import { BuiltinOcrProviderIds } from '@types'
+import { eq } from 'drizzle-orm'
 
 import type { OcrBaseService } from './builtin/OcrBaseService'
 import { ovOcrService } from './builtin/OvOcrService'
@@ -48,6 +56,19 @@ export class OcrService {
     const providers = await dbService.getDb().select().from(ocrProviderTable)
 
     return { data: providers.filter((p) => registeredKeys.includes(p.id)) }
+  }
+
+  public async patchProvider(update: PatchOcrProviderRequest): Promise<PatchOcrProviderResponse> {
+    const providers = await dbService
+      .getDb()
+      .select()
+      .from(ocrProviderTable)
+      .where(eq(ocrProviderTable.id, update.id))
+      .limit(1)
+    if (providers.length == 0) {
+      throw new Error(`OCR provider ${update.id} not found`)
+    }
+    return { data: providers[0] }
   }
 
   public async ocr(file: SupportedOcrFile, params: OcrParams): Promise<OcrResult> {
