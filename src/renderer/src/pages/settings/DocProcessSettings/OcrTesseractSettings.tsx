@@ -17,13 +17,13 @@ import { SettingRow, SettingRowTitle } from '..'
 
 export const OcrTesseractSettings = () => {
   const { t } = useTranslation()
-  const { provider, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.tesseract)
+  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.tesseract)
 
   if (!isOcrTesseractProvider(provider)) {
     throw new Error('Not tesseract provider.')
   }
 
-  const [langs, setLangs] = useState<Partial<Record<TesseractLangCode, boolean>>>(provider.config?.langs ?? {})
+  const [langs, setLangs] = useState<Partial<Record<TesseractLangCode, boolean>>>(config?.langs ?? {})
   const { translateLanguages } = useTranslate()
 
   const options = useMemo(

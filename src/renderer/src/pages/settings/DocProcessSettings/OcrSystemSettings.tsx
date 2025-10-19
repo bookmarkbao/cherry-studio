@@ -19,7 +19,7 @@ export const OcrSystemSettings = () => {
   const { t } = useTranslation()
   // 和翻译自定义语言耦合了，应该还ok
   const { translateLanguages } = useTranslate()
-  const { provider, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.system)
+  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.system)
 
   if (!isOcrSystemProvider(provider)) {
     throw new Error('Not system provider.')
@@ -29,7 +29,7 @@ export const OcrSystemSettings = () => {
     throw new Error('Only Windows and MacOS is supported.')
   }
 
-  const [langs, setLangs] = useState<TranslateLanguageCode[]>(provider.config?.langs ?? [])
+  const [langs, setLangs] = useState<TranslateLanguageCode[]>(config?.langs ?? [])
 
   // currently static
   const options = useMemo(

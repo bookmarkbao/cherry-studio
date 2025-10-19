@@ -13,14 +13,14 @@ export const OcrPpocrSettings = () => {
   const AISTUDIO_URL = 'https://aistudio.baidu.com/pipeline/mine'
 
   const { t } = useTranslation()
-  const { provider, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.paddleocr)
+  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIds.paddleocr)
 
   if (!isOcrPpocrProvider(provider)) {
     throw new Error('Not PaddleOCR provider.')
   }
 
-  const [apiUrl, setApiUrl] = useState<string>(provider.config.apiUrl || '')
-  const [accessToken, setAccessToken] = useState<string>(provider.config.accessToken || '')
+  const [apiUrl, setApiUrl] = useState<string>(config.apiUrl || '')
+  const [accessToken, setAccessToken] = useState<string>(config.accessToken || '')
 
   const onApiUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
