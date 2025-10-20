@@ -17,10 +17,10 @@ const logger = loggerService.withContext('OcrImageSettings')
 
 const OcrImageSettings = () => {
   const { t } = useTranslation()
-  const { providers, loading, error, getOcrProviderName } = useOcrProviders()
-  const { imageProvider, setImageProviderId } = useOcrImageProvider()
+  const { providers, loading, error, getOcrProviderName } = useOcrProviders({ registered: true })
+  const { imageProvider, setImageProviderId, imageProviderId } = useOcrImageProvider()
 
-  const imageProviders = providers.filter((p) => isImageOcrProvider(p))
+  const imageProviders = useMemo(() => providers?.filter((p) => isImageOcrProvider(p)) ?? [], [providers])
 
   const setImageProvider = (id: string) => {
     const provider = imageProviders.find((p) => p.id === id)
@@ -43,29 +43,48 @@ const OcrImageSettings = () => {
 
   const isSystem = imageProvider?.id === BuiltinOcrProviderIdMap.system
 
-  if (!imageProvider) {
-    return <Alert color="danger" title={t('ocr.error.provider.not_found')} />
-  }
+  const content = useMemo(() => {
+    if (loading) {
+      return <Skeleton className="h-full w-50" />
+    }
+
+    if (error) {
+      return (
+        <Alert
+          color="danger"
+          title={t('ocr.provider.get.error.failed', { provider: imageProviderId })}
+          description={getErrorMessage(error)}
+        />
+      )
+    }
+
+    if (!imageProvider) {
+      return <Alert color="danger" title={t('ocr.error.provider.not_found')} />
+    }
+
+    return (
+      <>
+        {!platformSupport && isSystem && <ErrorTag message={t('settings.tool.ocr.error.not_system')} />}
+        {!loading && !error && (
+          <Select
+            value={imageProvider.id}
+            className="w-50"
+            onChange={(id: string) => setImageProvider(id)}
+            options={options}
+          />
+        )}
+        {!loading && error && (
+          <Alert color="danger" title={t('ocr.error.provider.get_providers')} description={getErrorMessage(error)} />
+        )}
+      </>
+    )
+  }, [])
 
   return (
     <>
       <SettingRow>
         <SettingRowTitle>{t('settings.tool.ocr.image_provider')}</SettingRowTitle>
-        <div className="flex items-center gap-2 self-stretch">
-          {!platformSupport && isSystem && <ErrorTag message={t('settings.tool.ocr.error.not_system')} />}
-          {loading && <Skeleton className="h-full w-50" />}
-          {!loading && !error && (
-            <Select
-              value={imageProvider.id}
-              className="w-50"
-              onChange={(id: string) => setImageProvider(id)}
-              options={options}
-            />
-          )}
-          {!loading && error && (
-            <Alert color="danger" title={t('ocr.error.provider.get_providers')} description={getErrorMessage(error)} />
-          )}
-        </div>
+        <div className="flex items-center gap-2 self-stretch">{content}</div>
       </SettingRow>
     </>
   )

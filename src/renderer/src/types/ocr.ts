@@ -268,6 +268,8 @@ const TimestampExtendShape = {
 
 const DbOcrProviderSchema = OcrProviderSchema.extend(TimestampExtendShape)
 
+export type ListOcrProvidersQuery = { registered?: boolean }
+
 export const ListOcrProvidersResponseSchema = z.object({
   data: z.array(DbOcrProviderSchema)
 })

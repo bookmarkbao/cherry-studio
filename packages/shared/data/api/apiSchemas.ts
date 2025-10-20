@@ -4,6 +4,7 @@ import type {
   CreateOcrProviderRequest,
   CreateOcrProviderResponse,
   GetOcrProviderResponse,
+  ListOcrProvidersQuery,
   ListOcrProvidersResponse,
   OcrProviderId,
   PatchOcrProviderRequest,
@@ -360,7 +361,7 @@ export interface ApiSchemas {
 
   '/ocr/providers': {
     GET: {
-      query: { registered?: boolean }
+      query: ListOcrProvidersQuery
       response: ListOcrProvidersResponse
     }
     POST: {
