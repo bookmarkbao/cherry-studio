@@ -98,9 +98,7 @@
       "indexes": {
         "name": {
           "name": "name",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": false
         }
       },
@@ -151,10 +149,7 @@
       "indexes": {
         "scope_name_idx": {
           "name": "scope_name_idx",
-          "columns": [
-            "scope",
-            "key"
-          ],
+          "columns": ["scope", "key"],
           "isUnique": false
         }
       },
