@@ -15,7 +15,7 @@ const isProviderAvailable = (provider: OcrProvider | undefined | null): provider
 
 export const useOcr = () => {
   const { t } = useTranslation()
-  const { imageProvider } = useOcrImageProvider()
+  const { imageProvider, imageProviderId } = useOcrImageProvider()
 
   /**
    * 对图片文件进行OCR识别
@@ -31,10 +31,10 @@ export const useOcr = () => {
           providerId: imageProvider.id
         })
       } else {
-        throw new Error(t('ocr.error.provider.not_availabel'))
+        throw new Error(t('ocr.error.provider.not_availabel', { provider: imageProviderId }))
       }
     },
-    [imageProvider, t]
+    [imageProvider, imageProviderId, t]
   )
 
   /**
