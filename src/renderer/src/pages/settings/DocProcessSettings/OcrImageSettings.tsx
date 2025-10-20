@@ -1,6 +1,5 @@
 import { Skeleton } from '@cherrystudio/ui'
 import { Alert } from '@heroui/react'
-import { loggerService } from '@logger'
 import { ErrorTag } from '@renderer/components/Tags/ErrorTag'
 import { isMac, isWin } from '@renderer/config/constant'
 import { useOcrImageProvider } from '@renderer/hooks/ocr/useOcrImageProvider'
@@ -8,12 +7,12 @@ import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProviders'
 import { BuiltinOcrProviderIdMap, isImageOcrProvider } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils'
 import { Select } from 'antd'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingRow, SettingRowTitle } from '..'
 
-const logger = loggerService.withContext('OcrImageSettings')
+// const logger = loggerService.withContext('OcrImageSettings')
 
 const OcrImageSettings = () => {
   const { t } = useTranslation()
@@ -22,16 +21,12 @@ const OcrImageSettings = () => {
 
   const imageProviders = useMemo(() => providers?.filter((p) => isImageOcrProvider(p)) ?? [], [providers])
 
-  const setImageProvider = (id: string) => {
-    const provider = imageProviders.find((p) => p.id === id)
-    if (!provider) {
-      logger.error(`Failed to find image provider by id: ${id}`)
-      window.toast.error(t('settings.tool.ocr.image.error.provider_not_found'))
-      return
-    }
-
-    setImageProviderId(id)
-  }
+  const setImageProvider = useCallback(
+    (id: string) => {
+      setImageProviderId(id)
+    },
+    [setImageProviderId]
+  )
 
   const platformSupport = isMac || isWin
   const options = useMemo(() => {
@@ -78,7 +73,7 @@ const OcrImageSettings = () => {
         )}
       </>
     )
-  }, [])
+  }, [error, imageProvider, imageProviderId, isSystem, loading, options, platformSupport, setImageProvider, t])
 
   return (
     <>
