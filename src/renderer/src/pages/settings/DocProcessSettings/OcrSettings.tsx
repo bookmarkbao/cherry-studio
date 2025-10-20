@@ -21,7 +21,7 @@ import OcrProviderSettings from './OcrProviderSettings'
 const OcrSettings: FC = () => {
   const { t } = useTranslation()
   const { theme: themeMode } = useTheme()
-  const { imageProvider: provider } = useOcrImageProvider()
+  const { imageProvider: provider, updateConfig } = useOcrImageProvider()
   // const [activeTab, setActiveTab] = useState<Tab>('image')
   // const provider = useMemo(() => {
   //   switch (activeTab) {
@@ -82,7 +82,7 @@ const OcrSettings: FC = () => {
       </SettingGroup>
 
       <ErrorBoundary>
-        <OcrProviderSettings provider={provider} />
+        <OcrProviderSettings provider={provider} updateConfig={updateConfig} />
       </ErrorBoundary>
     </ErrorBoundary>
   )

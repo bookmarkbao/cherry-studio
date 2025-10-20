@@ -7,11 +7,17 @@ import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { isMac, isWin } from '@renderer/config/constant'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useOcrProviders } from '@renderer/hooks/ocr/useOcrProviders'
-import type { OcrProvider } from '@renderer/types'
-import { isBuiltinOcrProvider, isOcrSystemProvider } from '@renderer/types'
+import type { OcrProvider, OcrProviderConfig } from '@renderer/types'
+import {
+  isBuiltinOcrProvider,
+  isOcrOVProvider,
+  isOcrPpocrProvider,
+  isOcrSystemProvider,
+  isOcrTesseractProvider
+} from '@renderer/types'
 import { Divider } from 'antd'
 import { FileQuestionMarkIcon, MonitorIcon } from 'lucide-react'
-import styled from 'styled-components'
+import { useMemo } from 'react'
 
 import { SettingGroup, SettingTitle } from '..'
 import { OcrOVSettings } from './OcrOVSettings'
@@ -22,34 +28,37 @@ import { OcrTesseractSettings } from './OcrTesseractSettings'
 // const logger = loggerService.withContext('OcrTesseractSettings')
 
 type Props = {
-  provider: OcrProvider | undefined
+  provider: OcrProvider | undefined | null
+  updateConfig: (config: Partial<OcrProviderConfig>) => Promise<void>
 }
 
-const OcrProviderSettings = ({ provider }: Props) => {
+const OcrProviderSettings = ({ provider, updateConfig }: Props) => {
   const { theme: themeMode } = useTheme()
   const { getOcrProviderName } = useOcrProviders()
 
-  if (!provider || (!isWin && !isMac && isOcrSystemProvider(provider))) {
-    return null
-  }
-
-  const ProviderSettings = () => {
+  const settings = useMemo(() => {
+    if (!provider) return null
     if (isBuiltinOcrProvider(provider)) {
-      switch (provider.id) {
-        case 'tesseract':
-          return <OcrTesseractSettings />
-        case 'system':
-          return <OcrSystemSettings />
-        case 'paddleocr':
-          return <OcrPpocrSettings />
-        case 'ovocr':
-          return <OcrOVSettings />
-        default:
-          return null
+      if (isOcrTesseractProvider(provider)) {
+        return <OcrTesseractSettings provider={provider} updateConfig={updateConfig} />
       }
+      if (isOcrSystemProvider(provider)) {
+        return <OcrSystemSettings />
+      }
+      if (isOcrPpocrProvider(provider)) {
+        return <OcrPpocrSettings />
+      }
+      if (isOcrOVProvider(provider)) {
+        return <OcrOVSettings />
+      }
+      return null
     } else {
       throw new Error('Not supported OCR provider')
     }
+  }, [provider, updateConfig])
+
+  if (!provider || (!isWin && !isMac && isOcrSystemProvider(provider))) {
+    return null
   }
 
   return (
@@ -57,21 +66,14 @@ const OcrProviderSettings = ({ provider }: Props) => {
       <SettingTitle>
         <Flex className="items-center gap-2">
           <OcrProviderLogo provider={provider} />
-          <ProviderName> {getOcrProviderName(provider)}</ProviderName>
+          <span className="font-semibold text-sm"> {getOcrProviderName(provider)}</span>
         </Flex>
       </SettingTitle>
       <Divider style={{ width: '100%', margin: '10px 0' }} />
-      <ErrorBoundary>
-        <ProviderSettings />
-      </ErrorBoundary>
+      <ErrorBoundary>{settings}</ErrorBoundary>
     </SettingGroup>
   )
 }
-
-const ProviderName = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-`
 
 const OcrProviderLogo = ({ provider: p, size = 14 }: { provider: OcrProvider; size?: number }) => {
   if (isBuiltinOcrProvider(p)) {

@@ -7,15 +7,16 @@ import { useTranslation } from 'react-i18next'
 
 // const logger = loggerService.withContext('useOcrProvider')
 
-export const useOcrProvider = (id: string) => {
+export const useOcrProvider = (id: string | null) => {
   const { t } = useTranslation()
 
   const path: ConcreteApiPaths = `/ocr/providers/${id}`
-  const { data, loading, error } = useQuery(path, undefined)
+  const { data, loading, error } = useQuery(path)
   const { mutate, loading: mutating } = useMutation('PATCH', path)
 
   const updateConfig = useCallback(
     async (update: Partial<OcrProviderConfig>) => {
+      if (!id) return
       try {
         await mutate({ body: { id, config: update } })
       } catch (e) {
@@ -26,7 +27,8 @@ export const useOcrProvider = (id: string) => {
   )
 
   return {
-    provider: data?.data,
+    /** undefined: loading; null: invalid, id is null */
+    provider: id ? data?.data : null,
     loading,
     mutating,
     error,
