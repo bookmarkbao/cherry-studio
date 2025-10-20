@@ -2052,6 +2052,7 @@
         "cannot_remove_builtin": "Cannot delete built-in provider",
         "existing": "The provider already exists",
         "get_providers": "Failed to get available providers",
+        "not_availabel": "Provide {{provider}} is not available",
         "not_found": "OCR provider does not exist",
         "update_failed": "Failed to update configuration"
       },

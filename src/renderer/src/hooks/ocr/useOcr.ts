@@ -1,6 +1,6 @@
 import { loggerService } from '@logger'
 import * as OcrService from '@renderer/services/ocr/OcrService'
-import type { ImageFileMetadata, ImageOcrProvider, SupportedOcrFile } from '@renderer/types'
+import type { ImageFileMetadata, OcrProvider, SupportedOcrFile } from '@renderer/types'
 import { isImageFileMetadata } from '@renderer/types'
 import { formatErrorMessage } from '@renderer/utils/error'
 import { useCallback } from 'react'
@@ -10,7 +10,7 @@ import { useOcrImageProvider } from './useOcrImageProvider'
 
 const logger = loggerService.withContext('useOcr')
 
-const isProviderAvailable = (provider: ImageOcrProvider | undefined): provider is ImageOcrProvider =>
+const isProviderAvailable = (provider: OcrProvider | undefined | null): provider is OcrProvider =>
   provider !== undefined
 
 export const useOcr = () => {
@@ -31,7 +31,7 @@ export const useOcr = () => {
           providerId: imageProvider.id
         })
       } else {
-        throw new Error(t('ocr.error.provider.'))
+        throw new Error(t('ocr.error.provider.not_availabel'))
       }
     },
     [imageProvider, t]
