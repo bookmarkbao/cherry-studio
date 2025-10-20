@@ -18,6 +18,10 @@ export const OcrTesseractConfigSchema = OcrProviderBaseConfigSchema.extend({
 
 export type OcrTesseractConfig = z.infer<typeof OcrTesseractConfigSchema>
 
+export const isOcrTesseractConfig = (value: unknown): value is OcrTesseractConfig => {
+  return OcrTesseractConfigSchema.safeParse(value).success
+}
+
 export type OcrTesseractProvider = {
   id: 'tesseract'
   config: OcrTesseractConfig
