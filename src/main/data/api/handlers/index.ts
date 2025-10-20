@@ -213,7 +213,7 @@ export const apiHandlers: ApiImplementation = {
 
   '/ocr/providers': {
     GET: async ({ query }) => {
-      return ocrService.listProviders(query.registered)
+      return ocrService.listProviders(query)
     },
     POST: async ({ body }) => {
       return ocrService.createProvider(body)
@@ -228,13 +228,13 @@ export const apiHandlers: ApiImplementation = {
       if (params.id !== body.id) {
         throw new Error('Provider ID in path does not match ID in body')
       }
-      return ocrService.patchProvider(body)
+      return ocrService.updateProvider(params.id, body)
     },
     PUT: async ({ params, body }) => {
       if (params.id !== body.id) {
         throw new Error('Provider ID in path does not match ID in body')
       }
-      return ocrService.putProvider(body)
+      return ocrService.replaceProvider(body)
     },
     DELETE: async ({ params }) => {
       return ocrService.deleteProvider(params.id)
