@@ -747,20 +747,8 @@ export const REDUX_STORE_MAPPINGS = {
   ],
   ocr: [
     {
-      originalKey: 'ocr.configs.tesseract',
-      targetKey: 'ocr.provider.config.tesseract'
-    },
-    {
-      originalKey: 'ocr.configs.system',
-      targetKey: 'ocr.provider.config.system'
-    },
-    {
-      originalKey: 'ocr.configs.paddleocr',
-      targetKey: 'ocr.provider.config.paddleocr'
-    },
-    {
-      originalKey: 'ocr.configs.ovocr',
-      targetKey: 'ocr.provider.config.ovocr'
+      originalKey: 'ocr.imageProviderId',
+      targetKey: 'ocr.settings.image_provider_id'
     }
   ]
 } as const satisfies Record<
