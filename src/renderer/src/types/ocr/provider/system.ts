@@ -1,5 +1,4 @@
 import type { TranslateLanguageCode } from '../../translate'
-
 import type { OcrProvider } from './base'
 import { type ImageOcrProvider } from './base'
 import { type BuiltinOcrProvider } from './base'

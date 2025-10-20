@@ -1,7 +1,7 @@
-import { TranslateLanguageCodeSchema } from '../../translate'
 import type Tesseract from 'tesseract.js'
 import * as z from 'zod'
 
+import { TranslateLanguageCodeSchema } from '../../translate'
 import type { ImageOcrProvider } from './base'
 import type { BuiltinOcrProvider } from './base'
 import type { OcrProvider } from './base'
