@@ -266,7 +266,9 @@ const TimestampExtendShape = {
   updatedAt: z.number().nullable()
 }
 
-const DbOcrProviderSchema = OcrProviderSchema.extend(TimestampExtendShape)
+export const DbOcrProviderSchema = OcrProviderSchema.extend(TimestampExtendShape)
+
+export type DbOcrProvider = z.infer<typeof DbOcrProviderSchema>
 
 export type ListOcrProvidersQuery = { registered?: boolean }
 

@@ -4,6 +4,7 @@ import { loggerService } from '@logger'
 import type {
   CreateOcrProviderRequest,
   CreateOcrProviderResponse,
+  DbOcrProvider,
   ListOcrProvidersResponse,
   OcrParams,
   OcrResult,
@@ -14,6 +15,7 @@ import type {
   SupportedOcrFile
 } from '@types'
 import { BuiltinOcrProviderIdMap, BuiltinOcrProviderIds } from '@types'
+import dayjs from 'dayjs'
 import { eq } from 'drizzle-orm'
 import { merge } from 'lodash'
 
@@ -89,15 +91,12 @@ export class OcrService {
     if (providers.length == 0) {
       throw new Error(`OCR provider ${update.id} not found`)
     }
-    const config = providers[0].config
-    const newConfig = merge({}, config, update.config)
+    const found = providers[0]
+    const newProvider = { ...merge({}, found, update), updatedAt: dayjs().unix() } satisfies DbOcrProvider
     const [updated] = await dbService
       .getDb()
       .update(ocrProviderTable)
-      .set({
-        name: update.name,
-        config: newConfig
-      })
+      .set(newProvider)
       .where(eq(ocrProviderTable.id, update.id))
       .returning()
     return { data: updated }
@@ -115,32 +114,51 @@ export class OcrService {
       throw new Error(`OCR provider ${create.id} already exists`)
     }
 
-    const [created] = await dbService.getDb().insert(ocrProviderTable).values(create).returning()
+    const timestamp = dayjs().unix()
+    const newProvider = {
+      ...create,
+      createdAt: timestamp,
+      updatedAt: timestamp
+    } satisfies DbOcrProvider
+
+    const [created] = await dbService.getDb().insert(ocrProviderTable).values(newProvider).returning()
 
     return { data: created }
   }
 
-  public async putProvider(update: PutOcrProviderRequest): Promise<PutOcrProviderResponse> {
-    if (BuiltinOcrProviderIds.some((pid) => pid === update.id)) {
+  public async putProvider(provider: PutOcrProviderRequest): Promise<PutOcrProviderResponse> {
+    if (BuiltinOcrProviderIds.some((pid) => pid === provider.id)) {
       throw new Error('Builtin OCR providers cannot be modified with PUT method.')
     }
     const providers = await dbService
       .getDb()
       .select()
       .from(ocrProviderTable)
-      .where(eq(ocrProviderTable.id, update.id))
+      .where(eq(ocrProviderTable.id, provider.id))
       .limit(1)
 
+    const timestamp = dayjs().unix()
     if (providers.length === 0) {
-      const [created] = await dbService.getDb().insert(ocrProviderTable).values(update).returning()
+      const newProvider = {
+        ...provider,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      } satisfies DbOcrProvider
+      const [created] = await dbService.getDb().insert(ocrProviderTable).values(newProvider).returning()
       return { data: created }
     }
 
+    const existed = providers[0]
+    const newProvider = {
+      ...provider,
+      updatedAt: timestamp,
+      createdAt: existed.createdAt
+    } satisfies DbOcrProvider
     const [updated] = await dbService
       .getDb()
       .update(ocrProviderTable)
-      .set(update)
-      .where(eq(ocrProviderTable.id, update.id))
+      .set(newProvider)
+      .where(eq(ocrProviderTable.id, provider.id))
       .returning()
 
     return { data: updated }
