@@ -9,17 +9,18 @@ Cherry Studio's OCR (Optical Character Recognition) system is a modular, extensi
 
 ## Architecture Layers
 
-The OCR architecture follows a strict layered approach where each layer only communicates with adjacent layers:
+The OCR architecture follows a layered approach where data interactions occur through RESTful APIs, while IPC serves as part of the API layer, allowing the renderer to interact directly with the business layer:
 
 ### 1. API Layer
-**Location**: `src/main/data/api/handlers/`
+**Location**: `src/main/data/api/handlers/`, `src/main/ipc.ts`, `src/preload/index.ts`
 
-- **IPC Bridge**: Secure communication between main and renderer processes
+- **IPC Bridge**: Serves as API layer connecting renderer to main process
+- **Request Routing**: Routes IPC calls to appropriate service methods
 - **Type Safety**: Zod schemas for request/response validation
-- **Error Handling**: Centralized error propagation
-- **Entry Point**: All OCR operations enter through this layer
+- **Error Handling**: Centralized error propagation across process boundaries
+- **Security**: Secure communication sandbox between renderer and main processes
 
-### 2. OCR Service Layer
+### 2. OCR Service Layer (Business Layer)
 **Location**: `src/main/services/ocr/`
 
 - **OcrService**: Main business logic orchestrator and central coordinator
@@ -28,6 +29,7 @@ The OCR architecture follows a strict layered approach where each layer only com
 - **Lifecycle Management**: Handles provider initialization and disposal
 - **Validation**: Ensures provider availability and data integrity
 - **Orchestration**: Coordinates between providers and data services
+- **Direct IPC Access**: Renderer can directly invoke business layer methods via IPC
 
 ### 3. Provider Services Layer
 **Location**: `src/main/services/ocr/builtin/`
@@ -53,17 +55,18 @@ The OCR architecture follows a strict layered approach where each layer only com
 ### 5. Frontend Layer
 **Location**: `src/renderer/src/services/ocr/`, `src/renderer/src/hooks/ocr/`
 
-- **Service Facade**: Frontend OCR service for IPC communication
+- **Direct IPC Communication**: Direct interaction with business layer via IPC
 - **React Hooks**: Custom hooks for OCR operations and state management
 - **Configuration UI**: Settings pages for provider configuration
+- **State Management**: Frontend state synchronization with backend data
 
 ## Data Flow
 
 ```mermaid
 graph TD
-    A[Frontend UI] --> B[OcrService Renderer]
-    B --> C[API Layer - IPC Handler]
-    C --> D[OCR Service Layer]
+    A[Frontend UI] --> B[Frontend OCR Service]
+    B --> C[API Layer - IPC Bridge]
+    C --> D[OCR Service Layer - Business Logic]
     D --> E[Data Layer - Provider Repository]
     D --> F[Provider Services Layer]
     F --> G[OCR Processing]
@@ -77,7 +80,14 @@ graph TD
     style D fill:#e1f5fe
     style F fill:#f3e5f5
     style E fill:#e8f5e8
+    style C fill:#fff3e0
 ```
+
+**Key Flow Characteristics:**
+- **Direct Business Access**: Frontend communicates directly with OCR Service layer via IPC
+- **IPC as API Gateway**: IPC bridge functions as the API layer, handling routing and validation
+- **Data Isolation**: Only business layer interacts with data persistence
+- **Provider Independence**: OCR providers remain isolated from data concerns
 
 ## Provider System
 

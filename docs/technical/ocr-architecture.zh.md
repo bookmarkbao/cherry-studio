@@ -9,17 +9,18 @@ Cherry Studio 的 OCR（光学字符识别）系统是一个模块化、可扩�
 
 ## 架构分层
 
-OCR 架构遵循严格的分层方法，每层只与相邻层通信：
+OCR 架构采用分层方法，其中数据交互通过 RESTful API 进行，而 IPC 作为 API 层的一部分，允许 Renderer 直接与业务层交互：
 
 ### 1. API 层
-**位置**: `src/main/data/api/handlers/`
+**位置**: `src/main/data/api/handlers/`, `src/main/ipc.ts`, `src/preload/index.ts`
 
-- **IPC 桥接**: 主进程和渲染进程之间的安全通信
+- **IPC 桥接**: 作为 API 层连接 Renderer 到主进程
+- **请求路由**: 将 IPC 调用路由到相应的服务方法
 - **类型安全**: 使用 Zod 模式进行请求/响应验证
-- **错误处理**: 集中式错误传播
-- **入口点**: 所有 OCR 操作都通过此层进入
+- **错误处理**: 跨进程边界的集中式错误传播
+- **安全**: Renderer 和主进程之间的安全通信沙盒
 
-### 2. OCR 服务层
+### 2. OCR 服务层（业务层）
 **位置**: `src/main/services/ocr/`
 
 - **OcrService**: 主要业务逻辑协调器和中央协调器
@@ -28,6 +29,7 @@ OCR 架构遵循严格的分层方法，每层只与相邻层通信：
 - **生命周期管理**: 处理提供商初始化和销毁
 - **验证**: 确保提供商可用性和数据完整性
 - **协调**: 协调提供商和数据服务之间的交互
+- **直接 IPC 访问**: Renderer 可通过 IPC 直接调用业务层方法
 
 ### 3. 提供商服务层
 **位置**: `src/main/services/ocr/builtin/`
@@ -50,20 +52,21 @@ OCR 架构遵循严格的分层方法，每层只与相邻层通信：
 - **JSON 配置**: 多态的 `config` 字段存储提供商特定的设置
 - **数据访问**: 仅由 OCR 服务层访问
 
-### 5. 前端层
+### 5. Renderer 层
 **位置**: `src/renderer/src/services/ocr/`, `src/renderer/src/hooks/ocr/`
 
-- **服务门面**: 用于 IPC 通信的前端 OCR 服务
+- **直接 IPC 通信**: 通过 IPC 与业务层直接交互
 - **React Hooks**: 用于 OCR 操作和状态管理的自定义钩子
 - **配置 UI**: 提供商配置的设置页面
+- **状态管理**: Renderer 状态与后端数据同步
 
 ## 数据流
 
 ```mermaid
 graph TD
-    A[前端 UI] --> B[OcrService 渲染进程]
-    B --> C[API 层 - IPC 处理器]
-    C --> D[OCR 服务层]
+    A[Renderer UI] --> B[Renderer OCR 服务]
+    B --> C[API 层 - IPC 桥接]
+    C --> D[OCR 服务层 - 业务逻辑]
     D --> E[数据层 - 提供商仓储]
     D --> F[提供商服务层]
     F --> G[OCR 处理]
@@ -77,7 +80,14 @@ graph TD
     style D fill:#e1f5fe
     style F fill:#f3e5f5
     style E fill:#e8f5e8
+    style C fill:#fff3e0
 ```
+
+**关键流程特征**:
+- **直接业务访问**: Renderer 通过 IPC 与 OCR 服务层直接通信
+- **IPC 作为 API 网关**: IPC 桥接作为 API 层，处理路由和验证
+- **数据隔离**: 只有业务层与数据持久化交互
+- **提供商独立性**: OCR 提供商保持与数据关注点的隔离
 
 ## 提供商系统
 
