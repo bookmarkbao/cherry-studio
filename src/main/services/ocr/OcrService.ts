@@ -170,7 +170,10 @@ class OcrService {
   /**
    * Update OCR provider (partial update)
    */
-  public async updateProvider(id: OcrProviderId, data: Partial<PatchOcrProviderRequest>): Promise<PatchOcrProviderResponse> {
+  public async updateProvider(
+    id: OcrProviderId,
+    data: Partial<PatchOcrProviderRequest>
+  ): Promise<PatchOcrProviderResponse> {
     try {
       await this.ensureInitialized()
       const result = await ocrProviderRepository.update(id, data)
