@@ -16,11 +16,13 @@ import { SettingRow, SettingRowTitle } from '..'
 
 export const OcrTesseractSettings = ({
   provider,
-  updateConfig
+  updateConfig: _updateConfig
 }: {
   provider: OcrTesseractProvider
   updateConfig: (config: Partial<OcrProviderConfig>) => Promise<void>
 }) => {
+  const updateConfig = _updateConfig as (config: Partial<OcrTesseractConfig>) => Promise<void>
+
   const { t } = useTranslation()
 
   const [langs, setLangs] = useState<OcrTesseractConfig['langs'] | undefined>(provider?.config.langs)

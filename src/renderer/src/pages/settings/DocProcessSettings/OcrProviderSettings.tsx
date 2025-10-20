@@ -43,10 +43,10 @@ const OcrProviderSettings = ({ provider, updateConfig }: Props) => {
         return <OcrTesseractSettings provider={provider} updateConfig={updateConfig} />
       }
       if (isOcrSystemProvider(provider)) {
-        return <OcrSystemSettings />
+        return <OcrSystemSettings provider={provider} updateConfig={updateConfig} />
       }
       if (isOcrPpocrProvider(provider)) {
-        return <OcrPpocrSettings />
+        return <OcrPpocrSettings provider={provider} updateConfig={updateConfig} />
       }
       if (isOcrOVProvider(provider)) {
         return <OcrOVSettings />

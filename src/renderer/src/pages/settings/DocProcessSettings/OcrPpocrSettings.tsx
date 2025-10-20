@@ -1,26 +1,33 @@
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
-import { useOcrProvider } from '@renderer/hooks/ocr/useOcrProvider'
-import { BuiltinOcrProviderIdMap, isOcrPpocrProvider } from '@renderer/types'
+import type { OcrPpocrConfig, OcrPpocrProvider, OcrProviderConfig } from '@renderer/types'
+import { isOcrPpocrProvider } from '@renderer/types'
 import { Input } from 'antd'
 import { startTransition, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingHelpLink, SettingHelpText, SettingHelpTextRow, SettingRow, SettingRowTitle } from '..'
 
-export const OcrPpocrSettings = () => {
+export const OcrPpocrSettings = ({
+  provider,
+  updateConfig: _updateConfig
+}: {
+  provider: OcrPpocrProvider
+  updateConfig: (config: Partial<OcrProviderConfig>) => Promise<void>
+}) => {
+  const updateConfig = _updateConfig as (config: Partial<OcrPpocrConfig>) => Promise<void>
+
   // Hack: Hard-coded for now
   const SERVING_DOC_URL = 'https://www.paddleocr.ai/latest/version3.x/deployment/serving.html'
   const AISTUDIO_URL = 'https://aistudio.baidu.com/pipeline/mine'
 
   const { t } = useTranslation()
-  const { provider, config, updateConfig } = useOcrProvider(BuiltinOcrProviderIdMap.paddleocr)
 
   if (!isOcrPpocrProvider(provider)) {
     throw new Error('Not PaddleOCR provider.')
   }
 
-  const [apiUrl, setApiUrl] = useState<string>(config.apiUrl || '')
-  const [accessToken, setAccessToken] = useState<string>(config.accessToken || '')
+  const [apiUrl, setApiUrl] = useState<string>(provider.config.apiUrl || '')
+  const [accessToken, setAccessToken] = useState<string>(provider.config.accessToken || '')
 
   const onApiUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
