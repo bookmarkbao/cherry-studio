@@ -4,17 +4,18 @@ import type {
   CreateOcrProviderRequest,
   CreateOcrProviderResponse,
   DbOcrProvider,
+  GetOcrProviderResponse,
   ListOcrProvidersQuery,
   ListOcrProvidersResponse,
   OcrParams,
   OcrProvider,
-  OcrProviderId,
+  OcrProviderKeyBusiness,
   OcrResult,
-  PatchOcrProviderRequest,
-  PatchOcrProviderResponse,
-  PutOcrProviderRequest,
-  PutOcrProviderResponse,
-  SupportedOcrFile
+  ReplaceOcrProviderRequest,
+  ReplaceOcrProviderResponse,
+  SupportedOcrFile,
+  UpdateOcrProviderRequest,
+  UpdateOcrProviderResponse
 } from '@types'
 import { BuiltinOcrProviderIdMap } from '@types'
 
@@ -31,7 +32,7 @@ const logger = loggerService.withContext('OcrService')
  * Handles OCR provider registration, orchestration, and core OCR functionality
  */
 class OcrService {
-  private registry: Map<OcrProviderId, OcrBaseService> = new Map()
+  private registry: Map<OcrProviderKeyBusiness, OcrBaseService> = new Map()
   private initialized: boolean = false
 
   constructor() {
@@ -83,7 +84,7 @@ class OcrService {
   /**
    * Register an OCR provider service
    */
-  private register(providerId: OcrProviderId, service: OcrBaseService): void {
+  private register(providerId: OcrProviderKeyBusiness, service: OcrBaseService): void {
     if (this.registry.has(providerId)) {
       logger.warn(`Provider ${providerId} already registered. Overwriting.`)
     }
@@ -104,14 +105,14 @@ class OcrService {
   /**
    * Get all registered provider IDs
    */
-  public getRegisteredProviderIds(): OcrProviderId[] {
+  public getRegisteredProviderIds(): OcrProviderKeyBusiness[] {
     return Array.from(this.registry.keys())
   }
 
   /**
    * Check if a provider is registered
    */
-  public isProviderRegistered(providerId: OcrProviderId): boolean {
+  public isProviderRegistered(providerId: OcrProviderKeyBusiness): boolean {
     return this.registry.has(providerId)
   }
 
@@ -121,16 +122,17 @@ class OcrService {
   public async listProviders(query?: ListOcrProvidersQuery): Promise<ListOcrProvidersResponse> {
     try {
       await this.ensureInitialized()
-      const result = await ocrProviderRepository.findAll(query)
+      const providers = await ocrProviderRepository.findAll()
 
+      let result = providers
       if (query?.registered) {
         // Filter by registered providers
         const registeredIds = this.getRegisteredProviderIds()
-        result.data = result.data.filter((provider) => registeredIds.includes(provider.id))
+        result = providers.filter((provider) => registeredIds.includes(provider.id))
       }
 
-      logger.debug(`Listed ${result.data.length} OCR providers`)
-      return result
+      logger.debug(`Listed ${result.length} OCR providers`)
+      return { data: result }
     } catch (error) {
       logger.error('Failed to list OCR providers', error as Error)
       throw error
@@ -140,7 +142,7 @@ class OcrService {
   /**
    * Get OCR provider by ID
    */
-  public async getProvider(providerId: OcrProviderId): Promise<{ data: DbOcrProvider }> {
+  public async getProvider(providerId: OcrProviderKeyBusiness): Promise<GetOcrProviderResponse> {
     try {
       await this.ensureInitialized()
       const provider = await ocrProviderRepository.findById(providerId)
@@ -160,7 +162,7 @@ class OcrService {
       await this.ensureInitialized()
       const result = await ocrProviderRepository.create(data)
       logger.info(`Created OCR provider: ${data.id}`)
-      return result
+      return { data: result }
     } catch (error) {
       logger.error(`Failed to create OCR provider ${data.id}`, error as Error)
       throw error
@@ -171,9 +173,9 @@ class OcrService {
    * Update OCR provider (partial update)
    */
   public async updateProvider(
-    id: OcrProviderId,
-    data: Partial<PatchOcrProviderRequest>
-  ): Promise<PatchOcrProviderResponse> {
+    id: OcrProviderKeyBusiness,
+    data: UpdateOcrProviderRequest
+  ): Promise<UpdateOcrProviderResponse> {
     try {
       await this.ensureInitialized()
       const result = await ocrProviderRepository.update(id, data)
@@ -188,7 +190,7 @@ class OcrService {
   /**
    * Replace OCR provider (full update)
    */
-  public async replaceProvider(data: PutOcrProviderRequest): Promise<PutOcrProviderResponse> {
+  public async replaceProvider(data: ReplaceOcrProviderRequest): Promise<ReplaceOcrProviderResponse> {
     try {
       await this.ensureInitialized()
       const result = await ocrProviderRepository.replace(data)
@@ -203,7 +205,7 @@ class OcrService {
   /**
    * Delete OCR provider
    */
-  public async deleteProvider(id: OcrProviderId): Promise<void> {
+  public async deleteProvider(id: OcrProviderKeyBusiness): Promise<void> {
     try {
       await this.ensureInitialized()
       await ocrProviderRepository.delete(id)
@@ -242,7 +244,7 @@ class OcrService {
   /**
    * Check if a provider is available and ready
    */
-  public async isProviderAvailable(providerId: OcrProviderId): Promise<boolean> {
+  public async isProviderAvailable(providerId: OcrProviderKeyBusiness): Promise<boolean> {
     try {
       const service = this.registry.get(providerId)
       if (!service) {

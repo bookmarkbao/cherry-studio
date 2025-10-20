@@ -11,7 +11,7 @@
     "packages/mcp-trace/**/*",
     "src/renderer/src/services/traceApi.ts",
     "tests/__mocks__/**/*"
-, "src/renderer/src/types/ocr/ocr.ts"  ],
+, "src/renderer/src/types/ocr/base.ts"  ],
   "compilerOptions": {
     "composite": true,
     "incremental": true,

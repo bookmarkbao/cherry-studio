@@ -7,10 +7,10 @@ import type {
   ListOcrProvidersQuery,
   ListOcrProvidersResponse,
   OcrProviderId,
-  PatchOcrProviderRequest,
-  PatchOcrProviderResponse,
-  PutOcrProviderRequest,
-  PutOcrProviderResponse
+  ReplaceOcrProviderRequest,
+  ReplaceOcrProviderResponse,
+  UpdateOcrProviderRequest,
+  UpdateOcrProviderResponse
 } from '@types'
 
 import type { BodyForPath, ConcreteApiPaths, QueryParamsForPath, ResponseForPath } from './apiPaths'
@@ -377,13 +377,13 @@ export interface ApiSchemas {
     }
     PATCH: {
       params: { id: OcrProviderId }
-      body: PatchOcrProviderRequest
-      response: PatchOcrProviderResponse
+      body: UpdateOcrProviderRequest
+      response: UpdateOcrProviderResponse
     }
     PUT: {
       params: { id: OcrProviderId }
-      body: PutOcrProviderRequest
-      response: PutOcrProviderResponse
+      body: ReplaceOcrProviderRequest
+      response: ReplaceOcrProviderResponse
     }
     DELETE: {
       params: { id: OcrProviderId }

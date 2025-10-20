@@ -2,16 +2,12 @@ import { dbService } from '@data/db/DbService'
 import { ocrProviderTable } from '@data/db/schemas/ocr/provider'
 import { loggerService } from '@logger'
 import type {
-  CreateOcrProviderRequest,
-  CreateOcrProviderResponse,
   DbOcrProvider,
-  ListOcrProvidersQuery,
-  ListOcrProvidersResponse,
+  DbOcrProviderCreate,
+  DbOcrProviderReplace,
+  DbOcrProviderUpdate,
   OcrProviderId,
-  PatchOcrProviderRequest,
-  PatchOcrProviderResponse,
-  PutOcrProviderRequest,
-  PutOcrProviderResponse
+  UpdateOcrProviderResponse
 } from '@types'
 import { BuiltinOcrProviderIds, isDbOcrProvider } from '@types'
 import dayjs from 'dayjs'
@@ -28,17 +24,11 @@ export class OcrProviderRepository {
   /**
    * Get all OCR providers
    */
-  public async findAll(query?: ListOcrProvidersQuery): Promise<ListOcrProvidersResponse> {
+  public async findAll(): Promise<DbOcrProvider[]> {
     try {
       const providers = await dbService.getDb().select().from(ocrProviderTable)
 
-      if (query?.registered) {
-        // Filter by registered providers (this would need to be implemented)
-        // For now, return all providers
-        return { data: providers }
-      }
-
-      return { data: providers }
+      return providers
     } catch (error) {
       logger.error('Failed to find all OCR providers', error as Error)
       throw error
@@ -90,16 +80,16 @@ export class OcrProviderRepository {
   /**
    * Create new OCR provider
    */
-  public async create(data: CreateOcrProviderRequest): Promise<CreateOcrProviderResponse> {
+  public async create(param: DbOcrProviderCreate): Promise<DbOcrProvider> {
     try {
       // Check if provider already exists
-      if (await this.exists(data.id)) {
-        throw new Error(`OCR provider ${data.id} already exists`)
+      if (await this.exists(param.id)) {
+        throw new Error(`OCR provider ${param.id} already exists`)
       }
 
       const timestamp = dayjs().valueOf()
       const newProvider = {
-        ...data,
+        ...param,
         createdAt: timestamp,
         updatedAt: timestamp
       } satisfies DbOcrProvider
@@ -111,10 +101,10 @@ export class OcrProviderRepository {
 
       const [created] = await dbService.getDb().insert(ocrProviderTable).values(newProvider).returning()
 
-      logger.info(`Created OCR provider: ${data.id}`)
-      return { data: created }
+      logger.info(`Created OCR provider: ${param.id}`)
+      return created
     } catch (error) {
-      logger.error(`Failed to create OCR provider ${data.id}`, error as Error)
+      logger.error(`Failed to create OCR provider ${param.id}`, error as Error)
       throw error
     }
   }
@@ -122,12 +112,12 @@ export class OcrProviderRepository {
   /**
    * Update OCR provider (partial update)
    */
-  public async update(id: OcrProviderId, data: Partial<PatchOcrProviderRequest>): Promise<PatchOcrProviderResponse> {
+  public async update(id: OcrProviderId, update: DbOcrProviderUpdate): Promise<UpdateOcrProviderResponse> {
     try {
       const existing = await this.findById(id)
 
       const newProvider = {
-        ...merge({}, existing, data),
+        ...merge({}, existing, update),
         updatedAt: dayjs().valueOf()
       } satisfies DbOcrProvider
 
@@ -154,7 +144,7 @@ export class OcrProviderRepository {
   /**
    * Replace OCR provider (full update)
    */
-  public async replace(data: PutOcrProviderRequest): Promise<PutOcrProviderResponse> {
+  public async replace(data: DbOcrProviderReplace): Promise<DbOcrProvider> {
     try {
       // Check if it's a built-in provider
       if (BuiltinOcrProviderIds.some((pid) => pid === data.id)) {
@@ -199,7 +189,7 @@ export class OcrProviderRepository {
         .returning()
 
       logger.info(`Replaced OCR provider: ${data.id}`)
-      return { data: saved }
+      return saved
     } catch (error) {
       logger.error(`Failed to replace OCR provider ${data.id}`, error as Error)
       throw error
