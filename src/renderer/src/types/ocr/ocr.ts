@@ -1,8 +1,8 @@
 import type Tesseract from 'tesseract.js'
 import * as z from 'zod'
 
-import type { FileMetadata, ImageFileMetadata, TranslateLanguageCode } from '.'
-import { isImageFileMetadata, objectValues, TranslateLanguageCodeSchema } from '.'
+import type { FileMetadata, ImageFileMetadata, TranslateLanguageCode } from '..'
+import { isImageFileMetadata, objectValues, TranslateLanguageCodeSchema } from '..'
 
 export const BuiltinOcrProviderIdMap = {
   tesseract: 'tesseract',
@@ -258,7 +258,7 @@ export const isOcrOVProvider = (p: OcrProvider): p is OcrOvProvider => {
 }
 
 // ==========================================================
-//    Data-API OCR Types (notable)
+//    API layer Types
 // ==========================================================
 
 const TimestampExtendShape = {
@@ -288,19 +288,25 @@ export const GetOcrProviderResponseSchema = z.object({
 
 export type GetOcrProviderResponse = z.infer<typeof GetOcrProviderResponseSchema>
 
-export const PatchOcrProviderRequestSchema = z.object({
+/**
+ * Request payload for updating an OCR provider.
+ * Only the following fields are modifiable:
+ * - `name`: provider display name
+ * - `config`: provider-specific configuration object (all properties optional)
+ */
+export const UpdateOcrProviderRequestSchema = z.object({
   id: OcrProviderIdSchema,
   name: OcrProviderNameSchema.optional(),
   config: OcrProviderConfigSchema.partial().optional()
 })
 
-export type PatchOcrProviderRequest = z.infer<typeof PatchOcrProviderRequestSchema>
+export type UpdateOcrProviderRequest = z.infer<typeof UpdateOcrProviderRequestSchema>
 
-export const PatchOcrProviderResponseSchema = z.object({
+export const UpdateOcrProviderResponseSchema = z.object({
   data: DbOcrProviderSchema
 })
 
-export type PatchOcrProviderResponse = z.infer<typeof PatchOcrProviderResponseSchema>
+export type UpdateOcrProviderResponse = z.infer<typeof UpdateOcrProviderResponseSchema>
 
 export const CreateOcrProviderRequestSchema = OcrProviderSchema
 
@@ -312,12 +318,56 @@ export const CreateOcrProviderResponseSchema = z.object({
 
 export type CreateOcrProviderResponse = z.infer<typeof CreateOcrProviderResponseSchema>
 
-export const PutOcrProviderRequestSchema = OcrProviderSchema
+export const ReplaceOcrProviderRequestSchema = OcrProviderSchema
 
-export type PutOcrProviderRequest = z.infer<typeof PutOcrProviderRequestSchema>
+export type ReplaceOcrProviderRequest = z.infer<typeof ReplaceOcrProviderRequestSchema>
 
-export const PutOcrProviderResponseSchema = z.object({
+export const ReplaceOcrProviderResponseSchema = z.object({
   data: DbOcrProviderSchema
 })
 
-export type PutOcrProviderResponse = z.infer<typeof PutOcrProviderResponseSchema>
+export type ReplaceOcrProviderResponse = z.infer<typeof ReplaceOcrProviderResponseSchema>
+
+// ==========================================================
+//    Business layer Types
+// ==========================================================
+
+/**
+ * Business-level representation of an OCR provider.
+ * Mirrors the data layer but is intended for use in domain/business logic.
+ */
+export type OcrProviderBusiness = DbOcrProvider
+
+/**
+ * Business-level representation of an OCR provider creation payload.
+ */
+export type OcrProviderCreateBusiness = DbOcrProviderCreate
+
+/**
+ * Business-level representation of an OCR provider update payload.
+ */
+export type OcrProviderUpdateBusiness = DbOcrProviderUpdate
+
+/**
+ * Business-level representation of an OCR provider replacement payload.
+ */
+export type OcrProviderReplaceBusiness = DbOcrProviderReplace
+
+/**
+ * Business-level key type for identifying an OCR provider.
+ */
+export type OcrProviderKeyBusiness = DbOcrProviderKey
+
+// ==========================================================
+//    Data layer Types
+//
+//    NOTE: Timestamp operations are not exposed to outside.
+// ==========================================================
+
+export type DbOcrProviderCreate = OcrProvider
+
+export type DbOcrProviderUpdate = UpdateOcrProviderRequest
+
+export type DbOcrProviderReplace = OcrProvider
+
+export type DbOcrProviderKey = DbOcrProvider['id']
