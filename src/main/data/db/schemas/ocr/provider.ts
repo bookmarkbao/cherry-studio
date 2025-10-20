@@ -39,7 +39,7 @@ export const ocrProviderTable = sqliteTable(
      */
     config: text('config', { mode: 'json' }).$type<OcrProviderConfig>().notNull(),
 
-    /** Timestamps. May not useful. */
+    /** Unix timestamp (milliseconds since epoch) for creation and last update. */
     ...createUpdateTimestamps
   },
   (t) => [index('name').on(t.name)]

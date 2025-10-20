@@ -92,7 +92,7 @@ export class OcrService {
       throw new Error(`OCR provider ${update.id} not found`)
     }
     const found = providers[0]
-    const newProvider = { ...merge({}, found, update), updatedAt: dayjs().unix() } satisfies DbOcrProvider
+    const newProvider = { ...merge({}, found, update), updatedAt: dayjs().valueOf() } satisfies DbOcrProvider
     const [updated] = await dbService
       .getDb()
       .update(ocrProviderTable)
@@ -114,7 +114,7 @@ export class OcrService {
       throw new Error(`OCR provider ${create.id} already exists`)
     }
 
-    const timestamp = dayjs().unix()
+    const timestamp = dayjs().valueOf()
     const newProvider = {
       ...create,
       createdAt: timestamp,
@@ -137,7 +137,7 @@ export class OcrService {
       .where(eq(ocrProviderTable.id, provider.id))
       .limit(1)
 
-    const timestamp = dayjs().unix()
+    const timestamp = dayjs().valueOf()
     if (providers.length === 0) {
       const newProvider = {
         ...provider,
