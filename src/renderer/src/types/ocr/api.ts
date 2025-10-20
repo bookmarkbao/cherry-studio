@@ -9,10 +9,7 @@ import { OcrProviderConfigSchema } from './provider/base'
 // ==========================================================
 //    API layer Types
 // ==========================================================
-export const TimestampExtendShape = {
-  createdAt: z.number().nullable(),
-  updatedAt: z.number().nullable()
-}
+
 export type ListOcrProvidersQuery = { registered?: boolean }
 export const ListOcrProvidersResponseSchema = z.object({
   data: z.array(DbOcrProviderSchema)
@@ -21,13 +18,14 @@ export type ListOcrProvidersResponse = z.infer<typeof ListOcrProvidersResponseSc
 export const GetOcrProviderResponseSchema = z.object({
   data: DbOcrProviderSchema
 })
-export type GetOcrProviderResponse = z.infer<typeof GetOcrProviderResponseSchema> /**
+export type GetOcrProviderResponse = z.infer<typeof GetOcrProviderResponseSchema>
+
+/**
  * Request payload for updating an OCR provider.
  * Only the following fields are modifiable:
  * - `name`: provider display name
  * - `config`: provider-specific configuration object (all properties optional)
  */
-
 export const UpdateOcrProviderRequestSchema = z.object({
   id: OcrProviderIdSchema,
   name: OcrProviderNameSchema.optional(),

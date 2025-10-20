@@ -1,6 +1,6 @@
-import type * as z from 'zod'
+import * as z from 'zod'
 
-import { TimestampExtendShape, type UpdateOcrProviderRequest } from './api'
+import { type UpdateOcrProviderRequest } from './api'
 import { type OcrProvider } from './provider/base'
 import { OcrProviderSchema } from './provider/base'
 
@@ -9,7 +9,10 @@ import { OcrProviderSchema } from './provider/base'
 //
 //    NOTE: Timestamp operations are not exposed to outside.
 // ==========================================================
-
+export const TimestampExtendShape = {
+  createdAt: z.number().nullable(),
+  updatedAt: z.number().nullable()
+}
 export const DbOcrProviderSchema = OcrProviderSchema.extend(TimestampExtendShape)
 export type DbOcrProvider = z.infer<typeof DbOcrProviderSchema>
 export function isDbOcrProvider(p: unknown): p is DbOcrProvider {
