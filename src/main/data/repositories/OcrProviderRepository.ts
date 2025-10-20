@@ -6,8 +6,7 @@ import type {
   DbOcrProviderCreate,
   DbOcrProviderReplace,
   DbOcrProviderUpdate,
-  OcrProviderId,
-  UpdateOcrProviderResponse
+  OcrProviderId
 } from '@types'
 import { BuiltinOcrProviderIds, isDbOcrProvider } from '@types'
 import dayjs from 'dayjs'
@@ -112,7 +111,7 @@ export class OcrProviderRepository {
   /**
    * Update OCR provider (partial update)
    */
-  public async update(id: OcrProviderId, update: DbOcrProviderUpdate): Promise<UpdateOcrProviderResponse> {
+  public async update(id: OcrProviderId, update: DbOcrProviderUpdate): Promise<DbOcrProvider> {
     try {
       const existing = await this.findById(id)
 
@@ -134,7 +133,7 @@ export class OcrProviderRepository {
         .returning()
 
       logger.info(`Updated OCR provider: ${id}`)
-      return { data: updated }
+      return updated
     } catch (error) {
       logger.error(`Failed to update OCR provider ${id}`, error as Error)
       throw error

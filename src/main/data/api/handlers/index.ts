@@ -213,28 +213,33 @@ export const apiHandlers: ApiImplementation = {
 
   '/ocr/providers': {
     GET: async ({ query }) => {
-      return ocrService.listProviders(query)
+      const result = await ocrService.listProviders(query)
+      return { data: result }
     },
     POST: async ({ body }) => {
-      return ocrService.createProvider(body)
+      const result = await ocrService.createProvider(body)
+      return { data: result }
     }
   },
 
   '/ocr/providers/:id': {
     GET: async ({ params }) => {
-      return ocrService.getProvider(params.id)
+      const result = await ocrService.getProvider(params.id)
+      return { data: result }
     },
     PATCH: async ({ params, body }) => {
       if (params.id !== body.id) {
         throw new Error('Provider ID in path does not match ID in body')
       }
-      return ocrService.updateProvider(params.id, body)
+      const result = await ocrService.updateProvider(params.id, body)
+      return { data: result }
     },
     PUT: async ({ params, body }) => {
       if (params.id !== body.id) {
         throw new Error('Provider ID in path does not match ID in body')
       }
-      return ocrService.replaceProvider(body)
+      const result = await ocrService.replaceProvider(body)
+      return { data: result }
     },
     DELETE: async ({ params }) => {
       return ocrService.deleteProvider(params.id)

@@ -1,21 +1,17 @@
 import { loggerService } from '@logger'
 import { ocrProviderRepository } from '@main/data/repositories/OcrProviderRepository'
 import type {
-  CreateOcrProviderRequest,
-  CreateOcrProviderResponse,
   DbOcrProvider,
-  GetOcrProviderResponse,
   ListOcrProvidersQuery,
-  ListOcrProvidersResponse,
   OcrParams,
   OcrProvider,
+  OcrProviderBusiness,
+  OcrProviderCreateBusiness,
   OcrProviderKeyBusiness,
+  OcrProviderReplaceBusiness,
+  OcrProviderUpdateBusiness,
   OcrResult,
-  ReplaceOcrProviderRequest,
-  ReplaceOcrProviderResponse,
-  SupportedOcrFile,
-  UpdateOcrProviderRequest,
-  UpdateOcrProviderResponse
+  SupportedOcrFile
 } from '@types'
 import { BuiltinOcrProviderIdMap } from '@types'
 
@@ -119,7 +115,7 @@ class OcrService {
   /**
    * Get list of OCR providers
    */
-  public async listProviders(query?: ListOcrProvidersQuery): Promise<ListOcrProvidersResponse> {
+  public async listProviders(query?: ListOcrProvidersQuery): Promise<OcrProviderBusiness[]> {
     try {
       await this.ensureInitialized()
       const providers = await ocrProviderRepository.findAll()
@@ -132,7 +128,7 @@ class OcrService {
       }
 
       logger.debug(`Listed ${result.length} OCR providers`)
-      return { data: result }
+      return result
     } catch (error) {
       logger.error('Failed to list OCR providers', error as Error)
       throw error
@@ -142,12 +138,12 @@ class OcrService {
   /**
    * Get OCR provider by ID
    */
-  public async getProvider(providerId: OcrProviderKeyBusiness): Promise<GetOcrProviderResponse> {
+  public async getProvider(providerId: OcrProviderKeyBusiness): Promise<OcrProviderBusiness> {
     try {
       await this.ensureInitialized()
       const provider = await ocrProviderRepository.findById(providerId)
       logger.debug(`Retrieved OCR provider: ${providerId}`)
-      return { data: provider }
+      return provider
     } catch (error) {
       logger.error(`Failed to get OCR provider ${providerId}`, error as Error)
       throw error
@@ -157,12 +153,12 @@ class OcrService {
   /**
    * Create new OCR provider
    */
-  public async createProvider(data: CreateOcrProviderRequest): Promise<CreateOcrProviderResponse> {
+  public async createProvider(data: OcrProviderCreateBusiness): Promise<OcrProviderBusiness> {
     try {
       await this.ensureInitialized()
       const result = await ocrProviderRepository.create(data)
       logger.info(`Created OCR provider: ${data.id}`)
-      return { data: result }
+      return result
     } catch (error) {
       logger.error(`Failed to create OCR provider ${data.id}`, error as Error)
       throw error
@@ -174,8 +170,8 @@ class OcrService {
    */
   public async updateProvider(
     id: OcrProviderKeyBusiness,
-    data: UpdateOcrProviderRequest
-  ): Promise<UpdateOcrProviderResponse> {
+    data: OcrProviderUpdateBusiness
+  ): Promise<OcrProviderBusiness> {
     try {
       await this.ensureInitialized()
       const result = await ocrProviderRepository.update(id, data)
@@ -190,7 +186,7 @@ class OcrService {
   /**
    * Replace OCR provider (full update)
    */
-  public async replaceProvider(data: ReplaceOcrProviderRequest): Promise<ReplaceOcrProviderResponse> {
+  public async replaceProvider(data: OcrProviderReplaceBusiness): Promise<OcrProviderBusiness> {
     try {
       await this.ensureInitialized()
       const result = await ocrProviderRepository.replace(data)
@@ -285,7 +281,7 @@ class OcrService {
       const availableProviders: DbOcrProvider[] = []
       const capFilter = (provider: OcrProvider) => provider.capabilities.image
 
-      for (const provider of providers.data.filter(capFilter)) {
+      for (const provider of providers.filter(capFilter)) {
         if (await this._isProviderAvailable(provider)) {
           availableProviders.push(provider)
         }

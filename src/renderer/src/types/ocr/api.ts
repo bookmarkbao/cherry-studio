@@ -33,20 +33,31 @@ export const UpdateOcrProviderRequestSchema = z.object({
   name: OcrProviderNameSchema.optional(),
   config: OcrProviderConfigSchema.partial().optional()
 })
+
 export type UpdateOcrProviderRequest = z.infer<typeof UpdateOcrProviderRequestSchema>
+
 export const UpdateOcrProviderResponseSchema = z.object({
   data: DbOcrProviderSchema
 })
+
 export type UpdateOcrProviderResponse = z.infer<typeof UpdateOcrProviderResponseSchema>
+
 export const CreateOcrProviderRequestSchema = OcrProviderSchema
+
 export type CreateOcrProviderRequest = z.infer<typeof CreateOcrProviderRequestSchema>
+
 export const CreateOcrProviderResponseSchema = z.object({
   data: DbOcrProviderSchema
 })
+
 export type CreateOcrProviderResponse = z.infer<typeof CreateOcrProviderResponseSchema>
+
 export const ReplaceOcrProviderRequestSchema = OcrProviderSchema
+
 export type ReplaceOcrProviderRequest = z.infer<typeof ReplaceOcrProviderRequestSchema>
+
 export const ReplaceOcrProviderResponseSchema = z.object({
   data: DbOcrProviderSchema
 })
+
 export type ReplaceOcrProviderResponse = z.infer<typeof ReplaceOcrProviderResponseSchema>
