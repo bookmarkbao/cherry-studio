@@ -42,8 +42,8 @@ const S3Settings: FC = () => {
   const [secretAccessKey, setSecretAccessKey] = useState<string | undefined>(s3SecretAccessKeyInit)
   const [root, setRoot] = useState<string | undefined>(s3RootInit)
   const [skipBackupFile, setSkipBackupFile] = useState<boolean>(s3SkipBackupFileInit)
-  const [singleFileOverwrite, setSingleFileOverwrite] = useState<boolean>(!!s3SingleFileOverwriteInit)
-  const [singleFileName, setSingleFileName] = useState<string | undefined>(s3SingleFileNameInit)
+  const [singleFileOverwrite, setSingleFileOverwrite] = useState<boolean>(s3SingleFileOverwriteInit ?? false)
+  const [singleFileName, setSingleFileName] = useState<string>(s3SingleFileNameInit ?? '')
   const [backupManagerVisible, setBackupManagerVisible] = useState(false)
 
   const [syncInterval, setSyncInterval] = useState<number>(s3SyncIntervalInit)

@@ -2900,7 +2900,27 @@
       },
       "backup": {
         "skip_file_data_help": "备份时跳过备份图片、知识库等数据文件，仅备份聊天记录和设置。减少空间占用，加快备份速度",
-        "skip_file_data_title": "精简备份"
+        "skip_file_data_title": "精简备份",
+        "singleFileOverwrite": {
+          "title": "覆盖式单文件备份（同名覆盖）",
+          "help": "当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。",
+          "confirm": {
+            "title": "启用覆盖式备份",
+            "content1": "启用后，自动备份将：",
+            "item1": "使用固定文件名，不再添加时间戳",
+            "item2": "每次备份都会覆盖同名文件",
+            "item3": "仅保留最新的一个备份文件",
+            "note": "注意：此设置仅在自动备份且保留份数为1时生效"
+          }
+        },
+        "singleFileName": {
+          "title": "自定义文件名（可选）",
+          "placeholder": "如：cherry-studio.<hostname>.<device>.zip",
+          "help": "• 留空将使用默认格式：cherry-studio.[主机名].[设备类型].zip\n• 支持的变量：{hostname} - 主机名，{device} - 设备类型\n• 不支持的字符：<>:\"/\\|?*\n• 最大长度：250个字符",
+          "invalid_chars": "文件名包含无效字符",
+          "reserved": "文件名是系统保留名称",
+          "too_long": "文件名过长"
+        }
       },
       "clear_cache": {
         "button": "清除缓存",

@@ -2900,7 +2900,27 @@
       },
       "backup": {
         "skip_file_data_help": "Skip backing up data files such as pictures and knowledge bases during backup, and only back up chat records and settings. Reduce space occupancy and speed up the backup speed.",
-        "skip_file_data_title": "Slim Backup"
+        "skip_file_data_title": "Slim Backup",
+        "singleFileOverwrite": {
+          "title": "Single File Overwrite Backup",
+          "help": "When auto backup is enabled and max backups is 1, use a fixed filename for each overwrite.",
+          "confirm": {
+            "title": "Enable Overwrite Backup",
+            "content1": "After enabling, auto backup will:",
+            "item1": "Use a fixed filename without timestamp",
+            "item2": "Overwrite the file with the same name each time",
+            "item3": "Keep only the latest backup file",
+            "note": "Note: This setting only takes effect when auto backup is enabled and max backups is 1"
+          }
+        },
+        "singleFileName": {
+          "title": "Custom Filename (Optional)",
+          "placeholder": "e.g., cherry-studio.<hostname>.<device>.zip",
+          "help": "• Leave empty to use default format: cherry-studio.[hostname].[deviceType].zip\n• Supported variables: {hostname} - hostname, {device} - device type\n• Unsupported characters: <>:\"/\\|?*\n• Maximum length: 250 characters",
+          "invalid_chars": "Filename contains invalid characters",
+          "reserved": "Filename is a system reserved name",
+          "too_long": "Filename is too long"
+        }
       },
       "clear_cache": {
         "button": "Clear Cache",
