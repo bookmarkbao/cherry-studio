@@ -11,7 +11,7 @@ export const useOcrProvider = (id: string) => {
   const { t } = useTranslation()
 
   const path: ConcreteApiPaths = `/ocr/providers/${id}`
-  const { data: provider, loading, error } = useQuery(path, undefined)
+  const { data, loading, error } = useQuery(path, undefined)
   const { mutate, loading: mutating } = useMutation('PATCH', path)
 
   const updateConfig = useCallback(
@@ -26,7 +26,7 @@ export const useOcrProvider = (id: string) => {
   )
 
   return {
-    provider,
+    provider: data?.data,
     loading,
     mutating,
     error,
