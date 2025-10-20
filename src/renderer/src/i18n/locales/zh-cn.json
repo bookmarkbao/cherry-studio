@@ -2052,6 +2052,7 @@
         "cannot_remove_builtin": "不能删除内置提供商",
         "existing": "提供商已存在",
         "get_providers": "获取可用提供商失败",
+        "not_availabel": "{{provider}} 暂不可用",
         "not_found": "OCR 提供商不存在",
         "update_failed": "更新配置失败"
       },

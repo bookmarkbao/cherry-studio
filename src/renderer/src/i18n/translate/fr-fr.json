@@ -2052,6 +2052,7 @@
         "cannot_remove_builtin": "Impossible de supprimer le fournisseur intégré",
         "existing": "Le fournisseur existe déjà",
         "get_providers": "Échec de l'obtention des fournisseurs disponibles",
+        "not_availabel": "[to be translated]:Provide {{provider}} is not available",
         "not_found": "Le fournisseur OCR n'existe pas",
         "update_failed": "Échec de la mise à jour de la configuration"
       },
