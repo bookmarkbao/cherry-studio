@@ -1,4 +1,4 @@
-import { TranslateLanguageCodeSchema } from '@types'
+import { TranslateLanguageCodeSchema } from '../../translate'
 import type Tesseract from 'tesseract.js'
 import * as z from 'zod'
 

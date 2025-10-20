@@ -5,9 +5,9 @@ import type {
   OcrPpocrProvider,
   OcrSystemProvider,
   OcrTesseractProvider,
-  TesseractLangCode,
-  TranslateLanguageCode
+  TesseractLangCode
 } from '@types'
+import type { TranslateLanguageCode } from '../../../src/renderer/src/types/translate'
 
 export const tesseract: OcrTesseractProvider = {
   id: 'tesseract',

@@ -7,8 +7,6 @@ import type { CSSProperties } from 'react'
 export * from './file'
 export * from './note'
 
-import * as z from 'zod'
-
 import type { StreamTextParams } from './aiCoreTypes'
 import type { Chunk } from './chunk'
 import type { FileMetadata } from './file'
@@ -16,6 +14,7 @@ import type { KnowledgeBase, KnowledgeReference } from './knowledge'
 import type { MCPConfigSample, McpServerType } from './mcp'
 import type { Message } from './newMessage'
 import type { BaseTool, MCPTool } from './tool'
+import { type TranslateLanguage } from './translate'
 
 export * from './agent'
 export * from './apiModels'
@@ -25,6 +24,7 @@ export * from './mcp'
 export * from './notification'
 export * from './ocr'
 export * from './provider'
+export * from './translate'
 
 export type Assistant = {
   id: string
@@ -480,53 +480,6 @@ export type GenerateImageParams = {
 export type GenerateImageResponse = {
   type: 'url' | 'base64'
   images: string[]
-}
-
-/**
- * Language code pattern used for translation features.
- * Examples: "zh-cn", "en-us", "fr-fr", etc.
- * Must be lowercase and follow the format: 2-3 letter language code
- * followed by a hyphen and 2-letter region code.
- */
-export const TranslateLanguageCodeSchema = z.string().regex(/^[a-z]{2,3}(-[a-z]{2-3})$/)
-export type TranslateLanguageCode = z.infer<typeof TranslateLanguageCodeSchema>
-
-// langCode应当能够唯一确认一种语言
-export type TranslateLanguage = {
-  value: string
-  langCode: TranslateLanguageCode
-  label: () => string
-  emoji: string
-}
-
-export interface TranslateHistory {
-  id: string
-  sourceText: string
-  targetText: string
-  sourceLanguage: TranslateLanguageCode
-  targetLanguage: TranslateLanguageCode
-  createdAt: string
-  /** 收藏状态 */
-  star?: boolean
-}
-
-export type CustomTranslateLanguage = {
-  id: string
-  langCode: TranslateLanguageCode
-  value: string
-  emoji: string
-}
-
-export const AutoDetectionMethods = {
-  franc: 'franc',
-  llm: 'llm',
-  auto: 'auto'
-} as const
-
-export type AutoDetectionMethod = keyof typeof AutoDetectionMethods
-
-export const isAutoDetectionMethod = (method: string): method is AutoDetectionMethod => {
-  return Object.hasOwn(AutoDetectionMethods, method)
 }
 
 // by fullex @ data refactor

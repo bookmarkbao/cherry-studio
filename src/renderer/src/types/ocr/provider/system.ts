@@ -1,4 +1,4 @@
-import type { TranslateLanguageCode } from '@types'
+import type { TranslateLanguageCode } from '../../translate'
 
 import type { OcrProvider } from './base'
 import { type ImageOcrProvider } from './base'
