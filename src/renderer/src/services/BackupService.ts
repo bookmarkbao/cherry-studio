@@ -6,9 +6,22 @@ import store from '@renderer/store'
 import { setLocalBackupSyncState, setS3SyncState, setWebDAVSyncState } from '@renderer/store/backup'
 import { S3Config, WebDavConfig } from '@renderer/types'
 import { uuid } from '@renderer/utils'
+import { generateOverwriteFilename, generateTimestampedFilename, shouldSkipCleanup } from '@renderer/utils/backupUtils'
 import dayjs from 'dayjs'
 
 import { NotificationService } from './NotificationService'
+
+// Define specific error types for better error handling
+export class BackupError extends Error {
+  constructor(
+    message: string,
+    public readonly type: 'network' | 'permission' | 'storage' | 'validation' | 'unknown',
+    public readonly originalError?: Error
+  ) {
+    super(message)
+    this.name = 'BackupError'
+  }
+}
 
 const logger = loggerService.withContext('BackupService')
 
@@ -181,13 +194,14 @@ export async function backupToWebdav({
     logger.error('Failed to get device type or hostname:', error as Error)
   }
   const timestamp = dayjs().format('YYYYMMDDHHmmss')
-  let backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  let finalFileName: string
+
   // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
   if (autoBackupProcess && webdavMaxBackups === 1 && webdavSingleFileOverwrite) {
-    const base = (webdavSingleFileName || `cherry-studio.${hostname}.${deviceType}`).trim()
-    backupFileName = base.endsWith('.zip') ? base : `${base}.zip`
+    finalFileName = generateOverwriteFilename(webdavSingleFileName, hostname, deviceType)
+  } else {
+    finalFileName = generateTimestampedFilename(customFileName, hostname, deviceType, timestamp)
   }
-  const finalFileName = backupFileName.endsWith('.zip') ? backupFileName : `${backupFileName}.zip`
   const backupData = await getBackupData()
 
   // 上传文件
@@ -219,8 +233,8 @@ export async function backupToWebdav({
       })
       showMessage && window.toast.success(i18n.t('message.backup.success'))
 
-      // 覆盖式单文件备份启用时（且=1），不进行清理
-      if (webdavMaxBackups > 0 && !(autoBackupProcess && webdavMaxBackups === 1 && webdavSingleFileOverwrite)) {
+      // 使用工具函数判断是否���过清理
+      if (webdavMaxBackups > 0 && !shouldSkipCleanup(autoBackupProcess, webdavMaxBackups, webdavSingleFileOverwrite)) {
         try {
           // 获取所有备份文件
           const files = await window.api.backup.listWebdavFiles({
@@ -360,13 +374,14 @@ export async function backupToS3({
     logger.error('Failed to get device type or hostname:', error as Error)
   }
   const timestamp = dayjs().format('YYYYMMDDHHmmss')
-  let backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  let finalFileName: string
+
   // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
   if (autoBackupProcess && s3Config.maxBackups === 1 && s3Config.singleFileOverwrite) {
-    const base = (s3Config.singleFileName || `cherry-studio.${hostname}.${deviceType}`).trim()
-    backupFileName = base.endsWith('.zip') ? base : `${base}.zip`
+    finalFileName = generateOverwriteFilename(s3Config.singleFileName, hostname, deviceType)
+  } else {
+    finalFileName = generateTimestampedFilename(customFileName, hostname, deviceType, timestamp)
   }
-  const finalFileName = backupFileName.endsWith('.zip') ? backupFileName : `${backupFileName}.zip`
   const backupData = await getBackupData()
 
   try {
@@ -396,10 +411,10 @@ export async function backupToS3({
       showMessage && window.toast.success(i18n.t('message.backup.success'))
 
       // 清理旧备份文件
-      // 覆盖式单文件备份启用时（且=1），不进行清理，避免误删历史。后续不会再增长。
+      // 使用工具函数判断是否跳过清理
       if (
         s3Config.maxBackups > 0 &&
-        !(autoBackupProcess && s3Config.maxBackups === 1 && s3Config.singleFileOverwrite)
+        !shouldSkipCleanup(autoBackupProcess, s3Config.maxBackups, s3Config.singleFileOverwrite)
       ) {
         try {
           // 获取所有备份文件
@@ -969,12 +984,14 @@ export async function backupToLocal({
     logger.error('Failed to get device type or hostname:', error as Error)
   }
   const timestamp = dayjs().format('YYYYMMDDHHmmss')
-  let backupFileName = customFileName || `cherry-studio.${timestamp}.${hostname}.${deviceType}.zip`
+  let finalFileName: string
+
+  // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
   if (autoBackupProcess && localBackupMaxBackups === 1 && localSingleFileOverwrite) {
-    const base = (localSingleFileName || `cherry-studio.${hostname}.${deviceType}`).trim()
-    backupFileName = base.endsWith('.zip') ? base : `${base}.zip`
+    finalFileName = generateOverwriteFilename(localSingleFileName, hostname, deviceType)
+  } else {
+    finalFileName = generateTimestampedFilename(customFileName, hostname, deviceType, timestamp)
   }
-  const finalFileName = backupFileName.endsWith('.zip') ? backupFileName : `${backupFileName}.zip`
   const backupData = await getBackupData()
 
   try {
@@ -1003,10 +1020,10 @@ export async function backupToLocal({
         })
       }
 
-      // 覆盖式单文件备份启用时（且=1），不进行清理
+      // 使用工具函数判断是否跳过清理
       if (
         localBackupMaxBackups > 0 &&
-        !(autoBackupProcess && localBackupMaxBackups === 1 && localSingleFileOverwrite)
+        !shouldSkipCleanup(autoBackupProcess, localBackupMaxBackups, localSingleFileOverwrite)
       ) {
         try {
           // Get all backup files

@@ -42,8 +42,10 @@ const LocalBackupSettings: React.FC = () => {
   const [localBackupDir, setLocalBackupDir] = useState<string | undefined>(localBackupDirSetting)
   const [resolvedLocalBackupDir, setResolvedLocalBackupDir] = useState<string | undefined>(undefined)
   const [localBackupSkipBackupFile, setLocalBackupSkipBackupFile] = useState<boolean>(localBackupSkipBackupFileSetting)
-  const [localSingleFileOverwrite, setLocalSingleFileOverwrite] = useState<boolean>(!!localSingleFileOverwriteSetting)
-  const [localSingleFileName, setLocalSingleFileName] = useState<string | undefined>(localSingleFileNameSetting)
+  const [localSingleFileOverwrite, setLocalSingleFileOverwrite] = useState<boolean>(
+    localSingleFileOverwriteSetting ?? false
+  )
+  const [localSingleFileName, setLocalSingleFileName] = useState<string>(localSingleFileNameSetting ?? '')
   const [backupManagerVisible, setBackupManagerVisible] = useState(false)
 
   const [syncInterval, setSyncInterval] = useState<number>(localBackupSyncIntervalSetting)
@@ -147,12 +149,65 @@ const LocalBackupSettings: React.FC = () => {
   }
 
   const onSingleFileOverwriteChange = (value: boolean) => {
-    setLocalSingleFileOverwrite(value)
-    dispatch(_setLocalSingleFileOverwrite(value))
+    // Only show confirmation when enabling
+    if (value && !localSingleFileOverwrite) {
+      window.modal.confirm({
+        title: t('settings.data.backup.singleFileOverwrite.confirm.title') || '启用覆盖式备份',
+        content: (
+          <div>
+            <p>{t('settings.data.backup.singleFileOverwrite.confirm.content1') || '启用后，自动备份将：'}</p>
+            <ul style={{ marginLeft: 20, marginTop: 10 }}>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item1') || '使用固定文件名，不再添加时间戳'}</li>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item2') || '每次备份都会覆盖同名文件'}</li>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item3') || '仅保留最新的一个备份文件'}</li>
+            </ul>
+            <p style={{ marginTop: 10, color: 'var(--text-secondary)' }}>
+              {t('settings.data.backup.singleFileOverwrite.confirm.note') ||
+                '注意：此设置仅在自动备份且保留份数为1时生效'}
+            </p>
+          </div>
+        ),
+        okText: t('common.confirm') || '确认',
+        cancelText: t('common.cancel') || '取消',
+        onOk: () => {
+          setLocalSingleFileOverwrite(value)
+          dispatch(_setLocalSingleFileOverwrite(value))
+        }
+      })
+    } else {
+      setLocalSingleFileOverwrite(value)
+      dispatch(_setLocalSingleFileOverwrite(value))
+    }
+  }
+
+  const onSingleFileNameChange = (value: string) => {
+    setLocalSingleFileName(value)
   }
 
   const onSingleFileNameBlur = () => {
-    dispatch(_setLocalSingleFileName(localSingleFileName || ''))
+    const trimmed = localSingleFileName.trim()
+    // Validate filename
+    if (trimmed) {
+      // Check for invalid characters
+      const invalidChars = /[<>:"/\\|?*]/
+      if (invalidChars.test(trimmed)) {
+        window.toast.error(t('settings.data.backup.singleFileName.invalid_chars') || '文件名包含无效字符')
+        return
+      }
+      // Check for reserved names (Windows)
+      const reservedNames = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i
+      const nameWithoutExt = trimmed.replace(/\.zip$/i, '')
+      if (reservedNames.test(nameWithoutExt)) {
+        window.toast.error(t('settings.data.backup.singleFileName.reserved') || '文件名是系统保留名称')
+        return
+      }
+      // Check length
+      if (trimmed.length > 250) {
+        window.toast.error(t('settings.data.backup.singleFileName.too_long') || '文件名过长')
+        return
+      }
+    }
+    dispatch(_setLocalSingleFileName(trimmed))
   }
 
   const handleBrowseDirectory = async () => {
@@ -242,7 +297,7 @@ const LocalBackupSettings: React.FC = () => {
             t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
           }
           value={localSingleFileName}
-          onChange={(e) => setLocalSingleFileName(e.target.value)}
+          onChange={(e) => onSingleFileNameChange(e.target.value)}
           onBlur={onSingleFileNameBlur}
           style={{ width: 300 }}
           disabled={!localSingleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}

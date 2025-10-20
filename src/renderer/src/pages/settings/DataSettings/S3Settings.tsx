@@ -86,12 +86,65 @@ const S3Settings: FC = () => {
   }
 
   const onSingleFileOverwriteChange = (value: boolean) => {
-    setSingleFileOverwrite(value)
-    dispatch(setS3Partial({ singleFileOverwrite: value }))
+    // Only show confirmation when enabling
+    if (value && !singleFileOverwrite) {
+      window.modal.confirm({
+        title: t('settings.data.backup.singleFileOverwrite.confirm.title') || '启用覆盖式备份',
+        content: (
+          <div>
+            <p>{t('settings.data.backup.singleFileOverwrite.confirm.content1') || '启用后，自动备份将：'}</p>
+            <ul style={{ marginLeft: 20, marginTop: 10 }}>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item1') || '使用固定文件名，不再添加时间戳'}</li>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item2') || '每次备份都会覆盖同名文件'}</li>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item3') || '仅保留最新的一个备份文件'}</li>
+            </ul>
+            <p style={{ marginTop: 10, color: 'var(--text-secondary)' }}>
+              {t('settings.data.backup.singleFileOverwrite.confirm.note') ||
+                '注意：此设置仅在自动备份且保留份数为1时生效'}
+            </p>
+          </div>
+        ),
+        okText: t('common.confirm') || '确认',
+        cancelText: t('common.cancel') || '取消',
+        onOk: () => {
+          setSingleFileOverwrite(value)
+          dispatch(setS3Partial({ singleFileOverwrite: value }))
+        }
+      })
+    } else {
+      setSingleFileOverwrite(value)
+      dispatch(setS3Partial({ singleFileOverwrite: value }))
+    }
+  }
+
+  const onSingleFileNameChange = (value: string) => {
+    setSingleFileName(value)
   }
 
   const onSingleFileNameBlur = () => {
-    dispatch(setS3Partial({ singleFileName: singleFileName || '' }))
+    const trimmed = singleFileName.trim()
+    // Validate filename
+    if (trimmed) {
+      // Check for invalid characters
+      const invalidChars = /[<>:"/\\|?*]/
+      if (invalidChars.test(trimmed)) {
+        window.toast.error(t('settings.data.backup.singleFileName.invalid_chars') || '文件名包含无效字符')
+        return
+      }
+      // Check for reserved names (Windows)
+      const reservedNames = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i
+      const nameWithoutExt = trimmed.replace(/\.zip$/i, '')
+      if (reservedNames.test(nameWithoutExt)) {
+        window.toast.error(t('settings.data.backup.singleFileName.reserved') || '文件名是系统保留名称')
+        return
+      }
+      // Check length
+      if (trimmed.length > 250) {
+        window.toast.error(t('settings.data.backup.singleFileName.too_long') || '文件名过长')
+        return
+      }
+    }
+    dispatch(setS3Partial({ singleFileName: trimmed }))
   }
 
   const renderSyncStatus = () => {
@@ -163,7 +216,7 @@ const S3Settings: FC = () => {
             t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
           }
           value={singleFileName}
-          onChange={(e) => setSingleFileName(e.target.value)}
+          onChange={(e) => onSingleFileNameChange(e.target.value)}
           onBlur={onSingleFileNameBlur}
           style={{ width: 300 }}
           disabled={!singleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
