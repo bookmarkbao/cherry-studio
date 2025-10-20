@@ -14,7 +14,7 @@ import type {
   PutOcrProviderResponse,
   SupportedOcrFile
 } from '@types'
-import { BuiltinOcrProviderIdMap, BuiltinOcrProviderIds } from '@types'
+import { BuiltinOcrProviderIdMap, BuiltinOcrProviderIds, isDbOcrProvider } from '@types'
 import dayjs from 'dayjs'
 import { eq } from 'drizzle-orm'
 import { merge } from 'lodash'
@@ -93,6 +93,9 @@ export class OcrService {
     }
     const found = providers[0]
     const newProvider = { ...merge({}, found, update), updatedAt: dayjs().valueOf() } satisfies DbOcrProvider
+    if (!isDbOcrProvider(newProvider)) {
+      throw new Error('Invalid OCR provider data')
+    }
     const [updated] = await dbService
       .getDb()
       .update(ocrProviderTable)
@@ -121,6 +124,9 @@ export class OcrService {
       updatedAt: timestamp
     } satisfies DbOcrProvider
 
+    if (!isDbOcrProvider(newProvider)) {
+      throw new Error('Invalid OCR provider data')
+    }
     const [created] = await dbService.getDb().insert(ocrProviderTable).values(newProvider).returning()
 
     return { data: created }
@@ -144,6 +150,9 @@ export class OcrService {
         createdAt: timestamp,
         updatedAt: timestamp
       } satisfies DbOcrProvider
+      if (!isDbOcrProvider(newProvider)) {
+        throw new Error('Invalid OCR provider data')
+      }
       const [created] = await dbService.getDb().insert(ocrProviderTable).values(newProvider).returning()
       return { data: created }
     }
@@ -154,6 +163,9 @@ export class OcrService {
       updatedAt: timestamp,
       createdAt: existed.createdAt
     } satisfies DbOcrProvider
+    if (!isDbOcrProvider(newProvider)) {
+      throw new Error('Invalid OCR provider data')
+    }
     const [updated] = await dbService
       .getDb()
       .update(ocrProviderTable)

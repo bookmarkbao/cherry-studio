@@ -270,6 +270,10 @@ export const DbOcrProviderSchema = OcrProviderSchema.extend(TimestampExtendShape
 
 export type DbOcrProvider = z.infer<typeof DbOcrProviderSchema>
 
+export const isDbOcrProvider = (p: unknown): p is DbOcrProvider => {
+  return DbOcrProviderSchema.safeParse(p).success
+}
+
 export type ListOcrProvidersQuery = { registered?: boolean }
 
 export const ListOcrProvidersResponseSchema = z.object({

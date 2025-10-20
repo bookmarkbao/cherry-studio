@@ -224,10 +224,16 @@ export const apiHandlers: ApiImplementation = {
     GET: async ({ params }) => {
       return ocrService.getProvider(params.id)
     },
-    PATCH: async ({ body }) => {
+    PATCH: async ({ params, body }) => {
+      if (params.id !== body.id) {
+        throw new Error('Provider ID in path does not match ID in body')
+      }
       return ocrService.patchProvider(body)
     },
-    PUT: async ({ body }) => {
+    PUT: async ({ params, body }) => {
+      if (params.id !== body.id) {
+        throw new Error('Provider ID in path does not match ID in body')
+      }
       return ocrService.putProvider(body)
     },
     DELETE: async ({ params }) => {

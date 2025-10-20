@@ -376,10 +376,12 @@ export interface ApiSchemas {
       response: GetOcrProviderResponse
     }
     PATCH: {
+      params: { id: OcrProviderId }
       body: PatchOcrProviderRequest
       response: PatchOcrProviderResponse
     }
     PUT: {
+      params: { id: OcrProviderId }
       body: PutOcrProviderRequest
       response: PutOcrProviderResponse
     }
