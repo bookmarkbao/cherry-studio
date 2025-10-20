@@ -6,7 +6,7 @@ import * as z from 'zod'
  * Must be lowercase and follow the format: 2-3 letter language code
  * followed by a hyphen and 2-letter region code.
  */
-export const TranslateLanguageCodeSchema = z.string().regex(/^[a-z]{2,3}(-[a-z]{2-3})$/)
+export const TranslateLanguageCodeSchema = z.string().regex(/^[a-z]{2,3}(-[a-z]{2,3})$/)
 
 export type TranslateLanguageCode = z.infer<typeof TranslateLanguageCodeSchema> // langCode应当能够唯一确认一种语言
 

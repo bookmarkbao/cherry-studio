@@ -226,7 +226,7 @@ class OcrService {
       // Validate that the provider exists in database
       const provider = await this.getProvider(params.providerId)
 
-      logger.debug(`Performing OCR with provider: ${params.providerId}`)
+      logger.debug(`Performing OCR with provider: ${JSON.stringify(provider, undefined, 2)}`)
       const result = await service.ocr(file, provider.config)
 
       logger.info(`OCR completed successfully with provider: ${params.providerId}`)
