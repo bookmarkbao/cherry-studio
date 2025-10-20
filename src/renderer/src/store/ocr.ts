@@ -1,4 +1,4 @@
-import type { PayloadAction } from '@reduxjs/toolkit'
+/** @deprecated All migrated. */
 import { createSlice } from '@reduxjs/toolkit'
 import type { OcrProvider } from '@renderer/types'
 import { getDefaultOcrProvider } from '@renderer/utils/ocr'
@@ -23,21 +23,21 @@ const ocrSlice = createSlice({
     }
   },
   reducers: {
-    setOcrProviders(state, action: PayloadAction<OcrProvider[]>) {
-      state.providers = action.payload
-    },
-    addOcrProvider(state, action: PayloadAction<OcrProvider>) {
-      state.providers.push(action.payload)
-    },
-    removeOcrProvider(state, action: PayloadAction<string>) {
-      state.providers = state.providers.filter((provider) => provider.id !== action.payload)
-    },
-    updateOcrProvider(state, action: PayloadAction<Partial<OcrProvider>>) {
-      const index = state.providers.findIndex((provider) => provider.id === action.payload.id)
-      if (index !== -1) {
-        Object.assign(state.providers[index], action.payload)
-      }
-    },
+    // setOcrProviders(state, action: PayloadAction<OcrProvider[]>) {
+    //   state.providers = action.payload
+    // },
+    // addOcrProvider(state, action: PayloadAction<OcrProvider>) {
+    //   state.providers.push(action.payload)
+    // },
+    // removeOcrProvider(state, action: PayloadAction<string>) {
+    //   state.providers = state.providers.filter((provider) => provider.id !== action.payload)
+    // },
+    // updateOcrProvider(state, action: PayloadAction<Partial<OcrProvider>>) {
+    //   const index = state.providers.findIndex((provider) => provider.id === action.payload.id)
+    //   if (index !== -1) {
+    //     Object.assign(state.providers[index], action.payload)
+    //   }
+    // },
     // updateOcrProviderConfig(
     //   state,
     //   action: PayloadAction<{ id: string; update: Omit<Partial<OcrProviderConfig>, 'id'> }>
@@ -50,21 +50,21 @@ const ocrSlice = createSlice({
     //     Object.assign(state.providers[index].config, action.payload.update)
     //   }
     // },
-    setImageOcrProviderId(state, action: PayloadAction<string>) {
-      state.imageProviderId = action.payload
-    }
+    // setImageOcrProviderId(state, action: PayloadAction<string>) {
+    //   state.imageProviderId = action.payload
+    // }
   }
 })
 
-export const {
-  setOcrProviders,
-  addOcrProvider,
-  removeOcrProvider,
-  updateOcrProvider,
-  // updateOcrProviderConfig,
-  setImageOcrProviderId
-} = ocrSlice.actions
+// export const {
+// setOcrProviders,
+// addOcrProvider,
+// removeOcrProvider,
+// updateOcrProvider,
+// updateOcrProviderConfig,
+// setImageOcrProviderId
+// } = ocrSlice.actions
 
-export const { getImageProvider } = ocrSlice.selectors
+// export const { getImageProvider } = ocrSlice.selectors
 
 export default ocrSlice.reducer
