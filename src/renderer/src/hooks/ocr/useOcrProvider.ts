@@ -17,12 +17,12 @@ export const useOcrProvider = (id: string) => {
   const updateConfig = useCallback(
     async (update: Partial<OcrProviderConfig>) => {
       try {
-        await mutate({ body: update })
+        await mutate({ body: { id, config: update } })
       } catch (e) {
         window.toast.error({ title: t('ocr.provider.config.patch.error.failed'), description: getErrorMessage(e) })
       }
     },
-    [mutate, t]
+    [id, mutate, t]
   )
 
   return {
