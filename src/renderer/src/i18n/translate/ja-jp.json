@@ -1960,12 +1960,12 @@
     "rename_changed": "セキュリティポリシーにより、ファイル名は{{original}}から{{final}}に変更されました",
     "save": "メモに保存する",
     "search": {
-      "both": "[to be translated]:Name+Content",
-      "content": "[to be translated]:Content",
-      "found_results": "[to be translated]:Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
-      "more_matches": "[to be translated]:more matches",
-      "searching": "[to be translated]:Searching...",
-      "show_less": "[to be translated]:Show less"
+      "both": "名前+内容",
+      "content": "内容",
+      "found_results": "{{count}}件の結果が見つかりました (名前: {{nameCount}}, 内容: {{contentCount}})",
+      "more_matches": "さらに一致",
+      "searching": "検索中...",
+      "show_less": "表示を減らす"
     },
     "settings": {
       "data": {
@@ -2052,7 +2052,7 @@
         "cannot_remove_builtin": "組み込みプロバイダーは削除できません",
         "existing": "プロバイダーはすでに存在します",
         "get_providers": "利用可能なプロバイダーの取得に失敗しました",
-        "not_availabel": "[to be translated]:Provide {{provider}} is not available",
+        "not_availabel": "プロバイダー {{provider}} は利用できません",
         "not_found": "OCRプロバイダーが存在しません",
         "update_failed": "更新構成に失敗しました"
       },
@@ -2066,33 +2066,33 @@
       "config": {
         "patch": {
           "error": {
-            "failed": "[to be translated]:Failed to update config"
+            "failed": "設定の更新に失敗しました"
           }
         }
       },
       "create": {
         "error": {
-          "failed": "[to be translated]:Failed to create provider"
+          "failed": "プロバイダーの作成に失敗しました"
         }
       },
       "delete": {
         "error": {
-          "failed": "[to be translated]:Failed to delete provider {{provider}}"
+          "failed": "プロバイダー {{provider}} の削除に失敗しました"
         }
       },
       "get": {
         "error": {
-          "failed": "[to be translated]:Failed to get provider {{provider}}"
+          "failed": "プロバイダー {{provider}} の取得に失敗しました"
         }
       },
       "list": {
         "error": {
-          "failed": "[to be translated]:Failed to list providers"
+          "failed": "プロバイダーリストの取得に失敗しました"
         }
       },
       "update": {
         "error": {
-          "failed": "[to be translated]:Failed to update the provider"
+          "failed": "プロバイダーの更新に失敗しました"
         }
       }
     },
@@ -2150,8 +2150,8 @@
       "install_code_103": "OVMSランタイムのダウンロードに失敗しました",
       "install_code_104": "OVMSランタイムの解凍に失敗しました",
       "install_code_105": "OVMSランタイムのクリーンアップに失敗しました",
-      "install_code_106": "[to be translated]:Failed to create run.bat",
-      "install_code_110": "[to be translated]:Failed to clean old OVMS runtime",
+      "install_code_106": "run.bat の作成に失敗しました",
+      "install_code_110": "古い OVMS ランタイムのクリーンアップに失敗しました",
       "run": "OVMSの実行に失敗しました:",
       "stop": "OVMSの停止に失敗しました:"
     },

@@ -1960,12 +1960,12 @@
     "rename_changed": "En raison de la politique de sécurité, le nom du fichier a été changé de {{original}} à {{final}}",
     "save": "sauvegarder dans les notes",
     "search": {
-      "both": "[to be translated]:Name+Content",
-      "content": "[to be translated]:Content",
-      "found_results": "[to be translated]:Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
-      "more_matches": "[to be translated]:more matches",
-      "searching": "[to be translated]:Searching...",
-      "show_less": "[to be translated]:Show less"
+      "both": "Nom+Contenu",
+      "content": "Contenu",
+      "found_results": "Trouvé {{count}} résultats (Nom: {{nameCount}}, Contenu: {{contentCount}})",
+      "more_matches": "plus de correspondances",
+      "searching": "Recherche...",
+      "show_less": "Afficher moins"
     },
     "settings": {
       "data": {
@@ -2052,7 +2052,7 @@
         "cannot_remove_builtin": "Impossible de supprimer le fournisseur intégré",
         "existing": "Le fournisseur existe déjà",
         "get_providers": "Échec de l'obtention des fournisseurs disponibles",
-        "not_availabel": "[to be translated]:Provide {{provider}} is not available",
+        "not_availabel": "Le fournisseur {{provider}} n'est pas disponible",
         "not_found": "Le fournisseur OCR n'existe pas",
         "update_failed": "Échec de la mise à jour de la configuration"
       },
@@ -2066,33 +2066,33 @@
       "config": {
         "patch": {
           "error": {
-            "failed": "[to be translated]:Failed to update config"
+            "failed": "Échec de la mise à jour de la configuration"
           }
         }
       },
       "create": {
         "error": {
-          "failed": "[to be translated]:Failed to create provider"
+          "failed": "Échec de la création du fournisseur"
         }
       },
       "delete": {
         "error": {
-          "failed": "[to be translated]:Failed to delete provider {{provider}}"
+          "failed": "Échec de la suppression du fournisseur {{provider}}"
         }
       },
       "get": {
         "error": {
-          "failed": "[to be translated]:Failed to get provider {{provider}}"
+          "failed": "Échec de l'obtention du fournisseur {{provider}}"
         }
       },
       "list": {
         "error": {
-          "failed": "[to be translated]:Failed to list providers"
+          "failed": "Échec de l'obtention de la liste des fournisseurs"
         }
       },
       "update": {
         "error": {
-          "failed": "[to be translated]:Failed to update the provider"
+          "failed": "Échec de la mise à jour du fournisseur"
         }
       }
     },
@@ -2150,8 +2150,8 @@
       "install_code_103": "Échec du téléchargement du runtime OVMS",
       "install_code_104": "Échec de la décompression du runtime OVMS",
       "install_code_105": "Échec du nettoyage du runtime OVMS",
-      "install_code_106": "[to be translated]:Failed to create run.bat",
-      "install_code_110": "[to be translated]:Failed to clean old OVMS runtime",
+      "install_code_106": "Échec de la création de run.bat",
+      "install_code_110": "Échec du nettoyage de l'ancien runtime OVMS",
       "run": "Échec de l'exécution d'OVMS :",
       "stop": "Échec de l'arrêt d'OVMS :"
     },

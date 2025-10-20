@@ -1960,12 +1960,12 @@
     "rename_changed": "Λόγω πολιτικής ασφάλειας, το όνομα του αρχείου έχει αλλάξει από {{original}} σε {{final}}",
     "save": "αποθήκευση στις σημειώσεις",
     "search": {
-      "both": "[to be translated]:Name+Content",
-      "content": "[to be translated]:Content",
-      "found_results": "[to be translated]:Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
-      "more_matches": "[to be translated]:more matches",
-      "searching": "[to be translated]:Searching...",
-      "show_less": "[to be translated]:Show less"
+      "both": "Όνομα+Περιεχόμενο",
+      "content": "Περιεχόμενο",
+      "found_results": "Βρέθηκαν {{count}} αποτελέσματα (Όνομα: {{nameCount}}, Περιεχόμενο: {{contentCount}})",
+      "more_matches": "περισσότερες αντιστοιχίες",
+      "searching": "Αναζήτηση...",
+      "show_less": "Εμφάνιση λιγότερων"
     },
     "settings": {
       "data": {
@@ -2052,7 +2052,7 @@
         "cannot_remove_builtin": "Δεν είναι δυνατή η διαγραφή του ενσωματωμένου παρόχου",
         "existing": "Ο πάροχος υπηρεσιών υπάρχει ήδη",
         "get_providers": "Αποτυχία λήψης διαθέσιμων παρόχων",
-        "not_availabel": "[to be translated]:Provide {{provider}} is not available",
+        "not_availabel": "Ο παροχέας {{provider}} δεν είναι διαθέσιμος",
         "not_found": "Ο πάροχος OCR δεν υπάρχει",
         "update_failed": "Αποτυχία ενημέρωσης της διαμόρφωσης"
       },
@@ -2066,33 +2066,33 @@
       "config": {
         "patch": {
           "error": {
-            "failed": "[to be translated]:Failed to update config"
+            "failed": "Αποτυχία ενημέρωσης διαμόρφωσης"
           }
         }
       },
       "create": {
         "error": {
-          "failed": "[to be translated]:Failed to create provider"
+          "failed": "Αποτυχία δημιουργίας παροχέα"
         }
       },
       "delete": {
         "error": {
-          "failed": "[to be translated]:Failed to delete provider {{provider}}"
+          "failed": "Αποτυχία διαγραφής παροχέα {{provider}}"
         }
       },
       "get": {
         "error": {
-          "failed": "[to be translated]:Failed to get provider {{provider}}"
+          "failed": "Αποτυχία λήψης παροχέα {{provider}}"
         }
       },
       "list": {
         "error": {
-          "failed": "[to be translated]:Failed to list providers"
+          "failed": "Αποτυχία λίστας παροχέων"
         }
       },
       "update": {
         "error": {
-          "failed": "[to be translated]:Failed to update the provider"
+          "failed": "Αποτυχία ενημέρωσης παροχέα"
         }
       }
     },
@@ -2150,8 +2150,8 @@
       "install_code_103": "Η λήψη του OVMS runtime απέτυχε",
       "install_code_104": "Η αποσυμπίεση του OVMS runtime απέτυχε",
       "install_code_105": "Ο καθαρισμός του OVMS runtime απέτυχε",
-      "install_code_106": "[to be translated]:Failed to create run.bat",
-      "install_code_110": "[to be translated]:Failed to clean old OVMS runtime",
+      "install_code_106": "Αποτυχία δημιουργίας run.bat",
+      "install_code_110": "Αποτυχία καθαρισμού παλαιού runtime OVMS",
       "run": "Η εκτέλεση του OVMS απέτυχε:",
       "stop": "Η διακοπή του OVMS απέτυχε:"
     },
