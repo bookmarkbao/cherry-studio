@@ -11,7 +11,8 @@ import { useDefaultModel } from './useAssistant'
  */
 export type QuickCompletionParams = {
   /**
-   * The prompt text to send to the model.
+   * The user message text (not the system prompt) to send to the model.
+   * The system prompt is set via the `systemPrompt` parameter passed to `useQuickCompletion`.
    */
   prompt: string
   /**
