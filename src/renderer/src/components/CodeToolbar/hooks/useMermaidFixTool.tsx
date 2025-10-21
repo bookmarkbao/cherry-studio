@@ -41,12 +41,15 @@ const ResultSchema = z.union([
   })
 ])
 
+/**
+ * Input shape for the Mermaid fix prompt.
+ */
 type Input = {
-  // mermaid 代码
+  /** Mermaid diagram code to be fixed */
   mermaid: string
-  // 错误信息
+  /** Error message returned by the renderer */
   error: string
-  // 用户语言代码, 如 zh-cn, en-us
+  /** User’s language code (e.g. zh-cn, en-us) */
   lang: string
 }
 
