@@ -169,10 +169,10 @@ export const useMermaidFixTool = ({ enabled, context, onSave, setError, setTools
         icon: <WrenchIcon size={'1rem'} className="tool-icon" />,
         tooltip: t('code_block.mermaid_fix.label'),
         visible: () => error !== undefined && error !== null,
-        onClick: fixCode
+        onClick: () => fixCode()
       })
     }
 
-    return () => removeTool(TOOL_SPECS.expand.id)
+    return () => removeTool(TOOL_SPECS.mermaid_fix.id)
   }, [enabled, error, fixCode, registerTool, removeTool, t])
 }
