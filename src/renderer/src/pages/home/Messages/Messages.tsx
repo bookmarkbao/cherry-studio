@@ -199,6 +199,8 @@ const Messages: React.FC<MessagesProps> = ({ assistant, topic, setActiveTopic, o
           window.toast.error(t('message.branch.error')) // Example error message
         }
       }),
+      // TODO: We should move this processing function out of the component and turn it into a Hook, so that other components can reuse this function.
+      // The current implementation prevents the party emitting the event from knowing the completion status of the asynchronous function through a promise.
       EventEmitter.on(
         EVENT_NAMES.EDIT_CODE_BLOCK,
         async (data: { msgBlockId: string; codeBlockId: string; newContent: string }) => {
