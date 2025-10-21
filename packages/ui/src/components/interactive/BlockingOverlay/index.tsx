@@ -29,7 +29,7 @@ export const BlockingOverlay = ({ isVisible, onClick, children, className }: Blo
   return (
     <div
       className={cn(
-        'fixed inset-0',
+        'absolute inset-0',
         'bg-black/50',
         'z-[9999]',
         'flex items-center justify-center',
