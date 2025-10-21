@@ -18,6 +18,13 @@ const logger = loggerService.withContext('OcrProviderRepository')
 /**
  * Data access layer for OCR providers
  * Handles all database operations and data validation
+ *
+ * TODO: This class is already functional, but the data interaction service should be
+ *       migrated to src/main/data/api/services.
+ *
+ *       The reason why the migration hasn't been completed yet is that the data
+ *       architecture is still under development, and we need to wait until the
+ *       architectural design is finalized before proceeding with the migration.
  */
 export class OcrProviderRepository {
   /**
