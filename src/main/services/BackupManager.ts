@@ -617,13 +617,8 @@ class BackupManager {
   }
 
   async backupToS3(_: Electron.IpcMainInvokeEvent, data: string, s3Config: S3Config) {
-    const os = require('os')
-    const deviceName = os.hostname ? os.hostname() : 'device'
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/[-:T.Z]/g, '')
-      .slice(0, 14)
-    const filename = s3Config.fileName || `cherry-studio.backup.${deviceName}.${timestamp}.zip`
+    // Use the filename provided by frontend, or a simple default (no timestamp generation here)
+    const filename = s3Config.fileName || 'cherry-studio.backup.zip'
 
     logger.debug(`Starting S3 backup to ${filename}`)
 

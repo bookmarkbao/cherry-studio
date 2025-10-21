@@ -197,10 +197,15 @@ export async function backupToWebdav({
   let finalFileName: string
 
   // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
+  logger.debug(
+    `[WebDAV Backup] Overwrite check: autoBackupProcess=${autoBackupProcess}, maxBackups=${webdavMaxBackups}, singleFileOverwrite=${webdavSingleFileOverwrite}`
+  )
   if (autoBackupProcess && webdavMaxBackups === 1 && webdavSingleFileOverwrite) {
     finalFileName = generateOverwriteFilename(webdavSingleFileName, hostname, deviceType)
+    logger.debug(`[WebDAV Backup] Using overwrite filename: ${finalFileName}`)
   } else {
     finalFileName = generateTimestampedFilename(customFileName, hostname, deviceType, timestamp)
+    logger.debug(`[WebDAV Backup] Using timestamped filename: ${finalFileName}`)
   }
   const backupData = await getBackupData()
 
@@ -377,10 +382,15 @@ export async function backupToS3({
   let finalFileName: string
 
   // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
+  logger.debug(
+    `[S3 Backup] Overwrite check: autoBackupProcess=${autoBackupProcess}, maxBackups=${s3Config.maxBackups}, singleFileOverwrite=${s3Config.singleFileOverwrite}`
+  )
   if (autoBackupProcess && s3Config.maxBackups === 1 && s3Config.singleFileOverwrite) {
     finalFileName = generateOverwriteFilename(s3Config.singleFileName, hostname, deviceType)
+    logger.debug(`[S3 Backup] Using overwrite filename: ${finalFileName}`)
   } else {
     finalFileName = generateTimestampedFilename(customFileName, hostname, deviceType, timestamp)
+    logger.debug(`[S3 Backup] Using timestamped filename: ${finalFileName}`)
   }
   const backupData = await getBackupData()
 
@@ -987,10 +997,15 @@ export async function backupToLocal({
   let finalFileName: string
 
   // 覆盖式单文件备份（仅在自动备份流程且保留份数=1时生效）
+  logger.debug(
+    `[Local Backup] Overwrite check: autoBackupProcess=${autoBackupProcess}, maxBackups=${localBackupMaxBackups}, singleFileOverwrite=${localSingleFileOverwrite}`
+  )
   if (autoBackupProcess && localBackupMaxBackups === 1 && localSingleFileOverwrite) {
     finalFileName = generateOverwriteFilename(localSingleFileName, hostname, deviceType)
+    logger.debug(`[Local Backup] Using overwrite filename: ${finalFileName}`)
   } else {
     finalFileName = generateTimestampedFilename(customFileName, hostname, deviceType, timestamp)
+    logger.debug(`[Local Backup] Using timestamped filename: ${finalFileName}`)
   }
   const backupData = await getBackupData()
 
