@@ -150,7 +150,7 @@ export const useMermaidFixTool = ({ enabled, context, onSave, setError, setTools
     }
 
     setPending(blockId, false)
-  }, [setPending, blockId, completion, prompt, onSave, t])
+  }, [setPending, blockId, completion, prompt, t, onSave, setError])
 
   // when unmounted
   useEffect(() => {
