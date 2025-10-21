@@ -29,19 +29,20 @@ export type QuickCompletionParams = {
   params?: Partial<Omit<FetchChatCompletionParams, 'prompt' | 'messages' | 'assistant' | 'onChunkReceived'>>
 }
 
-export const useQuickCompletion = () => {
+export const useQuickCompletion = (systemPrompt: string) => {
   const { quickModel } = useDefaultModel()
 
   const completion = useCallback(
     async ({ prompt, onChunk, assistantUpdate, params }: QuickCompletionParams) => {
       const assistant = {
         ...getDefaultAssistant(),
+        prompt: systemPrompt,
         model: quickModel,
         ...assistantUpdate
       } satisfies Assistant
       return fetchChatCompletion({ prompt, assistant, onChunkReceived: onChunk, ...params })
     },
-    [quickModel]
+    [quickModel, systemPrompt]
   )
 
   return completion
