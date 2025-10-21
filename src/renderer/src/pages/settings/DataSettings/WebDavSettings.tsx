@@ -22,7 +22,7 @@ import {
 } from '@renderer/store/settings'
 import { Button, Input, Switch, Tooltip } from 'antd'
 import dayjs from 'dayjs'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingDivider, SettingGroup, SettingHelpText, SettingRow, SettingRowTitle, SettingTitle } from '..'
@@ -62,6 +62,11 @@ const WebDavSettings: FC = () => {
   const { t } = useTranslation()
 
   const { webdavSync } = useAppSelector((state) => state.backup)
+
+  // 同步 maxBackups 状态
+  useEffect(() => {
+    setMaxBackups(webDAVMaxBackups)
+  }, [webDAVMaxBackups])
 
   // 把之前备份的文件定时上传到 webdav，首先先配置 webdav 的 host, port, user, pass, path
 
@@ -193,57 +198,6 @@ const WebDavSettings: FC = () => {
     <SettingGroup theme={theme}>
       <SettingTitle>{t('settings.data.webdav.title')}</SettingTitle>
       <SettingDivider />
-      {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
-      <SettingRow>
-        <SettingRowTitle>
-          {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
-        </SettingRowTitle>
-        <Switch
-          checked={webdavSingleFileOverwrite}
-          onChange={onSingleFileOverwriteChange}
-          disabled={!(syncInterval > 0 && maxBackups === 1)}
-        />
-      </SettingRow>
-      <SettingRow>
-        <SettingHelpText>
-          {t('settings.data.backup.singleFileOverwrite.help') || (
-            <div>
-              <p>当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。</p>
-              <p style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
-                推荐场景：只需要保留最新备份，节省存储空间
-              </p>
-            </div>
-          )}
-        </SettingHelpText>
-      </SettingRow>
-      <SettingRow>
-        <SettingRowTitle>{t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}</SettingRowTitle>
-        <Input
-          placeholder={
-            t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
-          }
-          value={webdavSingleFileName}
-          onChange={(e) => onSingleFileNameChange(e.target.value)}
-          onBlur={onSingleFileNameBlur}
-          style={{ width: 300 }}
-          disabled={!webdavSingleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
-        />
-      </SettingRow>
-      <SettingRow>
-        <SettingHelpText>
-          {t('settings.data.backup.singleFileName.help') || (
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-              <p>• 留空将使用默认格式：cherry-studio.[主机名].[设备类型].zip</p>
-              <p>
-                • 支持的变量：{`{hostname}`} - 主机名，{`{device}`} - 设备类型
-              </p>
-              <p>• 不支持的字符：{'<>:"/\\|?*'}</p>
-              <p>• 最大长度：250个字符</p>
-            </div>
-          )}
-        </SettingHelpText>
-      </SettingRow>
-      <SettingDivider />
       <SettingRow>
         <SettingRowTitle>{t('settings.data.webdav.host.label')}</SettingRowTitle>
         <Input
@@ -356,6 +310,58 @@ const WebDavSettings: FC = () => {
       </SettingRow>
       <SettingRow>
         <SettingHelpText>{t('settings.data.webdav.disableStream.help')}</SettingHelpText>
+      </SettingRow>
+      {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
+      <SettingDivider />
+      <SettingRow>
+        <SettingRowTitle>
+          {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
+        </SettingRowTitle>
+        <Switch
+          checked={webdavSingleFileOverwrite}
+          onChange={onSingleFileOverwriteChange}
+          disabled={!(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingRow>
+        <SettingHelpText>
+          {t('settings.data.backup.singleFileOverwrite.help') || (
+            <div>
+              <p>当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。</p>
+              <p style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+                推荐场景：只需要保留最新备份，节省存储空间
+              </p>
+            </div>
+          )}
+        </SettingHelpText>
+      </SettingRow>
+      <SettingDivider />
+      <SettingRow>
+        <SettingRowTitle>{t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}</SettingRowTitle>
+        <Input
+          placeholder={
+            t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
+          }
+          value={webdavSingleFileName}
+          onChange={(e) => onSingleFileNameChange(e.target.value)}
+          onBlur={onSingleFileNameBlur}
+          style={{ width: 300 }}
+          disabled={!webdavSingleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingRow>
+        <SettingHelpText>
+          {t('settings.data.backup.singleFileName.help') || (
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+              <p>• 留空将使用默认格式：cherry-studio.[主机名].[设备类型].zip</p>
+              <p>
+                • 支持的变量：{`{hostname}`} - 主机名，{`{device}`} - 设备类型
+              </p>
+              <p>• 不支持的字符：{'<>:"/\\|?*'}</p>
+              <p>• 最大长度：250个字符</p>
+            </div>
+          )}
+        </SettingHelpText>
       </SettingRow>
       {webdavSync && syncInterval > 0 && (
         <>

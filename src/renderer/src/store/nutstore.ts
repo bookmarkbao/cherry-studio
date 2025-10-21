@@ -12,6 +12,8 @@ export interface NutstoreState {
   nutstoreSyncState: NutstoreSyncState
   nutstoreSkipBackupFile: boolean
   nutstoreMaxBackups: number
+  nutstoreSingleFileOverwrite: boolean
+  nutstoreSingleFileName: string
 }
 
 const initialState: NutstoreState = {
@@ -25,7 +27,9 @@ const initialState: NutstoreState = {
     lastSyncError: null
   },
   nutstoreSkipBackupFile: false,
-  nutstoreMaxBackups: 0
+  nutstoreMaxBackups: 0,
+  nutstoreSingleFileOverwrite: false,
+  nutstoreSingleFileName: ''
 }
 
 const nutstoreSlice = createSlice({
@@ -52,6 +56,12 @@ const nutstoreSlice = createSlice({
     },
     setNutstoreMaxBackups: (state, action: PayloadAction<number>) => {
       state.nutstoreMaxBackups = action.payload
+    },
+    setNutstoreSingleFileOverwrite: (state, action: PayloadAction<boolean>) => {
+      state.nutstoreSingleFileOverwrite = action.payload
+    },
+    setNutstoreSingleFileName: (state, action: PayloadAction<string>) => {
+      state.nutstoreSingleFileName = action.payload
     }
   }
 })
@@ -63,7 +73,9 @@ export const {
   setNutstoreSyncInterval,
   setNutstoreSyncState,
   setNutstoreSkipBackupFile,
-  setNutstoreMaxBackups
+  setNutstoreMaxBackups,
+  setNutstoreSingleFileOverwrite,
+  setNutstoreSingleFileName
 } = nutstoreSlice.actions
 
 export default nutstoreSlice.reducer

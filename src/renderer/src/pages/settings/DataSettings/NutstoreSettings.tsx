@@ -20,6 +20,8 @@ import {
   setNutstoreAutoSync,
   setNutstoreMaxBackups,
   setNutstorePath,
+  setNutstoreSingleFileName,
+  setNutstoreSingleFileOverwrite,
   setNutstoreSkipBackupFile,
   setNutstoreSyncInterval,
   setNutstoreToken
@@ -44,7 +46,9 @@ const NutstoreSettings: FC = () => {
     nutstoreAutoSync,
     nutstoreSyncState,
     nutstoreSkipBackupFile,
-    nutstoreMaxBackups
+    nutstoreMaxBackups,
+    nutstoreSingleFileOverwrite,
+    nutstoreSingleFileName
   } = useAppSelector((state) => state.nutstore)
 
   const dispatch = useAppDispatch()
@@ -55,11 +59,19 @@ const NutstoreSettings: FC = () => {
   const [checkConnectionLoading, setCheckConnectionLoading] = useState(false)
   const [nsConnected, setNsConnected] = useState<boolean>(false)
   const [syncInterval, setSyncInterval] = useState<number>(nutstoreSyncInterval)
+  const [maxBackups, setMaxBackups] = useState<number>(nutstoreMaxBackups)
   const [nutSkipBackupFile, setNutSkipBackupFile] = useState<boolean>(nutstoreSkipBackupFile)
+  const [nutSingleFileOverwrite, setNutSingleFileOverwrite] = useState<boolean>(nutstoreSingleFileOverwrite ?? false)
+  const [nutSingleFileName, setNutSingleFileName] = useState<string>(nutstoreSingleFileName ?? '')
   const [backupManagerVisible, setBackupManagerVisible] = useState(false)
 
   const nutstoreSSOHandler = useNutstoreSSO()
   const { setTimeoutTimer } = useTimer()
+
+  // 同步 maxBackups 状态
+  useEffect(() => {
+    setMaxBackups(nutstoreMaxBackups)
+  }, [nutstoreMaxBackups])
 
   const handleClickNutstoreSSO = useCallback(async () => {
     const ssoUrl = await window.api.nutstore.getSSOUrl()
@@ -142,7 +154,70 @@ const NutstoreSettings: FC = () => {
   }
 
   const onMaxBackupsChange = (value: number) => {
+    setMaxBackups(value)
     dispatch(setNutstoreMaxBackups(value))
+  }
+
+  const onSingleFileOverwriteChange = (value: boolean) => {
+    // Only show confirmation when enabling
+    if (value && !nutSingleFileOverwrite) {
+      window.modal.confirm({
+        title: t('settings.data.backup.singleFileOverwrite.confirm.title') || '启用覆盖式备份',
+        content: (
+          <div>
+            <p>{t('settings.data.backup.singleFileOverwrite.confirm.content1') || '启用后，自动备份将：'}</p>
+            <ul style={{ marginLeft: 20, marginTop: 10 }}>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item1') || '使用固定文件名，不再添加时间戳'}</li>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item2') || '每次备份都会覆盖同名文件'}</li>
+              <li>{t('settings.data.backup.singleFileOverwrite.confirm.item3') || '仅保留最新的一个备份文件'}</li>
+            </ul>
+            <p style={{ marginTop: 10, color: 'var(--text-secondary)' }}>
+              {t('settings.data.backup.singleFileOverwrite.confirm.note') ||
+                '注意：此设置仅在自动备份且保留份数为1时生效'}
+            </p>
+          </div>
+        ),
+        okText: t('common.confirm') || '确认',
+        cancelText: t('common.cancel') || '取消',
+        onOk: () => {
+          setNutSingleFileOverwrite(value)
+          dispatch(setNutstoreSingleFileOverwrite(value))
+        }
+      })
+    } else {
+      setNutSingleFileOverwrite(value)
+      dispatch(setNutstoreSingleFileOverwrite(value))
+    }
+  }
+
+  const onSingleFileNameChange = (value: string) => {
+    setNutSingleFileName(value)
+  }
+
+  const onSingleFileNameBlur = () => {
+    const trimmed = nutSingleFileName.trim()
+    // Validate filename
+    if (trimmed) {
+      // Check for invalid characters
+      const invalidChars = /[<>:"/\\|?*]/
+      if (invalidChars.test(trimmed)) {
+        window.toast.error(t('settings.data.backup.singleFileName.invalid_chars') || '文件名包含无效字符')
+        return
+      }
+      // Check for reserved names (Windows)
+      const reservedNames = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i
+      const nameWithoutExt = trimmed.replace(/\.zip$/i, '')
+      if (reservedNames.test(nameWithoutExt)) {
+        window.toast.error(t('settings.data.backup.singleFileName.reserved') || '文件名是系统保留名称')
+        return
+      }
+      // Check length
+      if (trimmed.length > 250) {
+        window.toast.error(t('settings.data.backup.singleFileName.too_long') || '文件名过长')
+        return
+      }
+    }
+    dispatch(setNutstoreSingleFileName(trimmed))
   }
 
   const handleClickPathChange = async () => {
@@ -335,6 +410,60 @@ const NutstoreSettings: FC = () => {
           </SettingRow>
           <SettingRow>
             <SettingHelpText>{t('settings.data.backup.skip_file_data_help')}</SettingHelpText>
+          </SettingRow>
+          {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>
+              {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
+            </SettingRowTitle>
+            <Switch
+              checked={nutSingleFileOverwrite}
+              onChange={onSingleFileOverwriteChange}
+              disabled={!(syncInterval > 0 && maxBackups === 1)}
+            />
+          </SettingRow>
+          <SettingRow>
+            <SettingHelpText>
+              {t('settings.data.backup.singleFileOverwrite.help') || (
+                <div>
+                  <p>当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。</p>
+                  <p style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+                    推荐场景：只需要保留最新备份，节省坚果云存储空间
+                  </p>
+                </div>
+              )}
+            </SettingHelpText>
+          </SettingRow>
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>
+              {t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}
+            </SettingRowTitle>
+            <Input
+              placeholder={
+                t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
+              }
+              value={nutSingleFileName}
+              onChange={(e) => onSingleFileNameChange(e.target.value)}
+              onBlur={onSingleFileNameBlur}
+              style={{ width: 300 }}
+              disabled={!nutSingleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
+            />
+          </SettingRow>
+          <SettingRow>
+            <SettingHelpText>
+              {t('settings.data.backup.singleFileName.help') || (
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                  <p>• 留空将使用默认格式：cherry-studio.[主机名].[设备类型].zip</p>
+                  <p>
+                    • 支持的变量：{`{hostname}`} - 主机名，{`{device}`} - 设备类型
+                  </p>
+                  <p>• 不支持的字符：{'<>:"/\\|?*'}</p>
+                  <p>• 最大长度：250个字符</p>
+                </div>
+              )}
+            </SettingHelpText>
           </SettingRow>
         </>
       )}

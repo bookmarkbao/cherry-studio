@@ -7,6 +7,7 @@ import { NUTSTORE_HOST } from '@shared/config/nutstore'
 import dayjs from 'dayjs'
 import { type CreateDirectoryOptions } from 'webdav'
 
+import { shouldSkipCleanup, validateAndSanitizeFilename } from '../utils/backupUtils'
 import { getBackupData, handleData } from './BackupService'
 
 const logger = loggerService.withContext('NutstoreService')
@@ -109,10 +110,12 @@ async function cleanupOldBackups(webdavConfig: WebDavConfig, maxBackups: number)
 
 export async function backupToNutstore({
   showMessage = false,
-  customFileName = ''
+  customFileName = '',
+  isAutoBackup = false
 }: {
   showMessage?: boolean
   customFileName?: string
+  isAutoBackup?: boolean
 } = {}) {
   const nutstoreToken = getNutstoreToken()
   if (!nutstoreToken) {
@@ -135,21 +138,37 @@ export async function backupToNutstore({
   } catch (error) {
     logger.error('[backupToNutstore] Failed to get device type:', error as Error)
   }
-  const timestamp = dayjs().format('YYYYMMDDHHmmss')
-  const backupFileName = customFileName || `cherry-studio.${timestamp}.${deviceType}.zip`
-  const finalFileName = backupFileName.endsWith('.zip') ? backupFileName : `${backupFileName}.zip`
+
+  const backupData = await getBackupData()
+  const skipBackupFile = store.getState().nutstore.nutstoreSkipBackupFile
+  const maxBackups = store.getState().nutstore.nutstoreMaxBackups
+  const singleFileOverwrite = store.getState().nutstore.nutstoreSingleFileOverwrite
+  const singleFileName = store.getState().nutstore.nutstoreSingleFileName
+
+  // Handle filename generation
+  let finalFileName: string
+  if (isAutoBackup && singleFileOverwrite && maxBackups === 1) {
+    // Use overwrite logic for auto backup when single file overwrite is enabled
+    const hostname = await window.api.system.getHostname()
+    const name = await validateAndSanitizeFilename(singleFileName, hostname, deviceType)
+    finalFileName = name
+  } else {
+    // Use timestamped logic for manual backup or when overwrite is disabled
+    const timestamp = dayjs().format('YYYYMMDDHHmmss')
+    const name = customFileName || `cherry-studio.${timestamp}.${deviceType}.zip`
+    finalFileName = name.endsWith('.zip') ? name : `${name}.zip`
+  }
 
   isManualBackupRunning = true
 
   store.dispatch(setNutstoreSyncState({ syncing: true, lastSyncError: null }))
 
-  const backupData = await getBackupData()
-  const skipBackupFile = store.getState().nutstore.nutstoreSkipBackupFile
-  const maxBackups = store.getState().nutstore.nutstoreMaxBackups
-
   try {
-    // 先清理旧备份
-    await cleanupOldBackups(config, maxBackups)
+    // Skip cleanup for single file overwrite mode when maxBackups is 1
+    if (!shouldSkipCleanup(maxBackups, singleFileOverwrite)) {
+      // 先清理旧备份
+      await cleanupOldBackups(config, maxBackups)
+    }
 
     const isSuccess = await window.api.backup.backupToWebdav(backupData, {
       ...config,
@@ -264,7 +283,7 @@ export async function startNutstoreAutoSync() {
     isAutoBackupRunning = true
     try {
       logger.verbose('[Nutstore AutoSync] Starting auto backup...')
-      await backupToNutstore({ showMessage: false })
+      await backupToNutstore({ showMessage: false, isAutoBackup: true })
     } catch (error) {
       logger.error('[Nutstore AutoSync] Auto backup failed:', error as Error)
     } finally {

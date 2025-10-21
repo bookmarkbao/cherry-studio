@@ -13,7 +13,7 @@ import { setS3Partial } from '@renderer/store/settings'
 import { S3Config } from '@renderer/types'
 import { Button, Input, Switch, Tooltip } from 'antd'
 import dayjs from 'dayjs'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingDivider, SettingGroup, SettingHelpText, SettingRow, SettingRowTitle, SettingTitle } from '..'
@@ -55,6 +55,11 @@ const S3Settings: FC = () => {
   const { openSmartMinapp } = useMinappPopup()
 
   const { s3Sync } = useAppSelector((state) => state.backup)
+
+  // 同步 maxBackups 状态
+  useEffect(() => {
+    setMaxBackups(s3MaxBackupsInit)
+  }, [s3MaxBackupsInit])
 
   const onSyncIntervalChange = (value: number) => {
     setSyncInterval(value)
@@ -192,37 +197,6 @@ const S3Settings: FC = () => {
       </SettingTitle>
       <SettingHelpText>{t('settings.data.s3.title.help')}</SettingHelpText>
       <SettingDivider />
-      {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
-      <SettingRow>
-        <SettingRowTitle>
-          {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
-        </SettingRowTitle>
-        <Switch
-          checked={singleFileOverwrite}
-          onChange={onSingleFileOverwriteChange}
-          disabled={!(syncInterval > 0 && maxBackups === 1)}
-        />
-      </SettingRow>
-      <SettingRow>
-        <SettingHelpText>
-          {t('settings.data.backup.singleFileOverwrite.help') ||
-            '当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。S3 会直接覆盖同键对象。'}
-        </SettingHelpText>
-      </SettingRow>
-      <SettingRow>
-        <SettingRowTitle>{t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}</SettingRowTitle>
-        <Input
-          placeholder={
-            t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
-          }
-          value={singleFileName}
-          onChange={(e) => onSingleFileNameChange(e.target.value)}
-          onBlur={onSingleFileNameBlur}
-          style={{ width: 300 }}
-          disabled={!singleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
-        />
-      </SettingRow>
-      <SettingDivider />
       <SettingRow>
         <SettingRowTitle>{t('settings.data.s3.endpoint.label')}</SettingRowTitle>
         <Input
@@ -356,6 +330,58 @@ const S3Settings: FC = () => {
       </SettingRow>
       <SettingRow>
         <SettingHelpText>{t('settings.data.s3.skipBackupFile.help')}</SettingHelpText>
+      </SettingRow>
+      {/* 覆盖式单文件备份，仅在自动备份开启且保留份数=1时推荐启用 */}
+      <SettingDivider />
+      <SettingRow>
+        <SettingRowTitle>
+          {t('settings.data.backup.singleFileOverwrite.title') || '覆盖式单文件备份（同名覆盖）'}
+        </SettingRowTitle>
+        <Switch
+          checked={singleFileOverwrite}
+          onChange={onSingleFileOverwriteChange}
+          disabled={!(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingRow>
+        <SettingHelpText>
+          {t('settings.data.backup.singleFileOverwrite.help') || (
+            <div>
+              <p>当自动备份开启且保留份数为1时，使用固定文件名每次覆盖。</p>
+              <p style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+                推荐场景：只需要保留最新备份，节省存储空间（S3会直接覆盖同键对象）
+              </p>
+            </div>
+          )}
+        </SettingHelpText>
+      </SettingRow>
+      <SettingDivider />
+      <SettingRow>
+        <SettingRowTitle>{t('settings.data.backup.singleFileName.title') || '自定义文件名（可选）'}</SettingRowTitle>
+        <Input
+          placeholder={
+            t('settings.data.backup.singleFileName.placeholder') || '如：cherry-studio.<hostname>.<device>.zip'
+          }
+          value={singleFileName}
+          onChange={(e) => onSingleFileNameChange(e.target.value)}
+          onBlur={onSingleFileNameBlur}
+          style={{ width: 300 }}
+          disabled={!singleFileOverwrite || !(syncInterval > 0 && maxBackups === 1)}
+        />
+      </SettingRow>
+      <SettingRow>
+        <SettingHelpText>
+          {t('settings.data.backup.singleFileName.help') || (
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+              <p>• 留空将使用默认格式：cherry-studio.[主机名].[设备类型].zip</p>
+              <p>
+                • 支持的变量：{`{hostname}`} - 主机名，{`{device}`} - 设备类型
+              </p>
+              <p>• 不支持的字符：{'<>:"/\\|?*'}</p>
+              <p>• 最大长度：250个字符</p>
+            </div>
+          )}
+        </SettingHelpText>
       </SettingRow>
       {syncInterval > 0 && (
         <>

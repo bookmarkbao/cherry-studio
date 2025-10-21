@@ -2916,7 +2916,7 @@
         "singleFileName": {
           "title": "自定义文件名（可选）",
           "placeholder": "如：cherry-studio.<hostname>.<device>.zip",
-          "help": "• 留空将使用默认格式：cherry-studio.[主机名].[设备类型].zip\n• 支持的变量：{hostname} - 主机名，{device} - 设备类型\n• 不支持的字符：<>:\"/\\|?*\n• 最大长度：250个字符",
+          "help": "留空将使用默认格式：cherry-studio.[主机名].[设备类型].zip\n支持的变量：{hostname} - 主机名，{device} - 设备类型\n不支持的字符：<>:\"/\\|?*\n最大长度：250个字符",
           "invalid_chars": "文件名包含无效字符",
           "reserved": "文件名是系统保留名称",
           "too_long": "文件名过长"
