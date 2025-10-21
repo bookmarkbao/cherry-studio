@@ -1,7 +1,7 @@
 import type { OcrProviderCapabilityRecord, OcrProviderConfig } from '@types'
 import { index, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
-import { createUpdateTimestamps } from '../columnHelpers'
+import { createUpdateTimestamps } from './columnHelpers'
 
 export const ocrProviderTable = sqliteTable(
   'ocr_provider',

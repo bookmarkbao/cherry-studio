@@ -1,3 +1,3 @@
 export { appStateTable } from './appState'
-export { ocrProviderTable } from './ocr/provider'
+export { ocrProviderTable } from './ocrProvider'
 export { preferenceTable } from './preference'

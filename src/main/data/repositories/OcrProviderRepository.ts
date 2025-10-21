@@ -1,5 +1,5 @@
 import { dbService } from '@data/db/DbService'
-import { ocrProviderTable } from '@data/db/schemas/ocr/provider'
+import { ocrProviderTable } from '@data/db/schemas/ocrProvider'
 import { loggerService } from '@logger'
 import type {
   DbOcrProvider,
