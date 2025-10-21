@@ -36,6 +36,8 @@ const CodeBlock: React.FC<Props> = ({ children, className, node, blockId }) => {
   const handleSave = useCallback(
     async (newContent: string) => {
       if (id !== undefined) {
+        // The event form cannot obtain the completion status of the handler via a promise.
+        // TODO: Use useContext to get topicId, use useEditCodeBlock to edit code block.
         EventEmitter.emit(EVENT_NAMES.EDIT_CODE_BLOCK, {
           msgBlockId: blockId,
           codeBlockId: id,
