@@ -87,6 +87,8 @@ export { HelpTooltip, type IconTooltipProps, InfoTooltip, WarnTooltip } from './
 export { default as ImageToolButton } from './interactive/ImageToolButton'
 // Sortable
 export { Sortable } from './interactive/Sortable'
+// BlockingOverlay
+export { BlockingOverlay } from './interactive/BlockingOverlay'
 
 // Composite Components (复合组件)
 // 暂无复合组件
