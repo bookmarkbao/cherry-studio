@@ -225,7 +225,11 @@ const GeneralSettings: FC = () => {
             <SettingRow>
               <SettingRowTitle style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span>{t('settings.proxy.bypass')}</span>
-                <InfoTooltip content={t('settings.proxy.tip')} placement="right" iconProps={{ className: 'cursor-pointer' }} />
+                <InfoTooltip
+                  content={t('settings.proxy.tip')}
+                  placement="right"
+                  iconProps={{ className: 'cursor-pointer' }}
+                />
               </SettingRowTitle>
               <Input
                 spellCheck={false}
