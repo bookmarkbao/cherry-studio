@@ -34,7 +34,7 @@ import type { ViewMode } from './types'
 const logger = loggerService.withContext('CodeBlockView')
 
 interface Props {
-  // FIXME: It's not runtime string!
+  // FIXME: It's may not runtime string!
   children: string
   language: string
   // Message Block ID
