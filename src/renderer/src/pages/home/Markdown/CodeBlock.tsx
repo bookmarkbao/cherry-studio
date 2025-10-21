@@ -34,7 +34,7 @@ const CodeBlock: React.FC<Props> = ({ children, className, node, blockId }) => {
   const isStreaming = useMemo(() => msgBlock?.status === MessageBlockStatus.STREAMING, [msgBlock?.status])
 
   const handleSave = useCallback(
-    (newContent: string) => {
+    async (newContent: string) => {
       if (id !== undefined) {
         EventEmitter.emit(EVENT_NAMES.EDIT_CODE_BLOCK, {
           msgBlockId: blockId,

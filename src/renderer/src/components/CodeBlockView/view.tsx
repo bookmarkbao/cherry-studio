@@ -39,7 +39,7 @@ interface Props {
   language: string
   // Message Block ID
   blockId: string
-  onSave: (newContent: string) => void
+  onSave: (newContent: string) => Promise<void>
 }
 
 /**

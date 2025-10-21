@@ -25,7 +25,7 @@ interface UseMermaidFixTool {
     /** Mermaid code */
     content: string
   }
-  onSave: (newContent: string) => void
+  onSave: (newContent: string) => Promise<void>
   setError: (error: unknown) => void
   setTools: React.Dispatch<React.SetStateAction<ActionTool[]>>
 }
@@ -136,7 +136,7 @@ export const useMermaidFixTool = ({ enabled, context, onSave, setError, setTools
       if (parsedResult.success) {
         const validResult = parsedResult.data
         if (validResult.fixed) {
-          onSave(validResult.result)
+          await onSave(validResult.result)
           setError(undefined)
         } else {
           window.toast.warning({ title: t('code_block.mermaid_fix.failed'), description: validResult.reason })
