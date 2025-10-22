@@ -124,7 +124,7 @@ const MermaidPreview = ({
   const error = mermaidError || renderError
 
   useEffect(() => {
-    if (error !== undefined && error !== null && onError !== undefined) {
+    if (onError !== undefined) {
       onError(error)
     }
   }, [error, onError])

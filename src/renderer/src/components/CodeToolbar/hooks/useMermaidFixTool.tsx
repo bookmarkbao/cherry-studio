@@ -26,7 +26,6 @@ interface UseMermaidFixTool {
     content: string
   }
   onSave: (newContent: string) => Promise<void>
-  setError: (error: unknown) => void
   setTools: React.Dispatch<React.SetStateAction<ActionTool[]>>
 }
 
@@ -73,7 +72,7 @@ Example outputs:
 
 `
 
-export const useMermaidFixTool = ({ enabled, context, onSave, setError, setTools }: UseMermaidFixTool) => {
+export const useMermaidFixTool = ({ enabled, context, onSave, setTools }: UseMermaidFixTool) => {
   const { t } = useTranslation()
   const { registerTool, removeTool } = useToolManager(setTools)
   const { language } = useSettings()
@@ -140,7 +139,6 @@ export const useMermaidFixTool = ({ enabled, context, onSave, setError, setTools
         const validResult = parsedResult.data
         if (validResult.fixed) {
           await onSave(validResult.result)
-          setError(undefined)
         } else {
           window.toast.warning({ title: t('code_block.mermaid_fix.failed'), description: validResult.reason })
         }
@@ -153,7 +151,7 @@ export const useMermaidFixTool = ({ enabled, context, onSave, setError, setTools
     }
 
     setPending(blockId, false)
-  }, [setPending, blockId, completion, prompt, t, onSave, setError])
+  }, [setPending, blockId, completion, prompt, t, onSave])
 
   // when unmounted
   useEffect(() => {

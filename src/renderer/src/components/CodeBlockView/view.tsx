@@ -271,7 +271,6 @@ export const CodeBlockView: React.FC<Props> = memo(({ children: code, language, 
       error,
       content: code
     },
-    setError,
     onSave,
     setTools
   })
