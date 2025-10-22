@@ -102,7 +102,7 @@
 }
 
 .ant-dropdown-menu .ant-dropdown-menu-sub {
-  max-height: 80vh;
+  max-height: min(400px, 80vh);
   width: max-content;
   overflow-y: auto;
   overflow-x: hidden;
