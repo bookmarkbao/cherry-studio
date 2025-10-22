@@ -102,11 +102,17 @@
 }
 
 .ant-dropdown-menu .ant-dropdown-menu-sub {
-  max-height: 80vh;
+  max-height: min(300px, 80vh);
   width: max-content;
   overflow-y: auto;
   overflow-x: hidden;
   border: 0.5px solid var(--color-border);
+}
+
+@media (max-height: 600px) {
+  .ant-dropdown-menu .ant-dropdown-menu-sub {
+    max-height: 30vh;
+  }
 }
 
 .ant-dropdown {
