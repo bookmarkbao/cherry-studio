@@ -1,0 +1,148 @@
+name: Build (No Release)
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Build platform"
+        required: true
+        type: choice
+        options:
+          - all
+          - windows
+          - macos
+          - linux
+        default: "all"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+          - os: macos-latest
+            platform: macos
+          - os: ubuntu-latest
+            platform: linux
+      fail-fast: false
+
+    # 根据用户选择的平台决定是否运行
+
+    steps:
+      - name: Check out Git repository
+        if: |
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform
+        uses: actions/checkout@v5
+
+      - name: Install Node.js
+        if: |
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: macos-latest dependencies fix
+        if: |
+          matrix.os == 'macos-latest' &&
+          (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'macos')
+        run: |
+          brew install python-setuptools
+
+      - name: Install corepack
+        if: |
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform
+        run: corepack enable && corepack prepare yarn@4.6.0 --activate
+
+      - name: Get yarn cache directory path
+        if: |
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache yarn dependencies
+        if: |
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install Dependencies
+        if: |
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform
+        run: yarn install
+
+      - name: Build Linux
+        if: |
+          matrix.os == 'ubuntu-latest' &&
+          (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'linux')
+        run: |
+          sudo apt-get install -y rpm
+          yarn build:linux
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+          MAIN_VITE_CHERRYAI_CLIENT_SECRET: ${{ secrets.MAIN_VITE_CHERRYAI_CLIENT_SECRET }}
+          MAIN_VITE_MINERU_API_KEY: ${{ secrets.MAIN_VITE_MINERU_API_KEY }}
+          RENDERER_VITE_AIHUBMIX_SECRET: ${{ secrets.RENDERER_VITE_AIHUBMIX_SECRET }}
+          RENDERER_VITE_PPIO_APP_SECRET: ${{ secrets.RENDERER_VITE_PPIO_APP_SECRET }}
+
+      - name: Build Mac
+        if: |
+          matrix.os == 'macos-latest' &&
+          (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'macos')
+        run: |
+          sudo -H pip install setuptools
+          yarn build:mac
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+          MAIN_VITE_CHERRYAI_CLIENT_SECRET: ${{ secrets.MAIN_VITE_CHERRYAI_CLIENT_SECRET }}
+          MAIN_VITE_MINERU_API_KEY: ${{ secrets.MAIN_VITE_MINERU_API_KEY }}
+          RENDERER_VITE_AIHUBMIX_SECRET: ${{ secrets.RENDERER_VITE_AIHUBMIX_SECRET }}
+          RENDERER_VITE_PPIO_APP_SECRET: ${{ secrets.RENDERER_VITE_PPIO_APP_SECRET }}
+
+      - name: Build Windows
+        if: |
+          matrix.os == 'windows-latest' &&
+          (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'windows')
+        run: |
+          yarn build:win
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+          MAIN_VITE_CHERRYAI_CLIENT_SECRET: ${{ secrets.MAIN_VITE_CHERRYAI_CLIENT_SECRET }}
+          MAIN_VITE_MINERU_API_KEY: ${{ secrets.MAIN_VITE_MINERU_API_KEY }}
+          RENDERER_VITE_AIHUBMIX_SECRET: ${{ secrets.RENDERER_VITE_AIHUBMIX_SECRET }}
+          RENDERER_VITE_PPIO_APP_SECRET: ${{ secrets.RENDERER_VITE_PPIO_APP_SECRET }}
+
+      - name: Upload artifacts
+        if: |
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.platform }}-${{ github.sha }}
+          path: |
+            dist/*.exe
+            dist/*.zip
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.snap
+            dist/*.deb
+            dist/*.rpm
+            dist/*.tar.gz
+          retention-days: 7
