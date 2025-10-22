@@ -19,7 +19,6 @@ export const webSearchPlugin = (config: WebSearchPluginConfig = DEFAULT_WEB_SEAR
 
     transformParams: async (params: any, context: AiRequestContext) => {
       const { providerId } = context
-      console.log('params', params)
       switchWebSearchTool(providerId, config, params)
       if (providerId === 'cherryin') {
         // cherryin.gemini
