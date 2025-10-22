@@ -151,6 +151,10 @@ export interface SettingsState {
   notionExportReasoning: boolean
   excludeCitationsInExport: boolean
   standardizeCitationsInExport: boolean
+  // Image export settings
+  imageExportMode: 'base64' | 'folder' | 'none'
+  imageExportQuality: number
+  imageExportMaxSize: number
   yuqueToken: string | null
   yuqueUrl: string | null
   yuqueRepoId: string | null
@@ -333,6 +337,10 @@ export const initialState: SettingsState = {
   notionExportReasoning: false,
   excludeCitationsInExport: false,
   standardizeCitationsInExport: false,
+  // Image export settings
+  imageExportMode: 'none',
+  imageExportQuality: 85,
+  imageExportMaxSize: 2048,
   yuqueToken: '',
   yuqueUrl: '',
   yuqueRepoId: '',
@@ -716,6 +724,16 @@ const settingsSlice = createSlice({
     setStandardizeCitationsInExport: (state, action: PayloadAction<boolean>) => {
       state.standardizeCitationsInExport = action.payload
     },
+    // Image export settings actions
+    setImageExportMode: (state, action: PayloadAction<'base64' | 'folder' | 'none'>) => {
+      state.imageExportMode = action.payload
+    },
+    setImageExportQuality: (state, action: PayloadAction<number>) => {
+      state.imageExportQuality = action.payload
+    },
+    setImageExportMaxSize: (state, action: PayloadAction<number>) => {
+      state.imageExportMaxSize = action.payload
+    },
     setYuqueToken: (state, action: PayloadAction<string>) => {
       state.yuqueToken = action.payload
     },
@@ -940,6 +958,9 @@ export const {
   setNotionExportReasoning,
   setExcludeCitationsInExport,
   setStandardizeCitationsInExport,
+  setImageExportMode,
+  setImageExportQuality,
+  setImageExportMaxSize,
   setYuqueToken,
   setYuqueRepoId,
   setYuqueUrl,

@@ -191,6 +191,11 @@ export enum IpcChannel {
   File_StartWatcher = 'file:startWatcher',
   File_StopWatcher = 'file:stopWatcher',
   File_ShowInFolder = 'file:showInFolder',
+  // Image export specific channels
+  File_ReadBinary = 'file:readBinary',
+  File_WriteBinary = 'file:writeBinary',
+  File_CopyFile = 'file:copyFile',
+  File_CreateDirectory = 'file:createDirectory',
 
   // file service
   FileService_Upload = 'file-service:upload',

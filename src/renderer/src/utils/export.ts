@@ -17,6 +17,8 @@ import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { appendBlocks } from 'notion-helper'
 
+import { createExportFolderStructure, processImageBlocks } from './exportImages'
+
 const logger = loggerService.withContext('Utils:export')
 
 // 全局的导出状态获取函数

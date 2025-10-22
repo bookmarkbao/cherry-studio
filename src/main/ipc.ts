@@ -531,6 +531,23 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   ipcMain.handle(IpcChannel.File_StopWatcher, fileManager.stopFileWatcher.bind(fileManager))
   ipcMain.handle(IpcChannel.File_ShowInFolder, fileManager.showInFolder.bind(fileManager))
 
+  // Image export specific handlers
+  ipcMain.handle(IpcChannel.File_ReadBinary, async (_, filePath: string) => {
+    return fs.promises.readFile(filePath)
+  })
+
+  ipcMain.handle(IpcChannel.File_WriteBinary, async (_, filePath: string, buffer: Buffer) => {
+    return fs.promises.writeFile(filePath, buffer)
+  })
+
+  ipcMain.handle(IpcChannel.File_CopyFile, async (_, sourcePath: string, destPath: string) => {
+    return fs.promises.copyFile(sourcePath, destPath)
+  })
+
+  ipcMain.handle(IpcChannel.File_CreateDirectory, async (_, dirPath: string) => {
+    return fs.promises.mkdir(dirPath, { recursive: true })
+  })
+
   // file service
   ipcMain.handle(IpcChannel.FileService_Upload, async (_, provider: Provider, file: FileMetadata) => {
     const service = FileServiceManager.getInstance().getService(provider)
