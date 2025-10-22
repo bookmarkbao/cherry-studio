@@ -50,7 +50,7 @@ describe('buildFunctionCallToolName', () => {
     it('should include serverId suffix when provided', () => {
       const serverId = 'abc123def456'
       const result = buildFunctionCallToolName('server', 'tool', serverId)
-      
+
       // Should include last 6 chars of serverId
       expect(result).toContain('ef456')
     })
@@ -79,7 +79,7 @@ describe('buildFunctionCallToolName', () => {
       const longServerName = 'a'.repeat(50)
       const longToolName = 'b'.repeat(50)
       const result = buildFunctionCallToolName(longServerName, longToolName, 'id123456')
-      
+
       expect(result.length).toBeLessThanOrEqual(63)
     })
 
@@ -87,7 +87,7 @@ describe('buildFunctionCallToolName', () => {
       const longServerName = 'a'.repeat(50)
       const longToolName = 'b'.repeat(50)
       const result = buildFunctionCallToolName(longServerName, longToolName, 'id123456')
-      
+
       expect(result).not.toMatch(/[_-]$/)
     })
   })
@@ -96,7 +96,7 @@ describe('buildFunctionCallToolName', () => {
     it('should handle GitHub MCP server instances correctly', () => {
       const serverName = 'github'
       const toolName = 'search_repositories'
-      
+
       const githubComId = 'server-github-com-abc123'
       const gheId = 'server-ghe-internal-xyz789'
 
@@ -105,11 +105,11 @@ describe('buildFunctionCallToolName', () => {
 
       // Should be different
       expect(tool1).not.toBe(tool2)
-      
+
       // Both should be valid identifiers
       expect(tool1).toMatch(/^[a-zA-Z][a-zA-Z0-9_-]*$/)
       expect(tool2).toMatch(/^[a-zA-Z][a-zA-Z0-9_-]*$/)
-      
+
       // Both should be <= 63 chars
       expect(tool1.length).toBeLessThanOrEqual(63)
       expect(tool2.length).toBeLessThanOrEqual(63)
