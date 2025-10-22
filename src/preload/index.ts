@@ -205,7 +205,14 @@ const api = {
       ipcRenderer.on('file-change', listener)
       return () => ipcRenderer.off('file-change', listener)
     },
-    showInFolder: (path: string): Promise<void> => ipcRenderer.invoke(IpcChannel.File_ShowInFolder, path)
+    showInFolder: (path: string): Promise<void> => ipcRenderer.invoke(IpcChannel.File_ShowInFolder, path),
+    // Image export specific methods
+    readBinary: (filePath: string): Promise<Buffer> => ipcRenderer.invoke(IpcChannel.File_ReadBinary, filePath),
+    writeBinary: (filePath: string, buffer: Buffer): Promise<void> =>
+      ipcRenderer.invoke(IpcChannel.File_WriteBinary, filePath, buffer),
+    copyFile: (sourcePath: string, destPath: string): Promise<void> =>
+      ipcRenderer.invoke(IpcChannel.File_CopyFile, sourcePath, destPath),
+    createDirectory: (dirPath: string): Promise<void> => ipcRenderer.invoke(IpcChannel.File_CreateDirectory, dirPath)
   },
   fs: {
     read: (pathOrUrl: string, encoding?: BufferEncoding) => ipcRenderer.invoke(IpcChannel.Fs_Read, pathOrUrl, encoding),

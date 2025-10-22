@@ -265,12 +265,20 @@ const formatCitationsAsFootnotes = (citations: string): string => {
   return footnotes.join('\n\n')
 }
 
-const createBaseMarkdown = (
+const createBaseMarkdown = async (
   message: Message,
   includeReasoning: boolean = false,
   excludeCitations: boolean = false,
-  normalizeCitations: boolean = true
-): { titleSection: string; reasoningSection: string; contentSection: string; citation: string } => {
+  normalizeCitations: boolean = true,
+  imageMode: 'base64' | 'folder' | 'none' = 'none',
+  imageOutputDir?: string
+): Promise<{
+  titleSection: string
+  reasoningSection: string
+  contentSection: string
+  citation: string
+  imageSection: string
+}> => {
   const { forceDollarMathInMarkdown } = store.getState().settings
   const roleText = getRoleText(message.role, message.model?.name, message.model?.provider)
   const titleSection = `## ${roleText}`
@@ -312,45 +320,98 @@ const createBaseMarkdown = (
     citation = formatCitationsAsFootnotes(citation)
   }
 
-  return { titleSection, reasoningSection, contentSection: processedContent, citation }
+  // 处理图片
+  let imageSection = ''
+  if (imageMode !== 'none') {
+    try {
+      const imageResults = await processImageBlocks(message, imageMode, imageOutputDir)
+      if (imageResults.length > 0) {
+        imageSection = imageResults.map((img) => `![${img.alt}](${img.exportedPath})`).join('\n\n')
+      }
+    } catch (error) {
+      logger.error('Failed to process images:', error as Error)
+    }
+  }
+
+  return { titleSection, reasoningSection, contentSection: processedContent, citation, imageSection }
 }
 
-export const messageToMarkdown = (message: Message, excludeCitations?: boolean): string => {
-  const { excludeCitationsInExport, standardizeCitationsInExport } = store.getState().settings
+export const messageToMarkdown = async (
+  message: Message,
+  excludeCitations?: boolean,
+  imageMode?: 'base64' | 'folder' | 'none',
+  imageOutputDir?: string
+): Promise<string> => {
+  const { excludeCitationsInExport, standardizeCitationsInExport, imageExportMode } = store.getState().settings
   const shouldExcludeCitations = excludeCitations ?? excludeCitationsInExport
-  const { titleSection, contentSection, citation } = createBaseMarkdown(
+  const actualImageMode = imageMode ?? imageExportMode ?? 'none'
+  const { titleSection, contentSection, citation, imageSection } = await createBaseMarkdown(
     message,
     false,
     shouldExcludeCitations,
-    standardizeCitationsInExport
+    standardizeCitationsInExport,
+    actualImageMode,
+    imageOutputDir
   )
-  return [titleSection, '', contentSection, citation].join('\n')
+  // Place images after the title and before content
+  const sections = [titleSection]
+  if (imageSection) {
+    sections.push('', imageSection)
+  }
+  sections.push('', contentSection)
+  if (citation) {
+    sections.push(citation)
+  }
+  return sections.join('\n')
 }
 
-export const messageToMarkdownWithReasoning = (message: Message, excludeCitations?: boolean): string => {
-  const { excludeCitationsInExport, standardizeCitationsInExport } = store.getState().settings
+export const messageToMarkdownWithReasoning = async (
+  message: Message,
+  excludeCitations?: boolean,
+  imageMode?: 'base64' | 'folder' | 'none',
+  imageOutputDir?: string
+): Promise<string> => {
+  const { excludeCitationsInExport, standardizeCitationsInExport, imageExportMode } = store.getState().settings
   const shouldExcludeCitations = excludeCitations ?? excludeCitationsInExport
-  const { titleSection, reasoningSection, contentSection, citation } = createBaseMarkdown(
+  const actualImageMode = imageMode ?? imageExportMode ?? 'none'
+  const { titleSection, reasoningSection, contentSection, citation, imageSection } = await createBaseMarkdown(
     message,
     true,
     shouldExcludeCitations,
-    standardizeCitationsInExport
+    standardizeCitationsInExport,
+    actualImageMode,
+    imageOutputDir
   )
-  return [titleSection, '', reasoningSection, contentSection, citation].join('\n')
+  // Place images after the title and before reasoning
+  const sections = [titleSection]
+  if (imageSection) {
+    sections.push('', imageSection)
+  }
+  if (reasoningSection) {
+    sections.push('', reasoningSection)
+  }
+  sections.push(contentSection)
+  if (citation) {
+    sections.push(citation)
+  }
+  return sections.join('\n')
 }
 
-export const messagesToMarkdown = (
+export const messagesToMarkdown = async (
   messages: Message[],
   exportReasoning?: boolean,
-  excludeCitations?: boolean
-): string => {
-  return messages
-    .map((message) =>
-      exportReasoning
-        ? messageToMarkdownWithReasoning(message, excludeCitations)
-        : messageToMarkdown(message, excludeCitations)
-    )
-    .join('\n---\n')
+  excludeCitations?: boolean,
+  imageMode?: 'base64' | 'folder' | 'none',
+  imageOutputDir?: string
+): Promise<string> => {
+  const markdownParts: string[] = []
+  for (const message of messages) {
+    const markdown = exportReasoning
+      ? await messageToMarkdownWithReasoning(message, excludeCitations, imageMode, imageOutputDir)
+      : await messageToMarkdown(message, excludeCitations, imageMode, imageOutputDir)
+    markdownParts.push(markdown)
+  }
+  return markdownParts.join('\n---\n')
 }
 
 const formatMessageAsPlainText = (message: Message): string => {
@@ -372,14 +433,23 @@ const messagesToPlainText = (messages: Message[]): string => {
 export const topicToMarkdown = async (
   topic: Topic,
   exportReasoning?: boolean,
-  excludeCitations?: boolean
+  excludeCitations?: boolean,
+  imageMode?: 'base64' | 'folder' | 'none',
+  imageOutputDir?: string
 ): Promise<string> => {
   const topicName = `# ${topic.name}`
 
   const messages = await fetchTopicMessages(topic.id)
 
   if (messages && messages.length > 0) {
-    return topicName + '\n\n' + messagesToMarkdown(messages, exportReasoning, excludeCitations)
+    const messagesMarkdown = await messagesToMarkdown(
+      messages,
+      exportReasoning,
+      excludeCitations,
+      imageMode,
+      imageOutputDir
+    )
+    return topicName + '\n\n' + messagesMarkdown
   }
 
   return topicName
@@ -409,34 +479,43 @@ export const exportTopicAsMarkdown = async (
 
   setExportingState(true)
 
-  const { markdownExportPath } = store.getState().settings
-  if (!markdownExportPath) {
-    try {
-      const fileName = removeSpecialCharactersForFileName(topic.name) + '.md'
-      const markdown = await topicToMarkdown(topic, exportReasoning, excludeCitations)
-      const result = await window.api.file.save(fileName, markdown)
-      if (result) {
-        window.toast.success(i18n.t('message.success.markdown.export.specified'))
+  const { markdownExportPath, imageExportMode } = store.getState().settings
+
+  try {
+    // Handle folder mode - create folder structure
+    if (imageExportMode === 'folder') {
+      const { rootDir, imagesDir } = await createExportFolderStructure(topic.name, markdownExportPath || undefined)
+
+      // Generate markdown with images in folder mode
+      const markdown = await topicToMarkdown(topic, exportReasoning, excludeCitations, 'folder', imagesDir)
+
+      // Save markdown to the root directory
+      const markdownPath = `${rootDir}/conversation.md`
+      await window.api.file.write(markdownPath, markdown)
+
+      window.toast.success(i18n.t('message.success.markdown.export.specified'))
+    } else {
+      // Base64 mode or no images - traditional export
+      if (!markdownExportPath) {
+        const fileName = removeSpecialCharactersForFileName(topic.name) + '.md'
+        const markdown = await topicToMarkdown(topic, exportReasoning, excludeCitations, imageExportMode)
+        const result = await window.api.file.save(fileName, markdown)
+        if (result) {
+          window.toast.success(i18n.t('message.success.markdown.export.specified'))
+        }
+      } else {
+        const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss')
+        const fileName = removeSpecialCharactersForFileName(topic.name) + ` ${timestamp}.md`
+        const markdown = await topicToMarkdown(topic, exportReasoning, excludeCitations, imageExportMode)
+        await window.api.file.write(markdownExportPath + '/' + fileName, markdown)
+        window.toast.success(i18n.t('message.success.markdown.export.preconf'))
       }
-    } catch (error: any) {
-      window.toast.error(i18n.t('message.error.markdown.export.specified'))
-      logger.error('Failed to export topic as markdown:', error)
-    } finally {
-      setExportingState(false)
     }
-  } else {
-    try {
-      const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss')
-      const fileName = removeSpecialCharactersForFileName(topic.name) + ` ${timestamp}.md`
-      const markdown = await topicToMarkdown(topic, exportReasoning, excludeCitations)
-      await window.api.file.write(markdownExportPath + '/' + fileName, markdown)
-      window.toast.success(i18n.t('message.success.markdown.export.preconf'))
-    } catch (error: any) {
-      window.toast.error(i18n.t('message.error.markdown.export.preconf'))
-      logger.error('Failed to export topic as markdown:', error)
-    } finally {
-      setExportingState(false)
-    }
+  } catch (error: any) {
+    window.toast.error(i18n.t('message.error.markdown.export.specified'))
+    logger.error('Failed to export topic as markdown:', error)
+  } finally {
+    setExportingState(false)
   }
 }
 
@@ -452,40 +531,50 @@ export const exportMessageAsMarkdown = async (
 
   setExportingState(true)
 
-  const { markdownExportPath } = store.getState().settings
-  if (!markdownExportPath) {
-    try {
-      const title = await getMessageTitle(message)
-      const fileName = removeSpecialCharactersForFileName(title) + '.md'
+  const { markdownExportPath, imageExportMode } = store.getState().settings
+  const title = await getMessageTitle(message)
+
+  try {
+    // Handle folder mode for single message
+    if (imageExportMode === 'folder') {
+      const { rootDir, imagesDir } = await createExportFolderStructure(title, markdownExportPath || undefined)
+
+      // Generate markdown with images in folder mode
       const markdown = exportReasoning
-        ? messageToMarkdownWithReasoning(message, excludeCitations)
-        : messageToMarkdown(message, excludeCitations)
-      const result = await window.api.file.save(fileName, markdown)
-      if (result) {
-        window.toast.success(i18n.t('message.success.markdown.export.specified'))
+        ? await messageToMarkdownWithReasoning(message, excludeCitations, 'folder', imagesDir)
+        : await messageToMarkdown(message, excludeCitations, 'folder', imagesDir)
+
+      // Save markdown to the root directory
+      const markdownPath = `${rootDir}/message.md`
+      await window.api.file.write(markdownPath, markdown)
+
+      window.toast.success(i18n.t('message.success.markdown.export.specified'))
+    } else {
+      // Base64 mode or no images - traditional export
+      if (!markdownExportPath) {
+        const fileName = removeSpecialCharactersForFileName(title) + '.md'
+        const markdown = exportReasoning
+          ? await messageToMarkdownWithReasoning(message, excludeCitations, imageExportMode)
+          : await messageToMarkdown(message, excludeCitations, imageExportMode)
+        const result = await window.api.file.save(fileName, markdown)
+        if (result) {
+          window.toast.success(i18n.t('message.success.markdown.export.specified'))
+        }
+      } else {
+        const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss')
+        const fileName = removeSpecialCharactersForFileName(title) + ` ${timestamp}.md`
+        const markdown = exportReasoning
+          ? await messageToMarkdownWithReasoning(message, excludeCitations, imageExportMode)
+          : await messageToMarkdown(message, excludeCitations, imageExportMode)
+        await window.api.file.write(markdownExportPath + '/' + fileName, markdown)
+        window.toast.success(i18n.t('message.success.markdown.export.preconf'))
       }
-    } catch (error: any) {
-      window.toast.error(i18n.t('message.error.markdown.export.specified'))
-      logger.error('Failed to export message as markdown:', error)
-    } finally {
-      setExportingState(false)
     }
-  } else {
-    try {
-      const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss')
-      const title = await getMessageTitle(message)
-      const fileName = removeSpecialCharactersForFileName(title) + ` ${timestamp}.md`
-      const markdown = exportReasoning
-        ? messageToMarkdownWithReasoning(message, excludeCitations)
-        : messageToMarkdown(message, excludeCitations)
-      await window.api.file.write(markdownExportPath + '/' + fileName, markdown)
-      window.toast.success(i18n.t('message.success.markdown.export.preconf'))
-    } catch (error: any) {
-      window.toast.error(i18n.t('message.error.markdown.export.preconf'))
-      logger.error('Failed to export message as markdown:', error)
-    } finally {
-      setExportingState(false)
-    }
+  } catch (error: any) {
+    window.toast.error(i18n.t('message.error.markdown.export.specified'))
+    logger.error('Failed to export message as markdown:', error)
+  } finally {
+    setExportingState(false)
   }
 }
 
