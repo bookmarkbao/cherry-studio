@@ -19,20 +19,18 @@ import ruRU from './translate/ru-ru.json'
 
 const logger = loggerService.withContext('I18N')
 
-const resources = Object.fromEntries(
-  [
-    ['en-US', enUS],
-    ['ja-JP', jaJP],
-    ['ru-RU', ruRU],
-    ['zh-CN', zhCN],
-    ['zh-TW', zhTW],
-    ['de-DE', deDE],
-    ['el-GR', elGR],
-    ['es-ES', esES],
-    ['fr-FR', frFR],
-    ['pt-PT', ptPT]
-  ].map(([locale, translation]) => [locale, { translation }])
-)
+const resources = Object.fromEntries([
+  ['en-US', enUS],
+  ['ja-JP', jaJP],
+  ['ru-RU', ruRU],
+  ['zh-CN', zhCN],
+  ['zh-TW', zhTW],
+  ['de-DE', deDE],
+  ['el-GR', elGR],
+  ['es-ES', esES],
+  ['fr-FR', frFR],
+  ['pt-PT', ptPT]
+])
 
 export const getLanguage = async () => {
   return (await preferenceService.get('app.language')) || navigator.language || defaultLanguage

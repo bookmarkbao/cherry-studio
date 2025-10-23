@@ -15,20 +15,18 @@ import JaJP from '../../renderer/src/i18n/translate/ja-jp.json'
 import ptPT from '../../renderer/src/i18n/translate/pt-pt.json'
 import RuRu from '../../renderer/src/i18n/translate/ru-ru.json'
 
-export const locales = Object.fromEntries(
-  [
-    ['en-US', EnUs],
-    ['zh-CN', ZhCn],
-    ['zh-TW', ZhTw],
-    ['ja-JP', JaJP],
-    ['ru-RU', RuRu],
-    ['de-DE', deDE],
-    ['el-GR', elGR],
-    ['es-ES', esES],
-    ['fr-FR', frFR],
-    ['pt-PT', ptPT]
-  ].map(([locale, translation]) => [locale, { translation }])
-)
+const locales = Object.fromEntries([
+  ['en-US', EnUs],
+  ['zh-CN', ZhCn],
+  ['zh-TW', ZhTw],
+  ['ja-JP', JaJP],
+  ['ru-RU', RuRu],
+  ['de-DE', deDE],
+  ['el-GR', elGR],
+  ['es-ES', esES],
+  ['fr-FR', frFR],
+  ['pt-PT', ptPT]
+])
 
 export const getAppLanguage = (): LanguageVarious => {
   const language = preferenceService.get('app.language')
