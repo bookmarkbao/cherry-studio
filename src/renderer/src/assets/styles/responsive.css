@@ -9,7 +9,7 @@
   --topic-list-width: 275px;
   --settings-width: 250px;
 
-  --scrollbar-width: 5px;
+  --scrollbar-width: 10px;
 }
 
 [navbar-position='left'] {
