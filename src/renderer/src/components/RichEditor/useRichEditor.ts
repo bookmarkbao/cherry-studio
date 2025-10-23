@@ -421,17 +421,21 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         // Default behavior for non-code blocks
         const text = event.clipboardData?.getData('text/plain') ?? ''
         if (text) {
-          const html = markdownToHtml(text)
           const { $from } = selection
           const atStartOfLine = $from.parentOffset === 0
           const inEmptyParagraph = $from.parent.type.name === 'paragraph' && $from.parent.textContent === ''
 
+          // If pasting in the middle of a line, insert as plain text to avoid unwanted line breaks
           if (!atStartOfLine && !inEmptyParagraph) {
-            const cleanHtml = html.replace(/^<p>(.*?)<\/p>/s, '$1')
-            editor.commands.insertContent(cleanHtml)
-          } else {
-            editor.commands.insertContent(html)
+            // Insert plain text without creating new paragraphs
+            const tr = view.state.tr.insertText(text, selection.from, selection.to)
+            view.dispatch(tr)
+            return true
           }
+
+          // At start of line or in empty paragraph: convert markdown to HTML and insert
+          const html = markdownToHtml(text)
+          editor.commands.insertContent(html)
           onPaste?.(html)
           return true
         }
