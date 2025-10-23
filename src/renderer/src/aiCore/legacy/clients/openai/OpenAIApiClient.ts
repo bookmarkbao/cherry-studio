@@ -1,3 +1,10 @@
+import type { AzureOpenAI } from '@cherrystudio/openai'
+import type OpenAI from '@cherrystudio/openai'
+import type {
+  ChatCompletionContentPart,
+  ChatCompletionContentPartRefusal,
+  ChatCompletionTool
+} from '@cherrystudio/openai/resources'
 import { loggerService } from '@logger'
 import { DEFAULT_MAX_TOKENS } from '@renderer/config/constant'
 import {
@@ -12,6 +19,7 @@ import {
   isGPT5SeriesModel,
   isGrokReasoningModel,
   isNotSupportSystemMessageModel,
+  isOpenAIDeepResearchModel,
   isOpenAIOpenWeightModel,
   isOpenAIReasoningModel,
   isQwenAlwaysThinkModel,
@@ -81,9 +89,6 @@ import {
 } from '@renderer/utils/mcp-tools'
 import { findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/find'
 import { t } from 'i18next'
-import type { AzureOpenAI } from 'openai'
-import type OpenAI from 'openai'
-import type { ChatCompletionContentPart, ChatCompletionContentPartRefusal, ChatCompletionTool } from 'openai/resources'
 
 import type { GenericChunk } from '../../middleware/schemas'
 import type { RequestTransformer, ResponseChunkTransformer, ResponseChunkTransformerContext } from '../types'
@@ -127,6 +132,12 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
 
     if (!isReasoningModel(model)) {
       return {}
+    }
+
+    if (isOpenAIDeepResearchModel(model)) {
+      return {
+        reasoning_effort: 'medium'
+      }
     }
 
     const reasoningEffort = assistant?.settings?.reasoning_effort

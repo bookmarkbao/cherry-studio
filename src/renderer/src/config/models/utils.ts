@@ -1,8 +1,8 @@
+import type OpenAI from '@cherrystudio/openai'
 import { isEmbeddingModel, isRerankModel } from '@renderer/config/models/embedding'
 import type { Model } from '@renderer/types'
 import { getLowerBaseModelName } from '@renderer/utils'
 import { WEB_SEARCH_PROMPT_FOR_OPENROUTER } from '@shared/config/prompts'
-import type OpenAI from 'openai'
 
 import { getWebSearchTools } from '../tools'
 import { isOpenAIReasoningModel } from './reasoning'
