@@ -326,7 +326,7 @@ class FileStorage {
         logger.debug(`File moved successfully: ${filePath} to ${newPath}`)
       } catch (renameError: any) {
         // If rename fails (e.g., cross-filesystem move), use copy+delete approach
-        // This ensures the file is actually moved, not just copied
+        // This ensures the original file is removed after copying, completing the move operation
         logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
         await fs.promises.copyFile(filePath, newPath)
         await fs.promises.unlink(filePath)
@@ -356,7 +356,7 @@ class FileStorage {
         logger.debug(`Directory moved successfully: ${dirPath} to ${newDirPath}`)
       } catch (renameError: any) {
         // If rename fails (e.g., cross-filesystem move), use copy+delete approach
-        // This ensures the directory is actually moved, not just copied
+        // This ensures the original directory is removed after copying, completing the move operation
         logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
         await this.copyDirectory(dirPath, newDirPath)
         await fs.promises.rm(dirPath, { recursive: true, force: true })
