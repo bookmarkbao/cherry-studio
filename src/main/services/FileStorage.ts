@@ -320,18 +320,8 @@ class FileStorage {
         await fs.promises.mkdir(destDir, { recursive: true })
       }
 
-      try {
-        // Try rename first - this is the fastest way for same-filesystem moves
-        await fs.promises.rename(filePath, newPath)
-        logger.debug(`File moved successfully: ${filePath} to ${newPath}`)
-      } catch (renameError: any) {
-        // If rename fails (e.g., cross-filesystem move), use copy+delete approach
-        // This ensures the original file is removed after copying, completing the move operation
-        logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
-        await fs.promises.copyFile(filePath, newPath)
-        await fs.promises.unlink(filePath)
-        logger.debug(`File moved successfully using copy+delete: ${filePath} to ${newPath}`)
-      }
+      await fs.promises.rename(filePath, newPath)
+      logger.debug(`File moved successfully: ${filePath} to ${newPath}`)
     } catch (error) {
       logger.error('Move file failed:', error as Error)
       throw error
@@ -350,44 +340,11 @@ class FileStorage {
         await fs.promises.mkdir(parentDir, { recursive: true })
       }
 
-      try {
-        // Try rename first - this is the fastest way for same-filesystem moves
-        await fs.promises.rename(dirPath, newDirPath)
-        logger.debug(`Directory moved successfully: ${dirPath} to ${newDirPath}`)
-      } catch (renameError: any) {
-        // If rename fails (e.g., cross-filesystem move), use copy+delete approach
-        // This ensures the original directory is removed after copying, completing the move operation
-        logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
-        await this.copyDirectory(dirPath, newDirPath)
-        await fs.promises.rm(dirPath, { recursive: true, force: true })
-        logger.debug(`Directory moved successfully using copy+delete: ${dirPath} to ${newDirPath}`)
-      }
+      await fs.promises.rename(dirPath, newDirPath)
+      logger.debug(`Directory moved successfully: ${dirPath} to ${newDirPath}`)
     } catch (error) {
       logger.error('Move directory failed:', error as Error)
       throw error
-    }
-  }
-
-  /**
-   * Recursively copy a directory and all its contents
-   * @private
-   * @param source Source directory path
-   * @param destination Destination directory path
-   */
-  private async copyDirectory(source: string, destination: string): Promise<void> {
-    await fs.promises.mkdir(destination, { recursive: true })
-
-    const entries = await fs.promises.readdir(source, { withFileTypes: true })
-
-    for (const entry of entries) {
-      const sourcePath = path.join(source, entry.name)
-      const destPath = path.join(destination, entry.name)
-
-      if (entry.isDirectory()) {
-        await this.copyDirectory(sourcePath, destPath)
-      } else {
-        await fs.promises.copyFile(sourcePath, destPath)
-      }
     }
   }
 

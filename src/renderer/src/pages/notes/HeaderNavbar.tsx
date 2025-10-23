@@ -176,18 +176,8 @@ const HeaderNavbar = ({
       }
     })
 
-    // Add root directory as the first breadcrumb item if not already at root
-    if (pathParts.length > 0) {
-      items.unshift({
-        key: 'root',
-        title: t('notes.root_directory') || 'Notes',
-        treePath: '/',
-        isFolder: true
-      })
-    }
-
     setBreadcrumbItems(items)
-  }, [activeNode, notesTree, t])
+  }, [activeNode, notesTree])
 
   return (
     <NavbarHeader
