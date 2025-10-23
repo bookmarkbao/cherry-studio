@@ -285,7 +285,6 @@
     "husky": "^9.1.7",
     "i18next": "^23.11.5",
     "i18next-cli": "^1.12.0",
-    "i18next-scanner": "^4.6.0",
     "iconv-lite": "^0.6.3",
     "ipaddr.js": "^2.2.0",
     "isbinaryfile": "5.0.4",
