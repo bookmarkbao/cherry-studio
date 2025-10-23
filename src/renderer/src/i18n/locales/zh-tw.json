@@ -1764,7 +1764,8 @@
     },
     "websearch": {
       "cutoff": "正在截斷搜尋內容...",
-      "fetch_complete": "{{count}} 個搜尋結果",
+      "fetch_complete_one": "{{count}} 個搜尋結果",
+      "fetch_complete_other": "{{count}} 個搜尋結果",
       "rag": "正在執行 RAG...",
       "rag_complete": "保留 {{countBefore}} 個結果中的 {{countAfter}} 個...",
       "rag_failed": "RAG 失敗，返回空結果..."

@@ -1764,7 +1764,8 @@
     },
     "websearch": {
       "cutoff": "Truncating search content...",
-      "fetch_complete": "{{count}} search result(s)",
+      "fetch_complete_one": "{{count}} search result",
+      "fetch_complete_other": "{{count}} search results",
       "rag": "Executing RAG...",
       "rag_complete": "Keeping {{countAfter}} out of {{countBefore}} results...",
       "rag_failed": "RAG failed, returning empty results..."
