@@ -6,7 +6,7 @@ export default defineConfig({
   extract: {
     input: 'src/renderer/src/**/*.{ts,tsx}',
     output: 'src/renderer/src/i18n/locales/{{language}}.json',
-    defaultValue: (_1, _2, lang, value) => `[translate to ${lang}]${value}`,
+    defaultValue: (_1, _2, _3, value) => `[to be translated]${value}`,
     primaryLanguage: 'en-us',
     removeUnusedKeys: false
   },
