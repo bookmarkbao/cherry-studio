@@ -81,7 +81,7 @@ export interface TaskListOptions {
 const md = new MarkdownIt({
   html: true, // Enable HTML tags in source
   xhtmlOut: true, // Use '>' for single tags (<br> instead of <br />)
-  breaks: false,
+  breaks: true, // Preserve line breaks when pasting text
   linkify: false, // Autoconvert URL-like text to links
   typographer: false // Enable smartypants and other sweet transforms
 })

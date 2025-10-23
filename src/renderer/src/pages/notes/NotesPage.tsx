@@ -777,6 +777,10 @@ const NotesPage: FC = () => {
     [notesTree, updateExpandedPaths]
   )
 
+  const handleClearActiveFile = useCallback(() => {
+    dispatch(setActiveFilePath(undefined))
+  }, [dispatch])
+
   const getCurrentNoteContent = useCallback(() => {
     if (settings.defaultEditMode === 'source') {
       return currentContent
@@ -870,6 +874,7 @@ const NotesPage: FC = () => {
             onToggleStar={handleToggleStar}
             onExpandPath={handleExpandPath}
             onRenameNode={handleRenameNode}
+            onClearActiveFile={handleClearActiveFile}
           />
           <NotesEditor
             activeNodeId={activeNode?.id}
