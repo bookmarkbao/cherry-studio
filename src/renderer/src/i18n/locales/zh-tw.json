@@ -531,7 +531,9 @@
         "expand": "展開",
         "file_error": "檔案處理錯誤",
         "file_not_supported": "模型不支援此檔案類型",
-        "file_not_supported_count": "{{count}} 個檔案不被支援",
+        "file_not_supported_count": "{{count}} 個檔案不受支援",
+        "file_not_supported_count_one": "{{count}} 個檔案不受支援",
+        "file_not_supported_count_other": "{{count}} 個檔案不受支援",
         "generate_image": "生成圖片",
         "generate_image_not_supported": "模型不支援生成圖片",
         "knowledge_base": "知識庫",
@@ -539,7 +541,7 @@
           "context": "清除上下文 {{Command}}"
         },
         "new_topic": "新話題 {{Command}}",
-        "paste_text_file_confirm": "[to be translated]:粘贴到输入框？",
+        "paste_text_file_confirm": "粘贴到输入框？",
         "pause": "暫停",
         "placeholder": "在此輸入您的訊息，按 {{key}} 傳送 - @ 選擇模型，/ 包含工具",
         "placeholder_without_triggers": "在此輸入您的訊息，按 {{key}} 傳送",
@@ -697,6 +699,8 @@
             },
             "content": {
               "tip": "已選擇 {{count}} 項內容，文本類型將合併儲存為一個筆記",
+              "tip_one": "已選擇 {{count}} 項內容，文本類型將合併儲存為一個筆記",
+              "tip_other": "已選擇 {{count}} 項內容，文本類型將合併儲存為一個筆記",
               "title": "選擇要儲存的內容類型"
             }
           },
@@ -721,10 +725,14 @@
               "content": {
                 "label": "選擇要保存的內容類型",
                 "selected_tip": "已選擇 {{count}} 項內容，來自 {{messages}} 條訊息",
+                "selected_tip_one": "已從 {{messages}} 條訊息中選取 {{count}} 項",
+                "selected_tip_other": "從 {{messages}} 條訊息中選取了 {{count}} 項",
                 "tip": "話題將以包含完整對話上下文的形式保存到知識庫"
               }
             },
             "success": "話題已成功保存到知識庫（{{count}} 項內容）",
+            "success_one": "主題已成功儲存至知識庫（{{count}} 項）",
+            "success_other": "主題已成功儲存至知識庫（{{count}} 項）",
             "title": "保存話題到知識庫"
           }
         }
@@ -970,6 +978,7 @@
       "clear": "清除",
       "close": "關閉",
       "collapse": "折疊",
+      "coming_soon": "即將推出",
       "confirm": "確認",
       "copied": "已複製",
       "copy": "複製",
@@ -1026,6 +1035,7 @@
       "reasoning_content": "已深度思考",
       "refresh": "重新整理",
       "regenerate": "重新生成",
+      "removed": "已移除",
       "rename": "重新命名",
       "reset": "重設",
       "save": "儲存",
@@ -1034,7 +1044,11 @@
       "select": "選擇",
       "selected": "已選擇",
       "selectedItems": "已選擇 {{count}} 項",
-      "selectedMessages": "選中 {{count}} 條訊息",
+      "selectedItems_one": "已選取 {{count}} 項",
+      "selectedItems_other": "已選取 {{count}} 項",
+      "selectedMessages": "已選取 {{count}} 條訊息",
+      "selectedMessages_one": "已選取 {{count}} 條訊息",
+      "selectedMessages_other": "已選取 {{count}} 條訊息",
       "settings": "設定",
       "sort": {
         "pinyin": {
@@ -1550,6 +1564,8 @@
         }
       },
       "citation": "{{count}} 個引用內容",
+      "citation_one": "{{count}} 個引用內容",
+      "citation_other": "{{count}} 個引用內容",
       "citations": "引用內容",
       "copied": "已複製！",
       "copy": {
@@ -1558,7 +1574,9 @@
       },
       "delete": {
         "confirm": {
-          "content": "確認刪除選中的 {{count}} 條訊息嗎？",
+          "content": "您確定要刪除所選的 {{count}} 則訊息嗎？",
+          "content_one": "您確定要刪除所選的 {{count}} 則訊息嗎？",
+          "content_other": "您確定要刪除所選的 {{count}} 則訊息嗎？",
           "title": "刪除確認"
         },
         "failed": "刪除失敗",
@@ -1967,6 +1985,8 @@
         "both": "名稱+內容",
         "content": "內容",
         "found_results": "找到 {{count}} 個結果 (名稱: {{nameCount}}, 內容: {{contentCount}})",
+        "found_results_one": "找到 {{count}} 個結果（名稱：{{nameCount}}，內容：{{contentCount}}）",
+        "found_results_other": "找到 {{count}} 筆結果（名稱：{{nameCount}}，內容：{{contentCount}}）",
         "more_matches": "個匹配",
         "searching": "搜索中...",
         "show_less": "收起"
@@ -2237,6 +2257,7 @@
       "prompt_placeholder": "描述你想建立的圖片，例如：一個寧靜的湖泊，夕陽西下，遠處是群山",
       "prompt_placeholder_edit": "輸入你的圖片描述，文本繪製用 ' 雙引號 ' 包裹",
       "prompt_placeholder_en": "輸入英文圖片描述，目前僅支持英文提示詞",
+      "prompt_required": "提示詞為必填",
       "proxy_required": "打開代理並開啟”TUN 模式 “查看生成圖片或複製到瀏覽器開啟，後續會支持國內直連",
       "quality": "品質",
       "quality_options": {
@@ -2974,14 +2995,18 @@
               },
               "delete": {
                 "confirm": {
-                  "multiple": "確定要刪除選中的 {{count}} 個備份文件嗎？此操作無法撤銷。",
+                  "multiple": "您確定要刪除 {{count}} 個選定的備份檔案嗎？此操作無法復原。",
+                  "multiple_one": "您確定要刪除 {{count}} 個選定的備份檔案嗎？此操作無法復原。",
+                  "multiple_other": "您確定要刪除 {{count}} 個已選取的備份檔案嗎？此動作無法復原。",
                   "single": "確定要刪除備份文件 \"{{fileName}}\" 嗎？此操作無法撤銷。",
                   "title": "確認刪除"
                 },
                 "error": "刪除失敗",
                 "selected": "刪除選中",
                 "success": {
-                  "multiple": "已刪除 {{count}} 個備份文件",
+                  "multiple": "成功刪除 {{count}} 個備份檔案",
+                  "multiple_one": "成功刪除 {{count}} 個備份檔案",
+                  "multiple_other": "成功刪除 {{count}} 個備份檔案",
                   "single": "刪除成功"
                 },
                 "text": "刪除"
@@ -3162,8 +3187,12 @@
           },
           "autoSync": {
             "hour": "每 {{count}} 小時",
+            "hour_one": "每 {{count}} 小時",
+            "hour_other": "每 {{count}} 小時",
             "label": "自動同步",
             "minute": "每 {{count}} 分鐘",
+            "minute_one": "每 {{count}} 分鐘",
+            "minute_other": "每 {{count}} 分鐘",
             "off": "關閉"
           },
           "backup": {
@@ -3203,14 +3232,20 @@
             "delete": {
               "confirm": {
                 "multiple": "確定要刪除選中的 {{count}} 個備份檔案嗎？此操作不可撤銷。",
+                "multiple_one": "您確定要刪除 {{count}} 個選定的備份檔案嗎？此操作無法復原。",
+                "multiple_other": "您確定要刪除 {{count}} 個已選取的備份檔案嗎？此操作無法復原。",
                 "single": "確定要刪除備份檔案 \"{{fileName}}\" 嗎？此操作不可撤銷。",
                 "title": "確認刪除"
               },
               "error": "刪除備份檔案失敗: {{message}}",
               "label": "刪除",
               "selected": "刪除選中 ({{count}})",
+              "selected_one": "刪除選取項目",
+              "selected_other": "刪除所選 {{count}}",
               "success": {
                 "multiple": "成功刪除 {{count}} 個備份檔案",
+                "multiple_one": "成功刪除 {{count}} 個備份檔案",
+                "multiple_other": "成功刪除 {{count}} 個備份檔案",
                 "single": "刪除備份檔案成功"
               }
             },
@@ -3320,13 +3355,17 @@
               "delete": {
                 "confirm": {
                   "multiple": "確定要刪除選中的 {{count}} 個備份文件嗎？此操作不可恢復",
+                  "multiple_one": "確認刪除多個備份？",
+                  "multiple_other": "確認刪除多個備份？",
                   "single": "確定要刪除備份文件 \"{{fileName}}\" 嗎？此操作不可恢復",
                   "title": "確認刪除"
                 },
                 "error": "刪除失敗",
                 "selected": "刪除選中",
                 "success": {
-                  "multiple": "成功刪除 {{count}} 個備份文件",
+                  "multiple": "成功刪除 {{count}} 個備份檔案",
+                  "multiple_one": "成功刪除 {{count}} 個備份檔案",
+                  "multiple_other": "成功刪除 {{count}} 個備份檔案",
                   "single": "刪除成功"
                 },
                 "text": "刪除"
@@ -3718,7 +3757,9 @@
           "noServersAvailable": "無可用的 MCP 伺服器",
           "selectProvider": "選擇提供者：",
           "setToken": "輸入您的令牌",
-          "success": "同步 MCP 伺服器成功",
+          "success": "成功同步 {{count}} 個 MCP 伺服器",
+          "success_one": "成功同步 1 個 MCP 伺服器",
+          "success_other": "成功同步 {{count}} 個 MCP 伺服器",
           "title": "同步伺服器",
           "tokenPlaceholder": "在此輸入 API 令牌",
           "tokenRequired": "需要 API 令牌",
@@ -3906,8 +3947,14 @@
           "failed": "失敗",
           "keys_status_count": "通過：{{count_passed}} 個密鑰，失敗：{{count_failed}} 個密鑰",
           "model_status_failed": "{{count}} 個模型完全無法訪問",
+          "model_status_failed_one": "1 個模型完全無法訪問",
+          "model_status_failed_other": "{{count}} 個模型完全無法訪問",
           "model_status_partial": "其中 {{count}} 個模型用某些密鑰無法訪問",
+          "model_status_partial_one": "其中 1 個模型用某些密鑰無法訪問",
+          "model_status_partial_other": "其中 {{count}} 個模型用某些密鑰無法訪問",
           "model_status_passed": "{{count}} 個模型通過健康檢查",
+          "model_status_passed_one": "1 個模型通過健康檢查",
+          "model_status_passed_other": "{{count}} 個模型通過健康檢查",
           "model_status_summary": "{{provider}}: {{summary}}",
           "no_api_keys": "未找到 API 密鑰，請先添加 API 密鑰",
           "no_results": "無結果",
@@ -4232,7 +4279,7 @@
           "system": "系統代理伺服器",
           "title": "代理伺服器模式"
         },
-        "tip": "[to be translated]:支持模糊匹配(*.test.com,192.168.0.0/16)"
+        "tip": "支援模糊比對 (*.test.com, 192.168.0.0/16)"
       },
       "quickAssistant": {
         "click_tray_to_show": "點選工具列圖示啟動",

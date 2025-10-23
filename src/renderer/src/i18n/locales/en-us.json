@@ -1574,6 +1574,7 @@
       },
       "delete": {
         "confirm": {
+          "content": "Are you sure you want to delete the selected {{count}} message(s)?",
           "content_one": "Are you sure you want to delete the selected {{count}} message?",
           "content_other": "Are you sure you want to delete the selected {{count}} messages?",
           "title": "Delete Confirmation"
@@ -3242,6 +3243,7 @@
               "selected_one": "Delete Selected",
               "selected_other": "Delete Selected {{count}}",
               "success": {
+                "multiple": "Successfully deleted {{count}} backup file(s)",
                 "multiple_one": "Successfully deleted {{count}} backup file",
                 "multiple_other": "Successfully deleted {{count}} backup files",
                 "single": "Backup file deleted successfully"

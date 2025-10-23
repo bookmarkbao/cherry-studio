@@ -532,6 +532,8 @@
         "file_error": "文件处理出错",
         "file_not_supported": "模型不支持此文件类型",
         "file_not_supported_count": "{{count}} 个文件不被支持",
+        "file_not_supported_count_one": "{{count}} 个文件不被支持",
+        "file_not_supported_count_other": "{{count}} 个文件不被支持",
         "generate_image": "生成图片",
         "generate_image_not_supported": "模型不支持生成图片",
         "knowledge_base": "知识库",
@@ -697,6 +699,8 @@
             },
             "content": {
               "tip": "已选择 {{count}} 项内容，文本类型将合并保存为一个笔记",
+              "tip_one": "已选择 {{count}} 项，文本类型将合并并保存为一条笔记",
+              "tip_other": "已选择 {{count}} 项，文本类型将合并并保存为一条笔记",
               "title": "选择要保存的内容类型"
             }
           },
@@ -721,10 +725,14 @@
               "content": {
                 "label": "选择要保存的内容类型",
                 "selected_tip": "已选择 {{count}} 项内容，来自 {{messages}} 条消息",
+                "selected_tip_one": "已选择 {{count}} 项内容，来自 {{messages}} 条消息",
+                "selected_tip_other": "已选择 {{count}} 项内容，来自 {{messages}} 条消息",
                 "tip": "话题将以包含完整对话上下文的形式保存到知识库"
               }
             },
             "success": "话题已成功保存到知识库（{{count}} 项内容）",
+            "success_one": "话题已成功保存到知识库（{{count}} 项内容）",
+            "success_other": "话题已成功保存到知识库（{{count}} 项内容）",
             "title": "保存话题到知识库"
           }
         }
@@ -970,6 +978,7 @@
       "clear": "清除",
       "close": "关闭",
       "collapse": "折叠",
+      "coming_soon": "即将推出",
       "confirm": "确认",
       "copied": "已复制",
       "copy": "复制",
@@ -1026,6 +1035,7 @@
       "reasoning_content": "已深度思考",
       "refresh": "刷新",
       "regenerate": "重新生成",
+      "removed": "已移除",
       "rename": "重命名",
       "reset": "重置",
       "save": "保存",
@@ -1034,7 +1044,11 @@
       "select": "选择",
       "selected": "已选择",
       "selectedItems": "已选择 {{count}} 项",
+      "selectedItems_one": "已选择 {{count}} 项",
+      "selectedItems_other": "已选择 {{count}} 项",
       "selectedMessages": "选中 {{count}} 条消息",
+      "selectedMessages_one": "选中 {{count}} 条消息",
+      "selectedMessages_other": "选中 {{count}} 条消息",
       "settings": "设置",
       "sort": {
         "pinyin": {
@@ -1550,6 +1564,8 @@
         }
       },
       "citation": "{{count}} 个引用内容",
+      "citation_one": "{{count}} 个引用内容",
+      "citation_other": "{{count}} 个引用内容",
       "citations": "引用内容",
       "copied": "已复制",
       "copy": {
@@ -1559,6 +1575,8 @@
       "delete": {
         "confirm": {
           "content": "确认删除选中的 {{count}} 条消息吗？",
+          "content_one": "确定删除选中的 {{count}} 条消息吗？",
+          "content_other": "确定删除选中的 {{count}} 条消息吗？",
           "title": "删除确认"
         },
         "failed": "删除失败",
@@ -1967,6 +1985,8 @@
         "both": "名称+内容",
         "content": "内容",
         "found_results": "找到 {{count}} 个结果 (名称: {{nameCount}}, 内容: {{contentCount}})",
+        "found_results_one": "找到 {{count}} 个结果（名称：{{nameCount}}，内容：{{contentCount}}）",
+        "found_results_other": "找到 {{count}} 个结果（名称：{{nameCount}}，内容：{{contentCount}}）",
         "more_matches": "个匹配",
         "searching": "搜索中...",
         "show_less": "收起"
@@ -2237,6 +2257,7 @@
       "prompt_placeholder": "描述你想创建的图片，例如：一个宁静的湖泊，夕阳西下，远处是群山",
       "prompt_placeholder_edit": "输入你的图片描述，文本绘制用 \"双引号\" 包裹",
       "prompt_placeholder_en": "输入 \"英文\" 图片描述，目前仅支持英文提示词",
+      "prompt_required": "提示词是必需的",
       "proxy_required": "打开代理并开启 \"TUN 模式\" 查看生成图片或复制到浏览器打开，后续会支持国内直连",
       "quality": "质量",
       "quality_options": {
@@ -2679,11 +2700,11 @@
               "go_to_settings": "去设置",
               "open_accessibility_settings": "打开辅助功能设置"
             },
-            "description": [
-              "划词助手需「<strong>辅助功能权限</strong>」才能正常工作。",
-              "请点击「<strong>去设置</strong>」，并在稍后弹出的权限请求弹窗中点击 「<strong>打开系统设置</strong>」 按钮，然后在之后的应用列表中找到 「<strong>Cherry Studio</strong>」，并打开权限开关。",
-              "完成设置后，请再次开启划词助手。"
-            ],
+            "description": {
+              "0": "划词助手需「<strong>辅助功能权限</strong>」才能正常工作。",
+              "1": "请点击「<strong>去设置</strong>」，并在稍后弹出的权限请求弹窗中点击 「<strong>打开系统设置</strong>」 按钮，然后在之后的应用列表中找到 「<strong>Cherry Studio</strong>」，并打开权限开关。",
+              "2": "完成设置后，请再次开启划词助手。"
+            },
             "title": "辅助功能权限"
           },
           "title": "启用"
@@ -2975,6 +2996,8 @@
               "delete": {
                 "confirm": {
                   "multiple": "确定要删除选中的 {{count}} 个备份文件吗？此操作无法撤销。",
+                  "multiple_one": "确定要删除选中的 {{count}} 个备份文件吗？此操作无法撤销。",
+                  "multiple_other": "确定要删除选中的 {{count}} 个备份文件吗？此操作无法撤销。",
                   "single": "确定要删除备份文件 \"{{fileName}}\" 吗？此操作无法撤销。",
                   "title": "确认删除"
                 },
@@ -2982,6 +3005,8 @@
                 "selected": "删除选中",
                 "success": {
                   "multiple": "已删除 {{count}} 个备份文件",
+                  "multiple_one": "已删除 {{count}} 个备份文件",
+                  "multiple_other": "已删除 {{count}} 个备份文件",
                   "single": "删除成功"
                 },
                 "text": "删除"
@@ -3162,8 +3187,12 @@
           },
           "autoSync": {
             "hour": "每 {{count}} 小时",
+            "hour_one": "每 {{count}} 小时",
+            "hour_other": "每 {{count}} 小时一次",
             "label": "自动同步",
             "minute": "每 {{count}} 分钟",
+            "minute_one": "每 {{count}} 分钟",
+            "minute_other": "每 {{count}} 分钟",
             "off": "关闭"
           },
           "backup": {
@@ -3203,14 +3232,20 @@
             "delete": {
               "confirm": {
                 "multiple": "确定要删除选中的 {{count}} 个备份文件吗？此操作不可撤销。",
+                "multiple_one": "确定要删除选中的 {{count}} 个选定的备份文件吗？此操作不可撤销。",
+                "multiple_other": "确定要删除选中的 {{count}} 个备份文件吗？此操作不可撤销。",
                 "single": "确定要删除备份文件 \"{{fileName}}\" 吗？此操作不可撤销。",
                 "title": "确认删除"
               },
               "error": "删除备份文件失败: {{message}}",
               "label": "删除",
               "selected": "删除选中 ({{count}})",
+              "selected_one": "删除所选",
+              "selected_other": "删除所选 {{count}} 项",
               "success": {
-                "multiple": "成功删除 {{count}} 个备份文件",
+                "multiple": "成功删除了 {{count}} 个备份文件",
+                "multiple_one": "成功删除 {{count}} 个备份文件",
+                "multiple_other": "成功删除了 {{count}} 个备份文件",
                 "single": "删除备份文件成功"
               }
             },
@@ -3320,6 +3355,8 @@
               "delete": {
                 "confirm": {
                   "multiple": "确定要删除选中的 {{count}} 个备份文件吗？此操作不可恢复",
+                  "multiple_one": "确定要删除选中的 {{count}} 个备份文件吗？此操作不可恢复",
+                  "multiple_other": "确定要删除选中的 {{count}} 个备份文件吗？此操作不可恢复",
                   "single": "确定要删除备份文件 \"{{fileName}}\" 吗？此操作不可恢复",
                   "title": "确认删除"
                 },
@@ -3327,6 +3364,8 @@
                 "selected": "删除选中",
                 "success": {
                   "multiple": "成功删除 {{count}} 个备份文件",
+                  "multiple_one": "成功删除 {{count}} 个备份文件",
+                  "multiple_other": "成功删除了 {{count}} 个备份文件",
                   "single": "删除成功"
                 },
                 "text": "删除"
@@ -3718,7 +3757,9 @@
           "noServersAvailable": "无可用的 MCP 服务器",
           "selectProvider": "选择提供商：",
           "setToken": "输入您的令牌",
-          "success": "同步 MCP 服务器成功",
+          "success": "成功同步了 {{count}} 个 MCP 服务器",
+          "success_one": "成功同步了 1 个 MCP 服务器",
+          "success_other": "成功同步了 {{count}} 个 MCP 服务器",
           "title": "同步服务器",
           "tokenPlaceholder": "在此输入 API 令牌",
           "tokenRequired": "需要 API 令牌",
@@ -3906,8 +3947,14 @@
           "failed": "失败",
           "keys_status_count": "通过：{{count_passed}} 个密钥，失败：{{count_failed}} 个密钥",
           "model_status_failed": "{{count}} 个模型完全无法访问",
+          "model_status_failed_one": "1 个模型完全无法访问",
+          "model_status_failed_other": "{{count}} 个模型完全无法访问",
           "model_status_partial": "其中 {{count}} 个模型用某些密钥无法访问",
+          "model_status_partial_one": "其中 {{count}} 个模型用某些密钥无法访问",
+          "model_status_partial_other": "其中 {{count}} 个模型用某些密钥无法访问",
           "model_status_passed": "{{count}} 个模型通过健康检测",
+          "model_status_passed_one": "{{count}} 个模型通过健康检测",
+          "model_status_passed_other": "{{count}} 个模型通过健康检查",
           "model_status_summary": "{{provider}}: {{summary}}",
           "no_api_keys": "未找到 API 密钥，请先添加 API 密钥",
           "no_results": "无结果",
