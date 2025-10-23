@@ -1,9 +1,19 @@
 import { defineConfig } from 'i18next-cli'
 
+/** @see https://github.com/i18next/i18next-cli */
 export default defineConfig({
   locales: ['en-us', 'zh-cn', 'zh-tw'],
   extract: {
     input: 'src/renderer/src/**/*.{ts,tsx}',
-    output: 'src/renderer/src/i18n/locales/{{language}}.json'
+    output: 'src/renderer/src/i18n/locales/{{language}}.json',
+    defaultValue: '__MISSING_KEY__',
+    primaryLanguage: 'en-us',
+    removeUnusedKeys: false
+  },
+  types: {
+    input: ['src/renderer/src/i18n/locales/en-us.json'],
+    output: 'src/renderer/src/i18n/i18next.d.ts',
+    resourcesFile: 'src/renderer/src/i18n/resources.d.ts',
+    enableSelector: true
   }
 })
