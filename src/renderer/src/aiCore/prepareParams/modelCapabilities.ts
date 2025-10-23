@@ -5,7 +5,7 @@
 
 import { isVisionModel } from '@renderer/config/models'
 import { getProviderByModel } from '@renderer/services/AssistantService'
-import type { Model } from '@renderer/types'
+import type { EndpointType, Model } from '@renderer/types'
 import { FileTypes } from '@renderer/types'
 
 import { getAiSdkProviderId } from '../provider/factory'
@@ -17,12 +17,14 @@ function modelSupportValidator(
     supportedModels = [],
     unsupportedModels = [],
     supportedProviders = [],
-    unsupportedProviders = []
+    unsupportedProviders = [],
+    supportedEndpointTypes = []
   }: {
     supportedModels?: string[]
     unsupportedModels?: string[]
     supportedProviders?: string[]
     unsupportedProviders?: string[]
+    supportedEndpointTypes?: EndpointType[]
   }
 ): boolean {
   const provider = getProviderByModel(model)
@@ -43,6 +45,11 @@ function modelSupportValidator(
     return true
   }
 
+  // 根据 EndpointType 进行判断
+  if (model.endpoint_type && supportedEndpointTypes.includes(model.endpoint_type)) {
+    return true
+  }
+
   // 回退到提供商判断
   return supportedProviders.includes(aiSdkId)
 }
@@ -54,6 +61,7 @@ export function supportsPdfInput(model: Model): boolean {
   // 基于AI SDK文档，以下模型或提供商支持PDF输入
   return modelSupportValidator(model, {
     supportedModels: ['qwen-long', 'qwen-doc'],
+    supportedEndpointTypes: ['anthropic', 'gemini'],
     supportedProviders: [
       'openai',
       'azure-openai',
