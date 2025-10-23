@@ -27,6 +27,7 @@ const openai = new OpenAI({
 })
 
 const languageMap = {
+  'zh-cn': 'Simplified Chinese',
   'en-us': 'English',
   'ja-jp': 'Japanese',
   'ru-ru': 'Russian',
@@ -34,7 +35,8 @@ const languageMap = {
   'el-gr': 'Greek',
   'es-es': 'Spanish',
   'fr-fr': 'French',
-  'pt-pt': 'Portuguese'
+  'pt-pt': 'Portuguese',
+  'de-de': 'German'
 }
 
 const PROMPT = `
@@ -136,6 +138,8 @@ const main = async () => {
       continue
     }
     const systemPrompt = PROMPT.replace('{{target_language}}', languageMap[filename])
+
+    console.info('System Prompt: ', systemPrompt)
 
     const result = await translateRecursively(targetJson, systemPrompt)
     count += 1
