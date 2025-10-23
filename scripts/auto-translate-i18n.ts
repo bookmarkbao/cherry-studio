@@ -9,7 +9,7 @@ import * as path from 'path'
 
 const localesDir = path.join(__dirname, '../src/renderer/src/i18n/locales')
 const translateDir = path.join(__dirname, '../src/renderer/src/i18n/translate')
-const baseLocale = process.env.BASE_LOCALE ?? 'zh-cn'
+const baseLocale = process.env.BASE_LOCALE ?? 'en-us'
 const baseFileName = `${baseLocale}.json`
 const baseLocalePath = path.join(__dirname, '../src/renderer/src/i18n/locales', baseFileName)
 
