@@ -422,18 +422,31 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         const text = event.clipboardData?.getData('text/plain') ?? ''
         if (text) {
           const { $from } = selection
+          const parentNode = $from.parent
           const atStartOfLine = $from.parentOffset === 0
-          const inEmptyParagraph = $from.parent.type.name === 'paragraph' && $from.parent.textContent === ''
+          const isEmptyBlock = parentNode.textContent === ''
+          const hasMultipleLines = text.includes('\n')
 
-          // If pasting in the middle of a line, insert as plain text to avoid unwanted line breaks
-          if (!atStartOfLine && !inEmptyParagraph) {
-            // Insert plain text without creating new paragraphs
+          // Check if we're in a styled block (heading, blockquote, etc.) that should preserve its style
+          const styledBlocks = ['heading', 'blockquote', 'listItem']
+          const isInStyledBlock = styledBlocks.includes(parentNode.type.name)
+
+          // If in a styled block (like H1), always insert as plain text to preserve the style
+          // even if the block is empty or we're at the start
+          if (isInStyledBlock && !hasMultipleLines) {
             const tr = view.state.tr.insertText(text, selection.from, selection.to)
             view.dispatch(tr)
             return true
           }
 
-          // At start of line or in empty paragraph: convert markdown to HTML and insert
+          // If pasting in the middle of a line (not at start, block has content), insert plain text
+          if (!atStartOfLine && !isEmptyBlock && !hasMultipleLines) {
+            const tr = view.state.tr.insertText(text, selection.from, selection.to)
+            view.dispatch(tr)
+            return true
+          }
+
+          // Otherwise (at start of paragraph, or multi-line paste): convert markdown to HTML
           const html = markdownToHtml(text)
           editor.commands.insertContent(html)
           onPaste?.(html)
