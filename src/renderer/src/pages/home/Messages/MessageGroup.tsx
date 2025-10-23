@@ -11,7 +11,7 @@ import type { Topic } from '@renderer/types'
 import type { Message } from '@renderer/types/newMessage'
 import { classNames } from '@renderer/utils'
 import { Popover } from 'antd'
-import { ComponentProps, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ComponentProps, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 import { useChatMaxWidth } from '../Chat'
@@ -42,9 +42,6 @@ const MessageGroup = ({ messages, topic, registerMessageElement }: Props) => {
     messages[0].multiModelMessageStyle || multiModelMessageStyleSetting
   )
   const [selectedIndex, setSelectedIndex] = useState(messageLength - 1)
-
-  // Refs
-  const prevMessageLengthRef = useRef(messageLength)
 
   // 对于单模型消息，采用简单的样式，避免 overflow 影响内部的 sticky 效果
   const multiModelMessageStyle = useMemo(
