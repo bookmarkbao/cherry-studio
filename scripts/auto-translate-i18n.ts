@@ -184,14 +184,22 @@ const translate = async (systemPrompt: string, text: string): Promise<string> =>
 }
 
 // Concurrent translation for single string (arrow function with implicit return)
-const translateConcurrent = (systemPrompt: string, text: string): Promise<string> =>
-  concurrencyController.add(() => translate(systemPrompt, text))
+const translateConcurrent = (systemPrompt: string, text: string, postProcess: () => Promise<void>): Promise<string> =>
+  concurrencyController.add(async () => {
+    const result = await translate(systemPrompt, text)
+    await postProcess()
+    return result
+  })
 
 /**
  * Recursively translate string values in objects (concurrent version)
  * Uses ES6+ features: Object.entries, destructuring, optional chaining
  */
-const translateRecursively = async (originObj: I18N, systemPrompt: string): Promise<I18N> => {
+const translateRecursively = async (
+  originObj: I18N,
+  systemPrompt: string,
+  postProcess: () => Promise<void>
+): Promise<I18N> => {
   const newObj: I18N = {}
 
   // Collect keys that need translation using Object.entries and filter
@@ -203,12 +211,12 @@ const translateRecursively = async (originObj: I18N, systemPrompt: string): Prom
   const translationTasks = translateKeys.map(async (key: string) => {
     const text = originObj[key] as string
     try {
-      const result = await translateConcurrent(systemPrompt, text)
+      const result = await translateConcurrent(systemPrompt, text, postProcess)
       newObj[key] = result
-      console.log(`✓ ${text.substring(0, 50)}... -> ${result.substring(0, 50)}...`)
+      console.log(`\r✓ ${text.substring(0, 50)}... -> ${result.substring(0, 50)}...`)
     } catch (e: any) {
       newObj[key] = text
-      console.error(`✗ Translation failed for key "${key}":`, e.message)
+      console.error(`\r✗ Translation failed for key "${key}":`, e.message)
     }
   })
 
@@ -221,7 +229,7 @@ const translateRecursively = async (originObj: I18N, systemPrompt: string): Prom
       if (typeof value === 'string') {
         newObj[key] = value
       } else if (typeof value === 'object' && value !== null) {
-        newObj[key] = await translateRecursively(value as I18N, systemPrompt)
+        newObj[key] = await translateRecursively(value as I18N, systemPrompt, postProcess)
       } else {
         newObj[key] = value
         if (!['string', 'object'].includes(typeof value)) {
@@ -277,16 +285,13 @@ const main = async () => {
     console.info(`  - ${filename}`)
   })
 
-  let count = 0
-  const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
-  bar.start(files.length, 0)
-
+  let fileCount = 0
   const startTime = Date.now()
 
   // Process each file with ES6+ features
   for (const filePath of files) {
     const filename = path.basename(filePath, '.json')
-    console.log(`\n📁 Processing ${filename}...`)
+    console.log(`\n📁 Processing ${filename}... ${fileCount}/${files.length}`)
 
     let targetJson = {}
     try {
@@ -294,22 +299,33 @@ const main = async () => {
       targetJson = JSON.parse(fileContent)
     } catch (error) {
       console.error(`❌ Error parsing ${filename}, skipping this file.`, error)
-      count += 1
-      bar.update(count)
+      fileCount += 1
       continue
     }
 
     const translatableCount = countTranslatableStrings(targetJson)
     console.log(`📊 Found ${translatableCount} strings to translate`)
+    const bar = new cliProgress.SingleBar(
+      {
+        stopOnComplete: true,
+        forceRedraw: true
+      },
+      cliProgress.Presets.shades_classic
+    )
+    bar.start(translatableCount, 0)
 
     const systemPrompt = PROMPT.replace('{{target_language}}', languageMap[filename])
 
     const fileStartTime = Date.now()
-    const result = await translateRecursively(targetJson, systemPrompt)
+    let count = 0
+    const result = await translateRecursively(targetJson, systemPrompt, async () => {
+      count += 1
+      bar.update(count)
+    })
     const fileDuration = (Date.now() - fileStartTime) / 1000
 
-    count += 1
-    bar.update(count)
+    fileCount += 1
+    bar.stop()
 
     try {
       // Sort the translated object by keys before writing
@@ -320,8 +336,6 @@ const main = async () => {
       console.error(`❌ Error writing ${filename}.`, error)
     }
   }
-
-  bar.stop()
 
   // Calculate statistics using ES6+ destructuring and template literals
   const totalDuration = (Date.now() - startTime) / 1000
