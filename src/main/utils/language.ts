@@ -3,17 +3,16 @@ import { defaultLanguage } from '@shared/config/constant'
 import type { LanguageVarious } from '@shared/data/preference/preferenceTypes'
 import { app } from 'electron'
 
+import deDE from '../../renderer/src/i18n/locales/de-de.json'
+import elGR from '../../renderer/src/i18n/locales/el-gr.json'
 import EnUs from '../../renderer/src/i18n/locales/en-us.json'
+import esES from '../../renderer/src/i18n/locales/es-es.json'
+import frFR from '../../renderer/src/i18n/locales/fr-fr.json'
+import JaJP from '../../renderer/src/i18n/locales/ja-jp.json'
+import ptPT from '../../renderer/src/i18n/locales/pt-pt.json'
+import RuRu from '../../renderer/src/i18n/locales/ru-ru.json'
 import ZhCn from '../../renderer/src/i18n/locales/zh-cn.json'
 import ZhTw from '../../renderer/src/i18n/locales/zh-tw.json'
-// Machine translation
-import deDE from '../../renderer/src/i18n/translate/de-de.json'
-import elGR from '../../renderer/src/i18n/translate/el-gr.json'
-import esES from '../../renderer/src/i18n/translate/es-es.json'
-import frFR from '../../renderer/src/i18n/translate/fr-fr.json'
-import JaJP from '../../renderer/src/i18n/translate/ja-jp.json'
-import ptPT from '../../renderer/src/i18n/translate/pt-pt.json'
-import RuRu from '../../renderer/src/i18n/translate/ru-ru.json'
 
 const locales = Object.fromEntries([
   ['en-US', EnUs],
