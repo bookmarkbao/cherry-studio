@@ -198,7 +198,7 @@ const ModelListItem: React.FC<ModelListItemProps> = memo(({ model, provider, onA
         }}
         fileInfo={{
           icon: (
-            <Avatar src={getModelLogo(model.id)} size="sm">
+            <Avatar src={getModelLogo(model)} size="sm">
               {model?.name?.[0]?.toUpperCase()}
             </Avatar>
           ),

@@ -4,7 +4,7 @@ import type {
   WebSearchPluginConfig
 } from '@cherrystudio/ai-core/core/plugins/built-in/webSearchPlugin/helper'
 import type { BaseProviderId } from '@cherrystudio/ai-core/provider'
-import { isOpenAIWebSearchChatCompletionOnlyModel } from '@renderer/config/models'
+import { isOpenAIDeepResearchModel, isOpenAIWebSearchChatCompletionOnlyModel } from '@renderer/config/models'
 import type { CherryWebSearchConfig } from '@renderer/store/websearch'
 import type { Model } from '@renderer/types'
 import { mapRegexToPatterns } from '@renderer/utils/blacklistMatchPattern'
@@ -43,20 +43,27 @@ function mapMaxResultToOpenAIContextSize(maxResults: number): OpenAISearchConfig
 
 export function buildProviderBuiltinWebSearchConfig(
   providerId: BaseProviderId,
-  webSearchConfig: CherryWebSearchConfig
+  webSearchConfig: CherryWebSearchConfig,
+  model?: Model
 ): WebSearchPluginConfig | undefined {
   switch (providerId) {
     case 'openai': {
+      const searchContextSize = isOpenAIDeepResearchModel(model)
+        ? 'medium'
+        : mapMaxResultToOpenAIContextSize(webSearchConfig.maxResults)
       return {
         openai: {
-          searchContextSize: mapMaxResultToOpenAIContextSize(webSearchConfig.maxResults)
+          searchContextSize
         }
       }
     }
     case 'openai-chat': {
+      const searchContextSize = isOpenAIDeepResearchModel(model)
+        ? 'medium'
+        : mapMaxResultToOpenAIContextSize(webSearchConfig.maxResults)
       return {
         'openai-chat': {
-          searchContextSize: mapMaxResultToOpenAIContextSize(webSearchConfig.maxResults)
+          searchContextSize
         }
       }
     }
