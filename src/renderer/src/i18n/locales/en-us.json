@@ -1563,6 +1563,7 @@
           "paused": "Chat completion paused"
         }
       },
+      "citation": "{{count}} citation(s)",
       "citation_one": "{{count}} citation",
       "citation_other": "{{count}} citations",
       "citations": "References",
@@ -1982,6 +1983,7 @@
       "search": {
         "both": "Name+Content",
         "content": "Content",
+        "found_results": "Found {{count}} result(s) (Name: {{nameCount}}, Content: {{contentCount}})",
         "found_results_one": "Found {{count}} result (Name: {{nameCount}}, Content: {{contentCount}})",
         "found_results_other": "Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
         "more_matches": "more matches",
