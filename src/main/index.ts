@@ -173,8 +173,15 @@ if (!app.requestSingleInstanceLock()) {
     const userLanguage = preferenceService.get('app.language')
     if (userLanguage) {
       i18n.changeLanguage(userLanguage)
+      preferenceService.subscribeChange('app.language', (newLang) => {
+        if (newLang) {
+          i18n.changeLanguage(newLang)
+        } else {
+          logger.error('New langauge is null, skip.')
+        }
+      })
     } else {
-      logger.warn('No user language preference found, falling back to default language')
+      logger.error('No user language preference found, falling back to default language')
       i18n.changeLanguage(defaultLanguage)
     }
 
