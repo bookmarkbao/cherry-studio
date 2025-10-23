@@ -7,9 +7,10 @@
   --color-scrollbar-thumb: var(--color-scrollbar-thumb-dark);
   --color-scrollbar-thumb-hover: var(--color-scrollbar-thumb-dark-hover);
 
-  --scrollbar-width: 6px;
+  --scrollbar-width: 10px;
   --scrollbar-height: 6px;
   --scrollbar-thumb-radius: 10px;
+  --scrollbar-thumb-width: 6px;
 }
 
 body[theme-mode='light'] {
@@ -31,6 +32,9 @@ body[theme-mode='light'] {
 ::-webkit-scrollbar-thumb {
   border-radius: var(--scrollbar-thumb-radius);
   background: var(--color-scrollbar-thumb);
+  /* Add transparent border to create space from window edge */
+  border-right: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -73,6 +77,9 @@ pre:not(.shiki)::-webkit-scrollbar-thumb:hover {
 .rc-virtual-list-scrollbar-thumb {
   border-radius: var(--scrollbar-thumb-radius) !important;
   background: var(--color-scrollbar-thumb) !important;
+  /* Add transparent border to create space from window edge */
+  border-right: 2px solid transparent !important;
+  background-clip: padding-box !important;
 }
 
 .rc-virtual-list-scrollbar-thumb:hover {
