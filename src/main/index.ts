@@ -173,6 +173,7 @@ if (!app.requestSingleInstanceLock()) {
     const userLanguage = preferenceService.get('app.language')
     if (userLanguage) {
       i18n.changeLanguage(userLanguage)
+      // Do not care about cleanup because it spans the whole lifecyle of the app
       preferenceService.subscribeChange('app.language', (newLang) => {
         if (newLang) {
           i18n.changeLanguage(newLang)
