@@ -320,9 +320,17 @@ class FileStorage {
         await fs.promises.mkdir(destDir, { recursive: true })
       }
 
-      // 移动文件
-      await fs.promises.rename(filePath, newPath)
-      logger.debug(`File moved successfully: ${filePath} to ${newPath}`)
+      try {
+        // 尝试使用 rename，这是最快的方式
+        await fs.promises.rename(filePath, newPath)
+        logger.debug(`File moved successfully: ${filePath} to ${newPath}`)
+      } catch (renameError: any) {
+        // 如果 rename 失败（例如跨文件系统移动），使用复制+删除的方式
+        logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
+        await fs.promises.copyFile(filePath, newPath)
+        await fs.promises.unlink(filePath)
+        logger.debug(`File moved successfully using copy+delete: ${filePath} to ${newPath}`)
+      }
     } catch (error) {
       logger.error('Move file failed:', error as Error)
       throw error
@@ -341,12 +349,41 @@ class FileStorage {
         await fs.promises.mkdir(parentDir, { recursive: true })
       }
 
-      // 移动目录
-      await fs.promises.rename(dirPath, newDirPath)
-      logger.debug(`Directory moved successfully: ${dirPath} to ${newDirPath}`)
+      try {
+        // 尝试使用 rename，这是最快的方式
+        await fs.promises.rename(dirPath, newDirPath)
+        logger.debug(`Directory moved successfully: ${dirPath} to ${newDirPath}`)
+      } catch (renameError: any) {
+        // 如果 rename 失败（例如跨文件系统移动），使用复制+删除的方式
+        logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
+        await this.copyDirectory(dirPath, newDirPath)
+        await fs.promises.rm(dirPath, { recursive: true, force: true })
+        logger.debug(`Directory moved successfully using copy+delete: ${dirPath} to ${newDirPath}`)
+      }
     } catch (error) {
       logger.error('Move directory failed:', error as Error)
       throw error
+    }
+  }
+
+  /**
+   * 递归复制目录
+   * @private
+   */
+  private async copyDirectory(source: string, destination: string): Promise<void> {
+    await fs.promises.mkdir(destination, { recursive: true })
+
+    const entries = await fs.promises.readdir(source, { withFileTypes: true })
+
+    for (const entry of entries) {
+      const sourcePath = path.join(source, entry.name)
+      const destPath = path.join(destination, entry.name)
+
+      if (entry.isDirectory()) {
+        await this.copyDirectory(sourcePath, destPath)
+      } else {
+        await fs.promises.copyFile(sourcePath, destPath)
+      }
     }
   }
 
