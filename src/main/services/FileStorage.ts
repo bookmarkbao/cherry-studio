@@ -314,18 +314,19 @@ class FileStorage {
         throw new Error(`Source file does not exist: ${filePath}`)
       }
 
-      // 确保目标目录存在
+      // Ensure the destination directory exists
       const destDir = path.dirname(newPath)
       if (!fs.existsSync(destDir)) {
         await fs.promises.mkdir(destDir, { recursive: true })
       }
 
       try {
-        // 尝试使用 rename，这是最快的方式
+        // Try rename first - this is the fastest way for same-filesystem moves
         await fs.promises.rename(filePath, newPath)
         logger.debug(`File moved successfully: ${filePath} to ${newPath}`)
       } catch (renameError: any) {
-        // 如果 rename 失败（例如跨文件系统移动），使用复制+删除的方式
+        // If rename fails (e.g., cross-filesystem move), use copy+delete approach
+        // This ensures the file is actually moved, not just copied
         logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
         await fs.promises.copyFile(filePath, newPath)
         await fs.promises.unlink(filePath)
@@ -343,18 +344,19 @@ class FileStorage {
         throw new Error(`Source directory does not exist: ${dirPath}`)
       }
 
-      // 确保目标父目录存在
+      // Ensure the parent directory of the destination exists
       const parentDir = path.dirname(newDirPath)
       if (!fs.existsSync(parentDir)) {
         await fs.promises.mkdir(parentDir, { recursive: true })
       }
 
       try {
-        // 尝试使用 rename，这是最快的方式
+        // Try rename first - this is the fastest way for same-filesystem moves
         await fs.promises.rename(dirPath, newDirPath)
         logger.debug(`Directory moved successfully: ${dirPath} to ${newDirPath}`)
       } catch (renameError: any) {
-        // 如果 rename 失败（例如跨文件系统移动），使用复制+删除的方式
+        // If rename fails (e.g., cross-filesystem move), use copy+delete approach
+        // This ensures the directory is actually moved, not just copied
         logger.debug(`Rename failed, using copy+delete approach: ${renameError.message}`)
         await this.copyDirectory(dirPath, newDirPath)
         await fs.promises.rm(dirPath, { recursive: true, force: true })
@@ -367,8 +369,10 @@ class FileStorage {
   }
 
   /**
-   * 递归复制目录
+   * Recursively copy a directory and all its contents
    * @private
+   * @param source Source directory path
+   * @param destination Destination directory path
    */
   private async copyDirectory(source: string, destination: string): Promise<void> {
     await fs.promises.mkdir(destination, { recursive: true })
