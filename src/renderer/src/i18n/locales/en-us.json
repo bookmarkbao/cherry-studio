@@ -531,7 +531,9 @@
         "expand": "Expand",
         "file_error": "Error processing file",
         "file_not_supported": "Model does not support this file type",
-        "file_not_supported_count": "{{count}} files are not supported",
+        "file_not_supported_count": "{{count}} file(s) are not supported",
+        "file_not_supported_count_one": "{{count}} file is not supported",
+        "file_not_supported_count_other": "{{count}} files are not supported",
         "generate_image": "Generate image",
         "generate_image_not_supported": "The model does not support generating images.",
         "knowledge_base": "Knowledge Base",
@@ -696,7 +698,9 @@
               "title": "Select Knowledge Base"
             },
             "content": {
-              "tip": "Selected {{count}} items, text types will be merged and saved as one note",
+              "tip": "Selected {{count}} item(s), text types will be merged and saved as one note",
+              "tip_one": "Selected {{count}} item, text types will be merged and saved as one note",
+              "tip_other": "Selected {{count}} items, text types will be merged and saved as one note",
               "title": "Select content types to save"
             }
           },
@@ -721,10 +725,14 @@
               "content": {
                 "label": "Select content types to save",
                 "selected_tip": "Selected {{count}} items from {{messages}} messages",
+                "selected_tip_one": "Selected {{count}} item from {{messages}} message",
+                "selected_tip_other": "Selected {{count}} items from {{messages}} messages",
                 "tip": "Topic will be saved to knowledge base with complete conversation context"
               }
             },
             "success": "Topic successfully saved to knowledge base ({{count}} items)",
+            "success_one": "Topic successfully saved to knowledge base ({{count}} item)",
+            "success_other": "Topic successfully saved to knowledge base ({{count}} items)",
             "title": "Save Topic to Knowledge Base"
           }
         }
@@ -970,6 +978,7 @@
       "clear": "Clear",
       "close": "Close",
       "collapse": "Collapse",
+      "coming_soon": "Coming soon",
       "confirm": "Confirm",
       "copied": "Copied",
       "copy": "Copy",
@@ -1026,6 +1035,7 @@
       "reasoning_content": "Deep reasoning",
       "refresh": "Refresh",
       "regenerate": "Regenerate",
+      "removed": "Removed",
       "rename": "Rename",
       "reset": "Reset",
       "save": "Save",
@@ -1034,7 +1044,11 @@
       "select": "Select",
       "selected": "Selected",
       "selectedItems": "Selected {{count}} items",
+      "selectedItems_one": "Selected {{count}} item",
+      "selectedItems_other": "Selected {{count}} items",
       "selectedMessages": "Selected {{count}} messages",
+      "selectedMessages_one": "Selected {{count}} message",
+      "selectedMessages_other": "Selected {{count}} messages",
       "settings": "Settings",
       "sort": {
         "pinyin": {
@@ -1549,7 +1563,8 @@
           "paused": "Chat completion paused"
         }
       },
-      "citation": "{{count}} citations",
+      "citation_one": "{{count}} citation",
+      "citation_other": "{{count}} citations",
       "citations": "References",
       "copied": "Copied!",
       "copy": {
@@ -1558,7 +1573,8 @@
       },
       "delete": {
         "confirm": {
-          "content": "Are you sure you want to delete the selected {{count}} message(s)?",
+          "content_one": "Are you sure you want to delete the selected {{count}} message?",
+          "content_other": "Are you sure you want to delete the selected {{count}} messages?",
           "title": "Delete Confirmation"
         },
         "failed": "Delete Failed",
@@ -1966,7 +1982,8 @@
       "search": {
         "both": "Name+Content",
         "content": "Content",
-        "found_results": "Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
+        "found_results_one": "Found {{count}} result (Name: {{nameCount}}, Content: {{contentCount}})",
+        "found_results_other": "Found {{count}} results (Name: {{nameCount}}, Content: {{contentCount}})",
         "more_matches": "more matches",
         "searching": "Searching...",
         "show_less": "Show less"
@@ -2237,6 +2254,7 @@
       "prompt_placeholder": "Describe the image you want to create, e.g. A serene lake at sunset with mountains in the background",
       "prompt_placeholder_edit": "Enter your image description, text drawing uses \"double quotes\" to wrap",
       "prompt_placeholder_en": "Enter your image description, currently only supports English prompts",
+      "prompt_required": "Prompt is required",
       "proxy_required": "Open the proxy and enable \"TUN mode\" to view generated images or copy them to the browser for opening. In the future, domestic direct connection will be supported",
       "quality": "Quality",
       "quality_options": {
@@ -2974,14 +2992,18 @@
               },
               "delete": {
                 "confirm": {
-                  "multiple": "Are you sure you want to delete {{count}} selected backup files? This action cannot be undone.",
+                  "multiple": "Are you sure you want to delete {{count}} selected backup file(s)? This action cannot be undone.",
+                  "multiple_one": "Are you sure you want to delete {{count}} selected backup file? This action cannot be undone.",
+                  "multiple_other": "Are you sure you want to delete {{count}} selected backup files? This action cannot be undone.",
                   "single": "Are you sure you want to delete backup file \"{{fileName}}\"? This action cannot be undone.",
                   "title": "Confirm Delete"
                 },
                 "error": "Delete failed",
                 "selected": "Delete Selected",
                 "success": {
-                  "multiple": "Successfully deleted {{count}} backup files",
+                  "multiple": "Successfully deleted {{count}} backup file(s)",
+                  "multiple_one": "Successfully deleted {{count}} backup file",
+                  "multiple_other": "Successfully deleted {{count}} backup files",
                   "single": "Deleted successfully"
                 },
                 "text": "Delete"
@@ -3162,8 +3184,12 @@
           },
           "autoSync": {
             "hour": "Every {{count}} hour",
+            "hour_one": "Every {{count}} hour",
+            "hour_other": "Every {{count}} hours",
             "label": "Auto Sync",
             "minute": "Every {{count}} minute",
+            "minute_one": "Every {{count}} minute",
+            "minute_other": "Every {{count}} minutes",
             "off": "Off"
           },
           "backup": {
@@ -3202,15 +3228,20 @@
             },
             "delete": {
               "confirm": {
-                "multiple": "Are you sure you want to delete {{count}} selected backup files? This action cannot be undone.",
+                "multiple": "Are you sure you want to delete {{count}} selected backup file(s)? This action cannot be undone.",
+                "multiple_one": "Are you sure you want to delete {{count}} selected backup file? This action cannot be undone.",
+                "multiple_other": "Are you sure you want to delete {{count}} selected backup files? This action cannot be undone.",
                 "single": "Are you sure you want to delete backup file \"{{fileName}}\"? This action cannot be undone.",
                 "title": "Confirm Delete"
               },
               "error": "Failed to delete backup file: {{message}}",
               "label": "Delete",
               "selected": "Delete Selected ({{count}})",
+              "selected_one": "Delete Selected",
+              "selected_other": "Delete Selected {{count}}",
               "success": {
-                "multiple": "Successfully deleted {{count}} backup files",
+                "multiple_one": "Successfully deleted {{count}} backup file",
+                "multiple_other": "Successfully deleted {{count}} backup files",
                 "single": "Backup file deleted successfully"
               }
             },
@@ -3319,14 +3350,18 @@
               },
               "delete": {
                 "confirm": {
-                  "multiple": "Are you sure you want to delete {{count}} selected backup files? This action cannot be undone.",
+                  "multiple": "Are you sure you want to delete {{count}} selected backup file(s)? This action cannot be undone.",
+                  "multiple_one": "settings.data.webdav.backup.manager.delete.confirm.multiple",
+                  "multiple_other": "settings.data.webdav.backup.manager.delete.confirm.multiple",
                   "single": "Are you sure you want to delete backup file \"{{fileName}}\"? This action cannot be undone.",
                   "title": "Confirm Delete"
                 },
                 "error": "Delete failed",
                 "selected": "Delete Selected",
                 "success": {
-                  "multiple": "Successfully deleted {{count}} backup files",
+                  "multiple": "Successfully deleted {{count}} backup file(s)",
+                  "multiple_one": "Successfully deleted {{count}} backup file",
+                  "multiple_other": "Successfully deleted {{count}} backup files",
                   "single": "Deleted successfully"
                 },
                 "text": "Delete"
@@ -3718,7 +3753,9 @@
           "noServersAvailable": "No MCP servers available",
           "selectProvider": "Select Provider:",
           "setToken": "Enter Your Token",
-          "success": "Sync MCP Servers successful",
+          "success": "Successfully synced {{count}} MCP server(s)",
+          "success_one": "Successfully synced 1 MCP server",
+          "success_other": "Successfully synced {{count}} MCP servers",
           "title": "Sync Servers",
           "tokenPlaceholder": "Enter API token here",
           "tokenRequired": "API Token is required",
@@ -3905,9 +3942,15 @@
           "enabled": "Enabled",
           "failed": "Failed",
           "keys_status_count": "Passed: {{count_passed}} keys, failed: {{count_failed}} keys",
-          "model_status_failed": "{{count}} models completely inaccessible",
-          "model_status_partial": "{{count}} models had inaccessible keys",
-          "model_status_passed": "{{count}} models passed health checks",
+          "model_status_failed": "{{count}} model(s) completely inaccessible",
+          "model_status_failed_one": "1 model completely inaccessible",
+          "model_status_failed_other": "{{count}} models completely inaccessible",
+          "model_status_partial": "{{count}} model(s) had inaccessible keys",
+          "model_status_partial_one": "1 model had inaccessible keys",
+          "model_status_partial_other": "{{count}} models had inaccessible keys",
+          "model_status_passed": "{{count}} model(s) passed health checks",
+          "model_status_passed_one": "1 model passed health checks",
+          "model_status_passed_other": "{{count}} models passed health checks",
           "model_status_summary": "{{provider}}: {{summary}}",
           "no_api_keys": "No API keys found, please add API keys first.",
           "no_results": "No results",
