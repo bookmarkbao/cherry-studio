@@ -13,9 +13,18 @@ on:
           - macos
           - linux
         default: "all"
+      create_release:
+        description: "Create GitHub Release"
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        description: "Release tag (e.g. v1.0.0, required if creating release)"
+        required: false
+        type: string
 
 permissions:
-  contents: read
+  contents: write # 需要 write 权限以创建 Release
 
 jobs:
   build:
@@ -140,8 +149,9 @@ jobs:
 
       - name: Upload artifacts
         if: |
-          github.event.inputs.platform == 'all' ||
-          github.event.inputs.platform == matrix.platform
+          (github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform) &&
+          github.event.inputs.create_release == false
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.platform }}-${{ github.sha }}
@@ -155,3 +165,23 @@ jobs:
             dist/*.rpm
             dist/*.tar.gz
           retention-days: 7
+
+      - name: Create Release (Unsigned)
+        if: |
+          (github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform) &&
+          github.event.inputs.create_release == true
+        uses: ncipollo/release-action@v1
+        with:
+          draft: true
+          allowUpdates: true
+          makeLatest: false
+          tag: ${{ github.event.inputs.release_tag }}
+          artifacts: "dist/*.exe,dist/*.zip,dist/*.dmg,dist/*.AppImage,dist/*.snap,dist/*.deb,dist/*.rpm,dist/*.tar.gz,dist/latest*.yml,dist/rc*.yml,dist/beta*.yml,dist/*.blockmap"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ⚠️ **Note: This is an unsigned release**
+
+            macOS users: Please right-click the app and select "Open" on first launch.
+
+            这是一个无签名版本，macOS 用户首次打开时请右键选择"打开"。
