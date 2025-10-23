@@ -3,7 +3,7 @@ import { loggerService } from '@logger'
 import { defaultLanguage } from '@shared/config/constant'
 import type { LanguageVarious } from '@shared/data/preference/preferenceTypes'
 import { app } from 'electron'
-import i18next from 'i18next'
+import i18n from 'i18next'
 
 // import deDE from '../../renderer/src/i18n/locales/de-de.json'
 // import elGR from '../../renderer/src/i18n/locales/el-gr.json'
@@ -19,9 +19,9 @@ import ZhTw from '../../renderer/src/i18n/locales/zh-tw.json'
 const logger = loggerService.withContext('i18n')
 
 const resources = Object.fromEntries([
-  ['en-US', EnUs],
-  ['zh-CN', ZhCn],
-  ['zh-TW', ZhTw]
+  ['en-us', EnUs],
+  ['zh-cn', ZhCn],
+  ['zh-tw', ZhTw]
   // ['ja-JP', JaJP],
   // ['ru-RU', RuRu],
   // ['de-DE', deDE],
@@ -47,7 +47,7 @@ export const getI18n = (): Record<string, any> => {
   return resources[language]
 }
 
-const i18n = i18next.init({
+i18n.init({
   resources,
   lng: getAppLanguage(),
   fallbackLng: defaultLanguage,
@@ -60,4 +60,8 @@ const i18n = i18next.init({
   }
 })
 
-export { i18n }
+const t = i18n.t
+
+const changeLang: typeof i18n.changeLanguage = i18n.changeLanguage
+
+export { changeLang, i18n, t }
