@@ -4176,6 +4176,11 @@
       "docs_check": "Check",
       "docs_more_details": "for more details",
       "get_api_key": "Get API Key",
+      "list": {
+        "settings": {
+          "hide_disabled": "Hide disabled providers"
+        }
+      },
       "misc": "Other",
       "no_models_for_check": "No models available for checking (e.g. chat models)",
       "not_checked": "Not Checked",

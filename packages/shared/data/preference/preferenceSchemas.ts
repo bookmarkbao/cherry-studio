@@ -47,6 +47,7 @@ export interface PreferenceSchemas {
     'app.proxy.mode': PreferenceTypes.ProxyMode
     // redux/settings/proxyUrl
     'app.proxy.url': string
+    'app.settings.provider.hide_disabled': boolean
     // redux/settings/enableSpellCheck
     'app.spell_check.enabled': boolean
     // redux/settings/spellCheckLanguages
@@ -433,6 +434,7 @@ export const DefaultPreferences: PreferenceSchemas = {
     'app.proxy.bypass_rules': '',
     'app.proxy.mode': 'system',
     'app.proxy.url': '',
+    'app.settings.provider.hide_disabled': false,
     'app.spell_check.enabled': false,
     'app.spell_check.languages': [],
     'app.tray.enabled': true,
