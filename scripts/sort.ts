@@ -1,22 +1,3 @@
-// https://github.com/Gudahtt/prettier-plugin-sort-json/blob/main/src/index.ts
-/**
- * Lexical sort function for strings, meant to be used as the sort
- * function for `Array.prototype.sort`.
- *
- * @param a - First element to compare.
- * @param b - Second element to compare.
- * @returns A number indicating which element should come first.
- */
-function lexicalSort(a: string, b: string): number {
-  if (a > b) {
-    return 1
-  }
-  if (a < b) {
-    return -1
-  }
-  return 0
-}
-
 /**
  * Natural sort function for strings, meant to be used as the sort
  * function for `Array.prototype.sort`.
