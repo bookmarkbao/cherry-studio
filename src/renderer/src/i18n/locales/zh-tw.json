@@ -160,10 +160,10 @@
             }
           },
           "review": {
-            "autoTools": "自動：{{count}}",
-            "customTools": "自訂：{{count}}",
+            "autoTools": "自動",
+            "customTools": "自訂",
             "helper": "設定會自動儲存，可隨時回到上方步驟調整。",
-            "mcp": "MCP：{{count}}",
+            "mcp": "MCP",
             "mode": "模式：{{mode}}"
           },
           "steps": {

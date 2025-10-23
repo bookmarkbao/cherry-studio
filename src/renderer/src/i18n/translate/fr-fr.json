@@ -160,10 +160,10 @@
             }
           },
           "review": {
-            "autoTools": "Auto : {{count}}",
-            "customTools": "Personnalisé : {{count}}",
+            "autoTools": "Auto",
+            "customTools": "Personnalisé",
             "helper": "Les modifications sont enregistrées automatiquement. Ajustez les étapes ci-dessus à tout moment pour affiner les autorisations.",
-            "mcp": "MCP : {{count}}",
+            "mcp": "MCP",
             "mode": "Mode : {{mode}}"
           },
           "steps": {

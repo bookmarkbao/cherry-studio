@@ -160,10 +160,10 @@
             }
           },
           "review": {
-            "autoTools": "自動: {{count}}",
-            "customTools": "カスタム: {{count}}",
+            "autoTools": "自動",
+            "customTools": "カスタム",
             "helper": "変更は自動的に保存されます。権限を微調整するには、上記の手順をいつでも調整してください。",
-            "mcp": "MCP: {{count}}",
+            "mcp": "MCP",
             "mode": "モード: {{mode}}"
           },
           "steps": {

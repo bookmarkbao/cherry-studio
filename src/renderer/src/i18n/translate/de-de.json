@@ -153,10 +153,10 @@
             }
           },
           "review": {
-            "autoTools": "Automatisch: {{count}}",
-            "customTools": "Benutzerdefiniert: {{count}}",
+            "autoTools": "Automatisch",
+            "customTools": "Benutzerdefiniert",
             "helper": "Einstellungen werden automatisch gespeichert. Sie können jederzeit zu den obigen Schritten zurückkehren und Anpassungen vornehmen.",
-            "mcp": "MCP: {{count}}",
+            "mcp": "MCP",
             "mode": "Modus: {{mode}}"
           },
           "steps": {
