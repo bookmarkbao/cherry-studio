@@ -9,7 +9,6 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 const localesDir = path.join(__dirname, '../src/renderer/src/i18n/locales')
-const translateDir = path.join(__dirname, '../src/renderer/src/i18n/translate')
 const baseLocale = process.env.BASE_LOCALE ?? 'en-us'
 const baseFileName = `${baseLocale}.json`
 const baseLocalePath = path.join(__dirname, '../src/renderer/src/i18n/locales', baseFileName)
@@ -107,15 +106,10 @@ const main = async () => {
   if (!fs.existsSync(baseLocalePath)) {
     throw new Error(`${baseLocalePath} not found.`)
   }
-  const localeFiles = fs
+  const files = fs
     .readdirSync(localesDir)
     .filter((file) => file.endsWith('.json') && file !== baseFileName)
     .map((filename) => path.join(localesDir, filename))
-  const translateFiles = fs
-    .readdirSync(translateDir)
-    .filter((file) => file.endsWith('.json') && file !== baseFileName)
-    .map((filename) => path.join(translateDir, filename))
-  const files = [...localeFiles, ...translateFiles]
 
   let count = 0
   const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
