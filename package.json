@@ -57,6 +57,7 @@
     "i18n:check": "dotenv -e .env -- tsx scripts/check-i18n.ts",
     "i18n:sync": "dotenv -e .env -- tsx scripts/sync-i18n.ts",
     "i18n:auto": "dotenv -e .env -- tsx scripts/auto-translate-i18n.ts",
+    "i18n:scan": "i18next-scanner && yarn format",
     "update:languages": "tsx scripts/update-languages.ts",
     "test": "vitest run --silent",
     "test:main": "vitest run --project main",
