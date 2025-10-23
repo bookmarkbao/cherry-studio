@@ -11,7 +11,7 @@ import type { Topic } from '@renderer/types'
 import type { Message } from '@renderer/types/newMessage'
 import { classNames } from '@renderer/utils'
 import { Popover } from 'antd'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ComponentProps, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { useChatMaxWidth } from '../Chat'
@@ -83,24 +83,6 @@ const MessageGroup = ({ messages, topic, registerMessageElement }: Props) => {
     },
     [editMessage, selectedMessageId, setTimeoutTimer]
   )
-
-  useEffect(() => {
-    if (messageLength > prevMessageLengthRef.current) {
-      setSelectedIndex(messageLength - 1)
-      const lastMessage = messages[messageLength - 1]
-      if (lastMessage) {
-        setSelectedMessage(lastMessage)
-      }
-    } else {
-      const newIndex = messages.findIndex((msg) => msg.id === selectedMessageId)
-      if (newIndex !== -1) {
-        setSelectedIndex(newIndex)
-      }
-    }
-    prevMessageLengthRef.current = messageLength
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messageLength])
-
   // 添加对流程图节点点击事件的监听
   useEffect(() => {
     // 只在组件挂载和消息数组变化时添加监听器
@@ -223,7 +205,7 @@ const MessageGroup = ({ messages, topic, registerMessageElement }: Props) => {
         message,
         topic,
         index: message.index
-      }
+      } satisfies ComponentProps<typeof MessageItem>
 
       const messageContent = (
         <MessageWrapper
@@ -277,7 +259,7 @@ const MessageGroup = ({ messages, topic, registerMessageElement }: Props) => {
       isGrouped,
       topic,
       multiModelMessageStyle,
-      messages.length,
+      messages,
       selectedMessageId,
       onUpdateUseful,
       groupContextMessageId,
