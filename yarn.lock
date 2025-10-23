@@ -17744,7 +17744,7 @@ __metadata:
     htmlparser2: "npm:^10.0.0"
     husky: "npm:^9.1.7"
     i18next: "npm:^23.11.5"
-    i18next-cli: "npm:^1.11.14"
+    i18next-cli: "npm:^1.12.0"
     i18next-scanner: "npm:^4.6.0"
     iconv-lite: "npm:^0.6.3"
     ipaddr.js: "npm:^2.2.0"
@@ -24338,9 +24338,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-cli@npm:^1.11.14":
-  version: 1.11.14
-  resolution: "i18next-cli@npm:1.11.14"
+"i18next-cli@npm:^1.12.0":
+  version: 1.12.0
+  resolution: "i18next-cli@npm:1.12.0"
   dependencies:
     "@swc/core": "npm:1.13.19"
     chalk: "npm:5.6.2"
@@ -24357,7 +24357,7 @@ __metadata:
     swc-walk: "npm:1.0.0"
   bin:
     i18next-cli: dist/esm/cli.js
-  checksum: 10c0/4759fc181048a2ff73de054c0c388ceea673cde83ccdefdcd6945046bec31c7ebef285360e7596f2e7504724e01dc46cddb023295fcf45660e04c75633a1f38c
+  checksum: 10c0/8bbc245dae52b66250911d15feee508827dbaf8c5f096ecfec8079e3ff6332e89606f022a5d63ed8550ff6f63ebd1bf6bebfe32f03e582f20aebf483e72c2263
   languageName: node
   linkType: hard
 
