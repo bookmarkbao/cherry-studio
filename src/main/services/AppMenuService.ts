@@ -39,6 +39,9 @@ export class AppMenuService {
         role: 'editMenu'
       },
       {
+        role: 'viewMenu'
+      },
+      {
         role: 'windowMenu'
       }
     ]

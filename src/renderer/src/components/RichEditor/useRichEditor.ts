@@ -5,12 +5,6 @@ import { loggerService } from '@logger'
 import { MARKDOWN_SOURCE_LINE_ATTR } from '@renderer/components/RichEditor/constants'
 import type { FormattingState } from '@renderer/components/RichEditor/types'
 import { useCodeStyle } from '@renderer/context/CodeStyleProvider'
-import {
-  htmlToMarkdown,
-  isMarkdownContent,
-  markdownToHtml,
-  markdownToPreviewText
-} from '@renderer/utils/markdownConverter'
 import type { Editor } from '@tiptap/core'
 import { Extension } from '@tiptap/core'
 import { TaskItem, TaskList } from '@tiptap/extension-list'
@@ -22,8 +16,9 @@ import {
   TableOfContents
 } from '@tiptap/extension-table-of-contents'
 import Typography from '@tiptap/extension-typography'
+import { Markdown } from '@tiptap/markdown'
 import { useEditor, useEditorState } from '@tiptap/react'
-import { StarterKit } from '@tiptap/starter-kit'
+import StarterKit from '@tiptap/starter-kit'
 import { t } from 'i18next'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -32,6 +27,7 @@ import { CodeBlockShiki } from './extensions/code-block-shiki/code-block-shiki'
 import { EnhancedImage } from './extensions/enhanced-image'
 import { EnhancedLink } from './extensions/enhanced-link'
 import { EnhancedMath } from './extensions/enhanced-math'
+import { Highlight } from './extensions/hightlight'
 import { Placeholder } from './extensions/placeholder'
 import { YamlFrontMatter } from './extensions/yaml-front-matter'
 import { blobToArrayBuffer, compressImage, shouldCompressImage } from './helpers/imageUtils'
@@ -105,8 +101,6 @@ export interface UseRichEditorReturn {
   html: string
   /** Preview text for display */
   previewText: string
-  /** Whether content is detected as markdown */
-  isMarkdown: boolean
   /** Whether editor is disabled */
   disabled: boolean
   /** Current formatting state from TipTap editor */
@@ -125,19 +119,11 @@ export interface UseRichEditorReturn {
 
   /** Set markdown content */
   setMarkdown: (content: string) => void
-  /** Set HTML content (converts to markdown) */
-  setHtml: (html: string) => void
   /** Clear all content */
   clear: () => void
 
-  /** Convert markdown to HTML */
-  toHtml: (markdown: string) => string
-  /** Convert markdown to safe HTML */
-  toSafeHtml: (markdown: string) => string
-  /** Convert HTML to markdown */
-  toMarkdown: (html: string) => string
   /** Get preview text from markdown */
-  getPreviewText: (markdown: string, maxLength?: number) => string
+  getPreviewText: (maxLength?: number) => string
 }
 
 /**
@@ -161,20 +147,6 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
   } = options
 
   const [markdown, setMarkdownState] = useState<string>(initialContent)
-
-  const html = useMemo(() => {
-    if (!markdown) return ''
-    return markdownToHtml(markdown)
-  }, [markdown])
-
-  const previewText = useMemo(() => {
-    if (!markdown) return ''
-    return markdownToPreviewText(markdown, previewLength)
-  }, [markdown, previewLength])
-
-  const isMarkdown = useMemo(() => {
-    return isMarkdownContent(markdown)
-  }, [markdown])
 
   // Get theme and language mapping from CodeStyleProvider
   const { activeShikiTheme } = useCodeStyle()
@@ -223,6 +195,10 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
   // TipTap editor extensions
   const extensions = useMemo(
     () => [
+      Markdown.configure({
+        markedOptions: { gfm: true },
+        html: true // Enable HTML support to preserve <u> tags for underline
+      }),
       SourceLineAttribute,
       StarterKit.configure({
         heading: {
@@ -230,6 +206,7 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         },
         codeBlock: false,
         link: false
+        // underline is enabled by default in StarterKit
       }),
       EnhancedLink.configure({
         onLinkHover: handleLinkHover,
@@ -380,7 +357,8 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
       TaskList,
       TaskItem.configure({
         nested: true
-      })
+      }),
+      Highlight
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [placeholder, activeShikiTheme, handleLinkHover, handleLinkHoverEnd]
@@ -389,7 +367,8 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
   const editor = useEditor({
     shouldRerenderOnTransaction: true,
     extensions,
-    content: html || '',
+    content: markdown || '',
+    contentType: 'markdown',
     editable: editable,
     editorProps: {
       handlePaste: (view, event) => {
@@ -446,9 +425,7 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
             return true
           }
 
-          // Otherwise (at start of paragraph, or multi-line paste): convert markdown to HTML
-          const html = markdownToHtml(text)
-          editor.commands.insertContent(html)
+          editor.commands.insertContent(text, { contentType: 'markdown' })
           onPaste?.(html)
           return true
         }
@@ -466,10 +443,10 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
     onUpdate: ({ editor }) => {
       const content = editor.getText()
       const htmlContent = editor.getHTML()
+      const markdownContent = editor.getMarkdown()
       try {
-        const convertedMarkdown = htmlToMarkdown(htmlContent)
-        setMarkdownState(convertedMarkdown)
-        onChange?.(convertedMarkdown)
+        setMarkdownState(markdownContent)
+        onChange?.(markdownContent)
 
         onContentChange?.(content)
         if (onHtmlChange) {
@@ -491,6 +468,9 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
       }
     }
   })
+
+  const html = editor.getHTML()
+  const previewText = editor.getText().slice(0, previewLength)
 
   // Handle image paste function
   const handleImagePaste = useCallback(
@@ -579,7 +559,7 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
           .setTextSelection({ from: linkRange.from, to: linkRange.to })
           .insertContent(text)
           .setTextSelection({ from: linkRange.from, to: linkRange.from + text.length })
-          .setEnhancedLink({ href })
+          .setLink({ href })
           .run()
       }
       setLinkEditorState({
@@ -599,11 +579,11 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
     if (linkRange) {
       // Use a more reliable method - directly remove the mark from the range
       const tr = editor.state.tr
-      tr.removeMark(linkRange.from, linkRange.to, editor.schema.marks.enhancedLink || editor.schema.marks.link)
+      tr.removeMark(linkRange.from, linkRange.to, editor.schema.marks.link)
       editor.view.dispatch(tr)
     } else {
       // No explicit range - try to extend current mark range and remove
-      editor.chain().focus().extendMarkRange('enhancedLink').unsetEnhancedLink().run()
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
     }
 
     // Close link editor
@@ -727,7 +707,8 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
           isMath: false,
           isInlineMath: false,
           canMath: false,
-          isTaskList: false
+          isTaskList: false,
+          isHighlight: false
         }
       }
 
@@ -754,9 +735,9 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         isOrderedList: editor.isActive('orderedList') ?? false,
         isCodeBlock: editor.isActive('codeBlock') ?? false,
         isBlockquote: editor.isActive('blockquote') ?? false,
-        isLink: (editor.isActive('enhancedLink') || editor.isActive('link')) ?? false,
-        canLink: editor.can().chain().setEnhancedLink({ href: '' }).run() ?? false,
-        canUnlink: editor.can().chain().unsetEnhancedLink().run() ?? false,
+        isLink: editor.isActive('link') ?? false,
+        canLink: editor.can().chain().setLink({ href: '' }).run() ?? false,
+        canUnlink: editor.can().chain().unsetLink().run() ?? false,
         canUndo: editor.can().chain().undo().run() ?? false,
         canRedo: editor.can().chain().redo().run() ?? false,
         isTable: editor.isActive('table') ?? false,
@@ -765,7 +746,8 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         isMath: editor.isActive('blockMath') ?? false,
         isInlineMath: editor.isActive('inlineMath') ?? false,
         canMath: true,
-        isTaskList: editor.isActive('taskList') ?? false
+        isTaskList: editor.isActive('taskList') ?? false,
+        isHighlight: editor.isActive('highlight') ?? false
       }
     }
   })
@@ -776,33 +758,12 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         setMarkdownState(content)
         onChange?.(content)
 
-        const convertedHtml = markdownToHtml(content)
-
-        editor.commands.setContent(convertedHtml)
-
-        onHtmlChange?.(convertedHtml)
+        editor.commands.setContent(content, { contentType: 'markdown' })
       } catch (error) {
         logger.error('Error setting markdown content:', error as Error)
       }
     },
-    [editor.commands, onChange, onHtmlChange]
-  )
-
-  const setHtml = useCallback(
-    (htmlContent: string) => {
-      try {
-        const convertedMarkdown = htmlToMarkdown(htmlContent)
-        setMarkdownState(convertedMarkdown)
-        onChange?.(convertedMarkdown)
-
-        editor.commands.setContent(htmlContent)
-
-        onHtmlChange?.(htmlContent)
-      } catch (error) {
-        logger.error('Error setting HTML content:', error as Error)
-      }
-    },
-    [editor.commands, onChange, onHtmlChange]
+    [editor.commands, onChange]
   )
 
   const clear = useCallback(() => {
@@ -811,55 +772,25 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
     onHtmlChange?.('')
   }, [onChange, onHtmlChange])
 
-  // Utility methods
-  const toHtml = useCallback((content: string): string => {
-    try {
-      return markdownToHtml(content)
-    } catch (error) {
-      logger.error('Error converting markdown to HTML:', error as Error)
-      return ''
-    }
-  }, [])
-
-  const toSafeHtml = useCallback((content: string): string => {
-    try {
-      return markdownToHtml(content)
-    } catch (error) {
-      logger.error('Error converting markdown to safe HTML:', error as Error)
-      return ''
-    }
-  }, [])
-
-  const toMarkdown = useCallback((htmlContent: string): string => {
-    try {
-      return htmlToMarkdown(htmlContent)
-    } catch (error) {
-      logger.error('Error converting HTML to markdown:', error as Error)
-      return ''
-    }
-  }, [])
-
   const getPreviewText = useCallback(
-    (content: string, maxLength?: number): string => {
+    (maxLength?: number): string => {
       try {
-        return markdownToPreviewText(content, maxLength || previewLength)
+        return editor.getText().slice(0, maxLength || previewLength)
       } catch (error) {
         logger.error('Error generating preview text:', error as Error)
         return ''
       }
     },
-    [previewLength]
+    [editor, previewLength]
   )
 
   return {
     // Editor instance
     editor,
-
     // State
     markdown,
     html,
     previewText,
-    isMarkdown,
     disabled: !editable,
     formattingState,
     tableOfContentsItems,
@@ -874,13 +805,7 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
 
     // Actions
     setMarkdown,
-    setHtml,
     clear,
-
-    // Utilities
-    toHtml,
-    toSafeHtml,
-    toMarkdown,
     getPreviewText
   }
 }
