@@ -184,7 +184,7 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
             extra_body: {
               google: {
                 thinking_config: {
-                  thinking_budget: 0
+                  thinkingBudget: 0
                 }
               }
             }
@@ -319,8 +319,8 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
           extra_body: {
             google: {
               thinking_config: {
-                thinking_budget: -1,
-                include_thoughts: true
+                thinkingBudget: -1,
+                includeThoughts: true
               }
             }
           }
@@ -330,8 +330,8 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
         extra_body: {
           google: {
             thinking_config: {
-              thinking_budget: budgetTokens,
-              include_thoughts: true
+              thinkingBudget: budgetTokens,
+              includeThoughts: true
             }
           }
         }
@@ -662,7 +662,7 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
             } else if (isClaudeReasoningModel(model) && reasoningEffort.thinking?.budget_tokens) {
               suffix = ` --thinking_budget ${reasoningEffort.thinking.budget_tokens}`
             } else if (isGeminiReasoningModel(model) && reasoningEffort.extra_body?.google?.thinking_config) {
-              suffix = ` --thinking_budget ${reasoningEffort.extra_body.google.thinking_config.thinking_budget}`
+              suffix = ` --thinking_budget ${reasoningEffort.extra_body.google.thinking_config.thinkingBudget}`
             }
             // FIXME: poe 不支持多个text part，上传文本文件的时候用的不是file part而是text part，因此会出问题
             // 临时解决方案是强制poe用string content，但是其实poe部分支持array
