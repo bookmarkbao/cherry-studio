@@ -4178,7 +4178,7 @@
       "get_api_key": "Get API Key",
       "list": {
         "settings": {
-          "hide_disabled": "Hide disabled providers"
+          "show_disabled": "Show disabled providers"
         }
       },
       "misc": "Other",

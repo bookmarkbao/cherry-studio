@@ -45,7 +45,7 @@ const ProviderList: FC = () => {
   const [dragging, setDragging] = useState(false)
   const [providerLogos, setProviderLogos] = useState<Record<string, string>>({})
   const listRef = useRef<DraggableVirtualListRef>(null)
-  const [hideDisabled, setHideDisabled] = usePreference('app.settings.provider.hide_disabled')
+  const [showDisabled, setShowDisabled] = usePreference('ui.provider.show_disabled')
 
   const setSelectedProvider = useCallback((provider: Provider) => {
     startTransition(() => _setSelectedProvider(provider))
@@ -284,7 +284,7 @@ const ProviderList: FC = () => {
       return false
     }
 
-    if (hideDisabled && !provider.enabled) {
+    if (!showDisabled && !provider.enabled) {
       return false
     }
 
@@ -346,10 +346,10 @@ const ProviderList: FC = () => {
               <ul className="flex h-full w-full flex-col">
                 <li className="flex flex-row items-center justify-between">
                   <Switch
-                    isSelected={hideDisabled}
-                    onValueChange={setHideDisabled}
+                    isSelected={showDisabled}
+                    onValueChange={setShowDisabled}
                     classNames={{ base: 'flex-1 flex-row-reverse justify-between max-w-full' }}>
-                    {t('settings.provider.list.settings.hide_disabled')}
+                    {t('settings.provider.list.settings.show_disabled')}
                   </Switch>
                 </li>
               </ul>
