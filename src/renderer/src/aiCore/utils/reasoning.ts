@@ -9,6 +9,7 @@ import {
   isDoubaoThinkingAutoModel,
   isGrok4FastReasoningModel,
   isGrokReasoningModel,
+  isOpenAIDeepResearchModel,
   isOpenAIReasoningModel,
   isQwenAlwaysThinkModel,
   isQwenReasoningModel,
@@ -44,6 +45,12 @@ export function getReasoningEffort(assistant: Assistant, model: Model): Reasonin
 
   if (!isReasoningModel(model)) {
     return {}
+  }
+
+  if (isOpenAIDeepResearchModel(model)) {
+    return {
+      reasoning_effort: 'medium'
+    }
   }
   const reasoningEffort = assistant?.settings?.reasoning_effort
 
@@ -318,7 +325,11 @@ export function getOpenAIReasoningParams(assistant: Assistant, model: Model): Re
     reasoningSummary = summaryText
   }
 
-  const reasoningEffort = assistant?.settings?.reasoning_effort
+  let reasoningEffort = assistant?.settings?.reasoning_effort
+
+  if (isOpenAIDeepResearchModel(model)) {
+    reasoningEffort = 'medium'
+  }
 
   if (!reasoningEffort) {
     return {}

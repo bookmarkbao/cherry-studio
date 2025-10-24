@@ -1804,6 +1804,7 @@
     "title": "Встроенные приложения"
   },
   "minapps": {
+    "ant-ling": "Ant Ling",
     "baichuan": "Байчжан",
     "baidu-ai-search": "Baidu AI Search",
     "chatglm": "ChatGLM",
@@ -1961,12 +1962,12 @@
     "rename_changed": "В связи с политикой безопасности имя файла было изменено с {{Original}} на {{final}}",
     "save": "Сохранить в заметки",
     "search": {
-      "both": "Имя+Содержание",
-      "content": "Содержание",
-      "found_results": "Найдено {{count}} результатов (Имя: {{nameCount}}, Содержание: {{contentCount}})",
-      "more_matches": "больше совпадений",
-      "searching": "Поиск...",
-      "show_less": "Показать меньше"
+      "both": "[to be translated]:名称+内容",
+      "content": "[to be translated]:内容",
+      "found_results": "[to be translated]:找到 {{count}} 个结果 (名称: {{nameCount}}, 内容: {{contentCount}})",
+      "more_matches": "[to be translated]:个匹配",
+      "searching": "[to be translated]:搜索中...",
+      "show_less": "[to be translated]:收起"
     },
     "settings": {
       "data": {
@@ -2053,7 +2054,6 @@
         "cannot_remove_builtin": "Не удается удалить встроенного поставщика",
         "existing": "Поставщик уже существует",
         "get_providers": "Не удалось получить доступных поставщиков",
-        "not_availabel": "Провайдер {{provider}} недоступен",
         "not_found": "Поставщик OCR отсутствует",
         "update_failed": "Обновление конфигурации не удалось"
       },
@@ -2063,40 +2063,6 @@
       "not_supported": "Неподдерживаемый тип файла {{type}}"
     },
     "processing": "Обработка OCR...",
-    "provider": {
-      "config": {
-        "patch": {
-          "error": {
-            "failed": "Не удалось обновить конфигурацию"
-          }
-        }
-      },
-      "create": {
-        "error": {
-          "failed": "Не удалось создать провайдера"
-        }
-      },
-      "delete": {
-        "error": {
-          "failed": "Не удалось удалить провайдера {{provider}}"
-        }
-      },
-      "get": {
-        "error": {
-          "failed": "Не удалось получить провайдера {{provider}}"
-        }
-      },
-      "list": {
-        "error": {
-          "failed": "Не удалось получить список провайдеров"
-        }
-      },
-      "update": {
-        "error": {
-          "failed": "Не удалось обновить провайдера"
-        }
-      }
-    },
     "warning": {
       "provider": {
         "fallback": "Возвращено к {{name}}, это может вызвать проблемы"
@@ -2151,8 +2117,8 @@
       "install_code_103": "Ошибка загрузки среды выполнения OVMS",
       "install_code_104": "Ошибка распаковки среды выполнения OVMS",
       "install_code_105": "Ошибка очистки среды выполнения OVMS",
-      "install_code_106": "Не удалось создать run.bat",
-      "install_code_110": "Не удалось очистить старую среду выполнения OVMS",
+      "install_code_106": "[to be translated]:创建 run.bat 失败",
+      "install_code_110": "[to be translated]:清理旧 OVMS runtime 失败",
       "run": "Ошибка запуска OVMS:",
       "stop": "Ошибка остановки OVMS:"
     },
@@ -4263,7 +4229,8 @@
         "none": "Не использовать прокси",
         "system": "Системный прокси",
         "title": "Режим прокси"
-      }
+      },
+      "tip": "[to be translated]:支持模糊匹配(*.test.com,192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "Нажмите на иконку трея для запуска",

@@ -1804,6 +1804,7 @@
     "title": "ミニアプリ"
   },
   "minapps": {
+    "ant-ling": "Ant Ling",
     "baichuan": "百小應",
     "baidu-ai-search": "百度AI検索",
     "chatglm": "ChatGLM",
@@ -1961,12 +1962,12 @@
     "rename_changed": "セキュリティポリシーにより、ファイル名は{{original}}から{{final}}に変更されました",
     "save": "メモに保存する",
     "search": {
-      "both": "名前+内容",
-      "content": "内容",
-      "found_results": "{{count}}件の結果が見つかりました (名前: {{nameCount}}, 内容: {{contentCount}})",
-      "more_matches": "さらに一致",
-      "searching": "検索中...",
-      "show_less": "表示を減らす"
+      "both": "[to be translated]:名称+内容",
+      "content": "[to be translated]:内容",
+      "found_results": "[to be translated]:找到 {{count}} 个结果 (名称: {{nameCount}}, 内容: {{contentCount}})",
+      "more_matches": "[to be translated]:个匹配",
+      "searching": "[to be translated]:搜索中...",
+      "show_less": "[to be translated]:收起"
     },
     "settings": {
       "data": {
@@ -2053,7 +2054,6 @@
         "cannot_remove_builtin": "組み込みプロバイダーは削除できません",
         "existing": "プロバイダーはすでに存在します",
         "get_providers": "利用可能なプロバイダーの取得に失敗しました",
-        "not_availabel": "プロバイダー {{provider}} は利用できません",
         "not_found": "OCRプロバイダーが存在しません",
         "update_failed": "更新構成に失敗しました"
       },
@@ -2063,40 +2063,6 @@
       "not_supported": "サポートされていないファイルタイプ {{type}}"
     },
     "processing": "OCR処理中...",
-    "provider": {
-      "config": {
-        "patch": {
-          "error": {
-            "failed": "設定の更新に失敗しました"
-          }
-        }
-      },
-      "create": {
-        "error": {
-          "failed": "プロバイダーの作成に失敗しました"
-        }
-      },
-      "delete": {
-        "error": {
-          "failed": "プロバイダー {{provider}} の削除に失敗しました"
-        }
-      },
-      "get": {
-        "error": {
-          "failed": "プロバイダー {{provider}} の取得に失敗しました"
-        }
-      },
-      "list": {
-        "error": {
-          "failed": "プロバイダーリストの取得に失敗しました"
-        }
-      },
-      "update": {
-        "error": {
-          "failed": "プロバイダーの更新に失敗しました"
-        }
-      }
-    },
     "warning": {
       "provider": {
         "fallback": "{{name}} に戻されました。これにより問題が発生する可能性があります。"
@@ -2151,8 +2117,8 @@
       "install_code_103": "OVMSランタイムのダウンロードに失敗しました",
       "install_code_104": "OVMSランタイムの解凍に失敗しました",
       "install_code_105": "OVMSランタイムのクリーンアップに失敗しました",
-      "install_code_106": "run.bat の作成に失敗しました",
-      "install_code_110": "古い OVMS ランタイムのクリーンアップに失敗しました",
+      "install_code_106": "[to be translated]:创建 run.bat 失败",
+      "install_code_110": "[to be translated]:清理旧 OVMS runtime 失败",
       "run": "OVMSの実行に失敗しました:",
       "stop": "OVMSの停止に失敗しました:"
     },
@@ -4263,7 +4229,8 @@
         "none": "プロキシを使用しない",
         "system": "システムプロキシ",
         "title": "プロキシモード"
-      }
+      },
+      "tip": "[to be translated]:支持模糊匹配(*.test.com,192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "トレイアイコンをクリックして起動",
