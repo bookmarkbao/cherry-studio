@@ -12,7 +12,8 @@ describe('buildFunctionCallToolName', () => {
 
     it('should sanitize names by replacing dashes with underscores', () => {
       const result = buildFunctionCallToolName('my-server', 'my-tool')
-      expect(result).not.toContain('-')
+      // Input dashes are replaced, but the separator between server and tool is a dash
+      expect(result).toBe('my_serv-my_tool')
       expect(result).toContain('_')
     })
 
