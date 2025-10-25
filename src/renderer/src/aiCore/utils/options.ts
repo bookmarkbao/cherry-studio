@@ -125,7 +125,8 @@ export function buildProviderOptions(
         // 对于其他 provider，使用通用的构建逻辑
         providerSpecificOptions = {
           ...buildGenericProviderOptions(assistant, model, capabilities),
-          serviceTier
+          serviceTier,
+          textVerbosity
         }
         break
       }

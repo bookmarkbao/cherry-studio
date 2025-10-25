@@ -237,6 +237,19 @@ export function defined<T>(value: T | undefined): T | null {
   }
 }
 
+/**
+ * Converts a `null` value to `undefined`, otherwise returns the value as-is.
+ * @param value - The value to check
+ * @returns `undefined` if the input is `null`; otherwise the input value
+ */
+export function notNull<T>(value: T | null): T | undefined {
+  if (value === null) {
+    return undefined
+  } else {
+    return value
+  }
+}
+
 export * from './api'
 export * from './collection'
 export * from './dataLimit'
