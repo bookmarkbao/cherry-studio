@@ -29,6 +29,7 @@ export type GenerateObjectParams = Omit<Parameters<typeof generateObject>[0], 'm
 
 export type AiSdkModel = LanguageModel | ImageModel
 
+// We take undefined as same as default, and null as same as explicitly off.
 export type OpenAIVerbosity = OpenAI.Responses.ResponseTextConfig['verbosity']
 export type OpenAIReasoningEffort = OpenAI.ReasoningEffort
 export type OpenAISummaryText = OpenAI.Reasoning['summary']

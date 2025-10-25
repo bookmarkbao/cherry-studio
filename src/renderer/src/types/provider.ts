@@ -43,6 +43,7 @@ export type ProviderApiOptions = {
 }
 
 // scale is not well supported now. It even lacks of docs
+// We take undefined as same as default, and null as same as explicitly off.
 export type OpenAIServiceTier = Exclude<OpenAI.Responses.ResponseCreateParams['service_tier'], 'scale'>
 
 export const OpenAIServiceTiers = {
@@ -50,7 +51,7 @@ export const OpenAIServiceTiers = {
   default: 'default',
   flex: 'flex',
   priority: 'priority'
-} as const satisfies Record<string, OpenAIServiceTier>
+} as const satisfies Record<NonNullable<OpenAIServiceTier>, OpenAIServiceTier>
 
 export function isOpenAIServiceTier(tier: string | null | undefined): tier is OpenAIServiceTier {
   return tier === null || tier === undefined || Object.hasOwn(OpenAIServiceTiers, tier)
