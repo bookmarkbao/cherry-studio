@@ -224,6 +224,19 @@ export function uniqueObjectArray<T>(array: T[]): T[] {
   return array.filter((obj, index, self) => index === self.findIndex((t) => isEqual(t, obj)))
 }
 
+/**
+ * Converts an `undefined` value to `null`, otherwise returns the value as-is.
+ * @param value - The value to check
+ * @returns `null` if the input is `undefined`; otherwise the input value
+ */
+export function defined<T>(value: T | undefined): T | null {
+  if (value === undefined) {
+    return null
+  } else {
+    return value
+  }
+}
+
 export * from './api'
 export * from './collection'
 export * from './dataLimit'

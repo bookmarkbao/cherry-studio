@@ -31,4 +31,4 @@ export type AiSdkModel = LanguageModel | ImageModel
 
 export type OpenAIVerbosity = OpenAI.Responses.ResponseTextConfig['verbosity']
 export type OpenAIReasoningEffort = OpenAI.ReasoningEffort
-export type OpenAISummaryText = OpenAI.Reasoning['summary'] | 'off'
+export type OpenAISummaryText = OpenAI.Reasoning['summary']
