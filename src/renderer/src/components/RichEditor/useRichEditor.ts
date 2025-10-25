@@ -196,8 +196,9 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
   const extensions = useMemo(
     () => [
       Markdown.configure({
-        markedOptions: { gfm: true },
-        html: true // Enable HTML support to preserve <u> tags for underline
+        markedOptions: {
+          gfm: true
+        }
       }),
       SourceLineAttribute,
       StarterKit.configure({
