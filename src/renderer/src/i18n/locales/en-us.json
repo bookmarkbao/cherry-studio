@@ -1013,7 +1013,6 @@
     "name": "Name",
     "no_results": "No results",
     "none": "None",
-    "off": "Off",
     "open": "Open",
     "paste": "Paste",
     "placeholders": {
@@ -3986,6 +3985,7 @@
         "default": "default",
         "flex": "flex",
         "on_demand": "on demand",
+        "performance": "[to be translated]:性能",
         "priority": "priority",
         "tip": "Specifies the latency tier to use for processing the request",
         "title": "Service Tier"
