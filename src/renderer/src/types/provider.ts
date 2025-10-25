@@ -42,7 +42,7 @@ export type ProviderApiOptions = {
   isNotSupportEnableThinking?: boolean
 }
 
-// scale is not well supported now. It event lacks of docs
+// scale is not well supported now. It even lacks of docs
 export type OpenAIServiceTier = Exclude<OpenAI.Responses.ResponseCreateParams['service_tier'], 'scale'>
 
 export const OpenAIServiceTiers = {
