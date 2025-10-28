@@ -60,12 +60,6 @@ export const CodeBlockShiki = CodeBlock.extend<CodeBlockShikiOptions>({
 
   addKeyboardShortcuts() {
     return {
-      Tab: () => {
-        if (this.editor.isActive(this.name)) {
-          return this.editor.commands.insertContent('  ')
-        }
-        return false
-      },
       'Shift-Tab': () => {
         if (this.editor.isActive(this.name)) {
           const { selection } = this.editor.state
