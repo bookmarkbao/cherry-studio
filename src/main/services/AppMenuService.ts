@@ -1,6 +1,6 @@
 import { isMac } from '@main/constant'
 import { windowService } from '@main/services/WindowService'
-import { getAppLanguage,locales } from '@main/utils/language'
+import { getAppLanguage, locales } from '@main/utils/language'
 import { IpcChannel } from '@shared/IpcChannel'
 import type { MenuItemConstructorOptions } from 'electron'
 import { app, Menu, shell } from 'electron'
