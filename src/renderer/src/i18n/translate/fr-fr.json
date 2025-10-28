@@ -952,6 +952,7 @@
     }
   },
   "common": {
+    "about": "À propos",
     "add": "Ajouter",
     "add_success": "Ajout réussi",
     "advanced_settings": "Paramètres avancés",
@@ -1963,9 +1964,9 @@
     "save": "sauvegarder dans les notes",
     "search": {
       "both": "Nom + Contenu",
-      "content": "I’m here to process and translate any text you provide. Please go ahead and send the actual text you’d like translated into French.",
-      "found_results": "{{count}} résultats trouvés (noms : {{nameCount}}, contenus : {{contentCount}})",
-      "more_matches": "Une correspondance",
+      "content": "contenu",
+      "found_results": "{{count}} résultat(s) trouvé(s) (nom : {{nameCount}}, contenu : {{contentCount}})",
+      "more_matches": "Correspondance",
       "searching": "Recherche en cours...",
       "show_less": "Replier"
     },
@@ -2117,7 +2118,7 @@
       "install_code_103": "Échec du téléchargement du runtime OVMS",
       "install_code_104": "Échec de la décompression du runtime OVMS",
       "install_code_105": "Échec du nettoyage du runtime OVMS",
-      "install_code_106": "La création de run.bat a échoué",
+      "install_code_106": "Échec de la création de run.bat",
       "install_code_110": "Échec du nettoyage de l'ancien runtime OVMS",
       "run": "Échec de l'exécution d'OVMS :",
       "stop": "Échec de l'arrêt d'OVMS :"
@@ -2344,12 +2345,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "Tencent HunYuan",
     "hyperbolic": "Hyperbolique",
     "infini": "Sans Frontières Céleste",
     "jina": "Jina",
     "lanyun": "Technologie Lan Yun",
     "lmstudio": "Studio LM",
+    "longcat": "Mon voisin Totoro",
     "minimax": "MiniMax",
     "mistral": "Mistral",
     "modelscope": "ModelScope MoDa",
@@ -4230,7 +4233,7 @@
         "system": "Proxy système",
         "title": "Mode de proxy"
       },
-      "tip": "Supporte la correspondance floue (*.test.com, 192.168.0.0/16)"
+      "tip": "Prise en charge de la correspondance floue (*.test.com, 192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "Cliquez sur l'icône dans la barre d'état système pour démarrer",

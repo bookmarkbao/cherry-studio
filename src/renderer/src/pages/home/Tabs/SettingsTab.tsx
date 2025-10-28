@@ -230,10 +230,9 @@ const SettingsTab: FC<Props> = (props) => {
           extra={
             <RowFlex className="items-center gap-0.5">
               <Button
-                variant="light"
-                size="sm"
-                isIconOnly
-                onPress={() => AssistantSettingsPopup.show({ assistant, tab: 'model' })}>
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => AssistantSettingsPopup.show({ assistant, tab: 'model' })}>
                 <Settings2 size={16} />
               </Button>
             </RowFlex>

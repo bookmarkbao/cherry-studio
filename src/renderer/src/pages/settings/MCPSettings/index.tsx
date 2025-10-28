@@ -116,7 +116,9 @@ const MCPSettings: FC = () => {
           {!isHomePage() && (
             <BackButtonContainer>
               <Link to="/settings/mcp/servers">
-                <Button variant="solid" startContent={<ArrowLeftOutlined />} radius="full" isIconOnly />
+                <Button variant="default" className="rounded-full" size="icon">
+                  <ArrowLeftOutlined />
+                </Button>
               </Link>
             </BackButtonContainer>
           )}

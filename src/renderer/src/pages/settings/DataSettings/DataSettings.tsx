@@ -603,10 +603,12 @@ const DataSettings: FC = () => {
               <SettingRow>
                 <SettingRowTitle>{t('settings.general.backup.title')}</SettingRowTitle>
                 <RowFlex className="justify-between gap-[5px]">
-                  <Button onPress={BackupPopup.show} startContent={<SaveIcon size={14} />}>
+                  <Button onClick={BackupPopup.show}>
+                    <SaveIcon size={14} />
                     {t('settings.general.backup.button')}
                   </Button>
-                  <Button onPress={RestorePopup.show} startContent={<FolderOpen size={14} />}>
+                  <Button onClick={RestorePopup.show}>
+                    <FolderOpen size={14} />
                     {t('settings.general.restore.button')}
                   </Button>
                 </RowFlex>
@@ -633,7 +635,7 @@ const DataSettings: FC = () => {
                   </PathText>
                   <StyledIcon onClick={() => handleOpenPath(appInfo?.appDataPath)} style={{ flexShrink: 0 }} />
                   <RowFlex className="ml-2 gap-[5px]">
-                    <Button onPress={handleSelectAppDataPath}>{t('settings.data.app_data.select')}</Button>
+                    <Button onClick={handleSelectAppDataPath}>{t('settings.data.app_data.select')}</Button>
                   </RowFlex>
                 </PathRow>
               </SettingRow>
@@ -646,7 +648,7 @@ const DataSettings: FC = () => {
                   </PathText>
                   <StyledIcon onClick={() => handleOpenPath(appInfo?.logsPath)} style={{ flexShrink: 0 }} />
                   <RowFlex className="ml-2 gap-[5px]">
-                    <Button onPress={() => handleOpenPath(appInfo?.logsPath)}>
+                    <Button onClick={() => handleOpenPath(appInfo?.logsPath)}>
                       {t('settings.data.app_logs.button')}
                     </Button>
                   </RowFlex>
@@ -656,7 +658,7 @@ const DataSettings: FC = () => {
               <SettingRow>
                 <SettingRowTitle>{t('settings.data.app_knowledge.label')}</SettingRowTitle>
                 <RowFlex className="items-center gap-[5px]">
-                  <Button onPress={handleRemoveAllFiles}>{t('settings.data.app_knowledge.button.delete')}</Button>
+                  <Button onClick={handleRemoveAllFiles}>{t('settings.data.app_knowledge.button.delete')}</Button>
                 </RowFlex>
               </SettingRow>
               <SettingDivider />
@@ -666,14 +668,14 @@ const DataSettings: FC = () => {
                   {cacheSize && <CacheText>({cacheSize}MB)</CacheText>}
                 </SettingRowTitle>
                 <RowFlex className="gap-[5px]">
-                  <Button onPress={handleClearCache}>{t('settings.data.clear_cache.button')}</Button>
+                  <Button onClick={handleClearCache}>{t('settings.data.clear_cache.button')}</Button>
                 </RowFlex>
               </SettingRow>
               <SettingDivider />
               <SettingRow>
                 <SettingRowTitle>{t('settings.general.reset.title')}</SettingRowTitle>
                 <RowFlex className="gap-[5px]">
-                  <Button onPress={reset} color="danger">
+                  <Button onClick={reset} variant="destructive">
                     {t('settings.general.reset.title')}
                   </Button>
                 </RowFlex>

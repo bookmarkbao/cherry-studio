@@ -952,6 +952,7 @@
     }
   },
   "common": {
+    "about": "關於",
     "add": "新增",
     "add_success": "新增成功",
     "advanced_settings": "進階設定",
@@ -2054,7 +2055,6 @@
         "cannot_remove_builtin": "不能刪除內建提供者",
         "existing": "提供者已存在",
         "get_providers": "取得可用提供者失敗",
-        "not_availabel": "提供商 {{provider}} 不可用",
         "not_found": "OCR 提供者不存在",
         "update_failed": "更新配置失敗"
       },
@@ -2064,40 +2064,6 @@
       "not_supported": "不支持的文件類型 {{type}}"
     },
     "processing": "OCR 處理中...",
-    "provider": {
-      "config": {
-        "patch": {
-          "error": {
-            "failed": "更新配置失敗"
-          }
-        }
-      },
-      "create": {
-        "error": {
-          "failed": "創建提供商失敗"
-        }
-      },
-      "delete": {
-        "error": {
-          "failed": "刪除提供商 {{provider}} 失敗"
-        }
-      },
-      "get": {
-        "error": {
-          "failed": "獲取提供商 {{provider}} 失敗"
-        }
-      },
-      "list": {
-        "error": {
-          "failed": "列出提供商失敗"
-        }
-      },
-      "update": {
-        "error": {
-          "failed": "更新提供商失敗"
-        }
-      }
-    },
     "warning": {
       "provider": {
         "fallback": "已回退到 {{name}}，這可能導致問題"
@@ -2379,12 +2345,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "騰訊混元",
     "hyperbolic": "Hyperbolic",
     "infini": "無問芯穹",
     "jina": "Jina",
     "lanyun": "藍耘",
     "lmstudio": "LM Studio",
+    "longcat": "龍貓",
     "minimax": "MiniMax",
     "mistral": "Mistral",
     "modelscope": "ModelScope 魔搭",
@@ -4265,7 +4233,7 @@
         "system": "系統代理伺服器",
         "title": "代理伺服器模式"
       },
-      "tip": "支援模糊匹配 (*.test.com,192.168.0.0/16)"
+      "tip": "支援模糊匹配（*.test.com，192.168.0.0/16）"
     },
     "quickAssistant": {
       "click_tray_to_show": "點選工具列圖示啟動",

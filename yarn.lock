@@ -180,6 +180,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ai-sdk/huggingface@npm:0.0.4":
+  version: 0.0.4
+  resolution: "@ai-sdk/huggingface@npm:0.0.4"
+  dependencies:
+    "@ai-sdk/openai-compatible": "npm:1.0.22"
+    "@ai-sdk/provider": "npm:2.0.0"
+    "@ai-sdk/provider-utils": "npm:3.0.12"
+  peerDependencies:
+    zod: ^3.25.76 || ^4
+  checksum: 10c0/756b8f820b89bf9550c9281dfe2a1a813477dec82be5557e236e8b5eaaf0204b65a65925ad486b7576c687f33c709f6d99fd4fc87a46b1add210435b08834986
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/huggingface@patch:@ai-sdk/huggingface@npm%3A0.0.4#~/.yarn/patches/@ai-sdk-huggingface-npm-0.0.4-8080836bc1.patch":
+  version: 0.0.4
+  resolution: "@ai-sdk/huggingface@patch:@ai-sdk/huggingface@npm%3A0.0.4#~/.yarn/patches/@ai-sdk-huggingface-npm-0.0.4-8080836bc1.patch::version=0.0.4&hash=ceb48e"
+  dependencies:
+    "@ai-sdk/openai-compatible": "npm:1.0.22"
+    "@ai-sdk/provider": "npm:2.0.0"
+    "@ai-sdk/provider-utils": "npm:3.0.12"
+  peerDependencies:
+    zod: ^3.25.76 || ^4
+  checksum: 10c0/4726a10de7a6fd554b58d62f79cd6514c2cc5166052e035ba1517e224a310ddb355a5d2922ee8507fb8d928d6d5b2b102d3d221af5a44b181e436e6b64382087
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/mistral@npm:^2.0.19":
   version: 2.0.19
   resolution: "@ai-sdk/mistral@npm:2.0.19"
@@ -2853,17 +2879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emnapi/core@npm:^1.4.3":
-  version: 1.5.0
-  resolution: "@emnapi/core@npm:1.5.0"
-  dependencies:
-    "@emnapi/wasi-threads": "npm:1.1.0"
-    tslib: "npm:^2.4.0"
-  checksum: 10c0/52ba3485277706d92fa27d92b37e5b4f6ef0742c03ed68f8096f294c6bfa30f0752c82d4c2bfa14bff4dc30d63c9f71a8f9fb64a92743d00807d9e468fafd5ff
-  languageName: node
-  linkType: hard
-
-"@emnapi/core@npm:^1.4.5":
+"@emnapi/core@npm:^1.4.3, @emnapi/core@npm:^1.4.5":
   version: 1.4.5
   resolution: "@emnapi/core@npm:1.4.5"
   dependencies:
@@ -2883,16 +2899,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emnapi/runtime@npm:^1.4.3":
-  version: 1.5.0
-  resolution: "@emnapi/runtime@npm:1.5.0"
-  dependencies:
-    tslib: "npm:^2.4.0"
-  checksum: 10c0/a85c9fc4e3af49cbe41e5437e5be2551392a931910cd0a5b5d3572532786927810c9cc1db11b232ec8f9657b33d4e6f7c4f985f1a052917d7cd703b5b2a20faa
-  languageName: node
-  linkType: hard
-
-"@emnapi/runtime@npm:^1.4.5":
+"@emnapi/runtime@npm:^1.4.3, @emnapi/runtime@npm:^1.4.5":
   version: 1.4.5
   resolution: "@emnapi/runtime@npm:1.4.5"
   dependencies:
@@ -6589,7 +6596,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openrouter/ai-sdk-provider@npm:^1.1.2":
+"@openrouter/ai-sdk-provider@npm:^1.2.0":
   version: 1.2.0
   resolution: "@openrouter/ai-sdk-provider@npm:1.2.0"
   peerDependencies:
@@ -13318,6 +13325,7 @@ __metadata:
     "@agentic/tavily": "npm:^7.3.3"
     "@ai-sdk/amazon-bedrock": "npm:^3.0.35"
     "@ai-sdk/google-vertex": "npm:^3.0.40"
+    "@ai-sdk/huggingface": "patch:@ai-sdk/huggingface@npm%3A0.0.4#~/.yarn/patches/@ai-sdk-huggingface-npm-0.0.4-8080836bc1.patch"
     "@ai-sdk/mistral": "npm:^2.0.19"
     "@ai-sdk/perplexity": "npm:^2.0.13"
     "@ant-design/v5-patch-for-react-19": "npm:^1.0.3"
@@ -13367,7 +13375,7 @@ __metadata:
     "@mozilla/readability": "npm:^0.6.0"
     "@napi-rs/system-ocr": "patch:@napi-rs/system-ocr@npm%3A1.0.2#~/.yarn/patches/@napi-rs-system-ocr-npm-1.0.2-59e7a78e8b.patch"
     "@notionhq/client": "npm:^2.2.15"
-    "@openrouter/ai-sdk-provider": "npm:^1.1.2"
+    "@openrouter/ai-sdk-provider": "npm:^1.2.0"
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/core": "npm:2.0.0"
     "@opentelemetry/exporter-trace-otlp-http": "npm:^0.200.0"
@@ -23712,23 +23720,6 @@ __metadata:
   peerDependencies:
     zod: ^3.23.8
   checksum: 10c0/4848f48bb892a1bfcc8a1067863be34664d4ddbba7a4933a88e37be9b026f0cf06478af4d428428151ee7c194fb3b4d8d9e2a8a8b24d2fa923e3e80faf38885a
-  languageName: node
-  linkType: hard
-
-"openai@npm:5.12.2":
-  version: 5.12.2
-  resolution: "openai@npm:5.12.2"
-  peerDependencies:
-    ws: ^8.18.0
-    zod: ^3.23.8
-  peerDependenciesMeta:
-    ws:
-      optional: true
-    zod:
-      optional: true
-  bin:
-    openai: bin/cli
-  checksum: 10c0/7737b9b24edc81fcf9e6dcfb18a196cc0f8e29b6e839adf06a2538558c03908e3aa4cd94901b1a7f4a9dd62676fe9e34d6202281b2395090d998618ea1614c0c
   languageName: node
   linkType: hard
 

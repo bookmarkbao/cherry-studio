@@ -24,13 +24,8 @@ const UpdateAppButton: FC = () => {
 
   return (
     <Container>
-      <UpdateButton
-        className="nodrag"
-        onPress={onOpen}
-        startContent={<SyncOutlined />}
-        color="warning"
-        variant="bordered"
-        size="sm">
+      <UpdateButton className="nodrag" onClick={onOpen} variant="outline" size="sm">
+        <SyncOutlined />
         {t('button.update_available')}
       </UpdateButton>
 

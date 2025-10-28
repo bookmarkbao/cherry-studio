@@ -22,7 +22,7 @@ const ExpandableText = ({
 
   const button = useMemo(() => {
     return (
-      <Button variant="light" onPress={toggleExpand} className="self-end">
+      <Button variant="ghost" onClick={toggleExpand} className="self-end">
         {isExpanded ? t('common.collapse') : t('common.expand')}
       </Button>
     )

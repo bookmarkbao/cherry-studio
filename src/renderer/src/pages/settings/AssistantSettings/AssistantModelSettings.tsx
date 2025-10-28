@@ -218,22 +218,20 @@ const AssistantModelSettings: FC<Props> = ({ assistant, updateAssistant, updateA
       <RowFlex className="mb-2.5 items-center justify-between">
         <Label>{t('assistants.settings.default_model')}</Label>
         <RowFlex className="items-center gap-[5px]">
-          <ModelSelectButton
-            startContent={defaultModel ? <ModelAvatar model={defaultModel} size={20} /> : <PlusIcon size={18} />}
-            onPress={onSelectModel}>
+          <ModelSelectButton onClick={onSelectModel}>
+            {defaultModel ? <ModelAvatar model={defaultModel} size={20} /> : <PlusIcon size={18} />}
             <ModelName>{defaultModel ? defaultModel.name : t('assistants.presets.edit.model.select.title')}</ModelName>
           </ModelSelectButton>
           {defaultModel && (
             <Button
-              color="danger"
-              variant="solid"
-              isIconOnly
-              startContent={<DeleteIcon size={14} className="lucide-custom" />}
-              onPress={() => {
+              variant="destructive"
+              size="icon"
+              onClick={() => {
                 setDefaultModel(undefined)
                 updateAssistant({ ...assistant, defaultModel: undefined })
-              }}
-            />
+              }}>
+              <DeleteIcon size={14} className="lucide-custom" />
+            </Button>
           )}
         </RowFlex>
       </RowFlex>
@@ -459,7 +457,8 @@ const AssistantModelSettings: FC<Props> = ({ assistant, updateAssistant, updateA
       <Divider style={{ margin: '10px 0' }} />
       <SettingRow style={{ minHeight: 30 }}>
         <Label>{t('models.custom_parameters')}</Label>
-        <Button startContent={<PlusIcon size={18} />} onPress={onAddCustomParameter}>
+        <Button onClick={onAddCustomParameter}>
+          <PlusIcon size={18} />
           {t('models.add_parameter')}
         </Button>
       </SettingRow>
@@ -485,20 +484,16 @@ const AssistantModelSettings: FC<Props> = ({ assistant, updateAssistant, updateA
           </Col>
           <Col span={10}>{renderParameterValueInput(param, index)}</Col>
           <Col span={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              size="sm"
-              color="danger"
-              variant="solid"
-              isIconOnly
-              startContent={<DeleteIcon size={14} className="lucide-custom" />}
-              onPress={() => onDeleteCustomParameter(index)}
-            />
+            <Button size="sm" variant="destructive" onClick={() => onDeleteCustomParameter(index)}>
+              <DeleteIcon size={14} className="lucide-custom" />
+            </Button>
           </Col>
         </Row>
       ))}
       <Divider style={{ margin: '15px 0' }} />
       <RowFlex className="justify-end">
-        <Button onPress={onReset} color="danger" variant="solid" startContent={<ResetIcon size={16} />}>
+        <Button onClick={onReset} variant="destructive">
+          <ResetIcon size={16} />
           {t('chat.settings.reset')}
         </Button>
       </RowFlex>

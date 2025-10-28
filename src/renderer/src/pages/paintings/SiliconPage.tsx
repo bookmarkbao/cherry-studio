@@ -360,8 +360,8 @@ const SiliconPage: FC<{ Options: string[] }> = ({ Options }) => {
             <Button
               size="sm"
               className="nodrag"
-              startContent={<PlusOutlined />}
-              onPress={() => setPainting(addPainting('siliconflow_paintings', getNewPainting()))}>
+              onClick={() => setPainting(addPainting('siliconflow_paintings', getNewPainting()))}>
+              <PlusOutlined />
               {t('paintings.button.new.image')}
             </Button>
           </NavbarRight>

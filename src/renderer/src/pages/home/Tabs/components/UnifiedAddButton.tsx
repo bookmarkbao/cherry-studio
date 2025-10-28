@@ -39,13 +39,13 @@ const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant }) => {
         <PopoverContent>
           <div className="flex w-full flex-col gap-1 p-1">
             <Button
-              onPress={handleAddAssistant}
+              onClick={handleAddAssistant}
               className="w-full justify-start bg-transparent hover:bg-[var(--color-list-item)]"
               startContent={<MessageSquare size={16} className="shrink-0" />}>
               {t('chat.add.assistant.title')}
             </Button>
             <Button
-              onPress={handleAddAgent}
+              onClick={handleAddAgent}
               className="w-full justify-start bg-transparent hover:bg-[var(--color-list-item)]"
               startContent={<Bot size={16} className="shrink-0" />}>
               {t('agent.add.title')}
