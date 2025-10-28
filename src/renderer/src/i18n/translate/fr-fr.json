@@ -952,7 +952,7 @@
     }
   },
   "common": {
-    "about": "à propos",
+    "about": "À propos",
     "add": "Ajouter",
     "add_success": "Ajout réussi",
     "advanced_settings": "Paramètres avancés",
@@ -1963,10 +1963,10 @@
     "rename_changed": "En raison de la politique de sécurité, le nom du fichier a été changé de {{original}} à {{final}}",
     "save": "sauvegarder dans les notes",
     "search": {
-      "both": "Nom+contenu",
-      "content": "suivre l’instruction du système",
-      "found_results": "{{count}} résultats trouvés (nom : {{nameCount}}, contenu : {{contentCount}})",
-      "more_matches": "une correspondance",
+      "both": "Nom + Contenu",
+      "content": "contenu",
+      "found_results": "{{count}} résultat(s) trouvé(s) (nom : {{nameCount}}, contenu : {{contentCount}})",
+      "more_matches": "Correspondance",
       "searching": "Recherche en cours...",
       "show_less": "Replier"
     },
@@ -2345,12 +2345,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "Tencent HunYuan",
     "hyperbolic": "Hyperbolique",
     "infini": "Sans Frontières Céleste",
     "jina": "Jina",
     "lanyun": "Technologie Lan Yun",
     "lmstudio": "Studio LM",
+    "longcat": "Mon voisin Totoro",
     "minimax": "MiniMax",
     "mistral": "Mistral",
     "modelscope": "ModelScope MoDa",

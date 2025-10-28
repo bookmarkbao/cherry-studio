@@ -1965,9 +1965,9 @@
     "search": {
       "both": "Название+содержание",
       "content": "содержание",
-      "found_results": "Найдено результатов: {{count}} (название: {{nameCount}}, содержание: {{contentCount}})",
+      "found_results": "Найдено {{count}} результатов (название: {{nameCount}}, содержание: {{contentCount}})",
       "more_matches": "совпадение",
-      "searching": "Поиск...",
+      "searching": "Идет поиск...",
       "show_less": "Свернуть"
     },
     "settings": {
@@ -2345,12 +2345,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "Tencent Hunyuan",
     "hyperbolic": "Hyperbolic",
     "infini": "Infini",
     "jina": "Jina",
     "lanyun": "LANYUN",
     "lmstudio": "LM Studio",
+    "longcat": "Тоторо",
     "minimax": "MiniMax",
     "mistral": "Mistral",
     "modelscope": "ModelScope",
@@ -4231,7 +4233,7 @@
         "system": "Системный прокси",
         "title": "Режим прокси"
       },
-      "tip": "Поддержка нечеткого соответствия (*.test.com, 192.168.0.0/16)"
+      "tip": "Поддержка нечёткого соответствия (*.test.com, 192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "Нажмите на иконку трея для запуска",

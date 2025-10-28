@@ -2,7 +2,7 @@ import { isMac } from '@main/constant'
 import { windowService } from '@main/services/WindowService'
 import { locales } from '@main/utils/locales'
 import { IpcChannel } from '@shared/IpcChannel'
-import { app, Menu, MenuItemConstructorOptions } from 'electron'
+import { app, Menu, MenuItemConstructorOptions, shell } from 'electron'
 
 import { configManager } from './ConfigManager'
 export class AppMenuService {
@@ -36,6 +36,9 @@ export class AppMenuService {
         ]
       },
       {
+        role: 'fileMenu'
+      },
+      {
         role: 'editMenu'
       },
       {
@@ -43,6 +46,35 @@ export class AppMenuService {
       },
       {
         role: 'windowMenu'
+      },
+      {
+        role: 'help',
+        submenu: [
+          {
+            label: 'Website',
+            click: () => {
+              shell.openExternal('https://cherry-ai.com')
+            }
+          },
+          {
+            label: 'Documentation',
+            click: () => {
+              shell.openExternal('https://cherry-ai.com/docs')
+            }
+          },
+          {
+            label: 'Feedback',
+            click: () => {
+              shell.openExternal('https://github.com/CherryHQ/cherry-studio/issues/new/choose')
+            }
+          },
+          {
+            label: 'Releases',
+            click: () => {
+              shell.openExternal('https://github.com/CherryHQ/cherry-studio/releases')
+            }
+          }
+        ]
       }
     ]
 
