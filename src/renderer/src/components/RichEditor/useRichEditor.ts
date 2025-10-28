@@ -24,7 +24,7 @@ import { t } from 'i18next'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { commandSuggestion } from './command'
-import { CodeBlockShiki } from './extensions/code-block-shiki/code-block-shiki'
+import CodeBlockShiki from './extensions/code-block-shiki'
 import { EnhancedImage } from './extensions/enhanced-image'
 import { EnhancedLink } from './extensions/enhanced-link'
 import { EnhancedMath } from './extensions/enhanced-math'

@@ -13,6 +13,8 @@ export const CodeBlockShiki = CodeBlock.extend<CodeBlockShikiOptions>({
   addOptions() {
     return {
       ...this.parent?.(),
+      tabSize: 4,
+      enableTabIndentation: true,
       languageClassPrefix: 'language-',
       exitOnTripleEnter: true,
       exitOnArrowDown: true,
