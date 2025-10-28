@@ -11600,12 +11600,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-code@npm:^3.9.0":
+"@tiptap/extension-code@npm:3.9.0":
   version: 3.9.0
   resolution: "@tiptap/extension-code@npm:3.9.0"
   peerDependencies:
     "@tiptap/core": ^3.9.0
   checksum: 10c0/702a8ddb7d1899db3846a03ec39a567e14404fb96dad953cd943298acfce370d0f2a32eee5de4873d746e63ed965aaf499aa2cecc910bfe78eba1b204235e101
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-code@patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch":
+  version: 3.9.0
+  resolution: "@tiptap/extension-code@patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch::version=3.9.0&hash=86c3dd"
+  peerDependencies:
+    "@tiptap/core": ^3.9.0
+  checksum: 10c0/a0fc122d23a5c51cae6c9eae011eec419ae49c9d6a3427b96ad6136c4988b8f97121844ce4ae5c5da4af3d6c604acd53900f36b0c1cba5c8c97f29bcead4c371
   languageName: node
   linkType: hard
 
@@ -11832,7 +11841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-table-of-contents@npm:^3.9.0":
+"@tiptap/extension-table-of-contents@npm:3.9.0":
   version: 3.9.0
   resolution: "@tiptap/extension-table-of-contents@npm:3.9.0"
   dependencies:
@@ -11841,6 +11850,18 @@ __metadata:
     "@tiptap/core": ^3.9.0
     "@tiptap/pm": ^3.9.0
   checksum: 10c0/e6fdaf56d5a5ab4c31560e1badacd25f7b918ad14ecfdc49a1031a0f33ceb140874ff3bba8b06fe01d4adf76c4355607387af01e5a8e440436c06d44a2149e69
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-table-of-contents@patch:@tiptap/extension-table-of-contents@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-table-of-contents-npm-3.9.0-98de0a0e34.patch":
+  version: 3.9.0
+  resolution: "@tiptap/extension-table-of-contents@patch:@tiptap/extension-table-of-contents@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-table-of-contents-npm-3.9.0-98de0a0e34.patch::version=3.9.0&hash=08cbf9"
+  dependencies:
+    uuid: "npm:^10.0.0"
+  peerDependencies:
+    "@tiptap/core": ^3.9.0
+    "@tiptap/pm": ^3.9.0
+  checksum: 10c0/458f20a35a29cd9c6cba0126a5cff964365b1a6ea9fefcf3cb39f3b7f557fba28869c5655320fb6bc16ce3d37f78660f50966b93b1cb80521a77861d1f074e89
   languageName: node
   linkType: hard
 
@@ -11881,7 +11902,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/markdown@npm:^3.9.0":
+"@tiptap/markdown@npm:3.9.0":
   version: 3.9.0
   resolution: "@tiptap/markdown@npm:3.9.0"
   dependencies:
@@ -11890,6 +11911,18 @@ __metadata:
     "@tiptap/core": ^3.9.0
     "@tiptap/pm": ^3.9.0
   checksum: 10c0/e33451fc7132250bab31e79be84b6b35ccc2bd6ef428f3e7a69f270c03c7d183733daaae309b9a569b1657508d30c5ae95aa9ff7e6a71d57bd137f8d063658db
+  languageName: node
+  linkType: hard
+
+"@tiptap/markdown@patch:@tiptap/markdown@npm%3A3.9.0#~/.yarn/patches/@tiptap-markdown-npm-3.9.0-16e287adb3.patch":
+  version: 3.9.0
+  resolution: "@tiptap/markdown@patch:@tiptap/markdown@npm%3A3.9.0#~/.yarn/patches/@tiptap-markdown-npm-3.9.0-16e287adb3.patch::version=3.9.0&hash=fe7244"
+  dependencies:
+    marked: "npm:^16.1.2"
+  peerDependencies:
+    "@tiptap/core": ^3.9.0
+    "@tiptap/pm": ^3.9.0
+  checksum: 10c0/61633dc8f6f99eabd0c2f864a16a7d669cdab51b2e71216a76528f7b53c1041beaf6b673177a1a63f776db20cdebd64b84097520d5e6c2a852107d640190aa79
   languageName: node
   linkType: hard
 
@@ -13956,6 +13989,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.6.3"
     "@testing-library/react": "npm:^16.3.0"
     "@testing-library/user-event": "npm:^14.6.1"
+    "@tiptap/extension-code": "patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch"
     "@tiptap/extension-code-block": "npm:^3.9.0"
     "@tiptap/extension-collaboration": "npm:^3.9.0"
     "@tiptap/extension-drag-handle": "npm:^3.9.0"
@@ -13966,10 +14000,10 @@ __metadata:
     "@tiptap/extension-mathematics": "npm:^3.9.0"
     "@tiptap/extension-mention": "npm:^3.9.0"
     "@tiptap/extension-node-range": "npm:^3.9.0"
-    "@tiptap/extension-table-of-contents": "npm:^3.9.0"
+    "@tiptap/extension-table-of-contents": "patch:@tiptap/extension-table-of-contents@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-table-of-contents-npm-3.9.0-98de0a0e34.patch"
     "@tiptap/extension-typography": "npm:^3.9.0"
     "@tiptap/extension-underline": "npm:^3.9.0"
-    "@tiptap/markdown": "npm:^3.9.0"
+    "@tiptap/markdown": "patch:@tiptap/markdown@npm%3A3.9.0#~/.yarn/patches/@tiptap-markdown-npm-3.9.0-16e287adb3.patch"
     "@tiptap/pm": "npm:^3.9.0"
     "@tiptap/react": "npm:^3.9.0"
     "@tiptap/starter-kit": "npm:^3.9.0"
