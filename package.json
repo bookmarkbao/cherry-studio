@@ -169,7 +169,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@tiptap/extension-code": "patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch",
+    "@tiptap/extension-code": "patch:@tiptap/extension-code@patch%3A@tiptap/extension-code@npm%253A3.9.0%23~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch%3A%3Aversion=3.9.0&hash=86c3dd#~/.yarn/patches/@tiptap-extension-code-patch-5e999c6f1b.patch",
     "@tiptap/extension-code-block": "^3.9.0",
     "@tiptap/extension-collaboration": "^3.9.0",
     "@tiptap/extension-drag-handle": "^3.9.0",
@@ -398,7 +398,8 @@
     "@img/sharp-linux-arm64": "0.34.3",
     "@img/sharp-linux-x64": "0.34.3",
     "@img/sharp-win32-x64": "0.34.3",
-    "openai@npm:5.12.2": "npm:@cherrystudio/openai@6.5.0"
+    "openai@npm:5.12.2": "npm:@cherrystudio/openai@6.5.0",
+    "@tiptap/extension-code@npm:^3.9.0": "patch:@tiptap/extension-code@patch%3A@tiptap/extension-code@npm%253A3.9.0%23~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch%3A%3Aversion=3.9.0&hash=86c3dd#~/.yarn/patches/@tiptap-extension-code-patch-5e999c6f1b.patch"
   },
   "packageManager": "yarn@4.9.1",
   "lint-staged": {

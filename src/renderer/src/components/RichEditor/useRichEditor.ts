@@ -60,6 +60,16 @@ const SourceLineAttribute = Extension.create({
   }
 })
 
+// Create extension to disable marks on split (Enter key)
+const DisableMarksOnSplit = Extension.create({
+  name: 'disableMarksOnSplit',
+  addKeyboardShortcuts() {
+    return {
+      Enter: () => this.editor.commands.splitBlock({ keepMarks: false })
+    }
+  }
+})
+
 export interface UseRichEditorOptions {
   /** Initial markdown content */
   initialContent?: string
@@ -202,6 +212,7 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         }
       }),
       SourceLineAttribute,
+      DisableMarksOnSplit,
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3, 4, 5, 6]

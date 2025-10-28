@@ -11609,12 +11609,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-code@patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch":
+"@tiptap/extension-code@patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch::version=3.9.0&hash=86c3dd":
   version: 3.9.0
   resolution: "@tiptap/extension-code@patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch::version=3.9.0&hash=86c3dd"
   peerDependencies:
     "@tiptap/core": ^3.9.0
   checksum: 10c0/a0fc122d23a5c51cae6c9eae011eec419ae49c9d6a3427b96ad6136c4988b8f97121844ce4ae5c5da4af3d6c604acd53900f36b0c1cba5c8c97f29bcead4c371
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-code@patch:@tiptap/extension-code@patch%3A@tiptap/extension-code@npm%253A3.9.0%23~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch%3A%3Aversion=3.9.0&hash=86c3dd#~/.yarn/patches/@tiptap-extension-code-patch-5e999c6f1b.patch":
+  version: 3.9.0
+  resolution: "@tiptap/extension-code@patch:@tiptap/extension-code@patch%3A@tiptap/extension-code@npm%253A3.9.0%23~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch%3A%3Aversion=3.9.0&hash=86c3dd#~/.yarn/patches/@tiptap-extension-code-patch-5e999c6f1b.patch::version=3.9.0&hash=4d897f"
+  peerDependencies:
+    "@tiptap/core": ^3.9.0
+  checksum: 10c0/d3886c7bcd2270fb1ca8d63b2cf45ce32375050a043f01c2aa7c517f57f461359ba1d2c3d489759c46a056fc4eaf1f4840ede3033f7621c5cd89b52cd23d740c
   languageName: node
   linkType: hard
 
@@ -13989,7 +13998,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.6.3"
     "@testing-library/react": "npm:^16.3.0"
     "@testing-library/user-event": "npm:^14.6.1"
-    "@tiptap/extension-code": "patch:@tiptap/extension-code@npm%3A3.9.0#~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch"
+    "@tiptap/extension-code": "patch:@tiptap/extension-code@patch%3A@tiptap/extension-code@npm%253A3.9.0%23~/.yarn/patches/@tiptap-extension-code-npm-3.9.0-1fad1fecd8.patch%3A%3Aversion=3.9.0&hash=86c3dd#~/.yarn/patches/@tiptap-extension-code-patch-5e999c6f1b.patch"
     "@tiptap/extension-code-block": "npm:^3.9.0"
     "@tiptap/extension-collaboration": "npm:^3.9.0"
     "@tiptap/extension-drag-handle": "npm:^3.9.0"
