@@ -940,11 +940,6 @@
       }
     },
     "expand": "Expandir",
-    "mermaid_fix": {
-      "failed": "No se pudo corregir",
-      "invalid_result": "El modelo devolvió datos no válidos. Inténtalo de nuevo o prueba cambiando el modelo rápido.",
-      "label": "Corregir el error de mermaid"
-    },
     "more": "Más",
     "run": "Ejecutar código",
     "split": {
@@ -957,6 +952,7 @@
     }
   },
   "common": {
+    "about": "sobre",
     "add": "Agregar",
     "add_success": "Añadido con éxito",
     "advanced_settings": "Configuración avanzada",
@@ -1809,6 +1805,7 @@
     "title": "Mini programa"
   },
   "minapps": {
+    "ant-ling": "Ant Ling",
     "baichuan": "Baichuan",
     "baidu-ai-search": "Baidu AI Search",
     "chatglm": "ChatGLM",
@@ -1966,12 +1963,12 @@
     "rename_changed": "Debido a políticas de seguridad, el nombre del archivo ha cambiado de {{original}} a {{final}}",
     "save": "Guardar en notas",
     "search": {
-      "both": "Nombre + contenido",
-      "content": "内容",
+      "both": "Nombre + Contenido",
+      "content": "contenido",
       "found_results": "Se encontraron {{count}} resultados (nombre: {{nameCount}}, contenido: {{contentCount}})",
-      "more_matches": "un partido",
+      "more_matches": "Una coincidencia",
       "searching": "Buscando...",
-      "show_less": "Minimizar"
+      "show_less": "Recoger"
     },
     "settings": {
       "data": {
@@ -2122,7 +2119,7 @@
       "install_code_104": "Error al descomprimir el tiempo de ejecución de OVMS",
       "install_code_105": "Error al limpiar el tiempo de ejecución de OVMS",
       "install_code_106": "Error al crear run.bat",
-      "install_code_110": "Error al limpiar el runtime antiguo de OVMS",
+      "install_code_110": "Error al limpiar el antiguo runtime de OVMS",
       "run": "Error al ejecutar OVMS:",
       "stop": "Error al detener OVMS:"
     },
@@ -2348,12 +2345,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "Tencent Hùnyuán",
     "hyperbolic": "Hiperbólico",
     "infini": "Infini",
     "jina": "Jina",
     "lanyun": "Tecnología Lanyun",
     "lmstudio": "Estudio LM",
+    "longcat": "Totoro",
     "minimax": "Minimax",
     "mistral": "Mistral",
     "modelscope": "ModelScope Módulo",
@@ -4234,7 +4233,7 @@
         "system": "Proxy del sistema",
         "title": "Modo de proxy"
       },
-      "tip": "Admite coincidencias difusas (*.test.com, 192.168.0.0/16)"
+      "tip": "Admite coincidencia parcial (*.test.com, 192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "Haz clic en el icono de la bandeja para iniciar",

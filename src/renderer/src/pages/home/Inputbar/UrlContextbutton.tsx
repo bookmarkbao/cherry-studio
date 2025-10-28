@@ -48,7 +48,7 @@ const UrlContextButton: FC<Props> = ({ assistantId }) => {
 
   return (
     <Tooltip content={t('chat.input.url_context')}>
-      <ActionIconButton onPress={handleToggle} active={assistant.enableUrlContext} icon={<Link size={18} />} />
+      <ActionIconButton onClick={handleToggle} active={assistant.enableUrlContext} icon={<Link size={18} />} />
     </Tooltip>
   )
 }

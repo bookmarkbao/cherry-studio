@@ -323,18 +323,19 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
           <ProviderName>{fancyProviderName}</ProviderName>
           {officialWebsite && (
             <Link target="_blank" href={providerConfig.websites.official} style={{ display: 'flex' }}>
-              <Button variant="light" size="sm" startContent={<SquareArrowOutUpRight size={14} />} isIconOnly />
+              <Button variant="ghost" size="sm">
+                <SquareArrowOutUpRight size={14} />
+              </Button>
             </Link>
           )}
           {!isSystemProvider(provider) && (
             <Tooltip content={t('settings.provider.api.options.label')}>
               <Button
-                variant="light"
-                startContent={<Bolt size={14} />}
-                isIconOnly
+                variant="ghost"
                 size="sm"
-                onPress={() => ApiOptionsSettingsPopup.show({ providerId: provider.id })}
-              />
+                onClick={() => ApiOptionsSettingsPopup.show({ providerId: provider.id })}>
+                <Bolt size={14} />
+              </Button>
             </Tooltip>
           )}
         </Flex>
@@ -381,7 +382,9 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
             {t('settings.provider.api_key.label')}
             {provider.id !== 'copilot' && (
               <Tooltip content={t('settings.provider.api.key.list.open')} delay={500}>
-                <Button variant="light" onPress={openApiKeyList} startContent={<Settings2 size={16} />} isIconOnly />
+                <Button variant="ghost" onClick={openApiKeyList} size="icon">
+                  <Settings2 size={16} />
+                </Button>
               </Tooltip>
             )}
           </SettingSubtitle>
@@ -396,20 +399,16 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
               suffix={renderStatusIndicator()}
             />
             <Button
-              color={isApiKeyConnectable ? 'primary' : undefined}
               variant={isApiKeyConnectable ? 'ghost' : undefined}
-              onPress={onCheckApi}
-              startContent={
-                apiKeyConnectivity.checking ? (
-                  <LoadingIcon />
-                ) : apiKeyConnectivity.status === HealthStatus.SUCCESS ? (
-                  <Check size={16} className="lucide-custom" />
-                ) : undefined
-              }
-              isDisabled={!apiHost || apiKeyConnectivity.checking}>
-              {!apiKeyConnectivity.checking &&
-                !(apiKeyConnectivity.status === HealthStatus.SUCCESS) &&
-                t('settings.provider.check')}
+              onClick={onCheckApi}
+              disabled={!apiHost || apiKeyConnectivity.checking}>
+              {apiKeyConnectivity.checking ? (
+                <LoadingIcon />
+              ) : apiKeyConnectivity.status === HealthStatus.SUCCESS ? (
+                <Check size={16} className="lucide-custom" />
+              ) : (
+                t('settings.provider.check')
+              )}
             </Button>
           </Space.Compact>
           <SettingHelpTextRow style={{ justifyContent: 'space-between' }}>
@@ -428,12 +427,9 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
                 <Tooltip content={t('settings.provider.api_host_tooltip')} delay={300}>
                   <SubtitleLabel>{t('settings.provider.api_host')}</SubtitleLabel>
                 </Tooltip>
-                <Button
-                  variant="light"
-                  onPress={() => CustomHeaderPopup.show({ provider })}
-                  startContent={<Settings2 size={16} />}
-                  isIconOnly
-                />
+                <Button variant="ghost" onClick={() => CustomHeaderPopup.show({ provider })} size="icon">
+                  <Settings2 size={16} />
+                </Button>
               </SettingSubtitle>
               <Space.Compact style={{ width: '100%', marginTop: 5 }}>
                 <Input
@@ -443,7 +439,7 @@ const ProviderSetting: FC<Props> = ({ providerId }) => {
                   onBlur={onUpdateApiHost}
                 />
                 {!isEmpty(configedApiHost) && apiHost !== configedApiHost && (
-                  <Button color="danger" onPress={onReset}>
+                  <Button variant="destructive" onClick={onReset}>
                     {t('settings.provider.api.url.reset')}
                   </Button>
                 )}

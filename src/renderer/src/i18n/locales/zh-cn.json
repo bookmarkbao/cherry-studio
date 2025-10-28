@@ -957,6 +957,7 @@
     }
   },
   "common": {
+    "about": "关于",
     "add": "添加",
     "add_success": "添加成功",
     "advanced_settings": "高级设置",
@@ -1809,6 +1810,7 @@
     "title": "小程序"
   },
   "minapps": {
+    "ant-ling": "蚂蚁百灵",
     "baichuan": "百小应",
     "baidu-ai-search": "百度AI搜索",
     "chatglm": "智谱清言",
@@ -2348,12 +2350,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "腾讯混元",
     "hyperbolic": "Hyperbolic",
     "infini": "无问芯穹",
     "jina": "Jina",
     "lanyun": "蓝耘科技",
     "lmstudio": "LM Studio",
+    "longcat": "龙猫",
     "minimax": "MiniMax",
     "mistral": "Mistral",
     "modelscope": "ModelScope 魔搭",

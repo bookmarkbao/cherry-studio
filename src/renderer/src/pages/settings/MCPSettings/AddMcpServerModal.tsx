@@ -359,7 +359,10 @@ const AddMcpServerModal: FC<AddMcpServerModalProps> = ({
               }}
               onRemove={() => setDxtFile(null)}
               fileList={dxtFile ? [{ uid: '-1', name: dxtFile.name, status: 'done' } as any] : []}>
-              <Button startContent={<UploadOutlined />}>{t('settings.mcp.addServer.importFrom.selectDxtFile')}</Button>
+              <Button>
+                <UploadOutlined />
+                {t('settings.mcp.addServer.importFrom.selectDxtFile')}
+              </Button>
             </Upload>
           </Form.Item>
         )}

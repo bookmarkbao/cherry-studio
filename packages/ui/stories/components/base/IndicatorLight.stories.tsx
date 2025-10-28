@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import IndicatorLight from '../../../src/components/base/IndicatorLight'
+import IndicatorLight from '../../../src/components/primitives/indicatorLight'
 
 const meta: Meta<typeof IndicatorLight> = {
   title: 'Base/IndicatorLight',

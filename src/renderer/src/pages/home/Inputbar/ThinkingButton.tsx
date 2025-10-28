@@ -139,7 +139,7 @@ const ThinkingButton: FC<Props> = ({ ref, model, assistantId }): ReactElement =>
       }
       closeDelay={0}>
       <ActionIconButton
-        onPress={handleOpenQuickPanel}
+        onClick={handleOpenQuickPanel}
         active={currentReasoningEffort !== 'off'}
         icon={ThinkingIcon(currentReasoningEffort)}
       />

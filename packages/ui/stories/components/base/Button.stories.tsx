@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Button } from '../../../src/components'
 
 const meta: Meta<typeof Button> = {
-  title: 'Components/Base/Button',
+  title: 'Components/Primitives/Button',
   component: Button,
   parameters: {
     layout: 'centered'
@@ -12,30 +12,16 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: {
       control: { type: 'select' },
-      options: ['solid', 'bordered', 'light', 'flat', 'faded', 'shadow', 'ghost']
-    },
-    color: {
-      control: { type: 'select' },
-      options: ['default', 'primary', 'secondary', 'success', 'warning', 'danger']
+      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link']
     },
     size: {
       control: { type: 'select' },
-      options: ['sm', 'md', 'lg']
+      options: ['default', 'sm', 'lg', 'icon', 'icon-sm', 'icon-lg']
     },
-    radius: {
-      control: { type: 'select' },
-      options: ['none', 'sm', 'md', 'lg', 'full']
-    },
-    isDisabled: {
+    disabled: {
       control: { type: 'boolean' }
     },
-    isLoading: {
-      control: { type: 'boolean' }
-    },
-    fullWidth: {
-      control: { type: 'boolean' }
-    },
-    isIconOnly: {
+    asChild: {
       control: { type: 'boolean' }
     }
   }
@@ -55,27 +41,12 @@ export const Default: Story = {
 export const Variants: Story = {
   render: () => (
     <div className="flex gap-2 flex-wrap">
-      <Button variant="solid">Solid</Button>
-      <Button variant="bordered">Bordered</Button>
-      <Button variant="light">Light</Button>
-      <Button variant="flat">Flat</Button>
-      <Button variant="faded">Faded</Button>
-      <Button variant="shadow">Shadow</Button>
+      <Button variant="default">Default</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="destructive">Destructive</Button>
+      <Button variant="outline">Outline</Button>
       <Button variant="ghost">Ghost</Button>
-    </div>
-  )
-}
-
-// 不同颜色
-export const Colors: Story = {
-  render: () => (
-    <div className="flex gap-2 flex-wrap">
-      <Button color="default">Default</Button>
-      <Button color="primary">Primary</Button>
-      <Button color="secondary">Secondary</Button>
-      <Button color="success">Success</Button>
-      <Button color="warning">Warning</Button>
-      <Button color="danger">Danger</Button>
+      <Button variant="link">Link</Button>
     </div>
   )
 }
@@ -83,23 +54,21 @@ export const Colors: Story = {
 // 不同尺寸
 export const Sizes: Story = {
   render: () => (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center flex-wrap">
       <Button size="sm">Small</Button>
-      <Button size="md">Medium</Button>
+      <Button size="default">Default</Button>
       <Button size="lg">Large</Button>
     </div>
   )
 }
 
-// 不同圆角
-export const Radius: Story = {
+// 图标按钮
+export const IconButtons: Story = {
   render: () => (
-    <div className="flex gap-2 flex-wrap">
-      <Button radius="none">None</Button>
-      <Button radius="sm">Small</Button>
-      <Button radius="md">Medium</Button>
-      <Button radius="lg">Large</Button>
-      <Button radius="full">Full</Button>
+    <div className="flex gap-2 items-center flex-wrap">
+      <Button size="icon-sm">🔍</Button>
+      <Button size="icon">🔍</Button>
+      <Button size="icon-lg">🔍</Button>
     </div>
   )
 }
@@ -109,8 +78,7 @@ export const States: Story = {
   render: () => (
     <div className="flex gap-2 flex-wrap">
       <Button>Normal</Button>
-      <Button isDisabled>Disabled</Button>
-      <Button isLoading>Loading</Button>
+      <Button disabled>Disabled</Button>
     </div>
   )
 }
@@ -119,9 +87,15 @@ export const States: Story = {
 export const WithIcons: Story = {
   render: () => (
     <div className="flex gap-2 flex-wrap">
-      <Button startContent={<span>📧</span>}>Email</Button>
-      <Button endContent={<span>→</span>}>Next</Button>
-      <Button isIconOnly>🔍</Button>
+      <Button>
+        <span className="mr-2">📧</span>
+        Email
+      </Button>
+      <Button>
+        Next
+        <span className="ml-2">→</span>
+      </Button>
+      <Button size="icon">🔍</Button>
     </div>
   )
 }
@@ -130,9 +104,7 @@ export const WithIcons: Story = {
 export const FullWidth: Story = {
   render: () => (
     <div className="w-96">
-      <Button fullWidth color="primary">
-        Full Width Button
-      </Button>
+      <Button className="w-full">Full Width Button</Button>
     </div>
   )
 }
@@ -141,10 +113,45 @@ export const FullWidth: Story = {
 export const Interactive: Story = {
   render: () => (
     <div className="flex gap-2 flex-wrap">
-      <Button onPress={() => alert('Button pressed!')}>Click Me</Button>
-      <Button onPress={() => console.log('Primary action')} color="primary" variant="solid">
+      <Button onClick={() => alert('Button clicked!')}>Click Me</Button>
+      <Button onClick={() => console.log('Primary action')} variant="default">
         Primary Action
       </Button>
+    </div>
+  )
+}
+
+// 组合示例
+export const Combinations: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2 flex-wrap">
+        <Button variant="default" size="sm">
+          Small Default
+        </Button>
+        <Button variant="destructive" size="sm">
+          Small Destructive
+        </Button>
+        <Button variant="outline" size="sm">
+          Small Outline
+        </Button>
+      </div>
+      <div className="flex gap-2 flex-wrap">
+        <Button variant="default">Default</Button>
+        <Button variant="destructive">Destructive</Button>
+        <Button variant="outline">Outline</Button>
+      </div>
+      <div className="flex gap-2 flex-wrap">
+        <Button variant="default" size="lg">
+          Large Default
+        </Button>
+        <Button variant="destructive" size="lg">
+          Large Destructive
+        </Button>
+        <Button variant="outline" size="lg">
+          Large Outline
+        </Button>
+      </div>
     </div>
   )
 }

@@ -538,7 +538,7 @@
         "context": "コンテキストをクリア {{Command}}"
       },
       "new_topic": "新しいトピック {{Command}}",
-      "paste_text_file_confirm": "入力ボックスに貼り付けますか？",
+      "paste_text_file_confirm": "入力欄に貼り付けますか？",
       "pause": "一時停止",
       "placeholder": "ここにメッセージを入力し、{{key}} を押して送信...",
       "placeholder_without_triggers": "ここにメッセージを入力し、{{key}} を押して送信...",
@@ -940,11 +940,6 @@
       }
     },
     "expand": "展開する",
-    "mermaid_fix": {
-      "failed": "修正に失敗しました",
-      "invalid_result": "モデルが無効なデータを返しました。もう一度試すか、クイックモデルの変更をお試しください。",
-      "label": "mermaidのエラーを修正する"
-    },
     "more": "もっと",
     "run": "コードを実行",
     "split": {
@@ -957,6 +952,7 @@
     }
   },
   "common": {
+    "about": "について",
     "add": "追加",
     "add_success": "追加成功",
     "advanced_settings": "詳細設定",
@@ -1809,6 +1805,7 @@
     "title": "ミニアプリ"
   },
   "minapps": {
+    "ant-ling": "Ant Ling",
     "baichuan": "百小應",
     "baidu-ai-search": "百度AI検索",
     "chatglm": "ChatGLM",
@@ -1968,10 +1965,10 @@
     "search": {
       "both": "名称+内容",
       "content": "内容",
-      "found_results": "{{count}} 件の結果が見つかりました（名前: {{nameCount}}、内容: {{contentCount}}）",
-      "more_matches": "個の一致",
+      "found_results": "{{count}} 件の結果が見つかりました（名称: {{nameCount}}、内容: {{contentCount}}）",
+      "more_matches": "一致",
       "searching": "検索中...",
-      "show_less": "折りたたむ"
+      "show_less": "閉じる"
     },
     "settings": {
       "data": {
@@ -2122,7 +2119,7 @@
       "install_code_104": "OVMSランタイムの解凍に失敗しました",
       "install_code_105": "OVMSランタイムのクリーンアップに失敗しました",
       "install_code_106": "run.bat の作成に失敗しました",
-      "install_code_110": "旧OVMSランタイムのクリーンアップに失敗しました",
+      "install_code_110": "古いOVMSランタイムのクリーンアップに失敗しました",
       "run": "OVMSの実行に失敗しました:",
       "stop": "OVMSの停止に失敗しました:"
     },
@@ -2348,12 +2345,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "ハギングフェイス",
     "hunyuan": "腾讯混元",
     "hyperbolic": "Hyperbolic",
     "infini": "Infini",
     "jina": "Jina",
     "lanyun": "LANYUN",
     "lmstudio": "LM Studio",
+    "longcat": "トトロ",
     "minimax": "MiniMax",
     "mistral": "Mistral",
     "modelscope": "ModelScope",
@@ -4234,7 +4233,7 @@
         "system": "システムプロキシ",
         "title": "プロキシモード"
       },
-      "tip": "ワイルドカードマッチング（*.test.com、192.168.0.0/16）をサポート"
+      "tip": "ワイルドカード一致をサポート (*.test.com, 192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "トレイアイコンをクリックして起動",

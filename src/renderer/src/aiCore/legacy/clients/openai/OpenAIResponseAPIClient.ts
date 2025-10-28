@@ -1,3 +1,5 @@
+import OpenAI, { AzureOpenAI } from '@cherrystudio/openai'
+import type { ResponseInput } from '@cherrystudio/openai/resources/responses/responses'
 import { loggerService } from '@logger'
 import type { GenericChunk } from '@renderer/aiCore/legacy/middleware/schemas'
 import type { CompletionsContext } from '@renderer/aiCore/legacy/middleware/types'
@@ -44,8 +46,6 @@ import { findFileBlocks, findImageBlocks } from '@renderer/utils/messageUtils/fi
 import { MB } from '@shared/config/constant'
 import { t } from 'i18next'
 import { isEmpty } from 'lodash'
-import OpenAI, { AzureOpenAI } from 'openai'
-import type { ResponseInput } from 'openai/resources/responses/responses'
 
 import type { RequestTransformer, ResponseChunkTransformer } from '../types'
 import { OpenAIAPIClient } from './OpenAIApiClient'
@@ -341,9 +341,28 @@ export class OpenAIResponseAPIClient extends OpenAIBaseClient<
       }
     }
     switch (message.type) {
-      case 'function_call_output':
-        sum += estimateTextTokens(message.output)
+      case 'function_call_output': {
+        let str = ''
+        if (typeof message.output === 'string') {
+          str = message.output
+        } else {
+          for (const part of message.output) {
+            switch (part.type) {
+              case 'input_text':
+                str += part.text
+                break
+              case 'input_image':
+                str += part.image_url || ''
+                break
+              case 'input_file':
+                str += part.file_data || ''
+                break
+            }
+          }
+        }
+        sum += estimateTextTokens(str)
         break
+      }
       case 'function_call':
         sum += estimateTextTokens(message.arguments)
         break

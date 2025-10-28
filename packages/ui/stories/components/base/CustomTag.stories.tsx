@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AlertTriangleIcon, StarIcon } from 'lucide-react'
 import { action } from 'storybook/actions'
 
-import CustomTag from '../../../src/components/base/CustomTag'
+import CustomTag from '../../../src/components/primitives/customTag'
 
 const meta: Meta<typeof CustomTag> = {
   title: 'Base/CustomTag',

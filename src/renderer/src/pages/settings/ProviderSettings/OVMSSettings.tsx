@@ -115,46 +115,22 @@ const OVMSSettings: FC = () => {
             <SettingRow style={{ width: '100%' }}>
               <SettingSubtitle style={{ margin: 0, fontWeight: 'normal' }}>{getStatusMessage()}</SettingSubtitle>
               {ovmsStatus === 'not-installed' && (
-                <Button
-                  color="primary"
-                  variant="solid"
-                  onPress={installOvms}
-                  isLoading={isInstallingOvms}
-                  isDisabled={isInstallingOvms}
-                  size="sm">
+                <Button onClick={installOvms} disabled={isInstallingOvms} size="sm">
                   {isInstallingOvms ? t('ovms.action.installing') : t('ovms.action.install')}
                 </Button>
               )}
               {ovmsStatus === 'not-running' && (
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <Button
-                    color="primary"
-                    variant="solid"
-                    onPress={installOvms}
-                    isLoading={isInstallingOvms}
-                    isDisabled={isInstallingOvms || isRunningOvms}
-                    size="sm">
+                  <Button onClick={installOvms} disabled={isInstallingOvms || isRunningOvms} size="sm">
                     {isInstallingOvms ? t('ovms.action.installing') : t('ovms.action.reinstall')}
                   </Button>
-                  <Button
-                    color="primary"
-                    variant="solid"
-                    onPress={runOvms}
-                    isLoading={isRunningOvms}
-                    isDisabled={isRunningOvms || isInstallingOvms}
-                    size="sm">
+                  <Button onClick={runOvms} disabled={isRunningOvms || isInstallingOvms} size="sm">
                     {isRunningOvms ? t('ovms.action.starting') : t('ovms.action.run')}
                   </Button>
                 </div>
               )}
               {ovmsStatus === 'running' && (
-                <Button
-                  color="danger"
-                  variant="solid"
-                  onPress={stopOvms}
-                  isLoading={isStoppingOvms}
-                  isDisabled={isStoppingOvms}
-                  size="sm">
+                <Button variant="destructive" onClick={stopOvms} disabled={isStoppingOvms} size="sm">
                   {isStoppingOvms ? t('ovms.action.stopping') : t('ovms.action.stop')}
                 </Button>
               )}

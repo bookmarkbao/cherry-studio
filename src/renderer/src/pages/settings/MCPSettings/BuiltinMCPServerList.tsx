@@ -29,12 +29,9 @@ const BuiltinMCPServerList: FC = () => {
                 </ServerName>
                 <StatusIndicator>
                   <Button
-                    variant="light"
-                    startContent={
-                      isInstalled ? <CheckOutlined style={{ color: 'var(--color-primary)' }} /> : <PlusOutlined />
-                    }
-                    size="sm"
-                    onPress={() => {
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => {
                       if (isInstalled) {
                         return
                       }
@@ -42,9 +39,9 @@ const BuiltinMCPServerList: FC = () => {
                       addMCPServer(server)
                       window.toast.success(t('settings.mcp.addSuccess'))
                     }}
-                    isDisabled={isInstalled}
-                    isIconOnly
-                  />
+                    disabled={isInstalled}>
+                    {isInstalled ? <CheckOutlined style={{ color: 'var(--color-primary)' }} /> : <PlusOutlined />}
+                  </Button>
                 </StatusIndicator>
               </ServerHeader>
               <Popover

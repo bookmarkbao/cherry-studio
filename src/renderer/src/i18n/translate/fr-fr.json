@@ -940,11 +940,6 @@
       }
     },
     "expand": "Développer",
-    "mermaid_fix": {
-      "failed": "Échec de la correction",
-      "invalid_result": "Le modèle a renvoyé des données invalides. Veuillez réessayer ou essayer de changer le modèle rapide.",
-      "label": "Corriger l'erreur mermaid"
-    },
     "more": "Plus",
     "run": "Exécuter le code",
     "split": {
@@ -957,6 +952,7 @@
     }
   },
   "common": {
+    "about": "À propos",
     "add": "Ajouter",
     "add_success": "Ajout réussi",
     "advanced_settings": "Paramètres avancés",
@@ -1809,6 +1805,7 @@
     "title": "Mini-programme"
   },
   "minapps": {
+    "ant-ling": "Ant Ling",
     "baichuan": "Baichuan",
     "baidu-ai-search": "Baidu AI Search",
     "chatglm": "ChatGLM",
@@ -1966,12 +1963,12 @@
     "rename_changed": "En raison de la politique de sécurité, le nom du fichier a été changé de {{original}} à {{final}}",
     "save": "sauvegarder dans les notes",
     "search": {
-      "both": "Nom + contenu",
-      "content": "内容",
-      "found_results": "Trouvé {{count}} résultats (nom : {{nameCount}}, contenu : {{contentCount}})",
-      "more_matches": "une correspondance",
+      "both": "Nom + Contenu",
+      "content": "contenu",
+      "found_results": "{{count}} résultat(s) trouvé(s) (nom : {{nameCount}}, contenu : {{contentCount}})",
+      "more_matches": "Correspondance",
       "searching": "Recherche en cours...",
-      "show_less": "Réduire"
+      "show_less": "Replier"
     },
     "settings": {
       "data": {
@@ -2348,12 +2345,14 @@
     "gpustack": "GPUStack",
     "grok": "Grok",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "Tencent HunYuan",
     "hyperbolic": "Hyperbolique",
     "infini": "Sans Frontières Céleste",
     "jina": "Jina",
     "lanyun": "Technologie Lan Yun",
     "lmstudio": "Studio LM",
+    "longcat": "Mon voisin Totoro",
     "minimax": "MiniMax",
     "mistral": "Mistral",
     "modelscope": "ModelScope MoDa",
@@ -4234,7 +4233,7 @@
         "system": "Proxy système",
         "title": "Mode de proxy"
       },
-      "tip": "Prend en charge la correspondance floue (*.test.com, 192.168.0.0/16)"
+      "tip": "Prise en charge de la correspondance floue (*.test.com, 192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "Cliquez sur l'icône dans la barre d'état système pour démarrer",

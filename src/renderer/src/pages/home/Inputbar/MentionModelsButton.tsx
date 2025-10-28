@@ -135,7 +135,7 @@ const MentionModelsButton: FC<Props> = ({
             ),
             description: <ModelTagsWithLabel model={m} showLabel={false} size={10} style={{ opacity: 0.8 }} />,
             icon: (
-              <Avatar src={getModelLogo(m.id)} className="h-5 w-5">
+              <Avatar src={getModelLogo(m)} className="h-5 w-5">
                 {first(m.name)}
               </Avatar>
             ),
@@ -171,7 +171,7 @@ const MentionModelsButton: FC<Props> = ({
         ),
         description: <ModelTagsWithLabel model={m} showLabel={false} size={10} style={{ opacity: 0.8 }} />,
         icon: (
-          <Avatar src={getModelLogo(m.id)} className="h-5 w-5">
+          <Avatar src={getModelLogo(m)} className="h-5 w-5">
             {first(m.name)}
           </Avatar>
         ),
@@ -305,7 +305,7 @@ const MentionModelsButton: FC<Props> = ({
   return (
     <Tooltip content={t('assistants.presets.edit.model.select.title')} closeDelay={0}>
       <ActionIconButton
-        onPress={handleOpenQuickPanel}
+        onClick={handleOpenQuickPanel}
         active={mentionedModels.length > 0}
         icon={<AtSign size={18} />}
       />

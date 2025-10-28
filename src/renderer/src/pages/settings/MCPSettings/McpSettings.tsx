@@ -278,11 +278,11 @@ const McpSettings: React.FC = () => {
         searchKey: server.searchKey,
         timeout: values.timeout || server.timeout,
         longRunning: values.longRunning,
-        // Preserve existing advanced properties if not set in the form
-        provider: values.provider || server.provider,
-        providerUrl: values.providerUrl || server.providerUrl,
-        logoUrl: values.logoUrl || server.logoUrl,
-        tags: values.tags || server.tags
+        // Use nullish coalescing to allow empty strings (for deletion)
+        provider: values.provider ?? server.provider,
+        providerUrl: values.providerUrl ?? server.providerUrl,
+        logoUrl: values.logoUrl ?? server.logoUrl,
+        tags: values.tags ?? server.tags
       }
 
       // set stdio or sse server
@@ -738,14 +738,9 @@ const McpSettings: React.FC = () => {
               <ServerName className="text-nowrap">{server?.name}</ServerName>
               {serverVersion && <VersionBadge count={serverVersion} color="blue" />}
             </Flex>
-            <Button
-              size="sm"
-              color="danger"
-              startContent={<DeleteIcon size={14} className="lucide-custom" />}
-              variant="light"
-              onPress={() => onDeleteMcpServer(server)}
-              isIconOnly
-            />
+            <Button size="sm" variant="ghost" onClick={() => onDeleteMcpServer(server)}>
+              <DeleteIcon size={14} className="lucide-custom text-destructive" />
+            </Button>
           </Flex>
           <Flex className="items-center gap-4">
             <Switch
@@ -756,13 +751,11 @@ const McpSettings: React.FC = () => {
             />
             <Button
               size="sm"
-              variant="solid"
-              color="primary"
-              startContent={<SaveIcon size={14} />}
-              onPress={onSave}
-              isLoading={loading}
-              radius="full"
-              isDisabled={!isFormChanged || activeTab !== 'settings'}>
+              variant="default"
+              onClick={onSave}
+              disabled={loading || !isFormChanged || activeTab !== 'settings'}
+              className="rounded-full">
+              <SaveIcon size={14} />
               {t('common.save')}
             </Button>
           </Flex>

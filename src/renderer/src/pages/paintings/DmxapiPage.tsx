@@ -771,7 +771,8 @@ const DmxapiPage: FC<{ Options: string[] }> = ({ Options }) => {
         <NavbarCenter className="border-r-0">{t('paintings.title')}</NavbarCenter>
         {isMac && (
           <NavbarRight className="justify-end">
-            <Button size="sm" className="nodrag" startContent={<PlusOutlined />} onPress={createNewPainting}>
+            <Button size="sm" className="nodrag" onClick={createNewPainting}>
+              <PlusOutlined />
               {t('paintings.button.new.image')}
             </Button>
           </NavbarRight>

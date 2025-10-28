@@ -230,11 +230,8 @@ const McpServersList: FC = () => {
         </SettingTitle>
         <ButtonGroup>
           <InstallNpxUv mini />
-          <Button
-            startContent={<EditIcon size={14} />}
-            variant="solid"
-            radius="full"
-            onPress={() => EditMcpJsonPopup.show()}>
+          <Button variant="default" className="rounded-full" onClick={() => EditMcpJsonPopup.show()}>
+            <EditIcon size={14} />
             {t('common.edit')}
           </Button>
           <Dropdown
@@ -242,11 +239,13 @@ const McpServersList: FC = () => {
               items: menuItems
             }}
             trigger={['click']}>
-            <Button startContent={<Plus size={16} />} variant="solid" radius="full">
+            <Button variant="default" className="rounded-full">
+              <Plus size={16} />
               {t('common.add')}
             </Button>
           </Dropdown>
-          <Button startContent={<RefreshIcon size={14} />} variant="solid" onPress={onSyncServers} radius="full">
+          <Button variant="default" onClick={onSyncServers} className="rounded-full">
+            <RefreshIcon size={14} />
             {t('settings.mcp.sync.button')}
           </Button>
         </ButtonGroup>

@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/react'
 import { useState } from 'react'
 
-import Selector from '../../../src/components/base/Selector'
+import Selector from '../../../src/components/primitives/Selector'
 
 const meta: Meta<typeof Selector> = {
   title: 'Interactive/Selector',
