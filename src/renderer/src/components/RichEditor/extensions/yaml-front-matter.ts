@@ -78,18 +78,17 @@ export const YamlFrontMatter = Node.create({
       tokensLength: token.tokens?.length || 0
     })
 
+    // Since this is an atom node, we don't need child content
     const result = {
-      type: this.name,
+      type: 'yamlFrontMatter', // Use explicit node name instead of this.name
       attrs: {
         content: token.text || ''
-      },
-      content: helpers.parseChildren(token.tokens || [])
+      }
     }
 
     logger.info('✅ parseMarkdown() result', {
       type: result.type,
-      contentLength: result.attrs.content.length,
-      hasContent: !!result.content
+      contentLength: result.attrs.content.length
     })
 
     return result
