@@ -17,6 +17,9 @@ export const YamlFrontMatter = Node.create({
   atom: true,
   draggable: false,
 
+  // Markdown token name for custom parsing
+  markdownTokenName: 'yamlFrontMatter',
+
   addOptions() {
     return {
       HTMLAttributes: {}
@@ -73,6 +76,30 @@ export const YamlFrontMatter = Node.create({
       }),
       content
     ]
+  },
+
+  // Parse markdown token to Tiptap JSON
+  parseMarkdown(token: any) {
+    // Extract YAML content from the token
+    // The content should be the raw YAML text between --- delimiters
+    const content = token.text || token.raw || ''
+    return {
+      type: this.name,
+      attrs: {
+        content: content.trim()
+      }
+    }
+  },
+
+  // Serialize Tiptap node to markdown
+  renderMarkdown(node: any) {
+    const content = node.attrs.content || ''
+    // If content doesn't end with ---, add it
+    const trimmedContent = content.trim()
+    if (trimmedContent && !trimmedContent.endsWith('---')) {
+      return trimmedContent + '\n---\n\n'
+    }
+    return trimmedContent ? trimmedContent + '\n\n' : ''
   },
 
   addCommands() {
