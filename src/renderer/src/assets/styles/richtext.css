@@ -445,13 +445,14 @@
 }
 
 .tiptap ul[data-type='taskList'] li {
-  align-items: flex-start;
+  align-items: center;
   display: flex;
 }
 
 .tiptap ul[data-type='taskList'] li > label {
   flex: 0 0 auto;
   margin-right: 0.5rem;
+  margin-top: 0.35rem;
   user-select: none;
   display: flex;
   align-items: center;
@@ -459,6 +460,15 @@
 
 .tiptap ul[data-type='taskList'] li > div {
   flex: 1 1 auto;
+}
+
+/* For nested task lists, align label with first line of text */
+.tiptap ul[data-type='taskList'] li:has(ul[data-type='taskList']) {
+  align-items: flex-start;
+}
+
+.tiptap ul[data-type='taskList'] li:has(ul[data-type='taskList']) > label {
+  margin-top: 0.35rem;
 }
 
 .tiptap ul[data-type='taskList'] li > div p {
