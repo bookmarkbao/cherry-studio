@@ -2710,6 +2710,13 @@ const migrateConfig = {
       if (state.assistants.presets === undefined) {
         state.assistants.presets = []
       }
+      state.assistants.presets.forEach((preset) => {
+        if (!preset.settings) {
+          preset.settings = DEFAULT_ASSISTANT_SETTINGS
+        } else if (!preset.settings.toolUseMode) {
+          preset.settings.toolUseMode = DEFAULT_ASSISTANT_SETTINGS.toolUseMode
+        }
+      })
       return state
     } catch (error) {
       logger.error('migrate 166 error', error as Error)
@@ -2718,13 +2725,22 @@ const migrateConfig = {
   },
   '167': (state: RootState) => {
     try {
+      addProvider(state, 'huggingface')
+      return state
+    } catch (error) {
+      logger.error('migrate 167 error', error as Error)
+      return state
+    }
+  },
+  '168': (state: RootState) => {
+    try {
       // @ts-expect-error it's a removed type
       if (state.settings.openAI.summaryText === 'off') {
         state.settings.openAI.summaryText = null
       }
       return state
     } catch (error) {
-      logger.error('migrate 166 error', error as Error)
+      logger.error('migrate 167 error', error as Error)
       return state
     }
   }

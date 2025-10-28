@@ -10,6 +10,7 @@ import {
   isGrok4FastReasoningModel,
   isGrokReasoningModel,
   isOpenAIDeepResearchModel,
+  isOpenAIModel,
   isOpenAIReasoningModel,
   isQwenAlwaysThinkModel,
   isQwenReasoningModel,
@@ -66,7 +67,8 @@ export function getReasoningEffort(assistant: Assistant, model: Model): Reasonin
         isGrokReasoningModel(model) ||
         isOpenAIReasoningModel(model) ||
         isQwenAlwaysThinkModel(model) ||
-        model.id.includes('seed-oss')
+        model.id.includes('seed-oss') ||
+        model.id.includes('minimax-m2')
       ) {
         return {}
       }
@@ -199,7 +201,7 @@ export function getReasoningEffort(assistant: Assistant, model: Model): Reasonin
     }
   }
 
-  // OpenRouter models, use thinking
+  // OpenRouter models, use reasoning
   if (model.provider === SystemProviderIds.openrouter) {
     if (isSupportedReasoningEffortModel(model) || isSupportedThinkingTokenModel(model)) {
       return {
@@ -322,6 +324,24 @@ export function getOpenAIReasoningParams(
   if (!isReasoningModel(model)) {
     return {}
   }
+
+  let reasoningEffort = assistant?.settings?.reasoning_effort
+
+  if (!reasoningEffort) {
+    return {}
+  }
+
+  if (isOpenAIDeepResearchModel(model) || reasoningEffort === 'auto') {
+    reasoningEffort = 'medium'
+  }
+
+  // 非OpenAI模型，但是Provider类型是responses/azure openai的情况
+  if (!isOpenAIModel(model)) {
+    return {
+      reasoningEffort
+    }
+  }
+
   const openAI = getStoreSetting('openAI')
   const summaryText = openAI.summaryText
 
@@ -331,16 +351,6 @@ export function getOpenAIReasoningParams(
     reasoningSummary = undefined
   } else {
     reasoningSummary = summaryText
-  }
-
-  let reasoningEffort = assistant?.settings?.reasoning_effort
-
-  if (isOpenAIDeepResearchModel(model) || reasoningEffort === 'auto') {
-    reasoningEffort = 'medium'
-  }
-
-  if (!reasoningEffort) {
-    return {}
   }
 
   // OpenAI 推理参数

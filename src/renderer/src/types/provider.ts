@@ -167,7 +167,8 @@ export const SystemProviderIdSchema = z.enum([
   'aws-bedrock',
   'poe',
   'aionly',
-  'longcat'
+  'longcat',
+  'huggingface'
 ])
 
 export type SystemProviderId = z.infer<typeof SystemProviderIdSchema>
@@ -232,7 +233,8 @@ export const SystemProviderIds = {
   'aws-bedrock': 'aws-bedrock',
   poe: 'poe',
   aionly: 'aionly',
-  longcat: 'longcat'
+  longcat: 'longcat',
+  huggingface: 'huggingface'
 } as const satisfies Record<SystemProviderId, SystemProviderId>
 
 export type SystemProviderIdTypeMap = typeof SystemProviderIds

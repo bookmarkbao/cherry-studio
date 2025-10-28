@@ -107,7 +107,9 @@ export function buildProviderOptions(
           serviceTier
         } satisfies OpenAIResponsesProviderOptions
         break
-
+      case 'huggingface':
+        providerSpecificOptions = buildOpenAIProviderOptions(assistant, model, capabilities)
+        break
       case 'anthropic':
         providerSpecificOptions = buildAnthropicProviderOptions(assistant, model, capabilities)
         break
