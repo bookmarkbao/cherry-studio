@@ -452,7 +452,7 @@
 .tiptap ul[data-type='taskList'] li > label {
   flex: 0 0 auto;
   margin-right: 0.5rem;
-  margin-top: 0.35rem;
+  margin-top: 0.1rem;
   user-select: none;
   display: flex;
   align-items: center;
@@ -468,7 +468,7 @@
 }
 
 .tiptap ul[data-type='taskList'] li:has(ul[data-type='taskList']) > label {
-  margin-top: 0.35rem;
+  margin-top: 0.4rem;
 }
 
 .tiptap ul[data-type='taskList'] li > div p {
