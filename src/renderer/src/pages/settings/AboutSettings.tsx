@@ -226,10 +226,7 @@ const AboutSettings: FC = () => {
             </VersionWrapper>
           </Row>
           {!isPortable && (
-            <CheckUpdateButton
-              onPress={onCheckUpdate}
-              isLoading={appUpdateState.checking}
-              isDisabled={appUpdateState.downloading || appUpdateState.checking}>
+            <CheckUpdateButton onClick={onCheckUpdate} disabled={appUpdateState.downloading || appUpdateState.checking}>
               {appUpdateState.downloading
                 ? t('settings.about.downloading')
                 : appUpdateState.available
@@ -297,7 +294,7 @@ const AboutSettings: FC = () => {
             <BadgeQuestionMark size={18} />
             {t('docs.title')}
           </SettingRowTitle>
-          <Button onPress={onOpenDocs}>{t('settings.about.website.button')}</Button>
+          <Button onClick={onOpenDocs}>{t('settings.about.website.button')}</Button>
         </SettingRow>
         <SettingDivider />
         <SettingRow>
@@ -305,7 +302,7 @@ const AboutSettings: FC = () => {
             <Rss size={18} />
             {t('settings.about.releases.title')}
           </SettingRowTitle>
-          <Button onPress={showReleases}>{t('settings.about.releases.button')}</Button>
+          <Button onClick={showReleases}>{t('settings.about.releases.button')}</Button>
         </SettingRow>
         <SettingDivider />
         <SettingRow>
@@ -313,7 +310,7 @@ const AboutSettings: FC = () => {
             <Globe size={18} />
             {t('settings.about.website.title')}
           </SettingRowTitle>
-          <Button onPress={() => onOpenWebsite('https://cherry-ai.com')}>{t('settings.about.website.button')}</Button>
+          <Button onClick={() => onOpenWebsite('https://cherry-ai.com')}>{t('settings.about.website.button')}</Button>
         </SettingRow>
         <SettingDivider />
         <SettingRow>
@@ -321,7 +318,7 @@ const AboutSettings: FC = () => {
             <GithubOutlined size={18} />
             {t('settings.about.feedback.title')}
           </SettingRowTitle>
-          <Button onPress={() => onOpenWebsite('https://github.com/CherryHQ/cherry-studio/issues/new/choose')}>
+          <Button onClick={() => onOpenWebsite('https://github.com/CherryHQ/cherry-studio/issues/new/choose')}>
             {t('settings.about.feedback.button')}
           </Button>
         </SettingRow>
@@ -331,7 +328,7 @@ const AboutSettings: FC = () => {
             <FileCheck size={18} />
             {t('settings.about.license.title')}
           </SettingRowTitle>
-          <Button onPress={showLicense}>{t('settings.about.license.button')}</Button>
+          <Button onClick={showLicense}>{t('settings.about.license.button')}</Button>
         </SettingRow>
         <SettingDivider />
         <SettingRow>
@@ -339,7 +336,7 @@ const AboutSettings: FC = () => {
             <Mail size={18} />
             {t('settings.about.contact.title')}
           </SettingRowTitle>
-          <Button onPress={mailto}>{t('settings.about.contact.button')}</Button>
+          <Button onClick={mailto}>{t('settings.about.contact.button')}</Button>
         </SettingRow>
         <SettingDivider />
         <SettingRow>
@@ -347,7 +344,7 @@ const AboutSettings: FC = () => {
             <Bug size={18} />
             {t('settings.about.debug.title')}
           </SettingRowTitle>
-          <Button onPress={debug}>{t('settings.about.debug.open')}</Button>
+          <Button onClick={debug}>{t('settings.about.debug.open')}</Button>
         </SettingRow>
       </SettingGroup>
 

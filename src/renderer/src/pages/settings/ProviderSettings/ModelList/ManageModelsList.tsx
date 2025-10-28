@@ -116,13 +116,13 @@ const ManageModelsList: React.FC<ManageModelsListProps> = ({ modelGroups, provid
           }
           closeDelay={0}>
           <Button
-            variant="light"
-            startContent={isAllInProvider ? <Minus size={16} /> : <Plus size={16} />}
-            isIconOnly
-            onPress={() => {
+            variant="ghost"
+            size="icon"
+            onClick={() => {
               handleGroupAction()
-            }}
-          />
+            }}>
+            {isAllInProvider ? <Minus size={16} /> : <Plus size={16} />}
+          </Button>
         </Tooltip>
       )
     },
@@ -206,14 +206,13 @@ const ModelListItem: React.FC<ModelListItemProps> = memo(({ model, provider, onA
           extra: model.description && <ExpandableText text={model.description} />,
           ext: '.model',
           actions: isAdded ? (
-            <Button
-              variant="light"
-              onPress={() => onRemoveModel(model)}
-              startContent={<Minus size={16} />}
-              isIconOnly
-            />
+            <Button variant="ghost" onClick={() => onRemoveModel(model)} size="icon">
+              <Minus size={16} />
+            </Button>
           ) : (
-            <Button variant="light" onPress={() => onAddModel(model)} startContent={<Plus size={16} />} isIconOnly />
+            <Button variant="ghost" onClick={() => onAddModel(model)} size="icon">
+              <Plus size={16} />
+            </Button>
           )
         }}
       />

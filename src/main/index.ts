@@ -19,6 +19,7 @@ import process from 'node:process'
 import { registerIpc } from './ipc'
 import { agentService } from './services/agents'
 import { apiServerService } from './services/ApiServerService'
+import { appMenuService } from './services/AppMenuService'
 import mcpService from './services/MCPService'
 import { nodeTraceService } from './services/NodeTraceService'
 import {
@@ -219,6 +220,9 @@ if (!app.requestSingleInstanceLock()) {
     const mainWindow = windowService.createMainWindow()
 
     new TrayService()
+
+    // Setup macOS application menu
+    appMenuService?.setupApplicationMenu()
     nodeTraceService.init()
 
     app.on('activate', function () {

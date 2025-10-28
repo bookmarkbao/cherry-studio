@@ -81,7 +81,8 @@ const ApiServerSettings: FC = () => {
           <Text type="secondary">{t('apiServer.description')}</Text>
         </HeaderContent>
         {apiServerRunning && (
-          <Button color="primary" startContent={<ExternalLink size={14} />} onPress={openApiDocs}>
+          <Button onClick={openApiDocs}>
+            <ExternalLink size={14} />
             {t('apiServer.documentation.title')}
           </Button>
         )}
@@ -157,18 +158,14 @@ const ApiServerSettings: FC = () => {
           suffix={
             <InputButtonContainer>
               {!apiServerRunning && (
-                <Button color="primary" onPress={regenerateApiKey} isDisabled={apiServerRunning} variant="light">
+                <Button onClick={regenerateApiKey} disabled={apiServerRunning} variant="ghost">
                   {t('apiServer.actions.regenerate')}
                 </Button>
               )}
               <Tooltip content={t('apiServer.fields.apiKey.copyTooltip')}>
-                <Button
-                  variant="light"
-                  isIconOnly
-                  startContent={<Copy size={14} />}
-                  onPress={copyApiKey}
-                  isDisabled={!apiServerConfig.apiKey}
-                />
+                <Button variant="ghost" size="icon" onClick={copyApiKey} disabled={!apiServerConfig.apiKey}>
+                  <Copy size={14} />
+                </Button>
               </Tooltip>
             </InputButtonContainer>
           }

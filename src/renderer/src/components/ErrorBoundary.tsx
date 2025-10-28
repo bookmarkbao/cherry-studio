@@ -24,10 +24,10 @@ const DefaultFallback: ComponentType<FallbackProps> = (props: FallbackProps): Re
         type="error"
         action={
           <Space>
-            <Button size="sm" onPress={debug}>
+            <Button size="sm" onClick={debug}>
               {t('error.boundary.default.devtools')}
             </Button>
-            <Button size="sm" onPress={reload}>
+            <Button size="sm" onClick={reload}>
               {t('error.boundary.default.reload')}
             </Button>
           </Space>

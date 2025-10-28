@@ -64,13 +64,13 @@ const McpProviderSettings: React.FC<Props> = ({ provider, existingServers }) => 
           <ProviderName>{provider.name}</ProviderName>
           {provider.discoverUrl && (
             <Link target="_blank" href={provider.discoverUrl} style={{ display: 'flex' }}>
-              <Button variant="flat" size="sm">
+              <Button variant="ghost" size="sm">
                 <SquareArrowOutUpRight size={14} />
               </Button>
             </Link>
           )}
         </Flex>
-        <Button variant="solid" onClick={handleFetch} isLoading={isFetching} isDisabled={isFetchDisabled}>
+        <Button variant="default" onClick={handleFetch} disabled={isFetching || isFetchDisabled}>
           {t('settings.mcp.fetch.button', 'Fetch Servers')}
         </Button>
       </ProviderHeader>
@@ -110,7 +110,7 @@ const McpProviderSettings: React.FC<Props> = ({ provider, existingServers }) => 
                   const isAlreadyAdded = existingServers.some((existing) => existing.id === server.id)
                   return (
                     <Button
-                      variant={isAlreadyAdded ? 'bordered' : 'solid'}
+                      variant={isAlreadyAdded ? 'outline' : 'default'}
                       size="sm"
                       disabled={isAlreadyAdded}
                       onClick={() => {

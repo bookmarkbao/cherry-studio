@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 
-import { Sortable } from '../../../src/components/interactive/Sortable'
+import { Sortable } from '../../../src/components/composites/Sortable'
 import { useDndReorder } from '../../../src/hooks'
 
 type ExampleItem = { id: number; label: string }
