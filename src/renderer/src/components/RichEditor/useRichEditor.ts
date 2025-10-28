@@ -16,6 +16,7 @@ import {
   TableOfContents
 } from '@tiptap/extension-table-of-contents'
 import Typography from '@tiptap/extension-typography'
+import Underline from '@tiptap/extension-underline'
 import { Markdown } from '@tiptap/markdown'
 import { useEditor, useEditorState } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -213,6 +214,7 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         onLinkHoverEnd: handleLinkHoverEnd,
         editable: editable
       }),
+      Underline,
       TableOfContents.configure({
         getIndex: getHierarchicalIndexes,
         onUpdate(content) {
