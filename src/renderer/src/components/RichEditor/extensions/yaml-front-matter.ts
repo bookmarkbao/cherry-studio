@@ -1,10 +1,7 @@
-import { loggerService } from '@logger'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 
 import YamlFrontMatterNodeView from '../components/YamlFrontMatterNodeView'
-
-const logger = loggerService.withContext('YamlFrontMatterExtension')
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -24,30 +21,17 @@ export const YamlFrontMatter = Node.create({
   markdownTokenizer: {
     name: 'yamlFrontMatter',
     level: 'block',
-    // Optimization: check if content starts with ---
-    start(src: string) {
-      logger.info('🔍 Tokenizer start() called', {
-        srcLength: src.length,
-        srcPrefix: src.substring(0, 60).replace(/\n/g, '\\n'),
-        startsWithDashes: src.startsWith('---\n')
-      })
 
-      const result = src.match(/^---\n/) ? 0 : -1
-      logger.info('✅ Tokenizer start() result:', { result })
+    start(src: string) {
+      const result = src.match(/^\s*---\n/) ? 0 : -1
       return result
     },
     // Parse YAML front matter
     tokenize(src: string) {
-      logger.info('🔍 Tokenizer tokenize() called', {
-        srcLength: src.length,
-        srcPrefix: src.substring(0, 120).replace(/\n/g, '\\n')
-      })
-
       // Match: ---\n...yaml content...\n---
       const match = /^---\n([\s\S]*?)\n---(?:\n|$)/.exec(src)
 
       if (!match) {
-        logger.warn('❌ Tokenizer tokenize() - NO MATCH FOUND')
         return undefined
       }
 
@@ -56,74 +40,37 @@ export const YamlFrontMatter = Node.create({
         raw: match[0],
         text: match[1] // YAML content without delimiters
       }
-
-      logger.info('✅ Tokenizer tokenize() - MATCH FOUND', {
-        rawLength: token.raw.length,
-        textLength: token.text.length,
-        textPreview: token.text.substring(0, 100).replace(/\n/g, '\\n')
-      })
-
       return token
     }
   },
 
   // Parse markdown token to Tiptap JSON
   parseMarkdown(token, helpers) {
-    logger.info('🔍 parseMarkdown() called', {
-      tokenType: token.type,
-      hasText: !!token.text,
-      textLength: token.text?.length || 0,
-      textPreview: token.text?.substring(0, 100).replace(/\n/g, '\\n'),
-      hasTokens: !!token.tokens,
-      tokensLength: token.tokens?.length || 0
-    })
-
-    // Since this is an atom node, we don't need child content
-    const result = {
-      type: 'yamlFrontMatter', // Use explicit node name instead of this.name
-      attrs: {
-        content: token.text || ''
-      }
+    const attrs = {
+      content: token.text || ''
     }
 
-    logger.info('✅ parseMarkdown() result', {
-      type: result.type,
-      contentLength: result.attrs.content.length
-    })
-
-    return result
+    return helpers.createNode('yamlFrontMatter', attrs)
   },
 
   // Serialize Tiptap node to markdown
   renderMarkdown(node) {
-    logger.info('🔍 renderMarkdown() called', {
-      nodeType: node.type,
-      hasContent: !!node.attrs?.content,
-      contentLength: node.attrs?.content?.length || 0,
-      contentPreview: node.attrs?.content?.substring(0, 100).replace(/\n/g, '\\n')
-    })
-
     const content = node.attrs?.content || ''
     if (!content.trim()) {
-      logger.info('⚠️ renderMarkdown() - empty content, returning empty string')
       return ''
     }
 
-    const trimmedContent = content.trim()
     let result = ''
 
-    // Ensure proper format with closing ---
-    if (trimmedContent.endsWith('---')) {
-      result = trimmedContent + '\n\n'
+    // Ensure proper format with opening and closing ---
+    // The content is stored without the --- delimiters, so we need to add them back
+    if (content.endsWith('---')) {
+      // Content already has closing ---, just add opening
+      result = '---\n' + content + '\n\n'
     } else {
-      result = trimmedContent + '\n---\n\n'
+      // Add both opening and closing ---
+      result = '---\n' + content + '\n---\n\n'
     }
-
-    logger.info('✅ renderMarkdown() result', {
-      resultLength: result.length,
-      resultPreview: result.substring(0, 120).replace(/\n/g, '\\n')
-    })
-
     return result
   },
 

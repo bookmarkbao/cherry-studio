@@ -1,6 +1,5 @@
 import { loggerService } from '@logger'
 import { MARKDOWN_SOURCE_LINE_ATTR } from '@renderer/components/RichEditor/constants'
-import he from 'he'
 import MarkdownIt from 'markdown-it'
 import TurndownService from 'turndown'
 
@@ -58,141 +57,6 @@ defaultBlockRules.forEach((ruleName) => {
   }
 })
 
-// Override the code_block and code_inline renderers to properly escape HTML entities
-md.renderer.rules.code_block = function (tokens, idx) {
-  const token = tokens[idx]
-  const langName = token.info ? ` class="language-${token.info.trim()}"` : ''
-  const escapedContent = he.encode(token.content, { useNamedReferences: false })
-  let html = `<pre><code${langName}>${escapedContent}</code></pre>`
-  html = injectLineNumber(token, html)
-  return html
-}
-
-md.renderer.rules.code_inline = function (tokens, idx) {
-  const token = tokens[idx]
-  const escapedContent = he.encode(token.content, { useNamedReferences: false })
-  return `<code>${escapedContent}</code>`
-}
-
-md.renderer.rules.fence = function (tokens, idx) {
-  const token = tokens[idx]
-  const langName = token.info ? ` class="language-${token.info.trim()}"` : ''
-  const escapedContent = he.encode(token.content, { useNamedReferences: false })
-  let html = `<pre><code${langName}>${escapedContent}</code></pre>`
-  html = injectLineNumber(token, html)
-  return html
-}
-
-interface TokenLike {
-  content: string
-  block?: boolean
-  map?: [number, number]
-}
-
-interface BlockStateLike {
-  src: string
-  bMarks: number[]
-  eMarks: number[]
-  tShift: number[]
-  line: number
-  parentType: string
-  blkIndent: number
-  push: (type: string, tag: string, nesting: number) => TokenLike
-}
-
-interface InlineStateLike {
-  src: string
-  pos: number
-  posMax: number
-  push: (type: string, tag: string, nesting: number) => TokenLike & { content?: string }
-}
-
-function yamlFrontMatterPlugin(md: MarkdownIt) {
-  // Parser: recognize YAML front matter
-  md.block.ruler.before(
-    'table',
-    'yaml_front_matter',
-    (stateLike: unknown, startLine: number, endLine: number, silent: boolean): boolean => {
-      const state = stateLike as BlockStateLike
-
-      // Only check at the very beginning of the document
-      if (startLine !== 0) {
-        return false
-      }
-
-      const startPos = state.bMarks[startLine] + state.tShift[startLine]
-      const maxPos = state.eMarks[startLine]
-
-      // Must begin with --- at document start
-      if (startPos + 3 > maxPos) return false
-      if (
-        state.src.charCodeAt(startPos) !== 0x2d /* - */ ||
-        state.src.charCodeAt(startPos + 1) !== 0x2d /* - */ ||
-        state.src.charCodeAt(startPos + 2) !== 0x2d /* - */
-      ) {
-        return false
-      }
-
-      // If requested only to validate existence
-      if (silent) return true
-
-      // Search for closing ---
-      let nextLine = startLine + 1
-      let found = false
-
-      for (nextLine = startLine + 1; nextLine < endLine; nextLine++) {
-        const lineStart = state.bMarks[nextLine] + state.tShift[nextLine]
-        const lineEnd = state.eMarks[nextLine]
-        const line = state.src.slice(lineStart, lineEnd).trim()
-
-        if (line === '---') {
-          found = true
-          break
-        }
-      }
-
-      if (!found) {
-        return false
-      }
-
-      // Extract YAML content between the --- delimiters, preserving original indentation
-      const yamlLines: string[] = []
-      for (let lineIdx = startLine + 1; lineIdx < nextLine; lineIdx++) {
-        // Use the original line markers without shift to preserve indentation
-        const lineStart = state.bMarks[lineIdx]
-        const lineEnd = state.eMarks[lineIdx]
-        yamlLines.push(state.src.slice(lineStart, lineEnd))
-      }
-
-      // Also capture the closing --- line with its indentation
-      const closingLineStart = state.bMarks[nextLine]
-      const closingLineEnd = state.eMarks[nextLine]
-      const closingLine = state.src.slice(closingLineStart, closingLineEnd)
-
-      const yamlContent = yamlLines.join('\n') + '\n' + closingLine
-
-      const token = state.push('yaml_front_matter', 'div', 0)
-      token.block = true
-      token.map = [startLine, nextLine + 1]
-      token.content = yamlContent
-
-      state.line = nextLine + 1
-      return true
-    }
-  )
-
-  // Renderer: output YAML front matter as special HTML element
-  md.renderer.rules.yaml_front_matter = (tokens: Array<{ content?: string }>, idx: number): string => {
-    const token = tokens[idx]
-    const content = token?.content ?? ''
-    let html = `<div data-type="yaml-front-matter" data-content="${he.encode(content)}">${content}</div>`
-    html = injectLineNumber(token, html)
-    return html
-  }
-}
-
-md.use(yamlFrontMatterPlugin)
-
 // Initialize turndown service
 const turndownService = new TurndownService({
   headingStyle: 'atx', // Use # for headings
@@ -202,28 +66,6 @@ const turndownService = new TurndownService({
   fence: '```', // Use ``` for code blocks
   emDelimiter: '*', // Use * for emphasis
   strongDelimiter: '**' // Use ** for strong
-})
-
-// Custom rule to preserve YAML front matter
-turndownService.addRule('yamlFrontMatter', {
-  filter: (node: Element) => {
-    return node.nodeName === 'DIV' && node.getAttribute?.('data-type') === 'yaml-front-matter'
-  },
-  replacement: (_content: string, node: Node) => {
-    const element = node as Element
-    const yamlContent = element.getAttribute?.('data-content') || ''
-    const decodedContent = he.decode(yamlContent, {
-      isAttributeValue: false,
-      strict: false
-    })
-    // The decodedContent already includes the complete YAML with closing ---
-    // We just need to add the opening --- if it's not there
-    if (decodedContent.startsWith('---')) {
-      return decodedContent
-    } else {
-      return `---\n${decodedContent}`
-    }
-  }
 })
 
 /**
