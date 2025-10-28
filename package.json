@@ -180,7 +180,7 @@
     "@tiptap/extension-table-of-contents": "^3.7.2",
     "@tiptap/extension-typography": "^3.7.2",
     "@tiptap/extension-underline": "^3.7.2",
-    "@tiptap/markdown": "^3.7.2",
+    "@tiptap/markdown": "patch:@tiptap/markdown@npm%3A3.7.2#~/.yarn/patches/@tiptap-markdown-npm-3.7.2-165301ab30.patch",
     "@tiptap/pm": "^3.7.2",
     "@tiptap/react": "^3.7.2",
     "@tiptap/starter-kit": "^3.7.2",

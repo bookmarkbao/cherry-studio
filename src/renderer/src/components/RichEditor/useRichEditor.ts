@@ -207,7 +207,6 @@ export const useRichEditor = (options: UseRichEditorOptions = {}): UseRichEditor
         },
         codeBlock: false,
         link: false
-        // underline is enabled by default in StarterKit
       }),
       EnhancedLink.configure({
         onLinkHover: handleLinkHover,

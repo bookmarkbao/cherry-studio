@@ -11881,7 +11881,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/markdown@npm:^3.7.2":
+"@tiptap/markdown@npm:3.7.2":
   version: 3.7.2
   resolution: "@tiptap/markdown@npm:3.7.2"
   dependencies:
@@ -11890,6 +11890,18 @@ __metadata:
     "@tiptap/core": ^3.7.2
     "@tiptap/pm": ^3.7.2
   checksum: 10c0/3cad11fc20911a82530fec166806f937f85f2856691acadc18b70053175af1b0b57b8816856cabaa564a7babcc7cd90b021a3ec3631cd23f8ec9f7b38ee1f71e
+  languageName: node
+  linkType: hard
+
+"@tiptap/markdown@patch:@tiptap/markdown@npm%3A3.7.2#~/.yarn/patches/@tiptap-markdown-npm-3.7.2-165301ab30.patch":
+  version: 3.7.2
+  resolution: "@tiptap/markdown@patch:@tiptap/markdown@npm%3A3.7.2#~/.yarn/patches/@tiptap-markdown-npm-3.7.2-165301ab30.patch::version=3.7.2&hash=fe7244"
+  dependencies:
+    marked: "npm:^16.1.2"
+  peerDependencies:
+    "@tiptap/core": ^3.7.2
+    "@tiptap/pm": ^3.7.2
+  checksum: 10c0/e10a12b5bdfdd5efea24e7d089832cd2d3192b6222979c19b130e0eea00df0c498dd79efb5aec18e98d0b05627c81691dec3ab0c86f2a15244690cff1e1515f9
   languageName: node
   linkType: hard
 
@@ -13960,7 +13972,7 @@ __metadata:
     "@tiptap/extension-table-of-contents": "npm:^3.7.2"
     "@tiptap/extension-typography": "npm:^3.7.2"
     "@tiptap/extension-underline": "npm:^3.7.2"
-    "@tiptap/markdown": "npm:^3.7.2"
+    "@tiptap/markdown": "patch:@tiptap/markdown@npm%3A3.7.2#~/.yarn/patches/@tiptap-markdown-npm-3.7.2-165301ab30.patch"
     "@tiptap/pm": "npm:^3.7.2"
     "@tiptap/react": "npm:^3.7.2"
     "@tiptap/starter-kit": "npm:^3.7.2"
