@@ -3,7 +3,7 @@ import { Button, Tooltip } from '@cherrystudio/ui'
 import { restoreFromS3 } from '@renderer/services/BackupService'
 import type { S3Config } from '@renderer/types'
 import { formatFileSize } from '@renderer/utils'
-import { Modal, Table } from 'antd'
+import { Modal, Space, Table } from 'antd'
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -254,6 +254,26 @@ export function S3BackupManager({ visible, onClose, s3Config, restoreMethod }: S
     }
   }
 
+  const footerContent = (
+    <Space align="center">
+      <Button key="refresh" startContent={<ReloadOutlined />} onPress={fetchBackupFiles} isDisabled={loading}>
+        {t('settings.data.s3.manager.refresh')}
+      </Button>
+      <Button
+        key="delete"
+        color="danger"
+        startContent={<DeleteOutlined />}
+        onPress={handleDeleteSelected}
+        isDisabled={selectedRowKeys.length === 0 || deleting}
+        isLoading={deleting}>
+        {t('settings.data.s3.manager.delete.selected', { count: selectedRowKeys.length })}
+      </Button>
+      <Button key="close" onPress={onClose}>
+        {t('settings.data.s3.manager.close')}
+      </Button>
+    </Space>
+  )
+
   return (
     <Modal
       title={t('settings.data.s3.manager.title')}
@@ -262,23 +282,7 @@ export function S3BackupManager({ visible, onClose, s3Config, restoreMethod }: S
       width={800}
       centered
       transitionName="animation-move-down"
-      footer={[
-        <Button key="refresh" startContent={<ReloadOutlined />} onPress={fetchBackupFiles} isDisabled={loading}>
-          {t('settings.data.s3.manager.refresh')}
-        </Button>,
-        <Button
-          key="delete"
-          color="danger"
-          startContent={<DeleteOutlined />}
-          onPress={handleDeleteSelected}
-          isDisabled={selectedRowKeys.length === 0 || deleting}
-          isLoading={deleting}>
-          {t('settings.data.s3.manager.delete.selected', { count: selectedRowKeys.length })}
-        </Button>,
-        <Button key="close" onPress={onClose}>
-          {t('settings.data.s3.manager.close')}
-        </Button>
-      ]}>
+      footer={footerContent}>
       <Table
         rowKey="fileName"
         columns={columns}

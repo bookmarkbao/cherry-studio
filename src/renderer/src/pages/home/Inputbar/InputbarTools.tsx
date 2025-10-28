@@ -22,6 +22,7 @@ import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setIsCollapsed, setToolOrder } from '@renderer/store/inputTools'
 import type { FileType, KnowledgeBase, Model } from '@renderer/types'
 import { FileTypes } from '@renderer/types'
+import type { InputBarToolType } from '@renderer/types/chat'
 import { classNames } from '@renderer/utils'
 import { isPromptToolUse, isSupportedToolUse } from '@renderer/utils/mcp-tools'
 import { Divider, Dropdown } from 'antd'
@@ -97,7 +98,7 @@ export interface InputbarToolsProps {
 }
 
 interface ToolButtonConfig {
-  key: string
+  key: InputBarToolType
   component: ReactNode
   condition?: boolean
   visible?: boolean
@@ -196,7 +197,7 @@ const InputbarTools = ({
   const clearTopicShortcut = useShortcutDisplay('clear_topic')
 
   const toggleToolVisibility = useCallback(
-    (toolKey: string, isVisible: boolean | undefined) => {
+    (toolKey: InputBarToolType, isVisible: boolean | undefined) => {
       const newToolOrder = {
         visible: [...toolOrder.visible],
         hidden: [...toolOrder.hidden]
@@ -389,7 +390,9 @@ const InputbarTools = ({
         key: 'url_context',
         label: t('chat.input.url_context'),
         component: <UrlContextButton ref={urlContextButtonRef} assistantId={assistant.id} />,
-        condition: isGeminiModel(model) && isSupportUrlContextProvider(getProviderByModel(model))
+        condition:
+          isGeminiModel(model) &&
+          (isSupportUrlContextProvider(getProviderByModel(model)) || model.endpoint_type === 'gemini')
       },
       {
         key: 'knowledge_base',
