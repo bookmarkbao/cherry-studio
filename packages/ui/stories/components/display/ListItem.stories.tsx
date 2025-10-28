@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import { action } from 'storybook/actions'
 
-import ListItem from '../../../src/components/display/ListItem'
+import ListItem from '../../../src/components/composites/ListItem'
 
 const meta: Meta<typeof ListItem> = {
   title: 'Display/ListItem',

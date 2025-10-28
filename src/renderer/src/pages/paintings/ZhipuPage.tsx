@@ -330,12 +330,8 @@ const ZhipuPage: FC<{ Options: string[] }> = ({ Options }) => {
         <NavbarCenter style={{ borderRight: 'none' }}>{t('paintings.title')}</NavbarCenter>
         {isMac && (
           <NavbarRight>
-            <Button
-              size="sm"
-              className="nodrag"
-              variant="light"
-              startContent={<PlusOutlined />}
-              onPress={handleAddPainting}>
+            <Button size="sm" className="nodrag" variant="ghost" onClick={handleAddPainting}>
+              <PlusOutlined />
               {t('paintings.button.new.image')}
             </Button>
           </NavbarRight>

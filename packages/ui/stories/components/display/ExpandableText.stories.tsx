@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import ExpandableText from '../../../src/components/display/ExpandableText'
+import ExpandableText from '../../../src/components/composites/ExpandableText'
 
 const meta: Meta<typeof ExpandableText> = {
   title: 'Display/ExpandableText',

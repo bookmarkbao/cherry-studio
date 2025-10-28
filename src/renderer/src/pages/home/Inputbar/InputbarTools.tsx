@@ -357,7 +357,7 @@ const InputbarTools = ({
         label: t('chat.input.new_topic', { Command: '' }),
         component: (
           <Tooltip content={t('chat.input.new_topic', { Command: newTopicShortcut })} closeDelay={0}>
-            <ActionIconButton onPress={addNewTopic} icon={<MessageSquareDiff size={19} />} />
+            <ActionIconButton onClick={addNewTopic} icon={<MessageSquareDiff size={19} />} />
           </Tooltip>
         )
       },
@@ -460,7 +460,7 @@ const InputbarTools = ({
         label: t('chat.input.clear.label', { Command: '' }),
         component: (
           <Tooltip content={t('chat.input.clear.label', { Command: clearTopicShortcut })} closeDelay={0} showArrow>
-            <ActionIconButton onPress={clearTopic} icon={<PaintbrushVertical size={18} />} />
+            <ActionIconButton onClick={clearTopic} icon={<PaintbrushVertical size={18} />} />
           </Tooltip>
         )
       },
@@ -470,7 +470,7 @@ const InputbarTools = ({
         component: (
           <Tooltip content={isExpended ? t('chat.input.collapse') : t('chat.input.expand')} closeDelay={0} showArrow>
             <ActionIconButton
-              onPress={onToggleExpended}
+              onClick={onToggleExpended}
               icon={isExpended ? <Minimize size={18} /> : <Maximize size={18} />}
             />
           </Tooltip>
@@ -649,7 +649,7 @@ const InputbarTools = ({
         {showCollapseButton && (
           <Tooltip content={isCollapse ? t('chat.input.tools.expand') : t('chat.input.tools.collapse')} showArrow>
             <ActionIconButton
-              onPress={() => dispatch(setIsCollapsed(!isCollapse))}
+              onClick={() => dispatch(setIsCollapsed(!isCollapse))}
               icon={
                 <CircleChevronRight
                   size={18}

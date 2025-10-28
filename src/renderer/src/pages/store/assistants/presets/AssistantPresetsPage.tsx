@@ -267,18 +267,18 @@ const AssistantPresetsPage: FC = () => {
                 />
               ) : (
                 isTopNavbar && (
-                  <Button
-                    variant="light"
-                    onPress={handleSearchIconClick}
-                    startContent={<Search size={18} color="var(--color-icon)" />}>
+                  <Button variant="ghost" onClick={handleSearchIconClick}>
+                    <Search size={18} color="var(--color-icon)" />
                     {t('common.search')}
                   </Button>
                 )
               )}
-              <Button variant="light" onPress={handleImportAgent} startContent={<ImportOutlined />}>
+              <Button variant="ghost" onClick={handleImportAgent}>
+                <ImportOutlined />
                 {t('assistants.presets.import.title')}
               </Button>
-              <Button variant="light" onPress={handleAddAgent} startContent={<PlusOutlined />}>
+              <Button variant="ghost" onClick={handleAddAgent}>
+                <PlusOutlined />
                 {t('assistants.presets.add.title')}
               </Button>
             </Flex>

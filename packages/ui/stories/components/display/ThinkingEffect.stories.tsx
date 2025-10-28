@@ -2,7 +2,7 @@ import { Button } from '@heroui/react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect, useMemo, useState } from 'react'
 
-import ThinkingEffect from '../../../src/components/display/ThinkingEffect'
+import ThinkingEffect from '../../../src/components/composites/ThinkingEffect'
 
 const meta: Meta<typeof ThinkingEffect> = {
   title: 'Display/ThinkingEffect',

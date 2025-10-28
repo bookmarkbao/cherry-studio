@@ -115,7 +115,9 @@ const FilesPage: FC = () => {
       created_at_unix: dayjs(file.created_at).unix(),
       actions: (
         <Flex className="items-center gap-0 opacity-70">
-          <Button variant="light" startContent={<EditIcon size={14} />} onPress={() => handleRename(file.id)} />
+          <Button variant="ghost" onClick={() => handleRename(file.id)}>
+            <EditIcon size={14} />
+          </Button>
           <Popconfirm
             title={t('files.delete.title')}
             description={t('files.delete.content')}
@@ -124,7 +126,9 @@ const FilesPage: FC = () => {
             onConfirm={() => handleDelete(file.id, t)}
             placement="left"
             icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}>
-            <Button variant="light" color="danger" startContent={<DeleteIcon size={14} className="lucide-custom" />} />
+            <Button variant="ghost">
+              <DeleteIcon size={14} className="lucide-custom" style={{ color: 'var(--color-error)' }} />
+            </Button>
           </Popconfirm>
           {fileType !== 'image' && (
             <Checkbox
@@ -169,7 +173,7 @@ const FilesPage: FC = () => {
                 <SortButton
                   key={field}
                   active={sortField === field}
-                  onPress={() => {
+                  onClick={() => {
                     if (sortField === field) {
                       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
                     } else {

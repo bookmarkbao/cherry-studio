@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import MaxContextCount from '../../../src/components/display/MaxContextCount'
+import MaxContextCount from '../../../src/components/composites/MaxContextCount'
 
 const meta: Meta<typeof MaxContextCount> = {
   title: 'Display/MaxContextCount',

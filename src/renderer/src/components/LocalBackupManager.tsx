@@ -196,18 +196,17 @@ export function LocalBackupManager({ visible, onClose, localBackupDir, restoreMe
           <Button
             className="inline-flex"
             size="sm"
-            variant="light"
-            onPress={() => handleRestore(record.fileName)}
-            isDisabled={restoring || deleting}>
+            variant="ghost"
+            onClick={() => handleRestore(record.fileName)}
+            disabled={restoring || deleting}>
             {t('settings.data.local.backup.manager.restore.text')}
           </Button>
           <Button
             className="inline-flex"
             size="sm"
-            variant="light"
-            color="danger"
-            onPress={() => handleDeleteSingle(record.fileName)}
-            isDisabled={deleting || restoring}>
+            variant="ghost"
+            onClick={() => handleDeleteSingle(record.fileName)}
+            disabled={deleting || restoring}>
             {t('settings.data.local.backup.manager.delete.text')}
           </Button>
         </Flex>
@@ -232,19 +231,19 @@ export function LocalBackupManager({ visible, onClose, localBackupDir, restoreMe
       transitionName="animation-move-down"
       classNames={{ footer: 'flex justify-end gap-1' }}
       footer={[
-        <Button key="refresh" startContent={<ReloadOutlined />} onPress={fetchBackupFiles} isDisabled={loading}>
+        <Button key="refresh" onClick={fetchBackupFiles} disabled={loading}>
+          <ReloadOutlined />
           {t('settings.data.local.backup.manager.refresh')}
         </Button>,
         <Button
           key="delete"
-          color="danger"
-          startContent={<DeleteOutlined />}
-          onPress={handleDeleteSelected}
-          isDisabled={selectedRowKeys.length === 0 || deleting}
-          isLoading={deleting}>
+          variant="destructive"
+          onClick={handleDeleteSelected}
+          disabled={selectedRowKeys.length === 0 || deleting}>
+          <DeleteOutlined />
           {t('settings.data.local.backup.manager.delete.selected')} ({selectedRowKeys.length})
         </Button>,
-        <Button key="close" onPress={onClose}>
+        <Button key="close" onClick={onClose}>
           {t('common.close')}
         </Button>
       ]}>

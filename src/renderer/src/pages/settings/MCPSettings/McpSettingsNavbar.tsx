@@ -18,10 +18,10 @@ export const McpSettingsNavbar = () => {
       <RowFlex className="items-center gap-[5px]">
         <Button
           size="sm"
-          variant="light"
-          onPress={() => navigate('/settings/mcp/npx-search')}
-          startContent={<Search size={14} />}
+          variant="ghost"
+          onClick={() => navigate('/settings/mcp/npx-search')}
           className="nodrag h-7 rounded-[20px] text-[13px]">
+          <Search size={14} />
           {t('settings.mcp.searchNpx')}
         </Button>
         <InstallNpxUv mini />

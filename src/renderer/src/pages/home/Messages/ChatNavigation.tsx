@@ -343,56 +343,44 @@ const ChatNavigation: FC<ChatNavigationProps> = ({ containerId }) => {
         <ButtonGroup $isVisible={isVisible}>
           <Tooltip placement="left" content={t('chat.navigation.close')} delay={500}>
             <NavigationButton
-              variant="light"
-              startContent={<CloseOutlined />}
-              onPress={handleCloseChatNavigation}
-              aria-label={t('chat.navigation.close')}
-            />
+              variant="ghost"
+              onClick={handleCloseChatNavigation}
+              aria-label={t('chat.navigation.close')}>
+              <CloseOutlined />
+            </NavigationButton>
           </Tooltip>
           <Divider />
           <Tooltip placement="left" content={t('chat.navigation.top')} delay={500}>
-            <NavigationButton
-              variant="light"
-              startContent={<VerticalAlignTopOutlined />}
-              onPress={handleScrollToTop}
-              aria-label={t('chat.navigation.top')}
-            />
+            <NavigationButton variant="ghost" onClick={handleScrollToTop} aria-label={t('chat.navigation.top')}>
+              <VerticalAlignTopOutlined />
+            </NavigationButton>
           </Tooltip>
           <Divider />
           <Tooltip placement="left" content={t('chat.navigation.prev')} delay={500}>
-            <NavigationButton
-              variant="light"
-              startContent={<ArrowUpOutlined />}
-              onPress={handlePrevMessage}
-              aria-label={t('chat.navigation.prev')}
-            />
+            <NavigationButton variant="ghost" onClick={handlePrevMessage} aria-label={t('chat.navigation.prev')}>
+              <ArrowUpOutlined />
+            </NavigationButton>
           </Tooltip>
           <Divider />
           <Tooltip placement="left" content={t('chat.navigation.next')} delay={500}>
-            <NavigationButton
-              variant="light"
-              startContent={<ArrowDownOutlined />}
-              onPress={handleNextMessage}
-              aria-label={t('chat.navigation.next')}
-            />
+            <NavigationButton variant="ghost" onClick={handleNextMessage} aria-label={t('chat.navigation.next')}>
+              <ArrowDownOutlined />
+            </NavigationButton>
           </Tooltip>
           <Divider />
           <Tooltip placement="left" content={t('chat.navigation.bottom')} delay={500}>
-            <NavigationButton
-              variant="light"
-              startContent={<VerticalAlignBottomOutlined />}
-              onPress={handleScrollToBottom}
-              aria-label={t('chat.navigation.bottom')}
-            />
+            <NavigationButton variant="ghost" onClick={handleScrollToBottom} aria-label={t('chat.navigation.bottom')}>
+              <VerticalAlignBottomOutlined />
+            </NavigationButton>
           </Tooltip>
           <Divider />
           <Tooltip placement="left" content={t('chat.navigation.history')} delay={500}>
             <NavigationButton
-              variant="light"
-              startContent={<HistoryOutlined />}
-              onPress={handleChatHistoryClick}
-              aria-label={t('chat.navigation.history')}
-            />
+              variant="ghost"
+              onClick={handleChatHistoryClick}
+              aria-label={t('chat.navigation.history')}>
+              <HistoryOutlined />
+            </NavigationButton>
           </Tooltip>
         </ButtonGroup>
       </NavigationContainer>

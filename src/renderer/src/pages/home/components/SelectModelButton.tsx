@@ -57,8 +57,8 @@ const SelectModelButton: FC<Props> = ({ assistant }) => {
   return (
     <Button
       size="sm"
-      variant="light"
-      onPress={onSelectModel}
+      variant="ghost"
+      onClick={onSelectModel}
       className="mt-0.5 rounded-2xl border border-transparent border-solid bg-transparent px-1 py-3 text-xs shadow-none">
       <ButtonContent>
         <ModelAvatar model={model} size={20} />
