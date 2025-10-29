@@ -1,3 +1,5 @@
+import type { ShortcutPreferenceMap } from '@shared/shortcuts/types'
+
 import type { PreferenceSchemas } from './preferenceSchemas'
 
 export type PreferenceDefaultScopeType = PreferenceSchemas['default']
@@ -13,6 +15,8 @@ export type PreferenceShortcutType = {
   enabled: boolean
   system: boolean
 }
+
+export type ShortcutPreferencesValue = ShortcutPreferenceMap
 
 export enum SelectionTriggerMode {
   Selected = 'selected',

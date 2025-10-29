@@ -11,11 +11,22 @@
 
 import { TRANSLATE_PROMPT } from '@shared/config/prompts'
 import * as PreferenceTypes from '@shared/data/preference/preferenceTypes'
+import { shortcutDefinitions } from '@shared/shortcuts/definitions'
 
 /* eslint @typescript-eslint/member-ordering: ["error", {
   "interfaces": { "order": "alphabetically" },
   "typeLiterals": { "order": "alphabetically" }
 }] */
+
+const defaultShortcutPreferences: PreferenceTypes.ShortcutPreferencesValue = Object.fromEntries(
+  shortcutDefinitions.map((definition) => [
+    definition.name,
+    {
+      enabled: definition.defaultEnabled,
+      key: [...definition.defaultKey]
+    }
+  ])
+)
 
 export interface PreferenceSchemas {
   default: {
@@ -377,6 +388,8 @@ export interface PreferenceSchemas {
     'shortcut.chat.search_message': Record<string, unknown>
     // redux/shortcuts/shortcuts.toggle_new_context
     'shortcut.chat.toggle_new_context': Record<string, unknown>
+    // unified shortcut overrides
+    'shortcut.preferences': PreferenceTypes.ShortcutPreferencesValue
     // redux/shortcuts/shortcuts.selection_assistant_select_text
     'shortcut.selection.get_text': Record<string, unknown>
     // redux/shortcuts/shortcuts.selection_assistant_toggle
@@ -645,6 +658,7 @@ export const DefaultPreferences: PreferenceSchemas = {
       key: ['CommandOrControl', 'K'],
       system: false
     },
+    'shortcut.preferences': defaultShortcutPreferences,
     'shortcut.selection.get_text': { editable: true, enabled: false, key: [], system: true },
     'shortcut.selection.toggle_enabled': { editable: true, enabled: false, key: [], system: true },
     'shortcut.topic.new': { editable: true, enabled: true, key: ['CommandOrControl', 'N'], system: false },

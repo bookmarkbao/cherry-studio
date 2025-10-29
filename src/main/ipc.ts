@@ -14,6 +14,7 @@ import type { SpanEntity, TokenUsage } from '@mcp-trace/trace-core'
 import { MIN_WINDOW_HEIGHT, MIN_WINDOW_WIDTH } from '@shared/config/constant'
 import type { UpgradeChannel } from '@shared/data/preference/preferenceTypes'
 import { IpcChannel } from '@shared/IpcChannel'
+import type { ShortcutPreferenceMap } from '@shared/shortcuts/types'
 import type {
   AgentPersistedMessage,
   FileMetadata,
@@ -35,7 +36,6 @@ import appService from './services/AppService'
 import AppUpdater from './services/AppUpdater'
 import BackupManager from './services/BackupManager'
 import { codeToolsService } from './services/CodeToolsService'
-import { configManager } from './services/ConfigManager'
 import CopilotService from './services/CopilotService'
 import DxtService from './services/DxtService'
 import { ExportService } from './services/ExportService'
@@ -56,7 +56,6 @@ import { pythonService } from './services/PythonService'
 import { FileServiceManager } from './services/remotefile/FileServiceManager'
 import { searchService } from './services/SearchService'
 import { SelectionService } from './services/SelectionService'
-import { registerShortcuts, unregisterAllShortcuts } from './services/ShortcutService'
 import {
   addEndMessage,
   addStreamMessage,
@@ -582,13 +581,19 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   })
 
   // shortcuts
-  ipcMain.handle(IpcChannel.Shortcuts_Update, (_, shortcuts: Shortcut[]) => {
-    configManager.setShortcuts(shortcuts)
-    // Refresh shortcuts registration
-    if (mainWindow) {
-      unregisterAllShortcuts()
-      registerShortcuts(mainWindow)
+  ipcMain.handle(IpcChannel.Shortcuts_Update, async (_, shortcuts: Shortcut[]) => {
+    const existingPreferences = preferenceService.get('shortcut.preferences') ?? {}
+    const nextPreferences: ShortcutPreferenceMap = { ...existingPreferences }
+
+    for (const shortcut of shortcuts) {
+      const name = shortcut.key === 'mini_window' ? 'show_mini_window' : shortcut.key
+      nextPreferences[name] = {
+        key: [...shortcut.shortcut],
+        enabled: shortcut.enabled
+      }
     }
+
+    await preferenceService.set('shortcut.preferences', nextPreferences)
   })
 
   ipcMain.handle(IpcChannel.KnowledgeBase_Create, KnowledgeService.create.bind(KnowledgeService))

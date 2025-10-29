@@ -1,298 +1,349 @@
 import { preferenceService } from '@data/PreferenceService'
 import { loggerService } from '@logger'
 import { handleZoomFactor } from '@main/utils/zoom'
-import type { Shortcut } from '@types'
+import { IpcChannel } from '@shared/IpcChannel'
+import { shortcutDefinitions } from '@shared/shortcuts/definitions'
+import type { HydratedShortcut, ShortcutDefinition, ShortcutPreferenceMap } from '@shared/shortcuts/types'
 import type { BrowserWindow } from 'electron'
-import { globalShortcut } from 'electron'
+import { BrowserWindow as ElectronBrowserWindow, globalShortcut, ipcMain } from 'electron'
 
-import { configManager } from './ConfigManager'
 import selectionService from './SelectionService'
 import { windowService } from './WindowService'
+
 const logger = loggerService.withContext('ShortcutService')
 
-let showAppAccelerator: string | null = null
-let showMiniWindowAccelerator: string | null = null
-let selectionAssistantToggleAccelerator: string | null = null
-let selectionAssistantSelectTextAccelerator: string | null = null
+type ShortcutHandler = (window: BrowserWindow | undefined) => void
 
-//indicate if the shortcuts are registered on app boot time
-let isRegisterOnBoot = true
+class ShortcutService {
+  private handlers = new Map<string, ShortcutHandler>()
+  private hydratedShortcuts = new Map<string, HydratedShortcut>()
+  private registeredAccelerators = new Map<string, string[]>()
+  private readonly definitionMap = new Map<string, ShortcutDefinition>()
+  private ipcRegistered = false
 
-// store the focus and blur handlers for each window to unregister them later
-const windowOnHandlers = new Map<BrowserWindow, { onFocusHandler: () => void; onBlurHandler: () => void }>()
+  constructor() {
+    this.definitionMap = new Map(shortcutDefinitions.map((definition) => [definition.name, definition]))
 
-function getShortcutHandler(shortcut: Shortcut) {
-  switch (shortcut.key) {
-    case 'zoom_in':
-      return (window: BrowserWindow) => handleZoomFactor([window], 0.1)
-    case 'zoom_out':
-      return (window: BrowserWindow) => handleZoomFactor([window], -0.1)
-    case 'zoom_reset':
-      return (window: BrowserWindow) => handleZoomFactor([window], 0, true)
-    case 'show_app':
-      return () => {
-        windowService.toggleMainWindow()
+    this.setupIpcHandlers()
+    this.registerDefaultHandlers()
+    this.hydrateShortcuts()
+    this.registerPreferenceListeners()
+  }
+
+  public registerHandler(name: string, handler: ShortcutHandler) {
+    if (this.handlers.has(name)) {
+      logger.warn(`Handler for shortcut '${name}' is being overwritten.`)
+    }
+    this.handlers.set(name, handler)
+  }
+
+  public registerMainProcessShortcuts(window?: BrowserWindow) {
+    const targetWindow = this.getTargetWindow(window)
+
+    this.unregisterTrackedAccelerators()
+
+    for (const config of this.hydratedShortcuts.values()) {
+      if (config.scope !== 'main') {
+        continue
       }
-    case 'mini_window':
-      return () => {
-        windowService.toggleMiniWindow()
+
+      if (!config.enabled || config.key.length === 0) {
+        continue
       }
-    case 'selection_assistant_toggle':
-      return () => {
-        if (selectionService) {
-          selectionService.toggleEnabled()
+
+      const handler = this.handlers.get(config.name)
+      if (!handler) {
+        logger.warn(`No handler registered for shortcut '${config.name}'.`)
+        continue
+      }
+
+      const accelerators = this.buildAccelerators(config)
+      if (accelerators.length === 0) {
+        continue
+      }
+
+      for (const accelerator of accelerators) {
+        try {
+          const registered = globalShortcut.register(accelerator, () => {
+            try {
+              handler(this.getTargetWindow(targetWindow))
+            } catch (error) {
+              logger.error(`Error while executing handler for shortcut '${config.name}':`, error as Error)
+            }
+          })
+
+          if (!registered) {
+            logger.warn(`Electron rejected shortcut accelerator '${accelerator}' for '${config.name}'.`)
+            continue
+          }
+
+          this.trackAccelerator(config.name, accelerator)
+        } catch (error) {
+          logger.warn(`Failed to register shortcut '${config.name}' with accelerator '${accelerator}':`, error as Error)
         }
       }
-    case 'selection_assistant_select_text':
-      return () => {
-        if (selectionService) {
-          selectionService.processSelectTextByShortcut()
+    }
+
+    this.broadcastShortcuts()
+  }
+
+  public unregisterAllShortcuts() {
+    this.unregisterTrackedAccelerators()
+  }
+
+  public getHydratedShortcuts(): Record<string, HydratedShortcut> {
+    return Object.fromEntries(
+      [...this.hydratedShortcuts.entries()].map(([name, config]) => [
+        name,
+        {
+          ...config,
+          key: [...config.key]
+        }
+      ])
+    )
+  }
+
+  private setupIpcHandlers() {
+    if (this.ipcRegistered) {
+      return
+    }
+
+    ipcMain.handle(IpcChannel.Shortcuts_GetAll, () => {
+      return this.getHydratedShortcuts()
+    })
+
+    this.ipcRegistered = true
+  }
+
+  private registerPreferenceListeners() {
+    preferenceService.subscribeChange('shortcut.preferences', (newPreferences) => {
+      this.hydrateAndRegister(newPreferences)
+    })
+  }
+
+  private hydrateAndRegister(preferences?: ShortcutPreferenceMap) {
+    this.hydrateShortcuts(preferences)
+    this.registerMainProcessShortcuts()
+  }
+
+  private hydrateShortcuts(preferences?: ShortcutPreferenceMap) {
+    const preferenceSnapshot = preferences ?? preferenceService.get('shortcut.preferences')
+
+    this.hydratedShortcuts.clear()
+
+    for (const definition of shortcutDefinitions) {
+      const userPreference = preferenceSnapshot?.[definition.name]
+      const key =
+        userPreference?.key && userPreference.key.length > 0 ? [...userPreference.key] : [...definition.defaultKey]
+      const enabled = typeof userPreference?.enabled === 'boolean' ? userPreference.enabled : definition.defaultEnabled
+
+      this.hydratedShortcuts.set(definition.name, {
+        ...definition,
+        key,
+        enabled
+      })
+    }
+  }
+
+  private broadcastShortcuts() {
+    const payload = this.getHydratedShortcuts()
+
+    for (const window of ElectronBrowserWindow.getAllWindows()) {
+      if (window.isDestroyed()) {
+        continue
+      }
+
+      try {
+        window.webContents.send(IpcChannel.Shortcuts_Updated, payload)
+      } catch (error) {
+        logger.warn('Failed to broadcast shortcut update to renderer window:', error as Error)
+      }
+    }
+  }
+
+  private unregisterTrackedAccelerators() {
+    for (const accelerators of this.registeredAccelerators.values()) {
+      for (const accelerator of accelerators) {
+        try {
+          globalShortcut.unregister(accelerator)
+        } catch (error) {
+          logger.warn(`Failed to unregister accelerator '${accelerator}':`, error as Error)
         }
       }
-    default:
+    }
+
+    this.registeredAccelerators.clear()
+  }
+
+  private trackAccelerator(name: string, accelerator: string) {
+    if (!this.registeredAccelerators.has(name)) {
+      this.registeredAccelerators.set(name, [])
+    }
+    this.registeredAccelerators.get(name)!.push(accelerator)
+  }
+
+  private buildAccelerators(config: HydratedShortcut): string[] {
+    if (config.key.length === 0) {
+      return []
+    }
+
+    const baseAccelerator = this.normalizeAccelerator(config.key)
+    if (!baseAccelerator) {
+      logger.warn(`Invalid shortcut configuration for '${config.name}', skipping registration.`)
+      return []
+    }
+
+    if (config.name === 'zoom_in' && this.isUsingDefaultKey(config)) {
+      return [baseAccelerator, 'CommandOrControl+numadd']
+    }
+
+    if (config.name === 'zoom_out' && this.isUsingDefaultKey(config)) {
+      return [baseAccelerator, 'CommandOrControl+numsub']
+    }
+
+    if (config.name === 'zoom_reset' && this.isUsingDefaultKey(config)) {
+      return [baseAccelerator, 'CommandOrControl+num0']
+    }
+
+    return [baseAccelerator]
+  }
+
+  private isUsingDefaultKey(config: HydratedShortcut): boolean {
+    const definition = this.definitionMap.get(config.name)
+    if (!definition) {
+      return false
+    }
+
+    if (definition.defaultKey.length !== config.key.length) {
+      return false
+    }
+
+    return definition.defaultKey.every((key, index) => key === config.key[index])
+  }
+
+  private normalizeAccelerator(keys: string[]): string | null {
+    const normalizedKeys = keys.map((key) => this.normalizeKeyForElectron(key)).filter((key): key is string => !!key)
+
+    if (normalizedKeys.length !== keys.length) {
       return null
+    }
+
+    return normalizedKeys.join('+')
+  }
+
+  private normalizeKeyForElectron(key: string): string | null {
+    switch (key) {
+      case 'CommandOrControl':
+      case 'Ctrl':
+      case 'Alt':
+      case 'Meta':
+      case 'Shift':
+        return key
+      case 'Command':
+      case 'Cmd':
+        return 'CommandOrControl'
+      case 'Control':
+        return 'Ctrl'
+      case 'ArrowUp':
+        return 'Up'
+      case 'ArrowDown':
+        return 'Down'
+      case 'ArrowLeft':
+        return 'Left'
+      case 'ArrowRight':
+        return 'Right'
+      case 'AltGraph':
+        return 'AltGr'
+      case 'Slash':
+        return '/'
+      case 'Semicolon':
+        return ';'
+      case 'BracketLeft':
+        return '['
+      case 'BracketRight':
+        return ']'
+      case 'Backslash':
+        return '\\'
+      case 'Quote':
+        return "'"
+      case 'Comma':
+        return ','
+      case 'Minus':
+        return '-'
+      case 'Equal':
+        return '='
+      case 'Space':
+        return 'Space'
+      default:
+        return key
+    }
+  }
+
+  private registerDefaultHandlers() {
+    this.registerHandler('zoom_in', (window) => {
+      const target = this.getTargetWindow(window)
+      if (!target) {
+        return
+      }
+      handleZoomFactor([target], 0.1)
+    })
+
+    this.registerHandler('zoom_out', (window) => {
+      const target = this.getTargetWindow(window)
+      if (!target) {
+        return
+      }
+      handleZoomFactor([target], -0.1)
+    })
+
+    this.registerHandler('zoom_reset', (window) => {
+      const target = this.getTargetWindow(window)
+      if (!target) {
+        return
+      }
+      handleZoomFactor([target], 0, true)
+    })
+
+    this.registerHandler('show_app', () => {
+      windowService.toggleMainWindow()
+    })
+
+    this.registerHandler('show_mini_window', () => {
+      if (!preferenceService.get('feature.quick_assistant.enabled')) {
+        return
+      }
+      windowService.toggleMiniWindow()
+    })
+
+    this.registerHandler('selection_assistant_toggle', () => {
+      selectionService?.toggleEnabled()
+    })
+
+    this.registerHandler('selection_assistant_select_text', () => {
+      selectionService?.processSelectTextByShortcut()
+    })
+  }
+
+  private getTargetWindow(window?: BrowserWindow): BrowserWindow | undefined {
+    if (window && !window.isDestroyed()) {
+      return window
+    }
+
+    const mainWindow = windowService.getMainWindow()
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      return mainWindow
+    }
+
+    return undefined
   }
 }
 
-function formatShortcutKey(shortcut: string[]): string {
-  return shortcut.join('+')
-}
-
-// convert the shortcut recorded by JS keyboard event key value to electron global shortcut format
-// see: https://www.electronjs.org/zh/docs/latest/api/accelerator
-const convertShortcutFormat = (shortcut: string | string[]): string => {
-  const accelerator = (() => {
-    if (Array.isArray(shortcut)) {
-      return shortcut
-    } else {
-      return shortcut.split('+').map((key) => key.trim())
-    }
-  })()
-
-  return accelerator
-    .map((key) => {
-      switch (key) {
-        // OLD WAY FOR MODIFIER KEYS, KEEP THEM HERE FOR REFERENCE
-        // case 'Command':
-        //   return 'CommandOrControl'
-        // case 'Control':
-        //   return 'Control'
-        // case 'Ctrl':
-        //   return 'Control'
-
-        // NEW WAY FOR MODIFIER KEYS
-        // you can see all the modifier keys in the same
-        case 'CommandOrControl':
-          return 'CommandOrControl'
-        case 'Ctrl':
-          return 'Ctrl'
-        case 'Alt':
-          return 'Alt' // Use `Alt` instead of `Option`. The `Option` key only exists on macOS, whereas the `Alt` key is available on all platforms.
-        case 'Meta':
-          return 'Meta' // `Meta` key is mapped to the Windows key on Windows and Linux, `Cmd` on macOS.
-        case 'Shift':
-          return 'Shift'
-
-        // For backward compatibility with old data
-        case 'Command':
-        case 'Cmd':
-          return 'CommandOrControl'
-        case 'Control':
-          return 'Ctrl'
-
-        case 'ArrowUp':
-          return 'Up'
-        case 'ArrowDown':
-          return 'Down'
-        case 'ArrowLeft':
-          return 'Left'
-        case 'ArrowRight':
-          return 'Right'
-        case 'AltGraph':
-          return 'AltGr'
-        case 'Slash':
-          return '/'
-        case 'Semicolon':
-          return ';'
-        case 'BracketLeft':
-          return '['
-        case 'BracketRight':
-          return ']'
-        case 'Backslash':
-          return '\\'
-        case 'Quote':
-          return "'"
-        case 'Comma':
-          return ','
-        case 'Minus':
-          return '-'
-        case 'Equal':
-          return '='
-        default:
-          return key
-      }
-    })
-    .join('+')
-}
+export const shortcutService = new ShortcutService()
 
 export function registerShortcuts(window: BrowserWindow) {
-  if (isRegisterOnBoot) {
-    window.once('ready-to-show', () => {
-      if (preferenceService.get('app.tray.on_launch')) {
-        registerOnlyUniversalShortcuts()
-      }
-    })
-    isRegisterOnBoot = false
-  }
-
-  //only for clearer code
-  const registerOnlyUniversalShortcuts = () => {
-    register(true)
-  }
-
-  //onlyUniversalShortcuts is used to register shortcuts that are not window specific, like show_app & mini_window
-  //onlyUniversalShortcuts is needed when we launch to tray
-  const register = (onlyUniversalShortcuts: boolean = false) => {
-    if (window.isDestroyed()) return
-
-    const shortcuts = configManager.getShortcuts()
-    if (!shortcuts) return
-
-    shortcuts.forEach((shortcut) => {
-      try {
-        if (shortcut.shortcut.length === 0) {
-          return
-        }
-
-        //if not enabled, exit early from the process.
-        if (!shortcut.enabled) {
-          return
-        }
-
-        // only register universal shortcuts when needed
-        if (
-          onlyUniversalShortcuts &&
-          !['show_app', 'mini_window', 'selection_assistant_toggle', 'selection_assistant_select_text'].includes(
-            shortcut.key
-          )
-        ) {
-          return
-        }
-
-        const handler = getShortcutHandler(shortcut)
-        if (!handler) {
-          return
-        }
-
-        switch (shortcut.key) {
-          case 'show_app':
-            showAppAccelerator = formatShortcutKey(shortcut.shortcut)
-            break
-
-          case 'mini_window':
-            //available only when QuickAssistant enabled
-            if (!preferenceService.get('feature.quick_assistant.enabled')) {
-              return
-            }
-            showMiniWindowAccelerator = formatShortcutKey(shortcut.shortcut)
-            break
-
-          case 'selection_assistant_toggle':
-            selectionAssistantToggleAccelerator = formatShortcutKey(shortcut.shortcut)
-            break
-
-          case 'selection_assistant_select_text':
-            selectionAssistantSelectTextAccelerator = formatShortcutKey(shortcut.shortcut)
-            break
-
-          //the following ZOOMs will register shortcuts separately, so will return
-          case 'zoom_in':
-            globalShortcut.register('CommandOrControl+=', () => handler(window))
-            globalShortcut.register('CommandOrControl+numadd', () => handler(window))
-            return
-
-          case 'zoom_out':
-            globalShortcut.register('CommandOrControl+-', () => handler(window))
-            globalShortcut.register('CommandOrControl+numsub', () => handler(window))
-            return
-
-          case 'zoom_reset':
-            globalShortcut.register('CommandOrControl+0', () => handler(window))
-            return
-        }
-
-        const accelerator = convertShortcutFormat(shortcut.shortcut)
-
-        globalShortcut.register(accelerator, () => handler(window))
-      } catch (error) {
-        logger.warn(`Failed to register shortcut ${shortcut.key}`)
-      }
-    })
-  }
-
-  const unregister = () => {
-    if (window.isDestroyed()) return
-
-    try {
-      globalShortcut.unregisterAll()
-
-      if (showAppAccelerator) {
-        const handler = getShortcutHandler({ key: 'show_app' } as Shortcut)
-        const accelerator = convertShortcutFormat(showAppAccelerator)
-        handler && globalShortcut.register(accelerator, () => handler(window))
-      }
-
-      if (showMiniWindowAccelerator) {
-        const handler = getShortcutHandler({ key: 'mini_window' } as Shortcut)
-        const accelerator = convertShortcutFormat(showMiniWindowAccelerator)
-        handler && globalShortcut.register(accelerator, () => handler(window))
-      }
-
-      if (selectionAssistantToggleAccelerator) {
-        const handler = getShortcutHandler({ key: 'selection_assistant_toggle' } as Shortcut)
-        const accelerator = convertShortcutFormat(selectionAssistantToggleAccelerator)
-        handler && globalShortcut.register(accelerator, () => handler(window))
-      }
-
-      if (selectionAssistantSelectTextAccelerator) {
-        const handler = getShortcutHandler({ key: 'selection_assistant_select_text' } as Shortcut)
-        const accelerator = convertShortcutFormat(selectionAssistantSelectTextAccelerator)
-        handler && globalShortcut.register(accelerator, () => handler(window))
-      }
-    } catch (error) {
-      logger.warn('Failed to unregister shortcuts')
-    }
-  }
-
-  // only register the event handlers once
-  if (undefined === windowOnHandlers.get(window)) {
-    // pass register() directly to listener, the func will receive Event as argument, it's not expected
-    const registerHandler = () => {
-      register()
-    }
-    window.on('focus', registerHandler)
-    window.on('blur', unregister)
-    windowOnHandlers.set(window, { onFocusHandler: registerHandler, onBlurHandler: unregister })
-  }
-
-  if (!window.isDestroyed() && window.isFocused()) {
-    register()
-  }
+  shortcutService.registerMainProcessShortcuts(window)
 }
 
 export function unregisterAllShortcuts() {
-  try {
-    showAppAccelerator = null
-    showMiniWindowAccelerator = null
-    selectionAssistantToggleAccelerator = null
-    selectionAssistantSelectTextAccelerator = null
-    windowOnHandlers.forEach((handlers, window) => {
-      window.off('focus', handlers.onFocusHandler)
-      window.off('blur', handlers.onBlurHandler)
-    })
-    windowOnHandlers.clear()
-    globalShortcut.unregisterAll()
-  } catch (error) {
-    logger.warn('Failed to unregister all shortcuts')
-  }
+  shortcutService.unregisterAllShortcuts()
 }

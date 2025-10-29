@@ -237,6 +237,7 @@ const api = {
   },
   openPath: (path: string) => ipcRenderer.invoke(IpcChannel.Open_Path, path),
   shortcuts: {
+    getAll: () => ipcRenderer.invoke(IpcChannel.Shortcuts_GetAll),
     update: (shortcuts: Shortcut[]) => ipcRenderer.invoke(IpcChannel.Shortcuts_Update, shortcuts)
   },
   knowledgeBase: {

@@ -200,6 +200,7 @@ const shortcutKeyMap = {
   exit_fullscreen: 'settings.shortcuts.exit_fullscreen',
   label: 'settings.shortcuts.label',
   mini_window: 'settings.shortcuts.mini_window',
+  show_mini_window: 'settings.shortcuts.show_mini_window',
   new_topic: 'settings.shortcuts.new_topic',
   press_shortcut: 'settings.shortcuts.press_shortcut',
   reset_defaults: 'settings.shortcuts.reset_defaults',

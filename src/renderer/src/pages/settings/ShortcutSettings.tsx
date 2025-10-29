@@ -2,12 +2,17 @@ import { ClearOutlined, UndoOutlined } from '@ant-design/icons'
 import { Button, RowFlex, Switch, Tooltip } from '@cherrystudio/ui'
 import { isMac, isWin } from '@renderer/config/constant'
 import { useTheme } from '@renderer/context/ThemeProvider'
-import { useShortcuts } from '@renderer/hooks/useShortcuts'
+import {
+  resetAllShortcuts,
+  resetShortcut,
+  setShortcutBinding,
+  setShortcutEnabled,
+  useShortcuts
+} from '@renderer/hooks/useShortcuts'
 import { useTimer } from '@renderer/hooks/useTimer'
 import { getShortcutLabel } from '@renderer/i18n/label'
-import { useAppDispatch } from '@renderer/store'
-import { initialState, resetShortcuts, toggleShortcut, updateShortcut } from '@renderer/store/shortcuts'
-import type { Shortcut } from '@renderer/types'
+import { shortcutDefinitions } from '@shared/shortcuts/definitions'
+import type { HydratedShortcut } from '@shared/shortcuts/types'
 import type { InputRef } from 'antd'
 import { Input, Table as AntTable } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
@@ -18,10 +23,11 @@ import styled from 'styled-components'
 
 import { SettingContainer, SettingDivider, SettingGroup, SettingTitle } from '.'
 
+const definitionMap = new Map(shortcutDefinitions.map((definition) => [definition.name, definition]))
+
 const ShortcutSettings: FC = () => {
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const dispatch = useAppDispatch()
   const { shortcuts: originalShortcuts } = useShortcuts()
   const inputRefs = useRef<Record<string, InputRef>>({})
   const [editingKey, setEditingKey] = useState<string | null>(null)
@@ -32,44 +38,34 @@ const ShortcutSettings: FC = () => {
   if (!isWin && !isMac) {
     //Selection Assistant only available on Windows now
     const excludedShortcuts = ['selection_assistant_toggle', 'selection_assistant_select_text']
-    shortcuts = shortcuts.filter((s) => !excludedShortcuts.includes(s.key))
+    shortcuts = shortcuts.filter((shortcut) => !excludedShortcuts.includes(shortcut.name))
   }
 
-  const handleClear = (record: Shortcut) => {
-    dispatch(
-      updateShortcut({
-        ...record,
-        shortcut: []
-      })
-    )
+  const handleClear = (record: HydratedShortcut) => {
+    void setShortcutBinding(record.name, [])
   }
 
-  const handleAddShortcut = (record: Shortcut) => {
-    setEditingKey(record.key)
+  const handleAddShortcut = (record: HydratedShortcut) => {
+    setEditingKey(record.name)
     setTimeoutTimer(
       'handleAddShortcut',
       () => {
-        inputRefs.current[record.key]?.focus()
+        inputRefs.current[record.name]?.focus()
       },
       0
     )
   }
 
-  const isShortcutModified = (record: Shortcut) => {
-    const defaultShortcut = initialState.shortcuts.find((s) => s.key === record.key)
-    return defaultShortcut?.shortcut.join('+') !== record.shortcut.join('+')
+  const isShortcutModified = (record: HydratedShortcut) => {
+    const definition = definitionMap.get(record.name)
+    if (!definition) {
+      return false
+    }
+    return definition.defaultKey.join('+') !== record.key.join('+')
   }
 
-  const handleResetShortcut = (record: Shortcut) => {
-    const defaultShortcut = initialState.shortcuts.find((s) => s.key === record.key)
-    if (defaultShortcut) {
-      dispatch(
-        updateShortcut({
-          ...record,
-          shortcut: defaultShortcut.shortcut
-        })
-      )
-    }
+  const handleResetShortcut = (record: HydratedShortcut) => {
+    void resetShortcut(record.name)
   }
 
   const isValidShortcut = (keys: string[]): boolean => {
@@ -86,9 +82,10 @@ const ShortcutSettings: FC = () => {
     return (hasModifier && hasNonModifier && keys.length >= 2) || hasFnKey
   }
 
-  const isDuplicateShortcut = (newShortcut: string[], currentKey: string): boolean => {
+  const isDuplicateShortcut = (newShortcut: string[], currentName: string): boolean => {
     return shortcuts.some(
-      (s) => s.key !== currentKey && s.shortcut.length > 0 && s.shortcut.join('+') === newShortcut.join('+')
+      (shortcut) =>
+        shortcut.name !== currentName && shortcut.key.length > 0 && shortcut.key.join('+') === newShortcut.join('+')
     )
   }
 
@@ -272,8 +269,8 @@ const ShortcutSettings: FC = () => {
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent, record: Shortcut) => {
-    e.preventDefault()
+  const handleKeyDown = (event: React.KeyboardEvent, record: HydratedShortcut) => {
+    event.preventDefault()
 
     const keys: string[] = []
 
@@ -286,12 +283,12 @@ const ShortcutSettings: FC = () => {
     // NEW WAY FOR MODIFIER KEYS
     // for capability across platforms, we transform the modifier keys to the really meaning keys
     // mainly consider the habit of users on different platforms
-    if (e.ctrlKey) keys.push(isMac ? 'Ctrl' : 'CommandOrControl') // for win&linux, ctrl key is almost the same as command key in macOS
-    if (e.altKey) keys.push('Alt')
-    if (e.metaKey) keys.push(isMac ? 'CommandOrControl' : 'Meta') // for macOS, meta(Command) key is almost the same as Ctrl key in win&linux
-    if (e.shiftKey) keys.push('Shift')
+    if (event.ctrlKey) keys.push(isMac ? 'Ctrl' : 'CommandOrControl') // for win&linux, ctrl key is almost the same as command key in macOS
+    if (event.altKey) keys.push('Alt')
+    if (event.metaKey) keys.push(isMac ? 'CommandOrControl' : 'Meta') // for macOS, meta(Command) key is almost the same as Ctrl key in win&linux
+    if (event.shiftKey) keys.push('Shift')
 
-    const endKey = usableEndKeys(e)
+    const endKey = usableEndKeys(event)
     if (endKey) {
       keys.push(endKey)
     }
@@ -300,11 +297,11 @@ const ShortcutSettings: FC = () => {
       return
     }
 
-    if (isDuplicateShortcut(keys, record.key)) {
+    if (isDuplicateShortcut(keys, record.name)) {
       return
     }
 
-    dispatch(updateShortcut({ ...record, shortcut: keys }))
+    void setShortcutBinding(record.name, keys)
     setEditingKey(null)
   }
 
@@ -312,26 +309,28 @@ const ShortcutSettings: FC = () => {
     window.modal.confirm({
       title: t('settings.shortcuts.reset_defaults_confirm'),
       centered: true,
-      onOk: () => dispatch(resetShortcuts())
+      onOk: () => resetAllShortcuts()
     })
   }
 
   // 由于启用了showHeader = false，不再需要title字段
-  const columns: ColumnsType<Shortcut> = [
+  type ShortcutRow = HydratedShortcut & { displayName: string; shortcut: string[] }
+
+  const columns: ColumnsType<ShortcutRow> = [
     {
       // title: t('settings.shortcuts.action'),
-      dataIndex: 'name',
-      key: 'name'
+      dataIndex: 'displayName',
+      key: 'displayName'
     },
     {
       // title: t('settings.shortcuts.label'),
       dataIndex: 'shortcut',
       key: 'shortcut',
       align: 'right',
-      render: (shortcut: string[], record: Shortcut) => {
-        const isEditing = editingKey === record.key
-        const shortcutConfig = shortcuts.find((s) => s.key === record.key)
-        const isEditable = shortcutConfig?.editable !== false
+      render: (_: string[], record: ShortcutRow) => {
+        const isEditing = editingKey === record.name
+        const isEditable = record.editable !== false
+        const shortcutKeys = record.key
 
         return (
           <RowFlex className="items-center justify-end gap-2">
@@ -340,10 +339,10 @@ const ShortcutSettings: FC = () => {
                 <ShortcutInput
                   ref={(el) => {
                     if (el) {
-                      inputRefs.current[record.key] = el
+                      inputRefs.current[record.name] = el
                     }
                   }}
-                  value={formatShortcut(shortcut)}
+                  value={formatShortcut(shortcutKeys)}
                   placeholder={t('settings.shortcuts.press_shortcut')}
                   onKeyDown={(e) => handleKeyDown(e, record)}
                   onBlur={(e) => {
@@ -355,7 +354,7 @@ const ShortcutSettings: FC = () => {
                 />
               ) : (
                 <ShortcutText isEditable={isEditable} onClick={() => isEditable && handleAddShortcut(record)}>
-                  {shortcut.length > 0 ? formatShortcut(shortcut) : t('settings.shortcuts.press_shortcut')}
+                  {shortcutKeys.length > 0 ? formatShortcut(shortcutKeys) : t('settings.shortcuts.press_shortcut')}
                 </ShortcutText>
               )}
             </RowFlex>
@@ -368,7 +367,7 @@ const ShortcutSettings: FC = () => {
       key: 'actions',
       align: 'right',
       width: '70px',
-      render: (record: Shortcut) => (
+      render: (record: ShortcutRow) => (
         <RowFlex className="items-center justify-end gap-2">
           <Tooltip content={t('settings.shortcuts.reset_to_default')}>
             <Button size="icon-sm" onClick={() => handleResetShortcut(record)} disabled={!isShortcutModified(record)}>
@@ -391,8 +390,14 @@ const ShortcutSettings: FC = () => {
       key: 'enabled',
       align: 'right',
       width: '50px',
-      render: (record: Shortcut) => (
-        <Switch size="sm" isSelected={record.enabled} onValueChange={() => dispatch(toggleShortcut(record.key))} />
+      render: (record: ShortcutRow) => (
+        <Switch
+          size="sm"
+          isSelected={record.enabled}
+          onValueChange={(value) => {
+            void setShortcutEnabled(record.name, value)
+          }}
+        />
       )
     }
   ]
@@ -404,7 +409,12 @@ const ShortcutSettings: FC = () => {
         <SettingDivider style={{ marginBottom: 0 }} />
         <Table
           columns={columns as ColumnsType<unknown>}
-          dataSource={shortcuts.map((s) => ({ ...s, name: getShortcutLabel(s.key) }))}
+          dataSource={shortcuts.map((shortcut) => ({
+            ...shortcut,
+            shortcut: shortcut.key,
+            displayName: getShortcutLabel(shortcut.name)
+          }))}
+          rowKey="name"
           pagination={false}
           size="middle"
           showHeader={false}
