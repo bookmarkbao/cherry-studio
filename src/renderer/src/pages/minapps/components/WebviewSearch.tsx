@@ -120,7 +120,7 @@ const WebviewSearch: FC<WebviewSearchProps> = ({ webviewRef, isWebviewReady, app
         return
       }
       try {
-        target.findInPage(text, options)
+        target.findInPage(text, options || {})
       } catch (error) {
         logger.error('findInPage failed', { error })
         window.toast?.error(t('common.error'))
