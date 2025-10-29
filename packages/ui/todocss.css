@@ -458,14 +458,24 @@
   --Brand--Base_Colors--White: var(--Primitive--White);
   --Brand--Base_Colors--Black: var(--Primitive--Black);
   --Brand--Semantic_Colors--Background: var(--Primitive--Zinc--50); /*页面背景色：应用在整个页面的最底层。*/
-  --Brand--Semantic_Colors--Background-subtle: hsla(0, 0%, 0%, 0.02); /*细微背景色：用于需要与主背景有微弱区分的区域，如代码块背景。*/
+  --Brand--Semantic_Colors--Background-subtle: hsla(
+    0,
+    0%,
+    0%,
+    0.02
+  ); /*细微背景色：用于需要与主背景有微弱区分的区域，如代码块背景。*/
   --Brand--Semantic_Colors--Foreground: hsla(0, 0%, 0%, 0.9); /*主要前景/文字色：用于正文、标题等。*/
   --Brand--Semantic_Colors--Foreground-secondary: hsla(0, 0%, 0%, 0.6); /*次要前景/文字色：用于辅助性文本、描述。*/
   --Brand--Semantic_Colors--Foreground-muted: hsla(0, 0%, 0%, 0.4); /*静默前景/文字色：用于禁用状态的文字、占位符。*/
   --Brand--Semantic_Colors--Border: hsla(0, 0%, 0%, 0.1); /*默认边框色：用于卡片、输入框、分隔线。*/
   --Brand--Semantic_Colors--Border-hover: hsla(0, 0%, 0%, 0.2); /*激活边框色：用于元素被按下或激活时的边框。*/
   --Brand--Semantic_Colors--Border-active: hsla(0, 0%, 0%, 0.3); /*激活边框色：用于元素被按下或激活时的边框。*/
-  --Brand--Semantic_Colors--Ring: hsla(84, 81%, 44%, 0.4); /*聚焦环颜色：用于输入框等元素在聚焦 (Focus) 状态下的外发光。*/
+  --Brand--Semantic_Colors--Ring: hsla(
+    84,
+    81%,
+    44%,
+    0.4
+  ); /*聚焦环颜色：用于输入框等元素在聚焦 (Focus) 状态下的外发光。*/
   --Brand--UI_Element_Colors--Modal--Backdrop: hsla(0, 0%, 0%, 0.4);
   --Brand--UI_Element_Colors--Modal--Thumb: hsla(0, 0%, 0%, 0.2);
   --Brand--UI_Element_Colors--Modal--Thumb_Hover: hsla(0, 0%, 0%, 0.3);
@@ -812,14 +822,24 @@
   --Brand--Base_Colors--White: var(--Primitive--White);
   --Brand--Base_Colors--Black: var(--Primitive--Black);
   --Brand--Semantic_Colors--Background: var(--Primitive--Zinc--900); /*页面背景色：应用在整个页面的最底层。*/
-  --Brand--Semantic_Colors--Background-subtle: hsla(0, 0%, 100%, 0.02); /*细微背景色：用于需要与主背景有微弱区分的区域，如代码块背景。*/
+  --Brand--Semantic_Colors--Background-subtle: hsla(
+    0,
+    0%,
+    100%,
+    0.02
+  ); /*细微背景色：用于需要与主背景有微弱区分的区域，如代码块背景。*/
   --Brand--Semantic_Colors--Foreground: hsla(0, 0%, 100%, 0.9); /*主要前景/文字色：用于正文、标题等。*/
   --Brand--Semantic_Colors--Foreground-secondary: hsla(0, 0%, 100%, 0.6); /*次要前景/文字色：用于辅助性文本、描述。*/
   --Brand--Semantic_Colors--Foreground-muted: hsla(0, 0%, 100%, 0.4); /*静默前景/文字色：用于禁用状态的文字、占位符。*/
   --Brand--Semantic_Colors--Border: hsla(0, 0%, 100%, 0.1); /*默认边框色：用于卡片、输入框、分隔线。*/
   --Brand--Semantic_Colors--Border-hover: hsla(0, 0%, 100%, 0.2); /*激活边框色：用于元素被按下或激活时的边框。*/
   --Brand--Semantic_Colors--Border-active: hsla(0, 0%, 100%, 0.3); /*激活边框色：用于元素被按下或激活时的边框。*/
-  --Brand--Semantic_Colors--Ring: hsla(84, 81%, 44%, 0.4); /*聚焦环颜色：用于输入框等元素在聚焦 (Focus) 状态下的外发光。*/
+  --Brand--Semantic_Colors--Ring: hsla(
+    84,
+    81%,
+    44%,
+    0.4
+  ); /*聚焦环颜色：用于输入框等元素在聚焦 (Focus) 状态下的外发光。*/
   --Brand--UI_Element_Colors--Modal--Backdrop: hsla(0, 0%, 0%, 0.06);
   --Brand--UI_Element_Colors--Modal--Thumb: hsla(0, 0%, 100%, 0.2);
   --Brand--UI_Element_Colors--Modal--Thumb_Hover: hsla(0, 0%, 100%, 0.3);
@@ -847,5 +867,4 @@
   --Brand--UI_Element_Colors--Primary_Button--3rd_Background: hsla(84, 81%, 44%, 0.05);
   --Brand--UI_Element_Colors--Primary_Button--Background_Active: hsla(84, 81%, 44%, 0.7);
   --Boolean: false;
-
 }
