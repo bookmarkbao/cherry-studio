@@ -23,7 +23,7 @@ export const YamlFrontMatter = Node.create({
     level: 'block',
 
     start(src: string) {
-      const result = src.match(/^\s*---\n/) ? 0 : -1
+      const result = src.match(/^---\n/) ? 0 : -1
       return result
     },
     // Parse YAML front matter
