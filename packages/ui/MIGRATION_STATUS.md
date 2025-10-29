@@ -1,4 +1,26 @@
-# UI Component Library Migration Status
+# Cherry Studio UI Migration Plan
+
+## Overview
+
+This document outlines the detailed plan for migrating Cherry Studio from antd + styled-components to shadcn/ui + Tailwind CSS. We will adopt a progressive migration strategy to ensure system stability and development efficiency, while gradually implementing UI refactoring in collaboration with UI designers.
+
+## Migration Strategy
+
+### Target Tech Stack
+
+- **UI Component Library**: shadcn/ui (replacing antd and previously migrated HeroUI)
+- **Styling Solution**: Tailwind CSS (replacing styled-components)
+- **Design System**: Custom CSS variable system (see [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md))
+- **Theme System**: CSS variables + shadcn/ui theme
+
+### Migration Principles
+
+1. **Backward Compatibility**: Old components continue working until new components are fully available
+2. **Progressive Migration**: Migrate components one by one to avoid large-scale rewrites
+3. **Feature Parity**: Ensure new components have all the functionality of old components
+4. **Design Consistency**: Follow new design system specifications (see DESIGN_SYSTEM.md)
+5. **Performance Priority**: Optimize bundle size and rendering performance
+6. **Designer Collaboration**: Work with UI designers for gradual component encapsulation and UI optimization
 
 ## Usage Example
 
@@ -24,115 +46,68 @@ function MyComponent() {
 @packages/ui/
 ├── src/
 │   ├── components/         # Main components directory
-│   │   ├── base/           # Basic components (buttons, inputs, labels, etc.)
-│   │   ├── display/        # Display components (cards, lists, tables, etc.)
-│   │   ├── layout/         # Layout components (containers, grids, spacing, etc.)
-│   │   ├── icons/          # Icon components
-│   │   ├── interactive/    # Interactive components (modals, tooltips, dropdowns, etc.)
-│   │   └── composite/      # Composite components (made from multiple base components)
+│   │   ├── primitives/     # Basic/primitive components (Avatar, ErrorBoundary, Selector, etc.)
+│   │   │   └── shadcn-io/  # shadcn/ui components (dropzone, etc.)
+│   │   ├── icons/          # Icon components (Icon, FileIcons, etc.)
+│   │   └── composites/     # Composite components (CodeEditor, ListItem, etc.)
 │   ├── hooks/              # Custom React Hooks
-│   └── types/              # TypeScript type definitions
+│   ├── styles/             # Global styles and CSS variables
+│   ├── types/              # TypeScript type definitions
+│   ├── utils/              # Utility functions
+│   └── index.ts            # Main export file
 ```
 
 ### Component Classification Guide
 
 When submitting PRs, please place components in the correct directory based on their function:
 
-- **base**: Most basic UI elements like buttons, inputs, switches, labels, etc.
-- **display**: Components for displaying content like cards, lists, tables, tabs, etc.
-- **layout**: Components for page layout like containers, grid systems, dividers, etc.
+- **primitives**: Basic and primitive UI elements, shadcn/ui components
+  - `Avatar`: Avatar components
+  - `ErrorBoundary`: Error boundary components
+  - `Selector`: Selection components
+  - `shadcn-io/`: Direct shadcn/ui components or adaptations
 - **icons**: All icon-related components
-- **interactive**: Components requiring user interaction like modals, drawers, tooltips, dropdowns, etc.
-- **composite**: Composite components made from multiple base components
+  - `Icon`: Icon factory and basic icons
+  - `FileIcons`: File-specific icons
+  - Loading/spinner icons (SvgSpinners180Ring, ToolsCallingIcon, etc.)
+- **composites**: Complex components made from multiple primitives
+  - `CodeEditor`: Code editing components
+  - `ListItem`: List item components
+  - `ThinkingEffect`: Animation components
+  - Form and interaction components (DraggableList, EditableNumber, etc.)
 
-## Migration Overview
+## Component Extraction Criteria
 
-- **Total Components**: 236
-- **Migrated**: 34
-- **Refactored**: 18
-- **Pending Migration**: 184
+### Extraction Standards
 
-## Component Status Table
+1. **Usage Frequency**: Component is used in ≥ 3 places in the codebase
+2. **Future Reusability**: Expected to be used in multiple scenarios in the future
+3. **Business Complexity**: Component contains complex interaction logic or state management
+4. **Maintenance Cost**: Centralized management can reduce maintenance overhead
+5. **Design Consistency**: Components that require unified visual and interaction experience
+6. **Test Coverage**: As common components, they facilitate unit test writing and maintenance
 
-| Category          | Component Name            | Migration Status | Refactoring Status | Description                                                                                                                                                                    |
-| ----------------- | ------------------------- | ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **base**          |                           |                  |                    | Base components                                                                                                                                                                |
-|                   | CopyButton                | ✅                | ✅                  | Copy button                                                                                                                                                                    |
-|                   | CustomTag                 | ✅                | ✅                  | Custom tag                                                                                                                                                                     |
-|                   | DividerWithText           | ✅                | ✅                  | Divider with text                                                                                                                                                              |
-|                   | EmojiIcon                 | ✅                | ✅                  | Emoji icon                                                                                                                                                                     |
-|                   | ErrorBoundary             | ✅                | ✅                  | Error boundary (decoupled via props)                                                                                                                                           |
-|                   | StatusTag                 | ✅                | ✅                  | Unified status tag (merged ErrorTag, SuccessTag, WarnTag, InfoTag)                                                                                                             |
-|                   | IndicatorLight            | ✅                | ✅                  | Indicator light                                                                                                                                                                |
-|                   | Spinner                   | ✅                | ✅                  | Loading spinner                                                                                                                                                                |
-|                   | TextBadge                 | ✅                | ✅                  | Text badge                                                                                                                                                                     |
-|                   | CustomCollapse            | ✅                | ✅                  | Custom collapse panel                                                                                                                                                          |
-| **display**       |                           |                  |                    | Display components                                                                                                                                                             |
-|                   | Ellipsis                  | ✅                | ✅                  | Text ellipsis                                                                                                                                                                  |
-|                   | ExpandableText            | ✅                | ✅                  | Expandable text                                                                                                                                                                |
-|                   | ThinkingEffect            | ✅                | ✅                  | Thinking effect animation                                                                                                                                                      |
-|                   | EmojiAvatar               | ✅                | ✅                  | Emoji avatar                                                                                                                                                                   |
-|                   | ListItem                  | ✅                | ✅                  | List item                                                                                                                                                                      |
-|                   | MaxContextCount           | ✅                | ✅                  | Max context count display                                                                                                                                                      |
-|                   | ProviderAvatar            | ✅                | ✅                  | Provider avatar                                                                                                                                                                |
-|                   | CodeViewer                | ❌                | ❌                  | Code viewer (external deps)                                                                                                                                                    |
-|                   | OGCard                    | ❌                | ❌                  | OG card                                                                                                                                                                        |
-|                   | MarkdownShadowDOMRenderer | ❌                | ❌                  | Markdown renderer                                                                                                                                                              |
-|                   | Preview/*                 | ❌                | ❌                  | Preview components                                                                                                                                                             |
-| **layout**        |                           |                  |                    | Layout components                                                                                                                                                              |
-|                   | HorizontalScrollContainer | ✅                | ❌                  | Horizontal scroll container                                                                                                                                                    |
-|                   | Scrollbar                 | ✅                | ❌                  | Scrollbar                                                                                                                                                                      |
-|                   | Layout/*                  | ✅                | ✅                  | Layout components                                                                                                                                                              |
-|                   | Tab/*                     | ❌                | ❌                  | Tab (Redux dependency)                                                                                                                                                         |
-|                   | TopView                   | ❌                | ❌                  | Top view (window.api dependency)                                                                                                                                               |
-| **icons**         |                           |                  |                    | Icon components                                                                                                                                                                |
-|                   | Icon                      | ✅                | ✅                  | Icon factory function and predefined icons (merged CopyIcon, DeleteIcon, EditIcon, RefreshIcon, ResetIcon, ToolIcon, VisionIcon, WebSearchIcon, WrapIcon, UnWrapIcon, OcrIcon) |
-|                   | FileIcons                 | ✅                | ❌                  | File icons (FileSvgIcon, FilePngIcon)                                                                                                                                          |
-|                   | ReasoningIcon             | ✅                | ❌                  | Reasoning icon                                                                                                                                                                 |
-|                   | SvgSpinners180Ring        | ✅                | ❌                  | Spinner loading icon                                                                                                                                                           |
-|                   | ToolsCallingIcon          | ✅                | ❌                  | Tools calling icon                                                                                                                                                             |
-| **interactive**   |                           |                  |                    | Interactive components                                                                                                                                                         |
-|                   | InfoTooltip               | ✅                | ❌                  | Info tooltip                                                                                                                                                                   |
-|                   | HelpTooltip               | ✅                | ❌                  | Help tooltip                                                                                                                                                                   |
-|                   | WarnTooltip               | ✅                | ❌                  | Warning tooltip                                                                                                                                                                |
-|                   | EditableNumber            | ✅                | ❌                  | Editable number                                                                                                                                                                |
-|                   | InfoPopover               | ✅                | ❌                  | Info popover                                                                                                                                                                   |
-|                   | CollapsibleSearchBar      | ✅                | ❌                  | Collapsible search bar                                                                                                                                                         |
-|                   | ImageToolButton           | ✅                | ❌                  | Image tool button                                                                                                                                                              |
-|                   | DraggableList             | ✅                | ❌                  | Draggable list                                                                                                                                                                 |
-|                   | CodeEditor                | ✅                | ❌                  | Code editor                                                                                                                                                                    |
-|                   | EmojiPicker               | ❌                | ❌                  | Emoji picker (useTheme dependency)                                                                                                                                             |
-|                   | Selector                  | ✅                | ❌                  | Selector (i18n dependency)                                                                                                                                                     |
-|                   | ModelSelector             | ❌                | ❌                  | Model selector (Redux dependency)                                                                                                                                              |
-|                   | LanguageSelect            | ❌                | ❌                  | Language select                                                                                                                                                                |
-|                   | TranslateButton           | ❌                | ❌                  | Translate button (window.api dependency)                                                                                                                                       |
-| **composite**     |                           |                  |                    | Composite components                                                                                                                                                           |
-|                   | -                         | -                | -                  | No composite components yet                                                                                                                                                    |
-| **Uncategorized** |                           |                  |                    | Components needing categorization                                                                                                                                              |
-|                   | Popups/* (16+ files)      | ❌                | ❌                  | Popup components (business coupled)                                                                                                                                            |
-|                   | RichEditor/* (30+ files)  | ❌                | ❌                  | Rich text editor                                                                                                                                                               |
-|                   | MarkdownEditor/*          | ❌                | ❌                  | Markdown editor                                                                                                                                                                |
-|                   | MinApp/*                  | ❌                | ❌                  | Mini app (Redux dependency)                                                                                                                                                    |
-|                   | Avatar/*                  | ❌                | ❌                  | Avatar components                                                                                                                                                              |
-|                   | ActionTools/*             | ❌                | ❌                  | Action tools                                                                                                                                                                   |
-|                   | CodeBlockView/*           | ❌                | ❌                  | Code block view (window.api dependency)                                                                                                                                        |
-|                   | ContextMenu               | ❌                | ❌                  | Context menu (Electron API)                                                                                                                                                    |
-|                   | WindowControls            | ❌                | ❌                  | Window controls (Electron API)                                                                                                                                                 |
-|                   | ErrorBoundary             | ❌                | ❌                  | Error boundary (window.api dependency)                                                                                                                                         |
+### Extraction Principles
+
+- **Single Responsibility**: Each component should only handle one clear function
+- **Highly Configurable**: Provide flexible configuration options through props
+- **Backward Compatible**: New versions maintain API backward compatibility
+- **Complete Documentation**: Provide clear API documentation and usage examples
+- **Type Safety**: Use TypeScript to ensure type safety
+
+### Cases Not Recommended for Extraction
+
+- Simple display components used only on a single page
+- Overly customized business logic components
+- Components tightly coupled to specific data sources
 
 ## Migration Steps
 
-### Phase 1: Copy Migration (Current Phase)
-
-- Copy components as-is to @packages/ui
-- Retain original dependencies (antd, styled-components, etc.)
-- Add original path comment at file top
-
-### Phase 2: Refactor and Optimize
-
-- Remove antd dependencies, replace with HeroUI
-- Remove styled-components, replace with Tailwind CSS
-- Optimize component APIs and type definitions
+| Phase | Status | Main Tasks | Description |
+| --- | --- | --- | --- |
+| **Phase 1** | 🚧 **In Progress** | **Design System Integration** | • Integrate design system CSS variables (todocss.css → design-tokens.css → globals.css)<br>• Configure Tailwind CSS to use custom design tokens<br>• Establish basic style guidelines and theme system |
+| **Phase 2** | ⏳ **To Start** | **Component Migration and Optimization** | • Filter components for migration based on extraction criteria<br>• Remove antd dependencies, replace with shadcn/ui<br>• Remove HeroUI dependencies, replace with shadcn/ui<br>• Remove styled-components, replace with Tailwind CSS + design system variables<br>• Optimize component APIs and type definitions |
+| **Phase 3** | ⏳ **To Start** | **UI Refactoring and Optimization** | • Gradually implement UI refactoring with UI designers<br>• Ensure visual consistency and user experience<br>• Performance optimization and code quality improvement |
 
 ## Notes
 
@@ -143,9 +118,27 @@ When submitting PRs, please place components in the correct directory based on t
 
 2. **Can migrate** but need decoupling later:
    - Components using i18n (change i18n to props)
-   - Components using antd (replace with HeroUI later)
+   - Components using antd (replace with shadcn/ui later)
+   - Components using HeroUI (replace with shadcn/ui later)
 
 3. **Submission Guidelines**:
    - Each PR should focus on one category of components
    - Ensure all migrated components are exported
-   - Update migration status in this document
+   - Follow component extraction criteria, only migrate qualified components
+
+## Design System Integration
+
+### CSS Variable System
+- Refer to [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for complete design system planning
+- Design variables will be managed through CSS variable system, naming conventions TBD
+- Support theme switching and responsive design
+
+### Migration Priority Adjustment
+1. **High Priority**: Basic components (buttons, inputs, tags, etc.)
+2. **Medium Priority**: Display components (cards, lists, tables, etc.)
+3. **Low Priority**: Composite components and business-coupled components
+
+### UI Designer Collaboration
+- All component designs need confirmation from UI designers
+- Gradually implement UI refactoring to maintain visual consistency
+- New components must comply with design system specifications
