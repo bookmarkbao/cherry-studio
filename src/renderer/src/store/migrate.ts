@@ -22,6 +22,7 @@ import {
 import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
 import { DEFAULT_ASSISTANT_SETTINGS } from '@renderer/services/AssistantService'
+import { defaultPreprocessProviders } from '@renderer/store/preprocess'
 import type {
   Assistant,
   BuiltinOcrProvider,
@@ -201,6 +202,18 @@ function addShortcuts(state: RootState, ids: string[], afterId: string) {
     } else {
       // 如果找不到指定的快捷键，则添加到最后
       state.shortcuts.shortcuts.push(...newShortcuts)
+    }
+  }
+}
+
+// add preprocess provider
+function addPreprocessProviders(state: RootState, id: string) {
+  if (state.preprocess && state.preprocess.providers) {
+    if (!state.preprocess.providers.find((p) => p.id === id)) {
+      const provider = defaultPreprocessProviders.find((p) => p.id === id)
+      if (provider) {
+        state.preprocess.providers.push({ ...provider })
+      }
     }
   }
 }
@@ -2719,6 +2732,11 @@ const migrateConfig = {
           preset.settings.toolUseMode = DEFAULT_ASSISTANT_SETTINGS.toolUseMode
         }
       })
+      // 更新阿里云百炼的 Anthropic API 地址
+      const dashscopeProvider = state.llm.providers.find((provider) => provider.id === 'dashscope')
+      if (dashscopeProvider) {
+        dashscopeProvider.anthropicApiHost = 'https://dashscope.aliyuncs.com/apps/anthropic'
+      }
       return state
     } catch (error) {
       logger.error('migrate 166 error', error as Error)
@@ -2731,6 +2749,15 @@ const migrateConfig = {
       return state
     } catch (error) {
       logger.error('migrate 167 error', error as Error)
+      return state
+    }
+  },
+  '168': (state: RootState) => {
+    try {
+      addPreprocessProviders(state, 'open-mineru')
+      return state
+    } catch (error) {
+      logger.error('migrate 168 error', error as Error)
       return state
     }
   }

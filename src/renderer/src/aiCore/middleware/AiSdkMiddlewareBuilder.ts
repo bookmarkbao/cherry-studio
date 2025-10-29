@@ -1,13 +1,18 @@
 import type { WebSearchPluginConfig } from '@cherrystudio/ai-core/built-in/plugins'
 import { loggerService } from '@logger'
-import { type MCPTool, type Message, type Model, type Provider } from '@renderer/types'
+import { isSupportedThinkingTokenQwenModel } from '@renderer/config/models'
+import { isSupportEnableThinkingProvider } from '@renderer/config/providers'
+import type { MCPTool } from '@renderer/types'
+import { type Assistant, type Message, type Model, type Provider } from '@renderer/types'
 import type { Chunk } from '@renderer/types/chunk'
 import type { LanguageModelMiddleware } from 'ai'
 import { extractReasoningMiddleware, simulateStreamingMiddleware } from 'ai'
+import { isEmpty } from 'lodash'
 
 import { isOpenRouterGeminiGenerateImageModel } from '../utils/image'
 import { noThinkMiddleware } from './noThinkMiddleware'
 import { openrouterGenerateImageMiddleware } from './openrouterGenerateImageMiddleware'
+import { qwenThinkingMiddleware } from './qwenThinkingMiddleware'
 import { toolChoiceMiddleware } from './toolChoiceMiddleware'
 
 const logger = loggerService.withContext('AiSdkMiddlewareBuilder')
@@ -20,6 +25,7 @@ export interface AiSdkMiddlewareConfig {
   onChunk?: (chunk: Chunk) => void
   model?: Model
   provider?: Provider
+  assistant?: Assistant
   enableReasoning: boolean
   // 是否开启提示词工具调用
   isPromptToolUse: boolean
@@ -128,7 +134,7 @@ export function buildAiSdkMiddlewares(config: AiSdkMiddlewareConfig): LanguageMo
   const builder = new AiSdkMiddlewareBuilder()
 
   // 0. 知识库强制调用中间件（必须在最前面，确保第一轮强制调用知识库）
-  if (config.knowledgeRecognition === 'off') {
+  if (!isEmpty(config.assistant?.knowledge_bases?.map((base) => base.id)) && config.knowledgeRecognition !== 'on') {
     builder.add({
       name: 'force-knowledge-first',
       middleware: toolChoiceMiddleware('builtin_knowledge_search')
@@ -218,6 +224,21 @@ function addProviderSpecificMiddlewares(builder: AiSdkMiddlewareBuilder, config:
  */
 function addModelSpecificMiddlewares(builder: AiSdkMiddlewareBuilder, config: AiSdkMiddlewareConfig): void {
   if (!config.model || !config.provider) return
+
+  // Qwen models on providers that don't support enable_thinking parameter (like Ollama, LM Studio, NVIDIA)
+  // Use /think or /no_think suffix to control thinking mode
+  if (
+    config.provider &&
+    isSupportedThinkingTokenQwenModel(config.model) &&
+    !isSupportEnableThinkingProvider(config.provider)
+  ) {
+    const enableThinking = config.assistant?.settings?.reasoning_effort !== undefined
+    builder.add({
+      name: 'qwen-thinking-control',
+      middleware: qwenThinkingMiddleware(enableThinking)
+    })
+    logger.debug(`Added Qwen thinking middleware with thinking ${enableThinking ? 'enabled' : 'disabled'}`)
+  }
 
   // 可以根据模型ID或特性添加特定中间件
   // 例如：图像生成模型、多模态模型等

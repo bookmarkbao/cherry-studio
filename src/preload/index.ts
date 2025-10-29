@@ -1,3 +1,4 @@
+import type { PermissionUpdate } from '@anthropic-ai/claude-agent-sdk'
 import { electronAPI } from '@electron-toolkit/preload'
 import type { SpanEntity, TokenUsage } from '@mcp-trace/trace-core'
 import type { SpanContext } from '@opentelemetry/api'
@@ -41,6 +42,16 @@ import type {
 import type { OpenDialogOptions } from 'electron'
 import { contextBridge, ipcRenderer, shell, webUtils } from 'electron'
 import type { CreateDirectoryOptions } from 'webdav'
+
+import type {
+  InstalledPlugin,
+  InstallPluginOptions,
+  ListAvailablePluginsResult,
+  PluginMetadata,
+  PluginResult,
+  UninstallPluginOptions,
+  WritePluginContentOptions
+} from '../renderer/src/types/plugin'
 
 export function tracedInvoke(channel: string, spanContext: SpanContext | undefined, ...args: any[]) {
   if (spanContext) {
@@ -426,6 +437,15 @@ const api = {
     minimizeActionWindow: () => ipcRenderer.invoke(IpcChannel.Selection_ActionWindowMinimize),
     pinActionWindow: (isPinned: boolean) => ipcRenderer.invoke(IpcChannel.Selection_ActionWindowPin, isPinned)
   },
+  agentTools: {
+    respondToPermission: (payload: {
+      requestId: string
+      behavior: 'allow' | 'deny'
+      updatedInput?: Record<string, unknown>
+      message?: string
+      updatedPermissions?: PermissionUpdate[]
+    }) => ipcRenderer.invoke(IpcChannel.AgentToolPermission_Response, payload)
+  },
   quoteToMainWindow: (text: string) => ipcRenderer.invoke(IpcChannel.App_QuoteToMain, text),
   // setDisableHardwareAcceleration: (isDisable: boolean) =>
   //   ipcRenderer.invoke(IpcChannel.App_SetDisableHardwareAcceleration, isDisable),
@@ -548,6 +568,21 @@ const api = {
     start: (): Promise<StartApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_Start),
     restart: (): Promise<RestartApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_Restart),
     stop: (): Promise<StopApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_Stop)
+  },
+  claudeCodePlugin: {
+    listAvailable: (): Promise<PluginResult<ListAvailablePluginsResult>> =>
+      ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_ListAvailable),
+    install: (options: InstallPluginOptions): Promise<PluginResult<PluginMetadata>> =>
+      ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_Install, options),
+    uninstall: (options: UninstallPluginOptions): Promise<PluginResult<void>> =>
+      ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_Uninstall, options),
+    listInstalled: (agentId: string): Promise<PluginResult<InstalledPlugin[]>> =>
+      ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_ListInstalled, agentId),
+    invalidateCache: (): Promise<PluginResult<void>> => ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_InvalidateCache),
+    readContent: (sourcePath: string): Promise<PluginResult<string>> =>
+      ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_ReadContent, sourcePath),
+    writeContent: (options: WritePluginContentOptions): Promise<PluginResult<void>> =>
+      ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_WriteContent, options)
   }
 }
 

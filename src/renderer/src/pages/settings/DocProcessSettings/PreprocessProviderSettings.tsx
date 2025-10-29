@@ -77,7 +77,6 @@ const PreprocessProviderSettings: FC<Props> = ({ provider: _provider }) => {
             src={getPreprocessProviderLogo(preprocessProvider.id)}
             className="h-4 w-4 border-[0.5px] border-[var(--color-border)]"
           />
-
           <ProviderName> {preprocessProvider.name}</ProviderName>
           {officialWebsite && preprocessProviderConfig?.websites && (
             <Link target="_blank" href={preprocessProviderConfig.websites.official}>
