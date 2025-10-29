@@ -14,6 +14,7 @@ import { addSpan, endSpan } from '@renderer/services/SpanManagerService'
 import type { StartSpanParams } from '@renderer/trace/types/ModelSpanEntity'
 import type { Assistant, GenerateImageParams, Model, Provider } from '@renderer/types'
 import type { AiSdkModel, StreamTextParams } from '@renderer/types/aiCoreTypes'
+import { SUPPORTED_IMAGE_ENDPOINT_LIST } from '@renderer/utils'
 import { buildClaudeCodeSystemModelMessage } from '@shared/anthropic'
 import { type ImageModel, type LanguageModel, type Provider as AiSdkProvider, wrapLanguageModel } from 'ai'
 
@@ -78,7 +79,7 @@ export default class ModernAiProvider {
     return this.actualProvider
   }
 
-  public async completions(modelId: string, params: StreamTextParams, config: ModernAiProviderConfig) {
+  public async completions(modelId: string, params: StreamTextParams, providerConfig: ModernAiProviderConfig) {
     // 检查model是否存在
     if (!this.model) {
       throw new Error('Model is required for completions. Please use constructor with model parameter.')
@@ -86,7 +87,10 @@ export default class ModernAiProvider {
 
     // 每次请求时重新生成配置以确保API key轮换生效
     this.config = providerToAiSdkConfig(this.actualProvider, this.model)
-
+    logger.debug('Generated provider config for completions', this.config)
+    if (SUPPORTED_IMAGE_ENDPOINT_LIST.includes(this.config.options.endpoint)) {
+      providerConfig.isImageGenerationEndpoint = true
+    }
     // 准备特殊配置
     await prepareSpecialProviderConfig(this.actualProvider, this.config)
 
@@ -97,13 +101,13 @@ export default class ModernAiProvider {
 
     // 提前构建中间件
     const middlewares = buildAiSdkMiddlewares({
-      ...config,
+      ...providerConfig,
       provider: this.actualProvider,
-      assistant: config.assistant
+      assistant: providerConfig.assistant
     })
     logger.debug('Built middlewares in completions', {
       middlewareCount: middlewares.length,
-      isImageGeneration: config.isImageGenerationEndpoint
+      isImageGeneration: providerConfig.isImageGenerationEndpoint
     })
     if (!this.localProvider) {
       throw new Error('Local provider not created')
@@ -111,7 +115,7 @@ export default class ModernAiProvider {
 
     // 根据endpoint类型创建对应的模型
     let model: AiSdkModel | undefined
-    if (config.isImageGenerationEndpoint) {
+    if (providerConfig.isImageGenerationEndpoint) {
       model = this.localProvider.imageModel(modelId)
     } else {
       model = this.localProvider.languageModel(modelId)
@@ -127,15 +131,15 @@ export default class ModernAiProvider {
       params.messages = [...claudeCodeSystemMessage, ...(params.messages || [])]
     }
 
-    if (config.topicId && (await preferenceService.get('app.developer_mode.enabled'))) {
+    if (providerConfig.topicId && (await preferenceService.get('app.developer_mode.enabled'))) {
       // TypeScript类型窄化：确保topicId是string类型
       const traceConfig = {
-        ...config,
-        topicId: config.topicId
+        ...providerConfig,
+        topicId: providerConfig.topicId
       }
       return await this._completionsForTrace(model, params, traceConfig)
     } else {
-      return await this._completionsOrImageGeneration(model, params, config)
+      return await this._completionsOrImageGeneration(model, params, providerConfig)
     }
   }
 

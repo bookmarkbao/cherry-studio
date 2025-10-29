@@ -5,6 +5,7 @@ import { loggerService } from '@logger'
 import { ActionIconButton } from '@renderer/components/Buttons'
 import type { QuickPanelListItem } from '@renderer/components/QuickPanel'
 import {
+  isAnthropicModel,
   isGeminiModel,
   isGenerateImageModel,
   isMandatoryWebSearchModel,
@@ -391,7 +392,7 @@ const InputbarTools = ({
         label: t('chat.input.url_context'),
         component: <UrlContextButton ref={urlContextButtonRef} assistantId={assistant.id} />,
         condition:
-          isGeminiModel(model) &&
+          (isGeminiModel(model) || isAnthropicModel(model)) &&
           (isSupportUrlContextProvider(getProviderByModel(model)) || model.endpoint_type === 'gemini')
       },
       {
