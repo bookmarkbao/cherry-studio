@@ -89,6 +89,7 @@ const SettingsTab: FC<Props> = (props) => {
   const { theme } = useTheme()
   const { themeNames } = useCodeStyle()
 
+  // FIXME: We should use useMemo to calculate these states instead of using useEffect to sync
   const [temperature, setTemperature] = useState(assistant?.settings?.temperature ?? DEFAULT_TEMPERATURE)
   const [enableTemperature, setEnableTemperature] = useState(assistant?.settings?.enableTemperature ?? true)
   const [contextCount, setContextCount] = useState(assistant?.settings?.contextCount ?? DEFAULT_CONTEXTCOUNT)
