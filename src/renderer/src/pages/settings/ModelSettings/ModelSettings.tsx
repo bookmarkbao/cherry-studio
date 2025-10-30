@@ -1,8 +1,7 @@
-import { RedoOutlined } from '@ant-design/icons'
-import { Button, InfoTooltip, RowFlex, Tooltip } from '@cherrystudio/ui'
+import { Button, InfoTooltip, ResetIcon, RowFlex, Tooltip } from '@cherrystudio/ui'
 import { usePreference } from '@data/hooks/usePreference'
 import ModelSelector from '@renderer/components/ModelSelector'
-import { isEmbeddingModel, isRerankModel, isTextToImageModel } from '@renderer/config/models'
+import { DEFAULT_MODEL_MAP, isEmbeddingModel, isRerankModel, isTextToImageModel } from '@renderer/config/models'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useDefaultModel } from '@renderer/hooks/useAssistant'
 import { useProviders } from '@renderer/hooks/useProvider'
@@ -21,8 +20,17 @@ import DefaultAssistantSettings from './DefaultAssistantSettings'
 import TopicNamingModalPopup from './QuickModelPopup'
 
 const ModelSettings: FC = () => {
-  const { defaultModel, quickModel, translateModel, setDefaultModel, setQuickModel, setTranslateModel } =
-    useDefaultModel()
+  const {
+    defaultModel,
+    quickModel,
+    translateModel,
+    setDefaultModel,
+    setQuickModel,
+    setTranslateModel,
+    resetDefaultAssistantModel,
+    resetQuickModel,
+    resetTranslateModel
+  } = useDefaultModel()
   const { providers } = useProviders()
   const allModels = providers.map((p) => p.models).flat()
   const { theme } = useTheme()
@@ -73,6 +81,11 @@ const ModelSettings: FC = () => {
           <Button className="ml-2" onClick={DefaultAssistantSettings.show} size="icon">
             <Settings2 size={16} />
           </Button>
+          {defaultModelValue !== getModelUniqId(DEFAULT_MODEL_MAP.assistant) && (
+            <Tooltip title={t('common.reset')}>
+              <Button icon={<ResetIcon size={16} />} style={{ marginLeft: 8 }} onClick={resetDefaultAssistantModel} />
+            </Tooltip>
+          )}
         </RowFlex>
         <SettingDescription>{t('settings.models.default_assistant_model_description')}</SettingDescription>
       </SettingGroup>
@@ -97,6 +110,11 @@ const ModelSettings: FC = () => {
           <Button className="ml-2" onClick={TopicNamingModalPopup.show} size="icon">
             <Settings2 size={16} />
           </Button>
+          {defaultQuickModel !== getModelUniqId(DEFAULT_MODEL_MAP.quick) && (
+            <Tooltip title={t('common.reset')}>
+              <Button icon={<ResetIcon size={16} />} style={{ marginLeft: 8 }} onClick={resetQuickModel} />
+            </Tooltip>
+          )}
         </RowFlex>
         <SettingDescription>{t('settings.models.quick_model.description')}</SettingDescription>
       </SettingGroup>
@@ -120,11 +138,9 @@ const ModelSettings: FC = () => {
           <Button className="ml-2" onClick={() => TranslateSettingsPopup.show()} size="icon">
             <Settings2 size={16} />
           </Button>
-          {translateModelPrompt !== TRANSLATE_PROMPT && (
-            <Tooltip content={t('common.reset')}>
-              <Button className="ml-2" onClick={onResetTranslatePrompt} size="icon">
-                <RedoOutlined />
-              </Button>
+          {defaultTranslateModel !== getModelUniqId(DEFAULT_MODEL_MAP.translate) && (
+            <Tooltip title={t('common.reset')}>
+              <Button icon={<ResetIcon size={16} />} style={{ marginLeft: 8 }} onClick={resetTranslateModel} />
             </Tooltip>
           )}
         </RowFlex>
