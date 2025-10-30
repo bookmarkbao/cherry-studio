@@ -4,10 +4,9 @@ import { LoaderIcon } from 'lucide-react'
 import * as React from 'react'
 
 // Enhanced Switch component with loading state support
-interface CustomSwitchProps extends React.ComponentProps<typeof SwitchPrimitive.Root> {
+interface CustomSwitchProps extends Omit<React.ComponentProps<typeof SwitchPrimitive.Root>, 'children'> {
   /** When true, displays a loading spinner in the switch thumb. Defaults to false when undefined. */
   loading?: boolean
-  children?: never
 }
 
 function CustomizedSwitch({ loading = false, disabled = false, className, ...props }: CustomSwitchProps) {
