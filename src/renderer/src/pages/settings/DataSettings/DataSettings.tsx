@@ -289,8 +289,8 @@ const DataSettings: FC = () => {
       <div>
         <MigrationPathRow style={{ marginTop: '20px', flexDirection: 'row', alignItems: 'center' }}>
           <Switch
-            defaultSelected={shouldCopyData}
-            onValueChange={(checked) => {
+            defaultChecked={shouldCopyData}
+            onCheckedChange={(checked) => {
               shouldCopyData = checked
             }}
             className="mr-2"
@@ -616,7 +616,7 @@ const DataSettings: FC = () => {
               <SettingDivider />
               <SettingRow>
                 <SettingRowTitle>{t('settings.data.backup.skip_file_data_title')}</SettingRowTitle>
-                <Switch isSelected={skipBackupFile} onValueChange={onSkipBackupFilesChange} />
+                <Switch checked={skipBackupFile} onCheckedChange={onSkipBackupFilesChange} />
               </SettingRow>
               <SettingRow>
                 <SettingHelpText>{t('settings.data.backup.skip_file_data_help')}</SettingHelpText>
