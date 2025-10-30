@@ -1,3 +1,8 @@
+import { DefaultPreferences } from '@shared/data/preference/preferenceSchemas'
+import type { PreferenceShortcutType } from '@shared/data/preference/preferenceTypes'
+
+import type { ShortcutDefinition, ShortcutPreferenceValue } from './types'
+
 const modifierKeys = ['CommandOrControl', 'Ctrl', 'Alt', 'Shift', 'Meta', 'Command']
 const specialSingleKeys = ['Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
 
@@ -130,7 +135,3 @@ export const coerceShortcutPreference = (
     system: ensureBoolean(value?.system, fallback.system)
   }
 }
-import { DefaultPreferences } from '@shared/data/preference/preferenceSchemas'
-import type { PreferenceShortcutType } from '@shared/data/preference/preferenceTypes'
-
-import type { ShortcutDefinition, ShortcutPreferenceValue } from './types'
