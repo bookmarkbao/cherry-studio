@@ -216,8 +216,8 @@ export function useDefaultModel() {
   }, [setTranslateModel])
 
   const resetQuickModel = useCallback(() => {
-    setTranslateModel(DEFAULT_MODEL_MAP.quick)
-  }, [setTranslateModel])
+    setQuickModel(DEFAULT_MODEL_MAP.quick)
+  }, [setQuickModel])
 
   return {
     defaultModel,
