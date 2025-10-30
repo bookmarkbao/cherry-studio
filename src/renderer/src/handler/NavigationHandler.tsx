@@ -1,5 +1,5 @@
-import { IpcChannel } from '@shared/IpcChannel'
 import { useShortcut } from '@renderer/hooks/useShortcuts'
+import { IpcChannel } from '@shared/IpcChannel'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 

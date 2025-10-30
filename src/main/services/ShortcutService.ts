@@ -139,10 +139,7 @@ export class ShortcutService {
       }
 
       void targetWindow.webContents
-        .executeJavaScript(
-          `typeof window.navigate === 'function' && window.navigate('/settings/provider')`,
-          true
-        )
+        .executeJavaScript(`typeof window.navigate === 'function' && window.navigate('/settings/provider')`, true)
         .catch((error) => {
           logger.warn('Failed to navigate to settings from shortcut:', error as Error)
         })
