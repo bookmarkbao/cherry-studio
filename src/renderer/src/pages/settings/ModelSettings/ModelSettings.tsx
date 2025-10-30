@@ -1,5 +1,4 @@
 import { Button, InfoTooltip, ResetIcon, RowFlex, Tooltip } from '@cherrystudio/ui'
-import { usePreference } from '@data/hooks/usePreference'
 import ModelSelector from '@renderer/components/ModelSelector'
 import { DEFAULT_MODEL_MAP, isEmbeddingModel, isRerankModel, isTextToImageModel } from '@renderer/config/models'
 import { useTheme } from '@renderer/context/ThemeProvider'
@@ -7,7 +6,6 @@ import { useDefaultModel } from '@renderer/hooks/useAssistant'
 import { useProviders } from '@renderer/hooks/useProvider'
 import { getModelUniqId, hasModel } from '@renderer/services/ModelService'
 import type { Model } from '@renderer/types'
-import { TRANSLATE_PROMPT } from '@shared/config/prompts'
 import { find } from 'lodash'
 import { Languages, MessageSquareMore, Rocket, Settings2 } from 'lucide-react'
 import type { FC } from 'react'
@@ -36,8 +34,6 @@ const ModelSettings: FC = () => {
   const { theme } = useTheme()
   const { t } = useTranslation()
 
-  const [translateModelPrompt, setTranslateModelPrompt] = usePreference('feature.translate.model_prompt')
-
   const modelPredicate = useCallback(
     (m: Model) => !isEmbeddingModel(m) && !isRerankModel(m) && !isTextToImageModel(m),
     []
@@ -54,10 +50,6 @@ const ModelSettings: FC = () => {
     () => (hasModel(translateModel) ? getModelUniqId(translateModel) : undefined),
     [translateModel]
   )
-
-  const onResetTranslatePrompt = () => {
-    setTranslateModelPrompt(TRANSLATE_PROMPT)
-  }
 
   return (
     <SettingContainer theme={theme}>
