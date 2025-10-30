@@ -7,6 +7,7 @@ import * as React from 'react'
 interface CustomSwitchProps extends React.ComponentProps<typeof SwitchPrimitive.Root> {
   /** When true, displays a loading spinner in the switch thumb. Defaults to false when undefined. */
   loading?: boolean
+  children?: never
 }
 
 function CustomizedSwitch({ loading = false, disabled = false, className, ...props }: CustomSwitchProps) {
@@ -58,30 +59,31 @@ function CustomizedSwitch({ loading = false, disabled = false, className, ...pro
 //   )
 // }
 
-const DescriptionSwitch = ({ children, ...props }: CustomSwitchProps) => {
-  return (
-    <div className="flex w-full justify-between">
-      {children}
-      <CustomizedSwitch
-        // classNames={{
-        //   base: cn(
-        //     'inline-flex w-full max-w-md flex-row-reverse items-center hover:bg-content2',
-        //     'cursor-pointer justify-between gap-2 rounded-lg border-2 border-transparent py-2 pr-1',
-        //     'data-[selected=true]:border-primary'
-        //   ),
-        //   wrapper: 'p-0 h-4 overflow-visible',
-        //   thumb: cn(
-        //     'h-6 w-6 border-2 shadow-lg',
-        //     'group-data-[hover=true]:border-primary',
-        //     //selected
-        //     'group-data-[selected=true]:ms-6',
-        //     // pressed
-        //     'group-data-[pressed=true]:w-7',
-        //     'group-data-pressed:group-data-selected:ms-4'
-        //   )
-        // }}
+interface DescriptionSwitchProps extends CustomSwitchProps {
+  /** Text label displayed next to the switch. */
+  label: string
+  /** Optional helper text shown below the label. */
+  description?: string
+  /** Switch position relative to label. Defaults to 'right'. */
+  position?: 'left' | 'right'
+}
 
-        {...props}></CustomizedSwitch>
+const DescriptionSwitch = ({ label, description, position = 'right', ...props }: DescriptionSwitchProps) => {
+  const isLeftSide = position === 'left'
+  return (
+    // TODO: spacing 3xs
+    <div className={cn('flex w-full gap-3', isLeftSide && 'flex-row-reverse')}>
+      {/* TODO: spacing 5xs */}
+      <div className="flex-1 flex flex-col gap-1">
+        {/* TODO: use typography component */}
+        <span className="">{label}</span>
+        {/* TODO: use typography component */}
+        {description && <span className="text-secondary-foreground">{description}</span>}
+      </div>
+      {/* TODO: padding-top spacing 5xs */}
+      <div className="pt-1 flex-col flex justify-start">
+        <CustomizedSwitch {...props} />
+      </div>
     </div>
   )
 }
