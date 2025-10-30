@@ -363,7 +363,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>{t('settings.messages.use_serif_font')}</SettingRowTitleSmall> */}
             <DescriptionSwitch
               checked={messageFont === 'serif'}
               onCheckedChange={(checked) => setMessageFont(checked ? 'serif' : 'system')}
@@ -372,10 +371,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>
-              {t('chat.settings.thought_auto_collapse.label')}
-              <HelpTooltip title={t('chat.settings.thought_auto_collapse.tip')} />
-            </SettingRowTitleSmall> */}
             <DescriptionSwitch
               checked={thoughtAutoCollapse}
               onCheckedChange={setThoughtAutoCollapse}
@@ -393,7 +388,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>{t('message.message.style.label')}</SettingRowTitleSmall> */}
             <Selector
               size="sm"
               label={t('message.message.style.label')}
@@ -405,7 +399,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>{t('message.message.multi_model_style.label')}</SettingRowTitleSmall> */}
             <Selector
               size="sm"
               label={t('message.message.multi_model_style.label')}
@@ -417,7 +410,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>{t('settings.messages.navigation.label')}</SettingRowTitleSmall> */}
             <Selector
               size="sm"
               label={t('settings.messages.navigation.label')}
@@ -454,7 +446,6 @@ const SettingsTab: FC<Props> = (props) => {
       <CollapsibleSettingGroup title={t('settings.math.title')} defaultExpanded={false}>
         <SettingGroup>
           <SettingRow>
-            {/* <SettingRowTitleSmall>{t('settings.math.engine.label')}</SettingRowTitleSmall> */}
             <Selector
               size="sm"
               label={t('settings.math.engine.label')}
@@ -466,10 +457,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>
-              {t('settings.math.single_dollar.label')}
-              <HelpTooltip title={t('settings.math.single_dollar.tip')} />
-            </SettingRowTitleSmall> */}
             <DescriptionSwitch
               checked={mathEnableSingleDollar}
               onCheckedChange={setMathEnableSingleDollar}
@@ -483,7 +470,6 @@ const SettingsTab: FC<Props> = (props) => {
       <CollapsibleSettingGroup title={t('chat.settings.code.title')} defaultExpanded={false}>
         <SettingGroup>
           <SettingRow>
-            {/* <SettingRowTitleSmall>{t('message.message.code_style')}</SettingRowTitleSmall> */}
             <Selector
               size="sm"
               label={t('message.message.code_style')}
@@ -495,10 +481,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>
-              {t('chat.settings.code_fancy_block.label')}
-              <HelpTooltip title={t('chat.settings.code_fancy_block.tip')} />
-            </SettingRowTitleSmall> */}
             <DescriptionSwitch
               checked={codeFancyBlock}
               onCheckedChange={setCodeFancyBlock}
@@ -508,10 +490,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>
-              {t('chat.settings.code_execution.title')}
-              <HelpTooltip title={t('chat.settings.code_execution.tip')} />
-            </SettingRowTitleSmall> */}
             <DescriptionSwitch
               checked={codeExecution.enabled}
               onCheckedChange={(checked) => setCodeExecution({ enabled: checked })}
@@ -541,7 +519,6 @@ const SettingsTab: FC<Props> = (props) => {
           )}
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>{t('chat.settings.code_editor.title')}</SettingRowTitleSmall> */}
             <DescriptionSwitch
               checked={codeEditor.enabled}
               onCheckedChange={(checked) => setCodeEditor({ enabled: checked })}
@@ -552,20 +529,14 @@ const SettingsTab: FC<Props> = (props) => {
             <>
               <SettingDivider />
               <SettingRow style={{ paddingLeft: 8 }}>
-                {/* <SettingRowTitleSmall>
-                  {t('chat.settings.code_editor.highlight_active_line')}
-                  <HelpTooltip title={t('chat.settings.code_editor.highlight_active_line.tip')} />
-                </SettingRowTitleSmall> */}
                 <DescriptionSwitch
                   checked={codeEditor.highlightActiveLine}
                   onCheckedChange={(checked) => setCodeEditor({ highlightActiveLine: checked })}
                   label={t('chat.settings.code_editor.highlight_active_line')}
-                  description={t('chat.settings.code_editor.highlight_active_line.tip')}
                 />
               </SettingRow>
               <SettingDivider />
               <SettingRow style={{ paddingLeft: 8 }}>
-                {/* <SettingRowTitleSmall>{t('chat.settings.code_editor.fold_gutter')}</SettingRowTitleSmall> */}
                 <DescriptionSwitch
                   checked={codeEditor.foldGutter}
                   onCheckedChange={(checked) => setCodeEditor({ foldGutter: checked })}
@@ -574,7 +545,6 @@ const SettingsTab: FC<Props> = (props) => {
               </SettingRow>
               <SettingDivider />
               <SettingRow style={{ paddingLeft: 8 }}>
-                {/* <SettingRowTitleSmall>{t('chat.settings.code_editor.autocompletion')}</SettingRowTitleSmall> */}
                 <DescriptionSwitch
                   checked={codeEditor.autocompletion}
                   onCheckedChange={(checked) => setCodeEditor({ autocompletion: checked })}
@@ -583,7 +553,6 @@ const SettingsTab: FC<Props> = (props) => {
               </SettingRow>
               <SettingDivider />
               <SettingRow style={{ paddingLeft: 8 }}>
-                {/* <SettingRowTitleSmall>{t('chat.settings.code_editor.keymap')}</SettingRowTitleSmall> */}
                 <DescriptionSwitch
                   checked={codeEditor.keymap}
                   onCheckedChange={(checked) => setCodeEditor({ keymap: checked })}
@@ -729,7 +698,6 @@ const SettingsTab: FC<Props> = (props) => {
           </SettingRow>
           <SettingDivider />
           <SettingRow>
-            {/* <SettingRowTitleSmall>{}</SettingRowTitleSmall> */}
             <Selector
               size="sm"
               label={t('settings.messages.input.send_shortcuts')}
