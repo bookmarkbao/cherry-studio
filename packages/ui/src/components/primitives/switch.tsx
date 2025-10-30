@@ -2,6 +2,7 @@ import { cn } from '@cherrystudio/ui/utils'
 import * as SwitchPrimitive from '@radix-ui/react-switch'
 import { LoaderIcon } from 'lucide-react'
 import * as React from 'react'
+import { useId } from 'react'
 
 // Enhanced Switch component with loading state support
 interface CustomSwitchProps extends Omit<React.ComponentProps<typeof SwitchPrimitive.Root>, 'children'> {
@@ -69,19 +70,20 @@ interface DescriptionSwitchProps extends CustomSwitchProps {
 
 const DescriptionSwitch = ({ label, description, position = 'right', ...props }: DescriptionSwitchProps) => {
   const isLeftSide = position === 'left'
+  const id = useId()
   return (
     // TODO: spacing 3xs
     <div className={cn('flex w-full gap-3', isLeftSide && 'flex-row-reverse')}>
       {/* TODO: spacing 5xs */}
-      <div className="flex-1 flex flex-col gap-1">
+      <label className="flex-1 flex flex-col gap-1 cursor-pointer" htmlFor={id}>
         {/* TODO: use typography component */}
         <span className="">{label}</span>
         {/* TODO: use typography component */}
         {description && <span className="text-secondary-foreground">{description}</span>}
-      </div>
+      </label>
       {/* TODO: padding-top spacing 5xs */}
       <div className="pt-1 flex-col flex justify-start">
-        <CustomizedSwitch {...props} />
+        <CustomizedSwitch id={id} {...props} />
       </div>
     </div>
   )
