@@ -2924,15 +2924,14 @@
       },
       "description": "クリエイターのための強力なAIアシスタント",
       "downloading": "ダウンロード中...",
+      "enterprise": {
+        "title": "エンタープライズ"
+      },
       "feedback": {
         "button": "フィードバック",
         "title": "フィードバック"
       },
       "label": "について",
-      "license": {
-        "button": "ライセンス",
-        "title": "ライセンス"
-      },
       "releases": {
         "button": "リリース",
         "title": "リリースノート"
