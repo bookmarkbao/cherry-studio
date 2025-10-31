@@ -23,6 +23,7 @@ import { DEFAULT_ASSISTANT_SETTINGS } from '@renderer/services/AssistantService'
 import {
   Assistant,
   BuiltinOcrProvider,
+  isBuiltinMCPServer,
   isSystemProvider,
   Model,
   Provider,
@@ -2589,6 +2590,23 @@ const migrateConfig = {
       return state
     } catch (error) {
       logger.error('migrate 162 error', error as Error)
+      return state
+    }
+  },
+  '163': (state: RootState) => {
+    try {
+      if (state?.mcp?.servers) {
+        state.mcp.servers = state.mcp.servers.map((server) => {
+          const inferredSource = isBuiltinMCPServer(server) ? 'builtin' : 'unknown'
+          return {
+            ...server,
+            installSource: inferredSource
+          }
+        })
+      }
+      return state
+    } catch (error) {
+      logger.error('migrate 169 error', error as Error)
       return state
     }
   }
