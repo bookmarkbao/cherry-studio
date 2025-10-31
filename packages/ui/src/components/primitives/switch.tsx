@@ -1,30 +1,34 @@
 import { cn } from '@cherrystudio/ui/utils'
 import * as SwitchPrimitive from '@radix-ui/react-switch'
-import { LoaderIcon } from 'lucide-react'
 import * as React from 'react'
 import { useId } from 'react'
 
 // Enhanced Switch component with loading state support
 interface CustomSwitchProps extends Omit<React.ComponentProps<typeof SwitchPrimitive.Root>, 'children'> {
-  /** When true, displays a loading spinner in the switch thumb. Defaults to false when undefined. */
+  /** When true, displays a loading animation in the switch thumb. Defaults to false when undefined. */
   loading?: boolean
   size?: 'sm' | 'md' | 'lg'
 }
 
 function CustomizedSwitch({ loading = false, disabled = false, size = 'md', className, ...props }: CustomSwitchProps) {
+  // temp
+  const linearDisabled = `bg-linear-to-b from-[#8DE59E] to-[#AEEABA96]`
   return (
     <SwitchPrimitive.Root
       data-slot="switch"
       // TODO: use semantic color
       className={cn(
-        'group relative cursor-pointer peer inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=unchecked]:bg-input/80',
+        'cs-switch cs-switch-root',
+        'group relative box-content cursor-pointer peer inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs outline-none transition-all',
+        'data-[state=unchecked]:bg-gray-500/20',
+        'disabled:cursor-not-allowed disabled:opacity-50',
+        'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
         {
           'w-9 h-5': size === 'sm',
           'w-11 h-5.5': size === 'md',
           'w-11 h-6': size === 'lg'
         },
-        // TODO: add disabled style
-        disabled && '',
+        loading && 'data-[state=unchecked]:bg-primary',
         className
       )}
       disabled={disabled}
@@ -32,45 +36,41 @@ function CustomizedSwitch({ loading = false, disabled = false, size = 'md', clas
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(
-          'pointer-events-none block rounded-full bg-background ring-0 transition-transform data-[state=unchecked]:translate-x-0 dark:data-[state=checked]:bg-primary-foreground dark:data-[state=unchecked]:bg-foreground',
+          'cs-switch cs-switch-thumb',
+          'pointer-events-none block rounded-full bg-background ring-0 transition-all data-[state=unchecked]:translate-x-0 dark:data-[state=checked]:bg-primary-foreground dark:data-[state=unchecked]:bg-foreground',
           // TODO: not final
           {
-            'size-3.5 data-[state=checked]:translate-x-9)]': size === 'sm',
-            'size-4 ml-[3px] data-[state=checked]:translate-x-5.5': size === 'md',
-            'size-[17px] data-[state=checked]:translate-x-11': size === 'lg'
+            'size-4.5 ml-[1px] data-[state=checked]:translate-x-4': size === 'sm',
+            'size-5 ml-[1px] data-[state=checked]:translate-x-5.5': size === 'md',
+            'size-5 ml-0.5 data-[state=checked]:translate-x-5': size === 'lg'
           },
-          // TODO: use semantic color
-          disabled && 'bg-primary backdrop-grayscale-50'
+          {
+            'size-3.5 ml-[3px] data-[state=checked]:translate-x-4.5': loading && size === 'sm',
+            'size-4 ml-[3px] data-[state=checked]:translate-x-5.5': loading && size === 'md',
+            'size-[17px] ml-[3px] data-[state=checked]:translate-x-5.5': loading && size === 'lg'
+          }
+          // TODO: Add disabled style
         )}>
-        <div className="w-full h-full flex items-center justify-center">
-          {loading && <LoaderIcon size={15} className="animate-spin opacity-80" />}
-          {!loading && (
-            <div
-              // TODO: use semantic color
-              className={
-                'w-0.5 h-1.5 rounded-2xl transition-colors group-data-[state=checked]:bg-primary group-data-[state=unchecked]:bg-input/80'
-              }></div>
-          )}
+        <div
+          className={cn(
+            'cs-switch cs-switch-thumb-content-container',
+            'w-full h-full flex items-center justify-center'
+          )}>
+          <div
+            // TODO: use linear primary
+            className={cn(
+              'cs-switch cs-switch-thumb-content',
+              'w-0.5 h-1.5 rounded-2xl transition-colors group-data-[state=unchecked]:bg-gray-500/20',
+              'group-data-[state=checked]:bg-linear-to-b group-data-[state=checked]:from-[#8DE59E] group-data-[state=checked]:to-[#3CD45A]',
+              disabled && linearDisabled,
+              loading &&
+                'group-data-[state=unchecked]:bg-gray-500/20 group-data-[state=checked]:bg-gray-500/20 animate-spin'
+            )}></div>
         </div>
       </SwitchPrimitive.Thumb>
     </SwitchPrimitive.Root>
   )
 }
-
-// /**
-//  * A customized Switch component based on HeroUI Switch
-//  * @see https://www.heroui.com/docs/components/switch#api
-//  * @param isLoading When true, displays a loading spinner in the switch thumb
-//  */
-// const CustomizedSwitch = ({ isLoading, children, ref, thumbIcon, ...props }: CustomSwitchProps) => {
-//   const finalThumbIcon = isLoading ? <Spinner size="sm" /> : thumbIcon
-
-//   return (
-//     <Switch ref={ref} {...props} thumbIcon={finalThumbIcon}>
-//       {children}
-//     </Switch>
-//   )
-// }
 
 interface DescriptionSwitchProps extends CustomSwitchProps {
   /** Text label displayed next to the switch. */
