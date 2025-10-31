@@ -40,7 +40,7 @@
   --color-popover-foreground: var(--cs-foreground);
 
   --color-secondary: var(--cs-secondary);
-  --color-secondary-foreground: var(--cs-foreground);
+  --color-secondary-foreground: var(--cs-foreground-secondary);
 
   --color-muted: var(--cs-muted);
   --color-muted-foreground: var(--cs-foreground-secondary);

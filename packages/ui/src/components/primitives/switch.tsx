@@ -81,21 +81,26 @@ interface DescriptionSwitchProps extends CustomSwitchProps {
   position?: 'left' | 'right'
 }
 
+// TODO: It's not finished. We need to use Typography components instead of native html element.
 const DescriptionSwitch = ({ label, description, position = 'right', ...props }: DescriptionSwitchProps) => {
   const isLeftSide = position === 'left'
   const id = useId()
   return (
     // TODO: spacing 3xs
-    <div className={cn('flex w-full gap-3', isLeftSide && 'flex-row-reverse')}>
+    <div className={cn('flex w-full gap-3 justify-between', isLeftSide && 'flex-row-reverse')}>
       {/* TODO: spacing 5xs */}
-      <label className="flex-1 flex flex-col gap-1 cursor-pointer" htmlFor={id}>
-        {/* TODO: use typography component */}
-        <span className="">{label}</span>
-        {/* TODO: use typography component */}
+      <label
+        className={cn('flex flex-col gap-5xs cursor-pointer', {
+          'h-7': description === undefined,
+          'h-18': description !== undefined
+        })}
+        htmlFor={id}>
+        {/* TODO: use standard typography component */}
+        <p className="leading-7">{label}</p>
+        {/* TODO: use standard typography component */}
         {description && <span className="text-secondary-foreground">{description}</span>}
       </label>
-      {/* TODO: padding-top spacing 5xs */}
-      <div className="pt-1 flex-col flex justify-start">
+      <div className="pt-5xs h-7 flex-col flex justify-start">
         <CustomizedSwitch id={id} {...props} />
       </div>
     </div>
