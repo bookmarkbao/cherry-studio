@@ -43,7 +43,7 @@
   --color-secondary-foreground: var(--cs-foreground);
 
   --color-muted: var(--cs-muted);
-  --color-muted-foreground: var(--cs-foreground-secondary);
+  --color-muted-foreground: var(--cs-foreground-muted);
 
   --color-accent: var(--cs-accent);
   --color-accent-foreground: var(--cs-foreground);
