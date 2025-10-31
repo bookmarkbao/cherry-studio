@@ -354,6 +354,7 @@ export enum IpcChannel {
   ApiServer_Stop = 'api-server:stop',
   ApiServer_Restart = 'api-server:restart',
   ApiServer_GetStatus = 'api-server:get-status',
+  ApiServer_Ready = 'api-server:ready',
   // NOTE: This api is not be used.
   ApiServer_GetConfig = 'api-server:get-config',
 
@@ -395,5 +396,12 @@ export enum IpcChannel {
   ClaudeCodePlugin_ListInstalled = 'claudeCodePlugin:list-installed',
   ClaudeCodePlugin_InvalidateCache = 'claudeCodePlugin:invalidate-cache',
   ClaudeCodePlugin_ReadContent = 'claudeCodePlugin:read-content',
-  ClaudeCodePlugin_WriteContent = 'claudeCodePlugin:write-content'
+  ClaudeCodePlugin_WriteContent = 'claudeCodePlugin:write-content',
+
+  // WebSocket
+  WebSocket_Start = 'webSocket:start',
+  WebSocket_Stop = 'webSocket:stop',
+  WebSocket_Status = 'webSocket:status',
+  WebSocket_SendFile = 'webSocket:send-file',
+  WebSocket_GetAllCandidates = 'webSocket:get-all-candidates'
 }

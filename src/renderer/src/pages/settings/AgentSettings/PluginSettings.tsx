@@ -1,6 +1,6 @@
 import { Card, CardBody, Tab, Tabs } from '@heroui/react'
 import { useAvailablePlugins, useInstalledPlugins, usePluginActions } from '@renderer/hooks/usePlugins'
-import type { GetAgentResponse, GetAgentSessionResponse, UpdateAgentBaseForm } from '@renderer/types/agent'
+import type { GetAgentResponse, GetAgentSessionResponse, UpdateAgentFunctionUnion } from '@renderer/types/agent'
 import type { FC } from 'react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,7 +11,7 @@ import { SettingsContainer } from './shared'
 
 interface PluginSettingsProps {
   agentBase: GetAgentResponse | GetAgentSessionResponse
-  update: (partial: UpdateAgentBaseForm) => Promise<void>
+  update: UpdateAgentFunctionUnion
 }
 
 const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {

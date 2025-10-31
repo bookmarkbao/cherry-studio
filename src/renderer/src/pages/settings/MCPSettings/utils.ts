@@ -1,51 +1,58 @@
-/**
- * MCP Settings 页面导航工具函数
- */
+import { loggerService } from '@logger'
+import type { MCPServer } from '@renderer/types'
 
-export const MCPRoutes = {
-  // 管理类页面
-  servers: '/settings/mcp/servers',
-  npxSearch: '/settings/mcp/npx-search',
-  mcpInstall: '/settings/mcp/mcp-install',
-
-  // 发现类页面
-  builtin: '/settings/mcp/builtin',
-  marketplaces: '/settings/mcp/marketplaces',
-
-  // 服务商页面
-  modelscope: '/settings/mcp/modelscope',
-  tokenflux: '/settings/mcp/tokenflux',
-  lanyun: '/settings/mcp/lanyun',
-  '302ai': '/settings/mcp/302ai',
-  bailian: '/settings/mcp/bailian'
-} as const
+const logger = loggerService.withContext('MCPSettings/utils')
 
 /**
- * 导航到 MCP 设置页面的指定部分
- * @param page 页面标识
- * @returns 路由路径
+ * Get command preview string from MCP server configuration
+ * @param server - The MCP server to extract command from
+ * @returns Formatted command string with arguments
  */
-export function getMCPRoute(page: keyof typeof MCPRoutes): string {
-  return MCPRoutes[page]
+export const getCommandPreview = (server: MCPServer): string => {
+  return [server.command, ...(server.args ?? [])]
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .join(' ')
 }
 
 /**
- * 生成 MCP 服务商页面路由
- * @param providerKey 服务商标识
- * @returns 路由路径
+ * Ensures a server is trusted before proceeding (pure logic, no UI)
+ * @param currentServer - The server to verify trust for
+ * @param requestConfirm - Callback to request user confirmation
+ * @param updateServer - Callback to update server state
+ * @returns The trusted server if confirmed, or null if user declined
  */
-export function getMCPProviderRoute(providerKey: string): string {
-  return `/settings/mcp/${providerKey}`
-}
+export async function ensureServerTrusted(
+  currentServer: MCPServer,
+  requestConfirm: (server: MCPServer) => Promise<boolean>,
+  updateServer: (server: MCPServer) => void
+): Promise<MCPServer | null> {
+  const isProtocolInstall = currentServer.installSource === 'protocol'
 
-/**
- * 生成 MCP 服务器设置页面路由
- * @param serverId 服务器ID
- * @returns 路由路径
- */
-export function getMCPServerSettingsRoute(serverId: string): string {
-  return `/settings/mcp/settings/${serverId}`
-}
+  logger.silly('ensureServerTrusted', {
+    serverId: currentServer.id,
+    installSource: currentServer.installSource,
+    isTrusted: currentServer.isTrusted
+  })
 
-// 类型定义
-export type MCPPage = keyof typeof MCPRoutes
+  // Early return if no trust verification needed
+  if (!isProtocolInstall || currentServer.isTrusted) {
+    return currentServer
+  }
+
+  // Request user confirmation via callback
+  const confirmed = await requestConfirm(currentServer)
+
+  if (!confirmed) {
+    return null
+  }
+
+  // Update server with trust information
+  const trustedServer = {
+    ...currentServer,
+    installSource: 'protocol' as const,
+    isTrusted: true,
+    trustedAt: Date.now()
+  }
+  updateServer(trustedServer)
+  return trustedServer
+}

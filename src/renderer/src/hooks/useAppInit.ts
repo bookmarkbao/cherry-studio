@@ -80,17 +80,34 @@ export function useAppInit() {
 
   useEffect(() => {
     savedAvatar?.value && cacheService.set('avatar', savedAvatar.value)
-  }, [savedAvatar, dispatch])
+  }, [savedAvatar])
 
   useEffect(() => {
+    const checkForUpdates = async () => {
+      const { isPackaged } = await window.api.getAppInfo()
+
+      if (!isPackaged || !autoCheckUpdate) {
+        return
+      }
+
+      const { updateInfo } = await window.api.checkForUpdate()
+      updateAppUpdateState({ info: updateInfo })
+    }
+
+    // Initial check with delay
     runAsyncFunction(async () => {
       const { isPackaged } = await window.api.getAppInfo()
       if (isPackaged && autoCheckUpdate) {
         await delay(2)
-        const { updateInfo } = await window.api.checkForUpdate()
-        updateAppUpdateState({ info: updateInfo })
+        await checkForUpdates()
       }
     })
+
+    // Set up 4-hour interval check
+    const FOUR_HOURS = 4 * 60 * 60 * 1000
+    const intervalId = setInterval(checkForUpdates, FOUR_HOURS)
+
+    return () => clearInterval(intervalId)
   }, [autoCheckUpdate, updateAppUpdateState])
 
   useEffect(() => {
@@ -135,7 +152,7 @@ export function useAppInit() {
       cacheService.set('filesPath', info.filesPath)
       cacheService.set('resourcesPath', info.resourcesPath)
     })
-  }, [dispatch])
+  }, [])
 
   useEffect(() => {
     KnowledgeQueue.checkAllBases()

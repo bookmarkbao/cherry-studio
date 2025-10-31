@@ -9,8 +9,8 @@ import type {
   PermissionMode,
   Tool,
   UpdateAgentBaseForm,
-  UpdateAgentForm,
-  UpdateSessionForm
+  UpdateAgentFunction,
+  UpdateAgentSessionFunction
 } from '@renderer/types'
 import { AgentConfigurationSchema } from '@renderer/types'
 import { Modal } from 'antd'
@@ -24,11 +24,11 @@ import { SettingsContainer, SettingsItem, SettingsTitle } from './shared'
 type AgentToolingSettingsProps =
   | {
       agentBase: GetAgentResponse | undefined | null
-      update: (form: UpdateAgentForm) => Promise<void> | void
+      update: UpdateAgentFunction
     }
   | {
       agentBase: GetAgentSessionResponse | undefined | null
-      update: (form: UpdateSessionForm) => Promise<void> | void
+      update: UpdateAgentSessionFunction
     }
 
 type AgentConfigurationState = AgentConfiguration & Record<string, unknown>
