@@ -2,54 +2,87 @@
 
 Cherry Studio UI 组件库 - 为 Cherry Studio 设计的 React 组件集合
 
-## 特性
+## ✨ 特性
 
-- 🎨 基于 Tailwind CSS 的现代化设计
-- 📦 支持 ESM 和 CJS 格式
-- 🔷 完整的 TypeScript 支持
-- 🚀 可以作为 npm 包发布
-- 🔧 开箱即用的常用 hooks 和工具函数
+- 🎨 **设计系统**: 完整的 CherryStudio 设计令牌（17种颜色 × 11个色阶 + 语义化主题）
+- 🌓 **Dark Mode**: 开箱即用的深色模式支持
+- 🚀 **Tailwind v4**: 基于最新 Tailwind CSS v4 构建
+- 📦 **灵活导入**: 3种样式导入方式，满足不同使用场景
+- 🔷 **TypeScript**: 完整的类型定义和智能提示
+- 🎯 **零冲突**: CSS 变量隔离，不覆盖用户主题
 
-## 安装
+---
+
+## 🚀 快速开始
+
+### 安装
 
 ```bash
-# 安装组件库
 npm install @cherrystudio/ui
-
-# 安装必需的 peer dependencies
+# peer dependencies
 npm install @heroui/react framer-motion react react-dom tailwindcss
 ```
 
-## 配置
+### 三种使用方式
 
-### 1. Tailwind CSS v4 配置
+根据你的需求选择一种：
 
-本组件库使用 Tailwind CSS v4，配置方式已改变。在你的主 CSS 文件（如 `src/styles/tailwind.css`）中：
+#### 方式 1：完整主题（推荐给主包）
 
 ```css
+/* app.css */
+@import '@cherrystudio/ui/styles/theme.css';
+```
+
+- ✅ 使用标准 Tailwind 类名（`bg-primary`、`bg-red-500`）
+- ✅ 所有颜色使用设计师定义的值
+- ⚠️ 会覆盖 Tailwind 默认颜色
+
+```tsx
+<Button className="bg-primary text-red-500 p-md">
+  {/* bg-primary → CherryStudio 品牌色（lime-500） */}
+  {/* text-red-500 → 设计师定义的红色 */}
+  {/* p-md → 2.5rem（设计师定义） */}
+</Button>
+```
+
+#### 方式 2：仅变量（推荐给 npm 用户）
+
+```css
+/* app.css */
 @import 'tailwindcss';
+@import '@cherrystudio/ui/styles/index.css';
+```
 
-/* 必须扫描组件库文件以提取类名 */
-@source '../node_modules/@cherrystudio/ui/dist/**/*.{js,mjs}';
+- ✅ 不覆盖你的 Tailwind 主题
+- ✅ 通过 CSS 变量使用（`var(--cs-primary)`）
+- ✅ 你的 `bg-red-500` 不受影响
 
-/* 你的应用源文件 */
-@source './src/**/*.{js,ts,jsx,tsx}';
+```tsx
+<button style={{ backgroundColor: 'var(--cs-primary)' }}>
+  {/* 使用 CherryStudio 品牌色 */}
+</button>
 
-/*
- * 如果你的应用直接使用 HeroUI 组件，需要添加：
- * @source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
- * @plugin '@heroui/react/plugin';
- */
+<div className="bg-red-500">
+  {/* 使用你自己的红色，不受影响 */}
+</div>
+```
 
-/* 自定义主题配置（可选） */
+#### 方式 3：选择性覆盖
+
+```css
+/* app.css */
+@import 'tailwindcss';
+@import '@cherrystudio/ui/styles/tokens.css';
+
+/* 只使用部分设计系统 */
 @theme {
-  /* 你的主题扩展 */
+  --color-primary: var(--cs-primary);  /* 用 CS 的主色 */
+  --color-red-500: oklch(...);         /* 用自己的红色 */
 }
 ```
 
-注意：Tailwind CSS v4 不再使用 `tailwind.config.js` 文件，所有配置都在 CSS 中完成。
-
-### 2. Provider 配置
+### Provider 配置
 
 在你的 App 根组件中添加 HeroUI Provider：
 

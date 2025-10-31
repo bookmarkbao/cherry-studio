@@ -124,7 +124,11 @@
       "import": "./dist/utils/index.mjs",
       "require": "./dist/utils/index.js",
       "default": "./dist/utils/index.js"
-    }
+    },
+    "./styles": "./src/styles/index.css",
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/theme.css": "./src/styles/theme.css",
+    "./styles/index.css": "./src/styles/index.css"
   },
   "packageManager": "yarn@4.9.1"
 }
