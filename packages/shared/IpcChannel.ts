@@ -343,5 +343,12 @@ export enum IpcChannel {
   Ovms_StopOVMS = 'ovms:stop-ovms',
 
   // CherryAI
-  Cherryai_GetSignature = 'cherryai:get-signature'
+  Cherryai_GetSignature = 'cherryai:get-signature',
+
+  // WebSocket
+  WebSocket_Start = 'webSocket:start',
+  WebSocket_Stop = 'webSocket:stop',
+  WebSocket_Status = 'webSocket:status',
+  WebSocket_SendFile = 'webSocket:send-file',
+  WebSocket_GetAllCandidates = 'webSocket:get-all-candidates'
 }
