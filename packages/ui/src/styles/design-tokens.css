@@ -334,13 +334,13 @@
   --cs-ring: hsla(84, 81%, 44%, 0.4);
 
   /* UI Element Colors */
-  --cs-secondary: hsla(0, 0%, 0%, 0.05);  /* Secondary Button Background */
+  --cs-secondary: hsla(0, 0%, 0%, 0.05); /* Secondary Button Background */
   --cs-secondary-hover: hsla(0, 0%, 0%, 0.85);
   --cs-secondary-active: hsla(0, 0%, 0%, 0.7);
-  --cs-muted: hsla(0, 0%, 0%, 0.05);  /* Muted/Subtle Background */
-  --cs-accent: hsla(0, 0%, 0%, 0.05);  /* Accent Background */
-  --cs-ghost-hover: hsla(0, 0%, 0%, 0.05);  /* Ghost Button Hover */
-  --cs-ghost-active: hsla(0, 0%, 0%, 0.1);  /* Ghost Button Active */
+  --cs-muted: hsla(0, 0%, 0%, 0.05); /* Muted/Subtle Background */
+  --cs-accent: hsla(0, 0%, 0%, 0.05); /* Accent Background */
+  --cs-ghost-hover: hsla(0, 0%, 0%, 0.05); /* Ghost Button Hover */
+  --cs-ghost-active: hsla(0, 0%, 0%, 0.1); /* Ghost Button Active */
 
   /* Sidebar */
   --cs-sidebar: var(--cs-white);
@@ -390,43 +390,43 @@
   /* Spacing & Sizing (合并) */
   /* ==================== */
 
-  --cs-size-5xs: 0.25rem;   /* 4px */
-  --cs-size-4xs: 0.5rem;    /* 8px */
-  --cs-size-3xs: 0.75rem;   /* 12px */
-  --cs-size-2xs: 1rem;      /* 16px */
-  --cs-size-xs: 1.5rem;     /* 24px */
-  --cs-size-sm: 2rem;       /* 32px */
-  --cs-size-md: 2.5rem;     /* 40px */
-  --cs-size-lg: 3rem;       /* 48px */
-  --cs-size-xl: 3.5rem;     /* 56px */
-  --cs-size-2xl: 4rem;      /* 64px */
-  --cs-size-3xl: 4.5rem;    /* 72px */
-  --cs-size-4xl: 5rem;      /* 80px */
-  --cs-size-5xl: 5.5rem;    /* 88px */
-  --cs-size-6xl: 6rem;      /* 96px */
-  --cs-size-7xl: 6.5rem;    /* 104px */
-  --cs-size-8xl: 7rem;      /* 112px */
+  --cs-size-5xs: 0.25rem; /* 4px */
+  --cs-size-4xs: 0.5rem; /* 8px */
+  --cs-size-3xs: 0.75rem; /* 12px */
+  --cs-size-2xs: 1rem; /* 16px */
+  --cs-size-xs: 1.5rem; /* 24px */
+  --cs-size-sm: 2rem; /* 32px */
+  --cs-size-md: 2.5rem; /* 40px */
+  --cs-size-lg: 3rem; /* 48px */
+  --cs-size-xl: 3.5rem; /* 56px */
+  --cs-size-2xl: 4rem; /* 64px */
+  --cs-size-3xl: 4.5rem; /* 72px */
+  --cs-size-4xl: 5rem; /* 80px */
+  --cs-size-5xl: 5.5rem; /* 88px */
+  --cs-size-6xl: 6rem; /* 96px */
+  --cs-size-7xl: 6.5rem; /* 104px */
+  --cs-size-8xl: 7rem; /* 112px */
 
   /* ==================== */
   /* Border Radius */
   /* ==================== */
 
-  --cs-radius-4xs: 0.25rem;    /* 4px */
-  --cs-radius-3xs: 0.5rem;     /* 8px */
-  --cs-radius-2xs: 0.75rem;    /* 12px */
-  --cs-radius-xs: 1rem;        /* 16px */
-  --cs-radius-sm: 1.5rem;      /* 24px */
-  --cs-radius-md: 2rem;        /* 32px */
-  --cs-radius-lg: 2.5rem;      /* 40px */
-  --cs-radius-xl: 3rem;        /* 48px */
-  --cs-radius-2xl: 3.5rem;     /* 56px */
-  --cs-radius-3xl: 4rem;       /* 64px */
-  --cs-radius-round: 999px;    /* 保持 px，因为是特殊值 */
+  --cs-radius-4xs: 0.25rem; /* 4px */
+  --cs-radius-3xs: 0.5rem; /* 8px */
+  --cs-radius-2xs: 0.75rem; /* 12px */
+  --cs-radius-xs: 1rem; /* 16px */
+  --cs-radius-sm: 1.5rem; /* 24px */
+  --cs-radius-md: 2rem; /* 32px */
+  --cs-radius-lg: 2.5rem; /* 40px */
+  --cs-radius-xl: 3rem; /* 48px */
+  --cs-radius-2xl: 3.5rem; /* 56px */
+  --cs-radius-3xl: 4rem; /* 64px */
+  --cs-radius-round: 999px; /* 保持 px，因为是特殊值 */
 
   /* Border Width */
-  --cs-border-width-sm: 1px;  /* 1px */
-  --cs-border-width-md: 2px;   /* 2px */
-  --cs-border-width-lg: 3px;  /* 3px */
+  --cs-border-width-sm: 1px; /* 1px */
+  --cs-border-width-md: 2px; /* 2px */
+  --cs-border-width-lg: 3px; /* 3px */
 
   /* ==================== */
   /* Typography */
@@ -442,43 +442,43 @@
   --cs-font-weight-bold: 700;
 
   /* Font Sizes - Body */
-  --cs-font-size-body-xs: 0.75rem;    /* 12px */
-  --cs-font-size-body-sm: 0.875rem;   /* 14px */
-  --cs-font-size-body-md: 1rem;       /* 16px */
-  --cs-font-size-body-lg: 1.125rem;   /* 18px */
+  --cs-font-size-body-xs: 0.75rem; /* 12px */
+  --cs-font-size-body-sm: 0.875rem; /* 14px */
+  --cs-font-size-body-md: 1rem; /* 16px */
+  --cs-font-size-body-lg: 1.125rem; /* 18px */
 
   /* Font Sizes - Heading */
-  --cs-font-size-heading-xs: 1.25rem;   /* 20px */
-  --cs-font-size-heading-sm: 1.5rem;    /* 24px */
-  --cs-font-size-heading-md: 2rem;      /* 32px */
-  --cs-font-size-heading-lg: 2.5rem;    /* 40px */
-  --cs-font-size-heading-xl: 3rem;      /* 48px */
-  --cs-font-size-heading-2xl: 3.75rem;  /* 60px */
+  --cs-font-size-heading-xs: 1.25rem; /* 20px */
+  --cs-font-size-heading-sm: 1.5rem; /* 24px */
+  --cs-font-size-heading-md: 2rem; /* 32px */
+  --cs-font-size-heading-lg: 2.5rem; /* 40px */
+  --cs-font-size-heading-xl: 3rem; /* 48px */
+  --cs-font-size-heading-2xl: 3.75rem; /* 60px */
 
   /* Line Heights - Body */
-  --cs-line-height-body-xs: 1.25rem;  /* 20px */
-  --cs-line-height-body-sm: 1.5rem;   /* 24px */
-  --cs-line-height-body-md: 1.5rem;   /* 24px */
-  --cs-line-height-body-lg: 1.75rem;  /* 28px */
+  --cs-line-height-body-xs: 1.25rem; /* 20px */
+  --cs-line-height-body-sm: 1.5rem; /* 24px */
+  --cs-line-height-body-md: 1.5rem; /* 24px */
+  --cs-line-height-body-lg: 1.75rem; /* 28px */
 
   /* Line Heights - Heading */
-  --cs-line-height-heading-xs: 2rem;    /* 32px */
-  --cs-line-height-heading-sm: 2.5rem;  /* 40px */
-  --cs-line-height-heading-md: 3rem;    /* 48px */
+  --cs-line-height-heading-xs: 2rem; /* 32px */
+  --cs-line-height-heading-sm: 2.5rem; /* 40px */
+  --cs-line-height-heading-md: 3rem; /* 48px */
   --cs-line-height-heading-lg: 3.75rem; /* 60px */
-  --cs-line-height-heading-xl: 5rem;    /* 80px */
+  --cs-line-height-heading-xl: 5rem; /* 80px */
 
   /* Paragraph Spacing */
-  --cs-paragraph-spacing-body-xs: 0.75rem;    /* 12px */
-  --cs-paragraph-spacing-body-sm: 0.875rem;   /* 14px */
-  --cs-paragraph-spacing-body-md: 1rem;       /* 16px */
-  --cs-paragraph-spacing-body-lg: 1.125rem;   /* 18px */
-  --cs-paragraph-spacing-heading-xs: 1.25rem;   /* 20px */
-  --cs-paragraph-spacing-heading-sm: 1.5rem;    /* 24px */
-  --cs-paragraph-spacing-heading-md: 2rem;      /* 32px */
-  --cs-paragraph-spacing-heading-lg: 2.5rem;    /* 40px */
-  --cs-paragraph-spacing-heading-xl: 3rem;      /* 48px */
-  --cs-paragraph-spacing-heading-2xl: 3.75rem;  /* 60px */
+  --cs-paragraph-spacing-body-xs: 0.75rem; /* 12px */
+  --cs-paragraph-spacing-body-sm: 0.875rem; /* 14px */
+  --cs-paragraph-spacing-body-md: 1rem; /* 16px */
+  --cs-paragraph-spacing-body-lg: 1.125rem; /* 18px */
+  --cs-paragraph-spacing-heading-xs: 1.25rem; /* 20px */
+  --cs-paragraph-spacing-heading-sm: 1.5rem; /* 24px */
+  --cs-paragraph-spacing-heading-md: 2rem; /* 32px */
+  --cs-paragraph-spacing-heading-lg: 2.5rem; /* 40px */
+  --cs-paragraph-spacing-heading-xl: 3rem; /* 48px */
+  --cs-paragraph-spacing-heading-2xl: 3.75rem; /* 60px */
 }
 
 /* ==================== */
@@ -506,13 +506,13 @@
   --cs-ring: hsla(84, 81%, 44%, 0.4);
 
   /* UI Element Colors - Dark Mode */
-  --cs-secondary: hsla(0, 0%, 100%, 0.1);  /* Secondary Button Background */
+  --cs-secondary: hsla(0, 0%, 100%, 0.1); /* Secondary Button Background */
   --cs-secondary-hover: hsla(0, 0%, 100%, 0.2);
   --cs-secondary-active: hsla(0, 0%, 100%, 0.25);
-  --cs-muted: hsla(0, 0%, 100%, 0.1);  /* Muted/Subtle Background */
-  --cs-accent: hsla(0, 0%, 100%, 0.1);  /* Accent Background */
-  --cs-ghost-hover: hsla(0, 0%, 100%, 0.1);  /* Ghost Button Hover */
-  --cs-ghost-active: hsla(0, 0%, 100%, 0.15);  /* Ghost Button Active */
+  --cs-muted: hsla(0, 0%, 100%, 0.1); /* Muted/Subtle Background */
+  --cs-accent: hsla(0, 0%, 100%, 0.1); /* Accent Background */
+  --cs-ghost-hover: hsla(0, 0%, 100%, 0.1); /* Ghost Button Hover */
+  --cs-ghost-active: hsla(0, 0%, 100%, 0.15); /* Ghost Button Active */
 
   /* Sidebar */
   --cs-sidebar: var(--cs-black);
@@ -558,4 +558,3 @@
   --cs-ghost-button-background-hover: var(--cs-ghost-hover);
   --cs-ghost-button-background-active: var(--cs-ghost-active);
 }
-

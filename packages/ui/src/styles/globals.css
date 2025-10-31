@@ -8,7 +8,7 @@
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import './theme.css';  /* 已包含 design-tokens.css 和所有 cs-* 工具类 */
+@import './theme.css'; /* 已包含 design-tokens.css 和所有 cs-* 工具类 */
 
 @custom-variant dark (&:is(.dark *));
 
