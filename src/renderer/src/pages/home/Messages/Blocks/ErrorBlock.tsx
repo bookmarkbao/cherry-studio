@@ -1,4 +1,4 @@
-import { Button } from '@heroui/button'
+import { Button } from '@cherrystudio/ui'
 import CodeViewer from '@renderer/components/CodeViewer'
 import { useCodeStyle } from '@renderer/context/CodeStyleProvider'
 import { useTimer } from '@renderer/hooks/useTimer'
