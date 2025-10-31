@@ -3,7 +3,6 @@ import { loggerService } from '@logger'
 import type { MCPTool, Message, Model, Provider } from '@renderer/types'
 import type { Chunk } from '@renderer/types/chunk'
 import { extractReasoningMiddleware, LanguageModelMiddleware, simulateStreamingMiddleware } from 'ai'
-import { isEmpty } from 'lodash'
 
 import { toolChoiceMiddleware } from './toolChoiceMiddleware'
 
@@ -125,7 +124,7 @@ export function buildAiSdkMiddlewares(config: AiSdkMiddlewareConfig): LanguageMo
   const builder = new AiSdkMiddlewareBuilder()
 
   // 0. 知识库强制调用中间件（必须在最前面，确保第一轮强制调用知识库）
-  if (!isEmpty(config.assistant?.knowledge_bases?.map((base) => base.id)) && config.knowledgeRecognition !== 'on') {
+  if (config.knowledgeRecognition === 'off') {
     builder.add({
       name: 'force-knowledge-first',
       middleware: toolChoiceMiddleware('builtin_knowledge_search')
