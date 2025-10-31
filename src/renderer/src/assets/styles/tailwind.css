@@ -1,10 +1,12 @@
-@import '../../../../../packages/ui/src/styles/theme.css';
+@import 'tailwindcss';
 @import 'tw-animate-css';
+
+@import '../../../../../packages/ui/src/styles/theme.css';
 
 /* TODO heroui 迁移完成后即可删除 */
 /* heroui */
 /* @plugin '../../hero.ts'; */
-/* @source '../../../../../packages/ui/src*.{js,ts,jsx,tsx}'; */
+@source '../../../../../packages/ui/src/components/**/*.{js,ts,jsx,tsx}';
 
 @custom-variant dark (&:is(.dark *));
 
