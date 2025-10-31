@@ -525,7 +525,16 @@ const api = {
     getStatus: (): Promise<GetApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_GetStatus),
     start: (): Promise<StartApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_Start),
     restart: (): Promise<RestartApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_Restart),
-    stop: (): Promise<StopApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_Stop)
+    stop: (): Promise<StopApiServerStatusResult> => ipcRenderer.invoke(IpcChannel.ApiServer_Stop),
+    onReady: (callback: () => void): (() => void) => {
+      const listener = () => {
+        callback()
+      }
+      ipcRenderer.on(IpcChannel.ApiServer_Ready, listener)
+      return () => {
+        ipcRenderer.removeListener(IpcChannel.ApiServer_Ready, listener)
+      }
+    }
   },
   claudeCodePlugin: {
     listAvailable: (): Promise<PluginResult<ListAvailablePluginsResult>> =>
@@ -541,6 +550,13 @@ const api = {
       ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_ReadContent, sourcePath),
     writeContent: (options: WritePluginContentOptions): Promise<PluginResult<void>> =>
       ipcRenderer.invoke(IpcChannel.ClaudeCodePlugin_WriteContent, options)
+  },
+  webSocket: {
+    start: () => ipcRenderer.invoke(IpcChannel.WebSocket_Start),
+    stop: () => ipcRenderer.invoke(IpcChannel.WebSocket_Stop),
+    status: () => ipcRenderer.invoke(IpcChannel.WebSocket_Status),
+    sendFile: (filePath: string) => ipcRenderer.invoke(IpcChannel.WebSocket_SendFile, filePath),
+    getAllCandidates: () => ipcRenderer.invoke(IpcChannel.WebSocket_GetAllCandidates)
   }
 }
 

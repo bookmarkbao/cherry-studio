@@ -1,6 +1,6 @@
 import { Card, CardBody, Tab, Tabs } from '@heroui/react'
 import { useAvailablePlugins, useInstalledPlugins, usePluginActions } from '@renderer/hooks/usePlugins'
-import { GetAgentResponse, GetAgentSessionResponse, UpdateAgentBaseForm } from '@renderer/types/agent'
+import { GetAgentResponse, GetAgentSessionResponse, UpdateAgentFunctionUnion } from '@renderer/types/agent'
 import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,7 +10,7 @@ import { SettingsContainer } from './shared'
 
 interface PluginSettingsProps {
   agentBase: GetAgentResponse | GetAgentSessionResponse
-  update: (partial: UpdateAgentBaseForm) => Promise<void>
+  update: UpdateAgentFunctionUnion
 }
 
 const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
@@ -63,7 +63,7 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
           panel: 'w-full flex-1 overflow-hidden'
         }}>
         <Tab key="available" title={t('agent.settings.plugins.available.title')}>
-          <div className="flex h-full flex-col overflow-y-auto pt-4">
+          <div className="flex h-full flex-col overflow-y-auto pt-4 pr-2">
             {errorAvailable ? (
               <Card className="bg-danger-50 dark:bg-danger-900/20">
                 <CardBody>
@@ -88,7 +88,7 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
         </Tab>
 
         <Tab key="installed" title={t('agent.settings.plugins.installed.title')}>
-          <div className="flex h-full flex-col overflow-y-auto pt-4">
+          <div className="flex h-full flex-col overflow-y-auto pt-4 pr-2">
             {errorInstalled ? (
               <Card className="bg-danger-50 dark:bg-danger-900/20">
                 <CardBody>
