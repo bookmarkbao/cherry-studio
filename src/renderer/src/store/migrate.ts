@@ -32,7 +32,7 @@ import type {
   TranslateLanguageCode,
   WebSearchProvider
 } from '@renderer/types'
-import { isSystemProvider, SystemProviderIds } from '@renderer/types'
+import { isBuiltinMCPServer, isSystemProvider, SystemProviderIds } from '@renderer/types'
 import { getDefaultGroupName, getLeadingEmoji, runAsyncFunction, uuid } from '@renderer/utils'
 import { defaultByPassRules } from '@shared/config/constant'
 import { TRANSLATE_PROMPT } from '@shared/config/prompts'
@@ -2769,6 +2769,23 @@ const migrateConfig = {
       return state
     } catch (error) {
       logger.error('migrate 168 error', error as Error)
+      return state
+    }
+  },
+  '169': (state: RootState) => {
+    try {
+      if (state?.mcp?.servers) {
+        state.mcp.servers = state.mcp.servers.map((server) => {
+          const inferredSource = isBuiltinMCPServer(server) ? 'builtin' : 'unknown'
+          return {
+            ...server,
+            installSource: inferredSource
+          }
+        })
+      }
+      return state
+    } catch (error) {
+      logger.error('migrate 169 error', error as Error)
       return state
     }
   }

@@ -3,6 +3,7 @@ import {
   CloudSyncOutlined,
   FileSearchOutlined,
   LoadingOutlined,
+  WifiOutlined,
   YuqueOutlined
 } from '@ant-design/icons'
 import { RowFlex } from '@cherrystudio/ui'
@@ -13,6 +14,7 @@ import DividerWithText from '@renderer/components/DividerWithText'
 import { NutstoreIcon } from '@renderer/components/Icons/NutstoreIcons'
 import ListItem from '@renderer/components/ListItem'
 import BackupPopup from '@renderer/components/Popups/BackupPopup'
+import ExportToPhoneLanPopup from '@renderer/components/Popups/ExportToPhoneLanPopup'
 import RestorePopup from '@renderer/components/Popups/RestorePopup'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useKnowledgeFiles } from '@renderer/hooks/useKnowledgeFiles'
@@ -293,8 +295,8 @@ const DataSettings: FC = () => {
             onCheckedChange={(checked) => {
               shouldCopyData = checked
             }}
-            className="mr-2"
           />
+
           <MigrationPathLabel style={{ fontWeight: 'normal', fontSize: '14px' }}>
             {t('settings.data.app_data.copy_data_option')}
           </MigrationPathLabel>
@@ -621,6 +623,16 @@ const DataSettings: FC = () => {
               <SettingRow>
                 <SettingHelpText>{t('settings.data.backup.skip_file_data_help')}</SettingHelpText>
               </SettingRow>
+              <SettingDivider />
+              <SettingRow>
+                <SettingRowTitle>{t('settings.data.export_to_phone.title')}</SettingRowTitle>
+                <RowFlex className="justify-between gap-[5px]">
+                  <Button variant="ghost" size="sm" onClick={ExportToPhoneLanPopup.show}>
+                    <WifiOutlined />
+                    {t('settings.data.export_to_phone.lan.title')}
+                  </Button>
+                </RowFlex>
+              </SettingRow>
             </SettingGroup>
             <SettingGroup theme={theme}>
               <SettingTitle>{t('settings.data.data.title')}</SettingTitle>
@@ -635,7 +647,9 @@ const DataSettings: FC = () => {
                   </PathText>
                   <StyledIcon onClick={() => handleOpenPath(appInfo?.appDataPath)} style={{ flexShrink: 0 }} />
                   <RowFlex className="ml-2 gap-[5px]">
-                    <Button onClick={handleSelectAppDataPath}>{t('settings.data.app_data.select')}</Button>
+                    <Button variant="ghost" size="sm" onClick={handleSelectAppDataPath}>
+                      {t('settings.data.app_data.select')}
+                    </Button>
                   </RowFlex>
                 </PathRow>
               </SettingRow>
@@ -648,7 +662,7 @@ const DataSettings: FC = () => {
                   </PathText>
                   <StyledIcon onClick={() => handleOpenPath(appInfo?.logsPath)} style={{ flexShrink: 0 }} />
                   <RowFlex className="ml-2 gap-[5px]">
-                    <Button onClick={() => handleOpenPath(appInfo?.logsPath)}>
+                    <Button variant="ghost" size="sm" onClick={() => handleOpenPath(appInfo?.logsPath)}>
                       {t('settings.data.app_logs.button')}
                     </Button>
                   </RowFlex>
@@ -658,7 +672,9 @@ const DataSettings: FC = () => {
               <SettingRow>
                 <SettingRowTitle>{t('settings.data.app_knowledge.label')}</SettingRowTitle>
                 <RowFlex className="items-center gap-[5px]">
-                  <Button onClick={handleRemoveAllFiles}>{t('settings.data.app_knowledge.button.delete')}</Button>
+                  <Button variant="ghost" size="sm" onClick={handleRemoveAllFiles}>
+                    {t('settings.data.app_knowledge.button.delete')}
+                  </Button>
                 </RowFlex>
               </SettingRow>
               <SettingDivider />
@@ -668,14 +684,16 @@ const DataSettings: FC = () => {
                   {cacheSize && <CacheText>({cacheSize}MB)</CacheText>}
                 </SettingRowTitle>
                 <RowFlex className="gap-[5px]">
-                  <Button onClick={handleClearCache}>{t('settings.data.clear_cache.button')}</Button>
+                  <Button variant="ghost" size="sm" onClick={handleClearCache}>
+                    {t('settings.data.clear_cache.button')}
+                  </Button>
                 </RowFlex>
               </SettingRow>
               <SettingDivider />
               <SettingRow>
                 <SettingRowTitle>{t('settings.general.reset.title')}</SettingRowTitle>
                 <RowFlex className="gap-[5px]">
-                  <Button onClick={reset} variant="destructive">
+                  <Button variant="destructive" size="sm" onClick={reset}>
                     {t('settings.general.reset.title')}
                   </Button>
                 </RowFlex>

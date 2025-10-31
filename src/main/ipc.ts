@@ -30,6 +30,7 @@ import { BrowserWindow, dialog, ipcMain, session, shell, systemPreferences, webC
 import fontList from 'font-list'
 
 import { agentMessageRepository } from './services/agents/database'
+import { PluginService } from './services/agents/plugins/PluginService'
 import { apiServerService } from './services/ApiServerService'
 import appService from './services/AppService'
 import AppUpdater from './services/AppUpdater'
@@ -50,7 +51,6 @@ import * as NutstoreService from './services/NutstoreService'
 import ObsidianVaultService from './services/ObsidianVaultService'
 import { ocrService } from './services/ocr/OcrService'
 import OvmsManager from './services/OvmsManager'
-import { PluginService } from './services/PluginService'
 import { proxyManager } from './services/ProxyManager'
 import { pythonService } from './services/PythonService'
 import { FileServiceManager } from './services/remotefile/FileServiceManager'
@@ -72,6 +72,7 @@ import {
 } from './services/SpanCacheService'
 import storeSyncService from './services/StoreSyncService'
 import VertexAIService from './services/VertexAIService'
+import WebSocketService from './services/WebSocketService'
 import { setOpenLinkExternal } from './services/WebviewService'
 import { windowService } from './services/WindowService'
 import { calculateDirectorySize, getResourcePath } from './utils'
@@ -1020,6 +1021,13 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
       return { success: false, error }
     }
   })
+
+  // WebSocket
+  ipcMain.handle(IpcChannel.WebSocket_Start, WebSocketService.start)
+  ipcMain.handle(IpcChannel.WebSocket_Stop, WebSocketService.stop)
+  ipcMain.handle(IpcChannel.WebSocket_Status, WebSocketService.getStatus)
+  ipcMain.handle(IpcChannel.WebSocket_SendFile, WebSocketService.sendFile)
+  ipcMain.handle(IpcChannel.WebSocket_GetAllCandidates, WebSocketService.getAllCandidates)
 
   // Preference handlers
   PreferenceService.registerIpcHandler()
