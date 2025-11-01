@@ -2584,15 +2584,14 @@
       },
       "description": "Мощный AI-ассистент для созидания",
       "downloading": "Загрузка...",
+      "enterprise": {
+        "title": "Предприятие"
+      },
       "feedback": {
         "button": "Обратная связь",
         "title": "Обратная связь"
       },
       "label": "О программе и обратная связь",
-      "license": {
-        "button": "Лицензия",
-        "title": "Лицензия"
-      },
       "releases": {
         "button": "Релизы",
         "title": "Заметки о релизах"
@@ -2704,7 +2703,7 @@
         "confirm": {
           "button": "[to be translated]:选择备份文件"
         },
-        "content": "[to be translated]:导出部分数据，包括聊天记录、设置。请注意，备份过程可能需要一些时间，感谢您的耐心等待。",
+        "content": "Экспорт части данных, включая историю чатов и настройки. Обратите внимание, процесс резервного копирования может занять некоторое время, благодарим за ваше терпение.",
         "lan": {
           "auto_close_tip": "[to be translated]:Auto-closing in {{seconds}} seconds...",
           "confirm_close_message": "[to be translated]:File transfer is in progress. Closing will interrupt the transfer. Are you sure you want to force close?",
