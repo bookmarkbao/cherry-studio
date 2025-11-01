@@ -55,7 +55,7 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
   )
 
   return (
-    <SettingsContainer>
+    <SettingsContainer className="pr-0">
       <Tabs
         aria-label="Plugin settings tabs"
         classNames={{
@@ -64,7 +64,7 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
           panel: 'w-full flex-1 overflow-hidden'
         }}>
         <Tab key="available" title={t('agent.settings.plugins.available.title')}>
-          <div className="flex h-full flex-col overflow-y-auto pt-4">
+          <div className="flex h-full flex-col overflow-y-auto pt-1 pr-2">
             {errorAvailable ? (
               <Card className="bg-danger-50 dark:bg-danger-900/20">
                 <CardBody>
@@ -89,7 +89,7 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
         </Tab>
 
         <Tab key="installed" title={t('agent.settings.plugins.installed.title')}>
-          <div className="flex h-full flex-col overflow-y-auto pt-4">
+          <div className="flex h-full flex-col overflow-y-auto pt-4 pr-2">
             {errorInstalled ? (
               <Card className="bg-danger-50 dark:bg-danger-900/20">
                 <CardBody>
