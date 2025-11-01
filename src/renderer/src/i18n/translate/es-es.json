@@ -1,6 +1,7 @@
 {
   "agent": {
     "add": {
+      "description": "Maneja tareas complejas con varias herramientas",
       "error": {
         "failed": "Error al añadir agente",
         "invalid_agent": "Agent inválido"
@@ -547,7 +548,11 @@
   "chat": {
     "add": {
       "assistant": {
+        "description": "Conversaciones diarias y preguntas y respuestas rápidas",
         "title": "Agregar asistente"
+      },
+      "option": {
+        "title": "Seleccionar Tipo"
       },
       "topic": {
         "title": "Crear nuevo tema"
@@ -2923,15 +2928,14 @@
       },
       "description": "Una asistente de IA creada para los creadores",
       "downloading": "Descargando actualización...",
+      "enterprise": {
+        "title": "Empresa"
+      },
       "feedback": {
         "button": "Enviar feedback",
         "title": "Enviar comentarios"
       },
       "label": "Acerca de nosotros",
-      "license": {
-        "button": "Ver",
-        "title": "Licencia"
-      },
       "releases": {
         "button": "Ver",
         "title": "Registro de cambios"
