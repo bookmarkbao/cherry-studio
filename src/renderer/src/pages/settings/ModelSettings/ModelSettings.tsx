@@ -75,7 +75,9 @@ const ModelSettings: FC = () => {
           </Button>
           {defaultModelValue !== getModelUniqId(DEFAULT_MODEL_MAP.assistant) && (
             <Tooltip title={t('common.reset')}>
-              <Button icon={<ResetIcon size={16} />} style={{ marginLeft: 8 }} onClick={resetDefaultAssistantModel} />
+              <Button style={{ marginLeft: 8 }} onClick={resetDefaultAssistantModel}>
+                <ResetIcon size={16} />
+              </Button>
             </Tooltip>
           )}
         </RowFlex>
@@ -104,7 +106,9 @@ const ModelSettings: FC = () => {
           </Button>
           {defaultQuickModel !== getModelUniqId(DEFAULT_MODEL_MAP.quick) && (
             <Tooltip title={t('common.reset')}>
-              <Button icon={<ResetIcon size={16} />} style={{ marginLeft: 8 }} onClick={resetQuickModel} />
+              <Button style={{ marginLeft: 8 }} onClick={resetQuickModel}>
+                <ResetIcon size={16} />
+              </Button>
             </Tooltip>
           )}
         </RowFlex>
@@ -132,7 +136,9 @@ const ModelSettings: FC = () => {
           </Button>
           {defaultTranslateModel !== getModelUniqId(DEFAULT_MODEL_MAP.translate) && (
             <Tooltip title={t('common.reset')}>
-              <Button icon={<ResetIcon size={16} />} style={{ marginLeft: 8 }} onClick={resetTranslateModel} />
+              <Button style={{ marginLeft: 8 }} onClick={resetTranslateModel}>
+                <ResetIcon size={16} />
+              </Button>
             </Tooltip>
           )}
         </RowFlex>
