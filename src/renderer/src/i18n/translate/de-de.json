@@ -1,6 +1,7 @@
 {
   "agent": {
     "add": {
+      "description": "Bearbeiten Sie komplexe Aufgaben mit verschiedenen Werkzeugen",
       "error": {
         "failed": "Agent hinzufügen fehlgeschlagen",
         "invalid_agent": "Ungültiger Agent"
@@ -547,7 +548,11 @@
   "chat": {
     "add": {
       "assistant": {
+        "description": "Tägliche Gespräche und kurze Fragen & Antworten",
         "title": "Assistent hinzufügen"
+      },
+      "option": {
+        "title": "Typ auswählen"
       },
       "topic": {
         "title": "Neues Thema erstellen"
@@ -2923,15 +2928,14 @@
       },
       "description": "Ein KI-Assistent für Kreative",
       "downloading": "Update wird heruntergeladen...",
+      "enterprise": {
+        "title": "Unternehmen"
+      },
       "feedback": {
         "button": "Feedback",
         "title": "Feedback"
       },
       "label": "Über uns",
-      "license": {
-        "button": "Anzeigen",
-        "title": "Lizenz"
-      },
       "releases": {
         "button": "Anzeigen",
         "title": "Changelog"
