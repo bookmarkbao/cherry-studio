@@ -467,6 +467,8 @@ export default class ModernAiProvider {
       }
     }
 
+    // test comment
+
     // 直接使用传统实现
     return this.legacyProvider.generateImage(params)
   }
