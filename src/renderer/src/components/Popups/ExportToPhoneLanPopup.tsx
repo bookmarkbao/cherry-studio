@@ -1,11 +1,8 @@
-import { Button } from '@heroui/button'
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal'
-import { Progress } from '@heroui/progress'
-import { Spinner } from '@heroui/spinner'
 import { loggerService } from '@logger'
 import { AppLogo } from '@renderer/config/env'
 import { SettingHelpText, SettingRow } from '@renderer/pages/settings'
 import type { WebSocketCandidatesResponse } from '@shared/config/types'
+import { Button, Modal, Progress, Spin } from 'antd'
 import { QRCodeSVG } from 'qrcode.react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -25,7 +22,7 @@ const LoadingQRCode: React.FC = () => {
   const { t } = useTranslation()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-      <Spinner />
+      <Spin />
       <span style={{ fontSize: '14px', color: 'var(--color-text-2)' }}>
         {t('settings.data.export_to_phone.lan.generating_qr')}
       </span>
@@ -72,7 +69,7 @@ const ConnectingAnimation: React.FC = () => {
           borderRadius: '12px',
           backgroundColor: 'var(--color-status-warning)'
         }}>
-        <Spinner size="lg" color="warning" />
+        <Spin size="large" />
         <span style={{ fontSize: '14px', color: 'var(--color-text)', marginTop: '12px' }}>
           {t('settings.data.export_to_phone.lan.status.connecting')}
         </span>
@@ -441,11 +438,9 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
           </div>
 
           <Progress
-            value={Math.round(sendProgress)}
-            size="md"
-            color={transferPhase === 'completed' ? 'success' : 'primary'}
-            showValueLabel={false}
-            aria-label="Send progress"
+            percent={Math.round(sendProgress)}
+            status={transferPhase === 'completed' ? 'success' : 'active'}
+            showInfo={false}
           />
         </div>
       </div>
@@ -488,95 +483,83 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
 
   return (
     <Modal
-      isOpen={isOpen}
-      onOpenChange={(open) => {
-        if (!open) {
-          handleCancel()
-        }
-      }}
-      isDismissable={false}
-      isKeyboardDismissDisabled={false}
-      placement="center"
-      onClose={handleClose}>
-      <ModalContent>
-        {() => (
-          <>
-            <ModalHeader>{t('settings.data.export_to_phone.lan.title')}</ModalHeader>
-            <ModalBody>
-              <SettingRow>
-                <StatusIndicator />
-              </SettingRow>
+      open={isOpen}
+      onCancel={handleCancel}
+      afterClose={handleClose}
+      title={t('settings.data.export_to_phone.lan.title')}
+      centered
+      closable={!isSending}
+      maskClosable={false}
+      keyboard={true}
+      footer={
+        showCloseConfirm ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              gap: '12px',
+              padding: '8px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--color-status-warning)',
+              border: '1px solid var(--color-status-warning)'
+            }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '20px' }}>⚠️</span>
+              <span style={{ fontSize: '14px', color: 'var(--color-text)', fontWeight: '500' }}>
+                {t('settings.data.export_to_phone.lan.confirm_close_title')}
+              </span>
+            </div>
+            <span style={{ fontSize: '13px', color: 'var(--color-text-2)', marginLeft: '28px' }}>
+              {t('settings.data.export_to_phone.lan.confirm_close_message')}
+            </span>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
+              <Button size="small" onClick={handleCancelClose}>
+                {t('common.cancel')}
+              </Button>
+              <Button size="small" danger onClick={handleForceClose}>
+                {t('settings.data.export_to_phone.lan.force_close')}
+              </Button>
+            </div>
+          </div>
+        ) : null
+      }>
+      <SettingRow>
+        <StatusIndicator />
+      </SettingRow>
 
-              <SettingRow>
-                <div>{t('settings.data.export_to_phone.lan.content')}</div>
-              </SettingRow>
+      <SettingRow>
+        <div>{t('settings.data.export_to_phone.lan.content')}</div>
+      </SettingRow>
 
-              <SettingRow style={{ display: 'flex', justifyContent: 'center', minHeight: '180px' }}>
-                <QRCodeDisplay />
-              </SettingRow>
+      <SettingRow style={{ display: 'flex', justifyContent: 'center', minHeight: '180px' }}>
+        <QRCodeDisplay />
+      </SettingRow>
 
-              <SettingRow style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', width: '100%' }}>
-                  <Button color="default" variant="flat" onPress={handleSelectZip} isDisabled={isSending}>
-                    {t('settings.data.export_to_phone.lan.selectZip')}
-                  </Button>
-                  <Button color="primary" onPress={handleSendZip} isDisabled={!canSend} isLoading={isSending}>
-                    {transferStatusText || t('settings.data.export_to_phone.lan.sendZip')}
-                  </Button>
-                </div>
-              </SettingRow>
+      <SettingRow style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', width: '100%' }}>
+          <Button onClick={handleSelectZip} disabled={isSending}>
+            {t('settings.data.export_to_phone.lan.selectZip')}
+          </Button>
+          <Button type="primary" onClick={handleSendZip} disabled={!canSend} loading={isSending}>
+            {transferStatusText || t('settings.data.export_to_phone.lan.sendZip')}
+          </Button>
+        </div>
+      </SettingRow>
 
-              <SettingHelpText
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  textAlign: 'center'
-                }}>
-                {selectedFolderPath || t('settings.data.export_to_phone.lan.noZipSelected')}
-              </SettingHelpText>
+      <SettingHelpText
+        style={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          textAlign: 'center'
+        }}>
+        {selectedFolderPath || t('settings.data.export_to_phone.lan.noZipSelected')}
+      </SettingHelpText>
 
-              <TransferProgress />
-              <AutoCloseCountdown />
-              <ErrorDisplay />
-            </ModalBody>
-
-            {showCloseConfirm && (
-              <ModalFooter>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '100%',
-                    gap: '12px',
-                    padding: '8px',
-                    borderRadius: '8px',
-                    backgroundColor: 'var(--color-status-warning)',
-                    border: '1px solid var(--color-status-warning)'
-                  }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>⚠️</span>
-                    <span style={{ fontSize: '14px', color: 'var(--color-text)', fontWeight: '500' }}>
-                      {t('settings.data.export_to_phone.lan.confirm_close_title')}
-                    </span>
-                  </div>
-                  <span style={{ fontSize: '13px', color: 'var(--color-text-2)', marginLeft: '28px' }}>
-                    {t('settings.data.export_to_phone.lan.confirm_close_message')}
-                  </span>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-                    <Button size="sm" color="default" variant="flat" onPress={handleCancelClose}>
-                      {t('common.cancel')}
-                    </Button>
-                    <Button size="sm" color="danger" onPress={handleForceClose}>
-                      {t('settings.data.export_to_phone.lan.force_close')}
-                    </Button>
-                  </div>
-                </div>
-              </ModalFooter>
-            )}
-          </>
-        )}
-      </ModalContent>
+      <TransferProgress />
+      <AutoCloseCountdown />
+      <ErrorDisplay />
     </Modal>
   )
 }
