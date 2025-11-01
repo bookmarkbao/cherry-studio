@@ -1,9 +1,9 @@
-import { Textarea } from '@heroui/react'
 import type { AgentBaseWithId, UpdateAgentBaseForm, UpdateAgentFunctionUnion } from '@renderer/types'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingsItem, SettingsTitle } from './shared'
+import TextArea from 'antd/es/input/TextArea'
 
 export interface DescriptionSettingProps {
   base: AgentBaseWithId | undefined | null
@@ -24,11 +24,12 @@ export const DescriptionSetting = ({ base, update }: DescriptionSettingProps) =>
   if (!base) return null
 
   return (
-    <SettingsItem>
+    <SettingsItem divider={false}>
       <SettingsTitle>{t('common.description')}</SettingsTitle>
-      <Textarea
+      <TextArea
         value={description}
-        onValueChange={setDescription}
+        onChange={(e) => setDescription(e.target.value)}
+        rows={4}
         onBlur={() => {
           if (description !== base.description) {
             updateDesc(description)

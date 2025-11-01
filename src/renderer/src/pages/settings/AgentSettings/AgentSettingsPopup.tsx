@@ -1,4 +1,3 @@
-import { Alert, Spinner } from '@heroui/react'
 import { TopView } from '@renderer/components/TopView'
 import { useAgent } from '@renderer/hooks/agents/useAgent'
 import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
@@ -11,6 +10,8 @@ import PluginSettings from './PluginSettings'
 import PromptSettings from './PromptSettings'
 import { AgentLabel, LeftMenu, Settings, StyledMenu, StyledModal } from './shared'
 import ToolingSettings from './ToolingSettings'
+import { Center } from '@renderer/components/Layout'
+import { Alert, Spin } from 'antd'
 
 interface AgentSettingPopupShowParams {
   agentId: string
@@ -71,18 +72,25 @@ const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, ag
   const ModalContent = () => {
     if (isLoading) {
       // TODO: use skeleton for better ux
-      return <Spinner />
-    }
-    if (error) {
       return (
-        <div>
-          <Alert color="danger" title={t('agent.get.error.failed')} />
-        </div>
+        <Center flex={1}>
+          <Spin />
+        </Center>
       )
     }
+
+    if (error) {
+      return (
+        <Center flex={1}>
+          <Alert type="error" message={t('agent.get.error.failed')} />
+        </Center>
+      )
+    }
+
     if (!agent) {
       return null
     }
+
     return (
       <div className="flex w-full flex-1">
         <LeftMenu>

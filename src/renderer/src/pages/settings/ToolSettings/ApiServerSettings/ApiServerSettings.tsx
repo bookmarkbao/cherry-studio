@@ -1,4 +1,3 @@
-// TODO: Refactor this component to use HeroUI
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useApiServer } from '@renderer/hooks/useApiServer'
 import type { RootState } from '@renderer/store'
