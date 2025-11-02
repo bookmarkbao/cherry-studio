@@ -5,106 +5,103 @@ import React, { createContext, use, useCallback, useEffect, useMemo, useRef, use
 
 type QuickPanelTriggerHandler = (payload?: unknown) => void
 
-// ============================================================================
-// State Context (只读状态，会频繁变化)
-// ============================================================================
-
+/**
+ * Read-only state interface for Inputbar tools.
+ * Components subscribing to this state will re-render on changes.
+ */
 export interface InputbarToolsState {
-  // 核心状态
+  /** Attached files */
   files: FileType[]
+  /** Models mentioned in the input */
   mentionedModels: Model[]
+  /** Selected knowledge base items */
   selectedKnowledgeBases: KnowledgeBase[]
+  /** Whether the inputbar is expanded */
   isExpanded: boolean
 
-  // 派生状态（基于核心状态计算得出）
+  /** Whether image files can be added (derived state) */
   couldAddImageFile: boolean
+  /** Whether non-vision models can be mentioned (derived state) */
   couldMentionNotVisionModel: boolean
+  /** Supported file extensions (derived state) */
   extensions: string[]
 }
 
-// ============================================================================
-// Dispatch Context (操作函数，永远不变)
-// ============================================================================
-
 /**
- * 工具注册中心 API
- * 供工具按钮使用，用于注册菜单项和触发器
+ * Tools registry API for tool buttons.
+ * Used to register menu items and triggers.
  */
 export interface ToolsRegistryAPI {
   /**
-   * 注册工具到根菜单（`/` 触发的菜单）
-   * @param toolKey 工具唯一标识
-   * @param entries 菜单项列表
-   * @returns 取消注册的函数
+   * Register a tool to the root menu (triggered by `/`).
+   * @param toolKey - Unique tool identifier
+   * @param entries - Menu items to register
+   * @returns Cleanup function to unregister
    */
   registerRootMenu: (toolKey: string, entries: QuickPanelListItem[]) => () => void
 
   /**
-   * 注册触发器处理函数
-   * @param toolKey 工具唯一标识
-   * @param symbol 触发符号（如 @, #, / 等）
-   * @param handler 触发时执行的处理函数
-   * @returns 取消注册的函数
+   * Register a trigger handler function.
+   * @param toolKey - Unique tool identifier
+   * @param symbol - Trigger symbol (e.g., @, #, /)
+   * @param handler - Handler function to execute on trigger
+   * @returns Cleanup function to unregister
    */
   registerTrigger: (toolKey: string, symbol: QuickPanelReservedSymbol, handler: QuickPanelTriggerHandler) => () => void
 }
 
 /**
- * 触发器 API
- * 供 Inputbar 使用，用于触发面板和获取菜单项
+ * Triggers API for Inputbar component.
+ * Used to trigger panels and retrieve menu items.
  */
 export interface TriggersAPI {
   /**
-   * 触发指定符号的面板
-   * @param symbol 触发符号
-   * @param payload 传递给触发器的数据
+   * Emit a trigger for the specified symbol.
+   * @param symbol - Trigger symbol
+   * @param payload - Data to pass to trigger handlers
    */
   emit: (symbol: QuickPanelReservedSymbol, payload?: unknown) => void
 
   /**
-   * 获取根菜单的所有菜单项（合并所有工具注册的菜单项）
-   * @returns 合并后的菜单项列表
+   * Get all root menu items (merged from all registered tools).
+   * @returns Merged menu items list
    */
   getRootMenu: () => QuickPanelListItem[]
 }
 
+/**
+ * Dispatch interface containing all action functions.
+ * These functions have stable references and won't cause re-renders.
+ */
 export interface InputbarToolsDispatch {
-  // State setters
+  /** State setters */
   setFiles: React.Dispatch<React.SetStateAction<FileType[]>>
   setMentionedModels: React.Dispatch<React.SetStateAction<Model[]>>
   setSelectedKnowledgeBases: React.Dispatch<React.SetStateAction<KnowledgeBase[]>>
   setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>
 
-  // Parent actions (来自 Inputbar 组件)
+  /** Parent component actions */
   resizeTextArea: () => void
   addNewTopic: () => void
   clearTopic: () => void
   onNewContext: () => void
 
-  // Text manipulation (通过回调避免将 text 状态放入 Context)
+  /** Text manipulation (avoids putting text state in Context) */
   onTextChange: (updater: string | ((prev: string) => string)) => void
 
-  // ✅ 工具注册中心 (供工具按钮使用)
+  /** Tools registry API (for tool buttons) */
   toolsRegistry: ToolsRegistryAPI
 
-  // ✅ 触发器 API (供 Inputbar 使用)
+  /** Triggers API (for Inputbar component) */
   triggers: TriggersAPI
 }
-
-// ============================================================================
-// Context 创建
-// ============================================================================
 
 const InputbarToolsStateContext = createContext<InputbarToolsState | undefined>(undefined)
 const InputbarToolsDispatchContext = createContext<InputbarToolsDispatch | undefined>(undefined)
 
-// ============================================================================
-// Hooks
-// ============================================================================
-
 /**
- * 获取 Inputbar Tools 的状态（只读）
- * 注意：订阅此 hook 的组件会在状态变化时重新渲染
+ * Get Inputbar Tools state (read-only).
+ * Components using this hook will re-render when state changes.
  */
 export const useInputbarToolsState = (): InputbarToolsState => {
   const context = use(InputbarToolsStateContext)
@@ -115,8 +112,8 @@ export const useInputbarToolsState = (): InputbarToolsState => {
 }
 
 /**
- * 获取 Inputbar Tools 的 dispatch 函数（永远不变）
- * 订阅此 hook 的组件不会因为状态变化而重新渲染
+ * Get Inputbar Tools dispatch functions (stable references).
+ * Components using this hook won't re-render when state changes.
  */
 export const useInputbarToolsDispatch = (): InputbarToolsDispatch => {
   const context = use(InputbarToolsDispatchContext)
@@ -127,24 +124,20 @@ export const useInputbarToolsDispatch = (): InputbarToolsDispatch => {
 }
 
 /**
- * 组合类型，包含所有 state 和 dispatch
- * 用于工具按钮的 context 类型推断
+ * Combined type containing both state and dispatch.
+ * Used for type inference in tool buttons.
  */
 export type InputbarToolsContextValue = InputbarToolsState & InputbarToolsDispatch
 
 /**
- * 同时获取 state 和 dispatch（便捷 hook）
- * 注意：会订阅状态变化
+ * Get both state and dispatch (convenience hook).
+ * Components using this hook will re-render when state changes.
  */
 export const useInputbarTools = (): InputbarToolsContextValue => {
   const state = useInputbarToolsState()
   const dispatch = useInputbarToolsDispatch()
   return { ...state, ...dispatch }
 }
-
-// ============================================================================
-// Provider Props
-// ============================================================================
 
 interface InputbarToolsProviderProps {
   children: React.ReactNode
@@ -165,14 +158,8 @@ interface InputbarToolsProviderProps {
   }
 }
 
-// ============================================================================
-// Provider 实现
-// ============================================================================
-
 export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ children, initialState, actions }) => {
-  // --------------------------------------------------------------------------
-  // 核心状态
-  // --------------------------------------------------------------------------
+  // Core state
   const [files, setFiles] = useState<FileType[]>(initialState?.files || [])
   const [mentionedModels, setMentionedModels] = useState<Model[]>(initialState?.mentionedModels || [])
   const [selectedKnowledgeBases, setSelectedKnowledgeBases] = useState<KnowledgeBase[]>(
@@ -180,23 +167,17 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
   )
   const [isExpanded, setIsExpanded] = useState(initialState?.isExpanded || false)
 
-  // --------------------------------------------------------------------------
-  // 派生状态（内部管理）
-  // --------------------------------------------------------------------------
+  // Derived state (internal management)
   const [couldAddImageFile, setCouldAddImageFile] = useState(initialState?.couldAddImageFile || false)
   const [extensions, setExtensions] = useState<string[]>(initialState?.extensions || [])
 
   const couldMentionNotVisionModel = !files.some((file) => file.type === FileTypes.IMAGE)
 
-  // --------------------------------------------------------------------------
-  // Quick Panel Registry (使用 ref 存储，不触发重新渲染)
-  // --------------------------------------------------------------------------
+  // Quick Panel Registry (stored in refs to avoid re-renders)
   const rootMenuRegistryRef = useRef(new Map<string, QuickPanelListItem[]>())
   const triggerRegistryRef = useRef(new Map<QuickPanelReservedSymbol, Map<string, QuickPanelTriggerHandler>>())
 
-  // --------------------------------------------------------------------------
-  // Quick Panel API (创建一次，永远不变)
-  // --------------------------------------------------------------------------
+  // Quick Panel API (stable references)
   const getQuickPanelRootMenu = useCallback(() => {
     const allEntries: QuickPanelListItem[] = []
     rootMenuRegistryRef.current.forEach((entries) => {
@@ -241,9 +222,7 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
     })
   }, [])
 
-  // --------------------------------------------------------------------------
-  // 稳定化 actions (避免父组件 actions 引用变化导致 dispatch context 更新)
-  // --------------------------------------------------------------------------
+  // Stabilize parent actions (prevent dispatch context updates from parent action reference changes)
   const actionsRef = useRef(actions)
   useEffect(() => {
     actionsRef.current = actions
@@ -260,9 +239,7 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
     []
   )
 
-  // --------------------------------------------------------------------------
-  // State Context Value (会随状态变化而变化)
-  // --------------------------------------------------------------------------
+  // State Context Value (updates when state changes)
   const stateValue = useMemo<InputbarToolsState>(
     () => ({
       files,
@@ -284,9 +261,7 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
     ]
   )
 
-  // --------------------------------------------------------------------------
-  // Tools Registry API (供工具按钮使用，永远不变)
-  // --------------------------------------------------------------------------
+  // Tools Registry API (stable references for tool buttons)
   const toolsRegistryAPI = useMemo<ToolsRegistryAPI>(
     () => ({
       registerRootMenu,
@@ -295,9 +270,7 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
     [registerRootMenu, registerTrigger]
   )
 
-  // --------------------------------------------------------------------------
-  // Triggers API (供 Inputbar 使用，永远不变)
-  // --------------------------------------------------------------------------
+  // Triggers API (stable references for Inputbar component)
   const triggersAPI = useMemo<TriggersAPI>(
     () => ({
       emit: emitTrigger,
@@ -306,12 +279,10 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
     [emitTrigger, getQuickPanelRootMenu]
   )
 
-  // --------------------------------------------------------------------------
-  // Dispatch Context Value (创建一次，永远不变)
-  // --------------------------------------------------------------------------
+  // Dispatch Context Value (stable references)
   const dispatchValue = useMemo<InputbarToolsDispatch>(
     () => ({
-      // State setters (React 保证这些函数引用永远不变)
+      // State setters (React guarantees stable references)
       setFiles,
       setMentionedModels,
       setSelectedKnowledgeBases,
@@ -320,18 +291,16 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
       // Stable actions
       ...stableActions,
 
-      // ✅ 拆分后的 API
+      // API objects
       toolsRegistry: toolsRegistryAPI,
       triggers: triggersAPI
     }),
     [stableActions, toolsRegistryAPI, triggersAPI]
   )
 
-  // --------------------------------------------------------------------------
-  // 内部 Dispatch (包含 setCouldAddImageFile 和 setExtensions)
-  // --------------------------------------------------------------------------
-  // 这些 setter 需要暴露给 Inputbar，但不需要暴露给工具按钮
-  // 为了避免污染主 dispatch context，使用单独的 internal context
+  // Internal Dispatch (contains setCouldAddImageFile and setExtensions)
+  // These setters are exposed to Inputbar but not to tool buttons
+  // Using a separate internal context to avoid polluting the main dispatch context
   const internalDispatchValue = useMemo(
     () => ({
       setCouldAddImageFile,
@@ -351,10 +320,10 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
   )
 }
 
-// ============================================================================
-// Internal Dispatch Context (仅供 Inputbar 组件使用)
-// ============================================================================
-
+/**
+ * Internal dispatch interface for Inputbar component only.
+ * Used to set derived state (couldAddImageFile, extensions).
+ */
 interface InputbarToolsInternalDispatch {
   setCouldAddImageFile: React.Dispatch<React.SetStateAction<boolean>>
   setExtensions: React.Dispatch<React.SetStateAction<string[]>>
@@ -363,8 +332,8 @@ interface InputbarToolsInternalDispatch {
 const InputbarToolsInternalDispatchContext = createContext<InputbarToolsInternalDispatch | undefined>(undefined)
 
 /**
- * 内部 hook，仅供 Inputbar 组件使用
- * 用于设置派生状态 (couldAddImageFile, extensions)
+ * Internal hook for Inputbar component only.
+ * Used to set derived state (couldAddImageFile, extensions).
  */
 export const useInputbarToolsInternalDispatch = (): InputbarToolsInternalDispatch => {
   const context = use(InputbarToolsInternalDispatchContext)

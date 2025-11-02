@@ -428,7 +428,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     }
   }, [features.enableTranslate, triggers, quickPanelOpen, t, text, translate])
 
-  // ✅ 只注册一次 trigger（组件挂载时）
   useEffect(() => {
     if (!config.enableQuickPanel) {
       return
@@ -437,7 +436,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     const disposeRootTrigger = toolsRegistry.registerTrigger(
       'inputbar-root',
       QuickPanelReservedSymbol.Root,
-      (payload) => rootTriggerHandlerRef.current?.(payload) // ✅ 调用 ref 中的最新函数
+      (payload) => rootTriggerHandlerRef.current?.(payload)
     )
 
     return () => {
@@ -685,7 +684,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       }
 
       if (enableQuickPanelTriggers && config.enableQuickPanel) {
-        // ✅ 检查是否有根菜单项（调用函数而非使用缓存的数组）
         const hasRootMenuItems = triggers.getRootMenu().length > 0
         const textBeforeCursor = newText.slice(0, cursorPosition)
         const lastRootIndex = textBeforeCursor.lastIndexOf(QuickPanelReservedSymbol.Root)
@@ -754,7 +752,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       prevTextRef.current = newText
     },
     [config.enableQuickPanel, enableQuickPanelTriggers, features.enableMentionModels, quickPanel, triggers, setText]
-    // ✅ 移除了 quickPanelRootMenuItems 依赖
   )
 
   const handleDragOver = useCallback(
