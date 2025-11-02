@@ -192,14 +192,24 @@ export async function saveWebviewAsHTML(webviewId: number): Promise<string | nul
           if (document.doctype) {
             const dt = document.doctype;
             doctype = '<!DOCTYPE ' + (dt.name || 'html');
+            
+            // Add PUBLIC identifier if publicId is present
             if (dt.publicId) {
-              // Escape quotes in publicId
-              doctype += ' PUBLIC "' + String(dt.publicId).replace(/"/g, '&quot;') + '"';
+              // Escape single quotes in publicId by doubling them
+              const escapedPublicId = String(dt.publicId).replace(/'/g, "\\\\'");
+              doctype += " PUBLIC '" + escapedPublicId + "'";
+              
+              // Add systemId if present (required when publicId is present)
+              if (dt.systemId) {
+                const escapedSystemId = String(dt.systemId).replace(/'/g, "\\\\'");
+                doctype += " '" + escapedSystemId + "'";
+              }
+            } else if (dt.systemId) {
+              // SYSTEM identifier (without PUBLIC)
+              const escapedSystemId = String(dt.systemId).replace(/'/g, "\\\\'");
+              doctype += " SYSTEM '" + escapedSystemId + "'";
             }
-            if (dt.systemId) {
-              // Escape quotes in systemId
-              doctype += ' "' + String(dt.systemId).replace(/"/g, '&quot;') + '"';
-            }
+            
             doctype += '>';
           }
           return doctype + (document.documentElement?.outerHTML || '');
