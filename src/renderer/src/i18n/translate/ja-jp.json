@@ -548,11 +548,11 @@
   "chat": {
     "add": {
       "assistant": {
-        "description": "日常会話と簡単な質問応答",
+        "description": "日常会話と簡単なQ&A",
         "title": "アシスタントを追加"
       },
       "option": {
-        "title": "タイプを選択"
+        "title": "種類を選択"
       },
       "topic": {
         "title": "新しいトピック"
