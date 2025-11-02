@@ -15,11 +15,13 @@ import {
 } from '@renderer/config/models'
 import db from '@renderer/databases'
 import { useAssistant } from '@renderer/hooks/useAssistant'
+import { useInputText } from '@renderer/hooks/useInputText'
 import { useMessageOperations, useTopicLoading } from '@renderer/hooks/useMessageOperations'
 import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useShortcut } from '@renderer/hooks/useShortcuts'
 import { useSidebarIconShow } from '@renderer/hooks/useSidebarIcon'
+import { useTextareaResize } from '@renderer/hooks/useTextareaResize'
 import { useTimer } from '@renderer/hooks/useTimer'
 import useTranslate from '@renderer/hooks/useTranslate'
 import {
@@ -53,9 +55,8 @@ import {
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Tooltip } from 'antd'
-import type { TextAreaRef } from 'antd/es/input/TextArea'
 import TextArea from 'antd/es/input/TextArea'
-import { debounce, isEmpty } from 'lodash'
+import { debounce } from 'lodash'
 import { CirclePause, Languages } from 'lucide-react'
 import type { CSSProperties, FC } from 'react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -147,7 +148,8 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     inputbarDispatch
   const { setCouldAddImageFile, setExtensions } = inputbarInternalDispatch
 
-  const [text, setText] = useState('')
+  // 使用 useInputText 管理文本状态
+  const { text, setText, prevText, isEmpty: inputEmpty } = useInputText()
 
   const showKnowledgeIcon = useSidebarIconShow('knowledge')
   const [inputFocus, setInputFocus] = useState(false)
@@ -165,7 +167,19 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   } = useSettings()
   const [estimateTokenCount, setEstimateTokenCount] = useState(0)
   const [contextCount, setContextCount] = useState({ current: 0, max: 0 })
-  const textareaRef = useRef<TextAreaRef | null>(null)
+
+  // 使用 useTextareaResize 管理 textarea
+  const {
+    textareaRef,
+    resize: resizeTextArea,
+    customHeight: textareaHeight,
+    setExpanded,
+    isExpanded: textareaIsExpanded
+  } = useTextareaResize({
+    maxHeight: 400,
+    minHeight: 30
+  })
+
   const { t } = useTranslation()
   const { getLanguageByLangcode } = useTranslate()
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -177,7 +191,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   const spaceClickTimer = useRef<NodeJS.Timeout | null>(null)
   const [isTranslating, setIsTranslating] = useState(false)
   const [isFileDragging, setIsFileDragging] = useState(false)
-  const [textareaHeight, setTextareaHeight] = useState<number>()
   const startDragY = useRef<number>(0)
   const startHeight = useRef<number>(0)
   const isMultiSelectMode = useAppSelector((state) => state.runtime.chat.isMultiSelectMode)
@@ -237,15 +250,9 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     return []
   }, [canAddImageFile, canAddTextFile, features.enableAttachments])
 
-  const prevTextRef = useRef(text)
-
   useEffect(() => {
     setCouldAddImageFile(canAddImageFile)
   }, [canAddImageFile, setCouldAddImageFile])
-
-  useEffect(() => {
-    prevTextRef.current = text
-  }, [text])
 
   const placeholderText = enableQuickPanelTriggers
     ? t('chat.input.placeholder', { key: getSendMessageShortcutLabel(sendMessageShortcut) })
@@ -275,29 +282,13 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     textareaRef.current?.focus()
   }, [])
 
-  const resizeTextArea = useCallback(
-    (force: boolean = false) => {
-      const textArea = textareaRef.current?.resizableTextArea?.textArea
-      if (!textArea) {
-        return
-      }
+  // resizeTextArea 现在来自 useTextareaResize hook
 
-      if (textareaHeight && !force) {
-        return
-      }
-
-      textArea.style.height = 'auto'
-      if (textArea.scrollHeight) {
-        textArea.style.height = Math.min(textArea.scrollHeight, 400) + 'px'
-      }
-    },
-    [textareaHeight]
-  )
-
-  const inputEmpty = useMemo(() => isEmpty(text.trim()) && files.length === 0, [files.length, text])
+  // 判断是否可以发送：文本不为空或有文件
+  const cannotSend = useMemo(() => inputEmpty && files.length === 0, [inputEmpty, files.length])
 
   const sendMessage = useCallback(async () => {
-    if (!features.enableSendButton || inputEmpty) {
+    if (!features.enableSendButton || cannotSend) {
       return
     }
     if (checkRateLimit(assistant)) {
@@ -344,7 +335,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     dispatch,
     features.enableSendButton,
     files,
-    inputEmpty,
+    cannotSend,
     mentionedModels,
     resizeTextArea,
     setFiles,
@@ -450,31 +441,16 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       return
     }
 
-    const currentlyExpanded = isExpanded || !!textareaHeight
+    const currentlyExpanded = isExpanded || textareaIsExpanded
     const shouldExpand = !currentlyExpanded
+
+    // 使用 hook 提供的 setExpanded
+    setExpanded(shouldExpand)
+    // 同步更新 Context state
     setIsExpanded(shouldExpand)
 
-    const textArea = textareaRef.current?.resizableTextArea?.textArea
-    if (!textArea) {
-      return
-    }
-
-    if (shouldExpand) {
-      textArea.style.height = '70vh'
-      setTextareaHeight(window.innerHeight * 0.7)
-    } else {
-      textArea.style.height = 'auto'
-      setTextareaHeight(undefined)
-      requestAnimationFrame(() => {
-        if (textArea) {
-          const contentHeight = textArea.scrollHeight
-          textArea.style.height = contentHeight > 400 ? '400px' : `${contentHeight}px`
-        }
-      })
-    }
-
     focusTextarea()
-  }, [features.enableExpand, focusTextarea, isExpanded, setIsExpanded, textareaHeight])
+  }, [features.enableExpand, focusTextarea, isExpanded, textareaIsExpanded, setExpanded, setIsExpanded])
 
   const appendTxtContentToInput = useCallback(
     async (file: FileType, event: React.MouseEvent<HTMLDivElement>) => {
@@ -568,7 +544,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
         }
       }
 
-      if (features.enableExpand && (isExpanded || !!textareaHeight) && event.key === 'Escape') {
+      if (features.enableExpand && (isExpanded || textareaIsExpanded) && event.key === 'Escape') {
         event.stopPropagation()
         onToggleExpanded()
         return
@@ -618,6 +594,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       files.length,
       inputFocus,
       isExpanded,
+      textareaIsExpanded,
       onToggleExpanded,
       sendMessage,
       sendMessageShortcut,
@@ -625,7 +602,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       setTimeoutTimer,
       spaceClickCount,
       text.length,
-      textareaHeight,
       translate
     ]
   )
@@ -657,7 +633,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       const newText = e.target.value
       setText(newText)
 
-      const prevText = prevTextRef.current
+      // prevText 现在来自 useInputText hook
       const isDeletion = newText.length < prevText.length
 
       const textArea = textareaRef.current?.resizableTextArea?.textArea
@@ -748,10 +724,16 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
           }
         }
       }
-
-      prevTextRef.current = newText
     },
-    [config.enableQuickPanel, enableQuickPanelTriggers, features.enableMentionModels, quickPanel, triggers, setText]
+    [
+      config.enableQuickPanel,
+      enableQuickPanelTriggers,
+      features.enableMentionModels,
+      quickPanel,
+      triggers,
+      setText,
+      prevText
+    ]
   )
 
   const handleDragOver = useCallback(
@@ -1135,7 +1117,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     return null
   }
 
-  const composerExpanded = isExpanded || !!textareaHeight
+  const composerExpanded = isExpanded || textareaIsExpanded
 
   return (
     <NarrowLayout style={{ width: '100%' }}>
@@ -1223,7 +1205,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
               )}
 
               {features.enableSendButton && (
-                <SendMessageButton sendMessage={sendMessage} disabled={inputEmpty || loading || searching} />
+                <SendMessageButton sendMessage={sendMessage} disabled={cannotSend || loading || searching} />
               )}
 
               {rightSectionExtras}
