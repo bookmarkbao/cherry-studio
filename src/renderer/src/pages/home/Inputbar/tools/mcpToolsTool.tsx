@@ -9,13 +9,13 @@ const mcpToolsTool = defineTool({
   condition: ({ features, assistant }) =>
     features.enableMCPTools && (isSupportedToolUse(assistant) || isPromptToolUse(assistant)),
   dependencies: {
-    actions: ['setText', 'resizeTextArea'] as const
+    actions: ['onTextChange', 'resizeTextArea'] as const
   },
   render: ({ assistant, actions, quickPanel }) => (
     <MCPToolsButton
       assistantId={assistant.id}
       quickPanel={quickPanel}
-      setInputValue={actions.setText}
+      setInputValue={actions.onTextChange}
       resizeTextArea={actions.resizeTextArea}
     />
   )

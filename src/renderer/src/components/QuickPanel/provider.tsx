@@ -29,7 +29,22 @@ export const QuickPanelProvider: React.FC<React.PropsWithChildren> = ({ children
 
   // 添加更新item选中状态的方法
   const updateItemSelection = useCallback((targetItem: QuickPanelListItem, isSelected: boolean) => {
-    setList((prevList) => prevList.map((item) => (item === targetItem ? { ...item, isSelected } : item)))
+    setList((prevList) => {
+      // 先尝试引用匹配（快速路径）
+      const refIndex = prevList.findIndex((item) => item === targetItem)
+      if (refIndex !== -1) {
+        return prevList.map((item, idx) => (idx === refIndex ? { ...item, isSelected } : item))
+      }
+
+      // 如果引用匹配失败，使用内容匹配（兜底方案）
+      // 通过 label 和 filterText 来识别同一个item
+      return prevList.map((item) => {
+        const isSameItem =
+          (item.label === targetItem.label || item.filterText === targetItem.filterText) &&
+          (!targetItem.filterText || item.filterText === targetItem.filterText)
+        return isSameItem ? { ...item, isSelected } : item
+      })
+    })
   }, [])
 
   // 添加更新整个列表的方法

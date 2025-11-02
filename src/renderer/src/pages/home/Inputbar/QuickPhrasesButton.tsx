@@ -7,7 +7,7 @@ import {
 import { useQuickPanel } from '@renderer/components/QuickPanel'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useTimer } from '@renderer/hooks/useTimer'
-import { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
+import type { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
 import QuickPhraseService from '@renderer/services/QuickPhraseService'
 import type { QuickPhrase } from '@renderer/types'
 import { Input, Modal, Radio, Space, Tooltip } from 'antd'

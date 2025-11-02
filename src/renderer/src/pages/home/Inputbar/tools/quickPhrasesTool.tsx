@@ -11,7 +11,7 @@ const quickPhrasesTool = defineTool({
   condition: ({ features }) => !!features.enableQuickPhrases,
 
   dependencies: {
-    actions: ['setText', 'resizeTextArea'] as const
+    actions: ['onTextChange', 'resizeTextArea'] as const
   },
 
   render: (context) => {
@@ -20,7 +20,7 @@ const quickPhrasesTool = defineTool({
     return (
       <QuickPhrasesButton
         quickPanel={quickPanel}
-        setInputValue={actions.setText}
+        setInputValue={actions.onTextChange}
         resizeTextArea={actions.resizeTextArea}
         assistantId={assistant.id}
       />

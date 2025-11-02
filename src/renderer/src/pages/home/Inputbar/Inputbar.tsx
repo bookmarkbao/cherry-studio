@@ -85,6 +85,7 @@ type ProviderActionHandlers = {
   addNewTopic: () => void
   clearTopic: () => void
   onNewContext: () => void
+  onTextChange: (updater: string | ((prev: string) => string)) => void
 }
 
 interface InputbarInnerProps extends Props {
@@ -96,7 +97,8 @@ const Inputbar: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topi
     resizeTextArea: () => {},
     addNewTopic: () => {},
     clearTopic: () => {},
-    onNewContext: () => {}
+    onNewContext: () => {},
+    onTextChange: () => {}
   })
 
   const initialState = useMemo(
@@ -118,7 +120,8 @@ const Inputbar: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topi
         resizeTextArea: () => actionsRef.current.resizeTextArea(),
         addNewTopic: () => actionsRef.current.addNewTopic(),
         clearTopic: () => actionsRef.current.clearTopic(),
-        onNewContext: () => actionsRef.current.onNewContext()
+        onNewContext: () => actionsRef.current.onNewContext(),
+        onTextChange: (updater) => actionsRef.current.onTextChange(updater)
       }}>
       <InputbarInner
         assistant={initialAssistant}
@@ -1029,7 +1032,10 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       resizeTextArea,
       addNewTopic,
       clearTopic,
-      onNewContext
+      onNewContext,
+      onTextChange: (updater) => {
+        setText(updater)
+      }
     }
   }, [actionsRef, addNewTopic, clearTopic, onNewContext, resizeTextArea])
 

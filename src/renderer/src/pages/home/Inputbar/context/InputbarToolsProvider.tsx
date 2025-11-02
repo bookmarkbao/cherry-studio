@@ -81,6 +81,9 @@ export interface InputbarToolsDispatch {
   clearTopic: () => void
   onNewContext: () => void
 
+  // Text manipulation (通过回调避免将 text 状态放入 Context)
+  onTextChange: (updater: string | ((prev: string) => string)) => void
+
   // ✅ 工具注册中心 (供工具按钮使用)
   toolsRegistry: ToolsRegistryAPI
 
@@ -158,6 +161,7 @@ interface InputbarToolsProviderProps {
     addNewTopic: () => void
     clearTopic: () => void
     onNewContext: () => void
+    onTextChange: (updater: string | ((prev: string) => string)) => void
   }
 }
 
@@ -250,7 +254,8 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
       resizeTextArea: () => actionsRef.current.resizeTextArea(),
       addNewTopic: () => actionsRef.current.addNewTopic(),
       clearTopic: () => actionsRef.current.clearTopic(),
-      onNewContext: () => actionsRef.current.onNewContext()
+      onNewContext: () => actionsRef.current.onNewContext(),
+      onTextChange: (updater: string | ((prev: string) => string)) => actionsRef.current.onTextChange(updater)
     }),
     []
   )

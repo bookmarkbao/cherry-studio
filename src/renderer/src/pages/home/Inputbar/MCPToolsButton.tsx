@@ -479,7 +479,7 @@ const MCPToolsButton: FC<Props> = ({ quickPanel, setInputValue, resizeTextArea, 
     const disposeMain = quickPanel.registerRootMenu([
       {
         label: t('settings.mcp.title'),
-        description: t('settings.mcp.not_support'),
+        description: '',
         icon: <Hammer />,
         isMenu: true,
         action: () => openQuickPanel()

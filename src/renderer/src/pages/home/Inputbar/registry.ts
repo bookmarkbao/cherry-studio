@@ -1,6 +1,6 @@
 import { TopicType } from '@renderer/types'
 
-import { InputbarFeatures, InputbarScope, InputbarScopeConfig } from './types'
+import type { InputbarFeatures, InputbarScope, InputbarScopeConfig } from './types'
 
 const DEFAULT_INPUTBAR_SCOPE: InputbarScope = TopicType.Chat
 
