@@ -178,8 +178,10 @@ export async function saveWebviewAsHTML(webviewId: number): Promise<string | nul
     // Get the HTML content
     const html = await webview.executeJavaScript(`
       (() => {
-        const doctype = document.doctype ? 
-          new XMLSerializer().serializeToString(document.doctype) : '';
+        // Build DOCTYPE string if present
+        const doctype = document.doctype 
+          ? '<!DOCTYPE ' + document.doctype.name + '>' 
+          : '';
         return doctype + document.documentElement.outerHTML;
       })()
     `)
