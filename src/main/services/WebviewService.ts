@@ -54,13 +54,17 @@ const attachKeyboardHandler = (contents: Electron.WebContents) => {
       return
     }
 
-    const isFindShortcut = (input.control || input.meta) && key === 'f'
-    const isPrintShortcut = (input.control || input.meta) && key === 'p'
-    const isSaveShortcut = (input.control || input.meta) && key === 's'
-    const isEscape = key === 'escape'
-    const isEnter = key === 'enter'
+    // Helper to check if this is a shortcut we handle
+    const isHandledShortcut = (k: string) => {
+      const isFindShortcut = (input.control || input.meta) && k === 'f'
+      const isPrintShortcut = (input.control || input.meta) && k === 'p'
+      const isSaveShortcut = (input.control || input.meta) && k === 's'
+      const isEscape = k === 'escape'
+      const isEnter = k === 'enter'
+      return isFindShortcut || isPrintShortcut || isSaveShortcut || isEscape || isEnter
+    }
 
-    if (!isFindShortcut && !isPrintShortcut && !isSaveShortcut && !isEscape && !isEnter) {
+    if (!isHandledShortcut(key)) {
       return
     }
 
@@ -68,6 +72,10 @@ const attachKeyboardHandler = (contents: Electron.WebContents) => {
     if (!host || host.isDestroyed()) {
       return
     }
+
+    const isFindShortcut = (input.control || input.meta) && key === 'f'
+    const isPrintShortcut = (input.control || input.meta) && key === 'p'
+    const isSaveShortcut = (input.control || input.meta) && key === 's'
 
     // Always prevent Cmd/Ctrl+F to override the guest page's native find dialog
     if (isFindShortcut) {
@@ -175,22 +183,30 @@ export async function saveWebviewAsHTML(webviewId: number): Promise<string | nul
       return null
     }
 
-    // Get the HTML content
+    // Get the HTML content with safe error handling
     const html = await webview.executeJavaScript(`
       (() => {
-        // Build complete DOCTYPE string if present
-        let doctype = '';
-        if (document.doctype) {
-          doctype = '<!DOCTYPE ' + document.doctype.name;
-          if (document.doctype.publicId) {
-            doctype += ' PUBLIC "' + document.doctype.publicId + '"';
+        try {
+          // Build complete DOCTYPE string if present
+          let doctype = '';
+          if (document.doctype) {
+            const dt = document.doctype;
+            doctype = '<!DOCTYPE ' + (dt.name || 'html');
+            if (dt.publicId) {
+              // Escape quotes in publicId
+              doctype += ' PUBLIC "' + String(dt.publicId).replace(/"/g, '&quot;') + '"';
+            }
+            if (dt.systemId) {
+              // Escape quotes in systemId
+              doctype += ' "' + String(dt.systemId).replace(/"/g, '&quot;') + '"';
+            }
+            doctype += '>';
           }
-          if (document.doctype.systemId) {
-            doctype += ' "' + document.doctype.systemId + '"';
-          }
-          doctype += '>';
+          return doctype + (document.documentElement?.outerHTML || '');
+        } catch (error) {
+          // Fallback: just return the HTML without DOCTYPE if there's an error
+          return document.documentElement?.outerHTML || '';
         }
-        return doctype + document.documentElement.outerHTML;
       })()
     `)
 
