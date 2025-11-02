@@ -1,6 +1,7 @@
 {
   "agent": {
     "add": {
+      "description": "Lide com tarefas complexas usando várias ferramentas",
       "error": {
         "failed": "Falha ao adicionar agente",
         "invalid_agent": "Agent inválido"
@@ -22,12 +23,18 @@
     },
     "get": {
       "error": {
-        "failed": "Falha ao obter o agente."
+        "failed": "Falha ao obter o agente.",
+        "null_id": "O ID do agente é nulo."
       }
     },
     "list": {
       "error": {
         "failed": "Falha ao listar agentes."
+      }
+    },
+    "server": {
+      "error": {
+        "not_running": "O servidor de API está habilitado, mas não está funcionando corretamente."
       }
     },
     "session": {
@@ -68,7 +75,8 @@
       },
       "get": {
         "error": {
-          "failed": "Falha ao obter a sessão"
+          "failed": "Falha ao obter a sessão",
+          "null_id": "O ID da sessão é nulo"
         }
       },
       "label_one": "Sessão",
@@ -100,7 +108,50 @@
         "title": "Configurações avançadas"
       },
       "essential": "Configurações Essenciais",
-      "mcps": "Servidor MCP",
+      "plugins": {
+        "available": {
+          "title": "Plugins disponíveis"
+        },
+        "confirm": {
+          "uninstall": "Tem certeza de que deseja desinstalar este plugin?"
+        },
+        "empty": {
+          "available": "Nenhum plugin correspondente encontrado. Tente ajustar a pesquisa ou os filtros de categoria."
+        },
+        "error": {
+          "install": "Falha na instalação do plugin",
+          "load": "Falha ao carregar o plugin",
+          "uninstall": "Falha ao desinstalar o plug-in"
+        },
+        "filter": {
+          "all": "Todas as categorias"
+        },
+        "install": "Instalação",
+        "installed": {
+          "empty": "Nenhum plugin foi instalado ainda. Explore os plugins disponíveis para começar.",
+          "title": "Plugin instalado"
+        },
+        "installing": "Instalando...",
+        "results": "Encontrados {{count}} plugins",
+        "search": {
+          "placeholder": "Pesquisar extensão..."
+        },
+        "success": {
+          "install": "Plugin instalado com sucesso",
+          "uninstall": "插件 desinstalado com sucesso"
+        },
+        "tab": "plug-in",
+        "type": {
+          "agent": "agente",
+          "agents": "agente",
+          "all": "tudo",
+          "command": "comando",
+          "commands": "comando",
+          "skills": "habilidade"
+        },
+        "uninstall": "desinstalar",
+        "uninstalling": "Desinstalando..."
+      },
       "prompt": "Configurações de Prompt",
       "tooling": {
         "mcp": {
@@ -130,11 +181,14 @@
             "description": "Verificações normais de permissão aplicam-se.",
             "title": "Padrão (perguntar antes de continuar)"
           },
+          "helper": "Especifica como o agente lida com a autorização de uso de ferramentas",
+          "placeholder": "Selecionar modo de permissões",
           "plan": {
             "behavior": "Ferramentas somente leitura. A execução está desabilitada.",
             "description": "Claude só pode usar ferramentas de leitura e apresenta um plano antes da execução.",
             "title": "Modo de planejamento (em breve)"
-          }
+          },
+          "title": "Modo de permissões"
         },
         "preapproved": {
           "autoBadge": "Adicionado por modo",
@@ -182,6 +236,39 @@
         "toggle": "{{defaultValue}}"
       }
     },
+    "toolPermission": {
+      "aria": {
+        "allowRequest": "Permitir solicitação de ferramenta",
+        "denyRequest": "Negar solicitação de ferramenta",
+        "hideDetails": "Ocultar detalhes da ferramenta",
+        "runWithOptions": "Executar com opções adicionais",
+        "showDetails": "Mostrar detalhes da ferramenta"
+      },
+      "button": {
+        "cancel": "Cancelar",
+        "run": "Correr"
+      },
+      "confirmation": "Tem certeza de que quer executar esta ferramenta Claude?",
+      "defaultDenyMessage": "Usuário negou permissão para esta ferramenta.",
+      "defaultDescription": "Executa código ou ações do sistema no seu ambiente. Certifique-se de que o comando parece seguro antes de executá-lo.",
+      "error": {
+        "sendFailed": "Falha ao enviar sua decisão. Por favor, tente novamente."
+      },
+      "expired": "Expirado",
+      "inputPreview": "Pré-visualização da entrada da ferramenta",
+      "pending": "Pendente ({{seconds}}s)",
+      "permissionExpired": "Solicitação de permissão expirou. Aguardando novas instruções...",
+      "requiresElevatedPermissions": "Esta ferramenta requer permissões elevadas.",
+      "suggestion": {
+        "permissionUpdateMultiple": "Aprovar pode atualizar várias permissões de sessão se você escolheu sempre permitir esta ferramenta.",
+        "permissionUpdateSingle": "Aprovar pode atualizar as permissões da sua sessão se você escolheu sempre permitir esta ferramenta."
+      },
+      "toast": {
+        "denied": "Solicitação de ferramenta foi negada.",
+        "timeout": "A solicitação da ferramenta expirou antes de receber aprovação."
+      },
+      "waiting": "Aguardando decisão de permissão da ferramenta..."
+    },
     "type": {
       "label": "Tipo de Agente",
       "unknown": "Tipo Desconhecido"
@@ -194,83 +281,6 @@
     "warning": {
       "enable_server": "Ativar o Servidor de API para usar agentes."
     }
-  },
-  "agents": {
-    "add": {
-      "button": "Adicionar ao Assistente",
-      "knowledge_base": {
-        "label": "Base de Conhecimento",
-        "placeholder": "Selecione a Base de Conhecimento"
-      },
-      "name": {
-        "label": "Nome",
-        "placeholder": "Digite o Nome"
-      },
-      "prompt": {
-        "label": "Prompt",
-        "placeholder": "Digite o Prompt",
-        "variables": {
-          "tip": {
-            "content": "{{date}}:\tData\n{{time}}:\tHora\n{{datetime}}:\tData e hora\n{{system}}:\tSistema operativo\n{{arch}}:\tArquitetura da CPU\n{{language}}:\tIdioma\n{{model_name}}:\tNome do modelo\n{{username}}:\tNome de utilizador",
-            "title": "Variáveis disponíveis"
-          }
-        }
-      },
-      "title": "Criar Agente Inteligente",
-      "unsaved_changes_warning": "Você tem alterações não salvas, tem certeza de que deseja fechar?"
-    },
-    "delete": {
-      "popup": {
-        "content": "Tem certeza de que deseja excluir este agente inteligente?"
-      }
-    },
-    "edit": {
-      "model": {
-        "select": {
-          "title": "Selecionar Modelo"
-        }
-      },
-      "title": "Editar Agente Inteligente"
-    },
-    "export": {
-      "agent": "Exportar Agente"
-    },
-    "import": {
-      "button": "Importar",
-      "error": {
-        "fetch_failed": "Falha ao buscar dados da URL",
-        "invalid_format": "Formato de proxy inválido: campos obrigatórios ausentes",
-        "url_required": "Por favor, insira a URL"
-      },
-      "file_filter": "Arquivo JSON",
-      "select_file": "Selecionar arquivo",
-      "title": "Importar do exterior",
-      "type": {
-        "file": "Arquivo",
-        "url": "URL"
-      },
-      "url_placeholder": "Insira o URL JSON"
-    },
-    "manage": {
-      "title": "Gerenciar Agentes Inteligentes"
-    },
-    "my_agents": "Meus Agentes Inteligentes",
-    "search": {
-      "no_results": "Nenhum agente inteligente encontrado"
-    },
-    "settings": {
-      "title": "Configuração do Agente"
-    },
-    "sorting": {
-      "title": "Ordenação"
-    },
-    "tag": {
-      "agent": "Agente",
-      "default": "Padrão",
-      "new": "Novo",
-      "system": "Sistema"
-    },
-    "title": "Agente"
   },
   "apiServer": {
     "actions": {
@@ -312,6 +322,7 @@
     "messages": {
       "apiKeyCopied": "Chave API copiada para a área de transferência",
       "apiKeyRegenerated": "Chave API regenerada",
+      "notEnabled": "O Servidor de API não está habilitado.",
       "operationFailed": "Operação do Servidor API falhou: ",
       "restartError": "Falha ao reiniciar o Servidor API: ",
       "restartFailed": "Reinício do Servidor API falhou: ",
@@ -350,6 +361,83 @@
     "list": {
       "showByList": "Exibição em Lista",
       "showByTags": "Exibição por Etiquetas"
+    },
+    "presets": {
+      "add": {
+        "button": "Adicionar ao assistente",
+        "knowledge_base": {
+          "label": "Base de conhecimento",
+          "placeholder": "Selecionar base de conhecimento"
+        },
+        "name": {
+          "label": "Nome",
+          "placeholder": "Inserir nome"
+        },
+        "prompt": {
+          "label": "Prompt",
+          "placeholder": "Inserir prompt",
+          "variables": {
+            "tip": {
+              "content": "{{date}}:\tData\n{{time}}:\tHora\n{{datetime}}:\tData e hora\n{{system}}:\tSistema operacional\n{{arch}}:\tArquitetura CPU\n{{language}}:\tIdioma\n{{model_name}}:\tNome do modelo\n{{username}}:\tNome de utilizador",
+              "title": "Variáveis disponíveis"
+            }
+          }
+        },
+        "title": "Criar assistente",
+        "unsaved_changes_warning": "Tens alterações não guardadas. Tens a certeza de que queres fechar?"
+      },
+      "delete": {
+        "popup": {
+          "content": "Tens a certeza de que queres eliminar este assistente?"
+        }
+      },
+      "edit": {
+        "model": {
+          "select": {
+            "title": "Selecionar modelo"
+          }
+        },
+        "title": "Editar assistente"
+      },
+      "export": {
+        "agent": "Exportar assistente"
+      },
+      "import": {
+        "button": "Importar",
+        "error": {
+          "fetch_failed": "Falha ao obter dados do URL",
+          "invalid_format": "Formato de assistente inválido: campos obrigatórios em falta",
+          "url_required": "Por favor insere um URL"
+        },
+        "file_filter": "Ficheiros JSON",
+        "select_file": "Selecionar ficheiro",
+        "title": "Importar do exterior",
+        "type": {
+          "file": "Ficheiro",
+          "url": "URL"
+        },
+        "url_placeholder": "Inserir URL JSON"
+      },
+      "manage": {
+        "title": "Gerir assistentes"
+      },
+      "my_agents": "Os meus assistentes",
+      "search": {
+        "no_results": "Não foram encontrados assistentes relacionados"
+      },
+      "settings": {
+        "title": "Configuração de assistentes"
+      },
+      "sorting": {
+        "title": "Ordenar"
+      },
+      "tag": {
+        "agent": "Assistente",
+        "default": "Padrão",
+        "new": "Novo",
+        "system": "Sistema"
+      },
+      "title": "Biblioteca de assistentes"
     },
     "save": {
       "success": "Salvo com Sucesso",
@@ -447,6 +535,7 @@
     "added": "Adicionado",
     "case_sensitive": "Diferenciar maiúsculas e minúsculas",
     "collapse": "Recolher",
+    "download": "Baixar",
     "includes_user_questions": "Incluir perguntas do usuário",
     "manage": "Gerenciar",
     "select_model": "Selecionar Modelo",
@@ -459,7 +548,11 @@
   "chat": {
     "add": {
       "assistant": {
+        "description": "Conversas diárias e perguntas e respostas rápidas",
         "title": "Adicionar assistente"
+      },
+      "option": {
+        "title": "Selecionar Tipo"
       },
       "topic": {
         "title": "Novo Tópico"
@@ -527,8 +620,10 @@
         "context": "Limpar contexto {{Command}}"
       },
       "new_topic": "Novo tópico {{Command}}",
+      "paste_text_file_confirm": "Colar na caixa de entrada?",
       "pause": "Pausar",
       "placeholder": "Digite sua mensagem aqui...",
+      "placeholder_without_triggers": "Escreve a tua mensagem aqui, pressiona {{key}} para enviar",
       "send": "Enviar",
       "settings": "Configurações",
       "thinking": {
@@ -939,6 +1034,7 @@
     }
   },
   "common": {
+    "about": "sobre",
     "add": "Adicionar",
     "add_success": "Adicionado com sucesso",
     "advanced_settings": "Configurações Avançadas",
@@ -956,10 +1052,12 @@
     "clear": "Limpar",
     "close": "Fechar",
     "collapse": "Recolher",
+    "completed": "Concluído",
     "confirm": "Confirmar",
     "copied": "Copiado",
     "copy": "Copiar",
     "copy_failed": "Falha ao copiar",
+    "current": "Atual",
     "cut": "Cortar",
     "default": "Padrão",
     "delete": "Excluir",
@@ -1018,6 +1116,7 @@
     "saved": "Guardado",
     "search": "Pesquisar",
     "select": "Selecionar",
+    "selected": "Selecionado",
     "selectedItems": "{{count}} itens selecionados",
     "selectedMessages": "{{count}} mensagens selecionadas",
     "settings": "Configurações",
@@ -1032,6 +1131,8 @@
     "success": "Sucesso",
     "swap": "Trocar",
     "topics": "Tópicos",
+    "unknown": "Desconhecido",
+    "unnamed": "Sem nome",
     "update_success": "Atualização bem-sucedida",
     "upload_files": "Carregar arquivo",
     "warning": "Aviso",
@@ -1171,6 +1272,9 @@
     },
     "document": "Documento",
     "edit": "Editar",
+    "error": {
+      "open_path": "Não foi possível abrir o caminho: {{path}}"
+    },
     "file": "Arquivo",
     "image": "Imagem",
     "name": "Nome do Arquivo",
@@ -1785,6 +1889,7 @@
     "title": "Pequeno aplicativo"
   },
   "minapps": {
+    "ant-ling": "Ant Ling",
     "baichuan": "Baichuan",
     "baidu-ai-search": "Baidu AI Search",
     "chatglm": "ChatGLM",
@@ -1796,13 +1901,13 @@
     "nami-ai-search": "Nami AI Search",
     "qwen": "Qwen",
     "sensechat": "SenseChat",
+    "stepfun": "Stepfun",
     "tencent-yuanbao": "Yuanbao",
     "tiangong-ai": "Skywork",
     "wanzhi": "Wanzhi",
     "wenxin": "ERNIE",
     "wps-copilot": "WPS Copilot",
     "xiaoyi": "Xiaoyi",
-    "yuewen": "Yuewen",
     "zhihu": "Zhihu"
   },
   "miniwindow": {
@@ -1910,6 +2015,12 @@
     "provider_settings": "Ir para as configurações do provedor"
   },
   "notes": {
+    "auto_rename": {
+      "empty_note": "A nota está vazia, não é possível gerar um nome",
+      "failed": "Falha ao gerar o nome da nota",
+      "label": "Gerar nome da nota",
+      "success": "Nome da nota gerado com sucesso"
+    },
     "characters": "caractere",
     "collapse": "[minimizar]",
     "content_placeholder": "Introduza o conteúdo da nota...",
@@ -1935,6 +2046,14 @@
     "rename": "renomear",
     "rename_changed": "Devido às políticas de segurança, o nome do arquivo foi alterado de {{original}} para {{final}}",
     "save": "salvar em notas",
+    "search": {
+      "both": "Nome + Conteúdo",
+      "content": "conteúdo",
+      "found_results": "Encontrados {{count}} resultados (nome: {{nameCount}}, conteúdo: {{contentCount}})",
+      "more_matches": "uma correspondência",
+      "searching": "Pesquisando...",
+      "show_less": "Recolher"
+    },
     "settings": {
       "data": {
         "apply": "aplicativo",
@@ -1991,6 +2110,8 @@
     "sort_updated_asc": "Tempo de atualização (do mais antigo para o mais recente)",
     "sort_updated_desc": "atualização de tempo (do mais novo para o mais antigo)",
     "sort_z2a": "Nome do arquivo (Z-A)",
+    "spell_check": "verificação ortográfica",
+    "spell_check_tooltip": "Ativar/Desativar verificação ortográfica",
     "star": "Notas favoritas",
     "starred_notes": "notas salvas",
     "title": "nota",
@@ -2017,6 +2138,7 @@
       "provider": {
         "cannot_remove_builtin": "Não é possível excluir o provedor integrado",
         "existing": "O provedor já existe",
+        "get_providers": "Falha ao obter provedores disponíveis",
         "not_found": "O provedor OCR não existe",
         "update_failed": "Falha ao atualizar a configuração"
       },
@@ -2039,6 +2161,59 @@
       "title": "Manter tempo ativo"
     },
     "title": "Ollama"
+  },
+  "ovms": {
+    "action": {
+      "install": "Instalar",
+      "installing": "Instalando",
+      "reinstall": "Reinstalar",
+      "run": "Executar OVMS",
+      "starting": "Iniciando",
+      "stop": "Parar OVMS",
+      "stopping": "Parando"
+    },
+    "description": "<div><p>1. Baixe o modelo OV.</p><p>2. Adicione o modelo no 'Gerenciador'.</p><p>Compatível apenas com Windows!</p><p>Caminho de instalação do OVMS: '%USERPROFILE%\\.cherrystudio\\ovms' .</p><p>Consulte o <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Guia do Intel OVMS</a></p></dev>",
+    "download": {
+      "button": "Baixar",
+      "error": "Falha na seleção",
+      "model_id": {
+        "label": "ID do modelo:",
+        "model_id_pattern": "O ID do modelo deve começar com OpenVINO/",
+        "placeholder": "Obrigatório, por exemplo, OpenVINO/Qwen3-8B-int4-ov",
+        "required": "Por favor, insira o ID do modelo"
+      },
+      "model_name": {
+        "label": "Nome do modelo:",
+        "placeholder": "Obrigatório, por exemplo, Qwen3-8B-int4-ov",
+        "required": "Por favor, insira o nome do modelo"
+      },
+      "model_source": "Fonte do modelo:",
+      "model_task": "Tarefa do modelo:",
+      "success": "Download concluído com sucesso",
+      "success_desc": "O modelo \"{{modelName}}\"-\"{{modelId}}\" foi baixado com sucesso, por favor vá para a interface de gerenciamento OVMS para adicionar o modelo",
+      "tip": "O modelo está sendo baixado, às vezes leva várias horas. Por favor aguarde pacientemente...",
+      "title": "Baixar modelo Intel OpenVINO"
+    },
+    "failed": {
+      "install": "Falha na instalação do OVMS:",
+      "install_code_100": "Erro desconhecido",
+      "install_code_101": "Compatível apenas com CPU Intel(R) Core(TM) Ultra",
+      "install_code_102": "Compatível apenas com Windows",
+      "install_code_103": "Falha ao baixar o tempo de execução do OVMS",
+      "install_code_104": "Falha ao descompactar o tempo de execução do OVMS",
+      "install_code_105": "Falha ao limpar o tempo de execução do OVMS",
+      "install_code_106": "Falha ao criar run.bat",
+      "install_code_110": "Falha ao limpar o antigo runtime OVMS",
+      "run": "Falha ao executar o OVMS:",
+      "stop": "Falha ao parar o OVMS:"
+    },
+    "status": {
+      "not_installed": "OVMS não instalado",
+      "not_running": "OVMS não está em execução",
+      "running": "OVMS em execução",
+      "unknown": "Status do OVMS desconhecido"
+    },
+    "title": "Intel OVMS"
   },
   "paintings": {
     "aspect_ratio": "Proporção da Imagem",
@@ -2208,6 +2383,32 @@
       "seed_tip": "Controla a aleatoriedade do resultado de ampliação"
     }
   },
+  "plugins": {
+    "actions": "Operação",
+    "agents": "agente",
+    "all_categories": "Todas as categorias",
+    "all_types": "Tudo",
+    "category": "categoria",
+    "commands": "comando",
+    "confirm_uninstall": "Tem certeza de que deseja desinstalar {{name}}?",
+    "install": "Instalação",
+    "install_plugins_from_browser": "Navegue pelos plugins disponíveis para começar a usar",
+    "installing": "Instalando...",
+    "name": "Nome",
+    "no_description": "Sem descrição",
+    "no_installed_plugins": "Nenhum plugin foi instalado ainda",
+    "no_results": "Plugin não encontrado",
+    "search_placeholder": "Pesquisar plugin...",
+    "showing_results": "Exibir {{count}} extensões",
+    "showing_results_one": "Mostrar {{count}} extensões",
+    "showing_results_other": "Exibir {{count}} extensões",
+    "showing_results_plural": "Exibir {{count}} extensões",
+    "skills": "habilidade",
+    "try_different_search": "Por favor, tente ajustar a pesquisa ou os filtros de categoria.",
+    "type": "tipo",
+    "uninstall": "Desinstalar",
+    "uninstalling": "Desinstalando..."
+  },
   "preview": {
     "copy": {
       "image": "Copiar como imagem"
@@ -2254,12 +2455,14 @@
     "gpustack": "GPUStack",
     "grok": "Compreender",
     "groq": "Groq",
+    "huggingface": "Hugging Face",
     "hunyuan": "Tencent Hún Yuán",
     "hyperbolic": "Hiperbólico",
     "infini": "Infinito",
     "jina": "Jina",
     "lanyun": "Lanyun Tecnologia",
     "lmstudio": "Estúdio LM",
+    "longcat": "Totoro",
     "minimax": "Minimax",
     "mistral": "Mistral",
     "modelscope": "ModelScope MôDá",
@@ -2271,6 +2474,7 @@
     "ollama": "Ollama",
     "openai": "OpenAI",
     "openrouter": "OpenRouter",
+    "ovms": "Intel OVMS",
     "perplexity": "Perplexidade",
     "ph8": "Plataforma Aberta de Grandes Modelos PH8",
     "poe": "Poe",
@@ -2724,15 +2928,14 @@
       },
       "description": "Um assistente de IA criado para criadores",
       "downloading": "Baixando atualizações...",
+      "enterprise": {
+        "title": "Empresa"
+      },
       "feedback": {
         "button": "Feedback",
         "title": "Enviar feedback"
       },
       "label": "Sobre Nós",
-      "license": {
-        "button": "Ver",
-        "title": "Licença"
-      },
       "releases": {
         "button": "Ver",
         "title": "Registro de alterações"
@@ -2839,6 +3042,46 @@
         "siyuan": "Exportar para Siyuan Notes",
         "title": "Exportar Configurações do Menu",
         "yuque": "Exportar para Yuque"
+      },
+      "export_to_phone": {
+        "confirm": {
+          "button": "Selecionar arquivo de backup"
+        },
+        "content": "Exportar parte dos dados, incluindo registros de conversas e configurações. Observe que o processo de backup pode demorar um pouco; agradecemos sua paciência.",
+        "lan": {
+          "auto_close_tip": "Fechando automaticamente em {{seconds}} segundos...",
+          "confirm_close_message": "Transferência de arquivo em andamento. Fechar irá interromper a transferência. Tem certeza de que deseja forçar o fechamento?",
+          "confirm_close_title": "Confirmar Fechamento",
+          "connected": "Conectado",
+          "connection_failed": "Falha na conexão",
+          "content": "Certifique-se de que o computador e o telefone estejam na mesma rede para usar a transferência via LAN. Abra o aplicativo Cherry Studio e escaneie este código QR.",
+          "error": {
+            "init_failed": "Falha na inicialização",
+            "no_file": "Nenhum arquivo selecionado",
+            "no_ip": "Incapaz de obter endereço IP",
+            "send_failed": "Falha ao enviar arquivo"
+          },
+          "force_close": "Forçar Fechamento",
+          "generating_qr": "Gerando código QR...",
+          "noZipSelected": "Nenhum arquivo de compressão selecionado",
+          "scan_qr": "Por favor, escaneie o código QR com o seu telefone",
+          "selectZip": "Selecionar arquivo compactado",
+          "sendZip": "Iniciar recuperação de dados",
+          "status": {
+            "completed": "Transferência concluída",
+            "connected": "Conectado",
+            "connecting": "Conectando...",
+            "disconnected": "Desconectado",
+            "error": "Erro de conexão",
+            "initializing": "Inicializando conexão...",
+            "preparing": "Preparando transferência...",
+            "sending": "Transferindo {{progress}}%",
+            "waiting_qr_scan": "Por favor, escaneie o código QR para conectar"
+          },
+          "title": "transmissão de rede local",
+          "transfer_progress": "Progresso da transferência"
+        },
+        "title": "Exportar para o telemóvel"
       },
       "hour_interval_one": "{{count}} hora",
       "hour_interval_other": "{{count}} horas",
@@ -3498,6 +3741,7 @@
       "builtinServers": "Servidores integrados",
       "builtinServersDescriptions": {
         "brave_search": "uma implementação de servidor MCP integrada com a API de pesquisa Brave, fornecendo funcionalidades de pesquisa web e local. Requer a configuração da variável de ambiente BRAVE_API_KEY",
+        "didi_mcp": "Servidor DiDi MCP que fornece serviços de transporte incluindo pesquisa de mapas, estimativa de preços, gestão de pedidos e rastreamento de motoristas. Disponível apenas na China Continental. Requer configuração da variável de ambiente DIDI_API_KEY",
         "dify_knowledge": "Implementação do servidor MCP do Dify, que fornece uma API simples para interagir com o Dify. Requer a configuração da chave Dify",
         "fetch": "servidor MCP para obter o conteúdo da página web do URL",
         "filesystem": "Servidor Node.js do protocolo de contexto de modelo (MCP) para implementar operações de sistema de ficheiros. Requer configuração do diretório permitido para acesso",
@@ -3584,6 +3828,12 @@
         "loadError": "Falha ao carregar dicas",
         "noPromptsAvailable": "Nenhuma dica disponível",
         "requiredField": "Campo obrigatório"
+      },
+      "protocolInstallWarning": {
+        "command": "Comando de inicialização",
+        "message": "Este MCP foi instalado a partir de uma fonte externa via protocolo. Executar ferramentas desconhecidas pode prejudicar seu computador.",
+        "run": "Correr",
+        "title": "Executar MCP externo?"
       },
       "provider": "Fornecedor",
       "providerPlaceholder": "Nome do Fornecedor",
@@ -3948,6 +4198,9 @@
         "start_auth": "Iniciar autorização",
         "submit_code": "Concluir login"
       },
+      "anthropic_api_host": "Endereço da API Anthropic",
+      "anthropic_api_host_preview": "Pré-visualização Anthropic: {{url}}",
+      "anthropic_api_host_tooltip": "Preencher apenas quando o fornecedor fornece um endereço base compatível com Claude.",
       "api": {
         "key": {
           "check": {
@@ -3991,10 +4244,13 @@
         "url": {
           "preview": "Pré-visualização: {{url}}",
           "reset": "Redefinir",
-          "tip": "Ignorar v1 na versão finalizada com /, usar endereço de entrada forçado se terminar com #"
+          "tip": "e forçar o uso do endereço original quando terminar com '#'"
         }
       },
       "api_host": "Endereço API",
+      "api_host_no_valid": "O endereço da API é inválido",
+      "api_host_preview": "Pré-visualização: {{url}}",
+      "api_host_tooltip": "Substituir apenas quando o fornecedor necessita de um endereço compatível com OpenAI personalizado.",
       "api_key": {
         "label": "Chave API",
         "tip": "Use vírgula para separar várias chaves"
@@ -4131,7 +4387,8 @@
         "none": "Não Usar Proxy",
         "system": "Proxy do Sistema",
         "title": "Modo de Proxy"
-      }
+      },
+      "tip": "suporte a correspondência fuzzy (*.test.com, 192.168.0.0/16)"
     },
     "quickAssistant": {
       "click_tray_to_show": "Clique no ícone da bandeja para iniciar",
@@ -4398,7 +4655,6 @@
     }
   },
   "title": {
-    "agents": "Agentes",
     "apps": "Miniaplicativos",
     "code": "Código",
     "files": "Arquivos",
@@ -4410,6 +4666,7 @@
     "notes": "Notas",
     "paintings": "Pinturas",
     "settings": "Configurações",
+    "store": "Biblioteca de assistentes",
     "translate": "Traduzir"
   },
   "trace": {
@@ -4565,6 +4822,7 @@
     "later": "Mais tarde",
     "message": "Nova versão {{version}} disponível, deseja instalar agora?",
     "noReleaseNotes": "Sem notas de versão",
+    "saveDataError": "Falha ao salvar os dados, tente novamente",
     "title": "Atualização"
   },
   "warning": {

@@ -1,7 +1,8 @@
-import { NormalToolResponse } from '@renderer/types'
+import type { NormalToolResponse } from '@renderer/types'
 import type { ToolMessageBlock } from '@renderer/types/newMessage'
 
 import { MessageAgentTools } from './MessageAgentTools'
+import { AgentToolsType } from './MessageAgentTools/types'
 import { MessageKnowledgeSearchToolTitle } from './MessageKnowledgeSearch'
 import { MessageMemorySearchToolTitle } from './MessageMemorySearch'
 import { MessageWebSearchToolTitle } from './MessageWebSearch'
@@ -9,46 +10,42 @@ import { MessageWebSearchToolTitle } from './MessageWebSearch'
 interface Props {
   block: ToolMessageBlock
 }
-const prefix = 'builtin_'
+const builtinToolsPrefix = 'builtin_'
+const agentMcpToolsPrefix = 'mcp__'
+const agentTools = Object.values(AgentToolsType)
+
+const isAgentTool = (toolName: AgentToolsType) => {
+  if (agentTools.includes(toolName) || toolName.startsWith(agentMcpToolsPrefix)) {
+    return true
+  }
+  return false
+}
 
 const ChooseTool = (toolResponse: NormalToolResponse): React.ReactNode | null => {
   let toolName = toolResponse.tool.name
-  if (toolName.startsWith(prefix)) {
-    toolName = toolName.slice(prefix.length)
+  const toolType = toolResponse.tool.type
+  if (toolName.startsWith(builtinToolsPrefix)) {
+    toolName = toolName.slice(builtinToolsPrefix.length)
+    switch (toolName) {
+      case 'web_search':
+      case 'web_search_preview':
+        return toolType === 'provider' ? null : <MessageWebSearchToolTitle toolResponse={toolResponse} />
+      case 'knowledge_search':
+        return <MessageKnowledgeSearchToolTitle toolResponse={toolResponse} />
+      case 'memory_search':
+        return <MessageMemorySearchToolTitle toolResponse={toolResponse} />
+      default:
+        return null
+    }
+  } else if (isAgentTool(toolName as AgentToolsType)) {
+    return <MessageAgentTools toolResponse={toolResponse} />
   }
-
-  switch (toolName) {
-    case 'web_search':
-    case 'web_search_preview':
-      return <MessageWebSearchToolTitle toolResponse={toolResponse} />
-    case 'knowledge_search':
-      return <MessageKnowledgeSearchToolTitle toolResponse={toolResponse} />
-    case 'memory_search':
-      return <MessageMemorySearchToolTitle toolResponse={toolResponse} />
-    case 'Read':
-    case 'Task':
-    case 'Bash':
-    case 'Search':
-    case 'Glob':
-    case 'TodoWrite':
-    case 'WebSearch':
-    case 'Grep':
-    case 'Write':
-    case 'WebFetch':
-    case 'Edit':
-    case 'MultiEdit':
-    case 'BashOutput':
-    case 'NotebookEdit':
-    case 'ExitPlanMode':
-      return <MessageAgentTools toolResponse={toolResponse} />
-    default:
-      return null
-  }
+  return null
 }
 
 export default function MessageTool({ block }: Props) {
   // FIXME: 语义错误，这里已经不是 MCP tool 了,更改rawMcpToolResponse需要改用户数据, 所以暂时保留
-  const toolResponse = block.metadata?.rawMcpToolResponse
+  const toolResponse = block.metadata?.rawMcpToolResponse as NormalToolResponse
 
   if (!toolResponse) return null
 

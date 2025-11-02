@@ -1,13 +1,14 @@
 import { ActionIconButton } from '@renderer/components/Buttons'
 import { QuickPanelReservedSymbol, useQuickPanel } from '@renderer/components/QuickPanel'
 import { useKnowledgeBases } from '@renderer/hooks/useKnowledge'
-import { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
-import { FileType, KnowledgeBase, KnowledgeItem } from '@renderer/types'
+import type { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
+import type { FileType, KnowledgeBase, KnowledgeItem } from '@renderer/types'
 import { filterSupportedFiles, formatFileSize } from '@renderer/utils/file'
 import { Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import { FileSearch, FileText, Paperclip, Upload } from 'lucide-react'
-import { Dispatch, FC, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react'
+import type { Dispatch, FC, SetStateAction } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface Props {

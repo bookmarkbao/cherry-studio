@@ -1,57 +1,35 @@
-import { Select, SelectedItems, SelectItem } from '@heroui/react'
-import { ApiModelLabel } from '@renderer/components/ApiModelLabel'
-import { useApiModels } from '@renderer/hooks/agents/useModels'
-import { AgentBaseWithId, ApiModel, UpdateAgentBaseForm, UpdateAgentForm } from '@renderer/types'
-import { useCallback } from 'react'
+import SelectAgentBaseModelButton from '@renderer/pages/home/components/SelectAgentBaseModelButton'
+import type { AgentBaseWithId, ApiModel, UpdateAgentFunctionUnion } from '@renderer/types'
 import { useTranslation } from 'react-i18next'
 
 import { SettingsItem, SettingsTitle } from './shared'
 
 export interface ModelSettingProps {
   base: AgentBaseWithId | undefined | null
-  update: (form: UpdateAgentBaseForm) => Promise<void>
+  update: UpdateAgentFunctionUnion
   isDisabled?: boolean
 }
 
-export const ModelSetting: React.FC<ModelSettingProps> = ({ base, update, isDisabled }) => {
+export const ModelSetting = ({ base, update, isDisabled }: ModelSettingProps) => {
   const { t } = useTranslation()
-  const { models } = useApiModels({ providerType: 'anthropic' })
 
-  const updateModel = (model: UpdateAgentForm['model']) => {
+  const updateModel = async (model: ApiModel) => {
     if (!base) return
-    update({ id: base.id, model })
+    return update({ id: base.id, model: model.id })
   }
-
-  const renderModels = useCallback((items: SelectedItems<ApiModel>) => {
-    return items.map((item) => {
-      const model = item.data ?? undefined
-      return <ApiModelLabel key={model?.id} model={model} />
-    })
-  }, [])
 
   if (!base) return null
 
   return (
-    <SettingsItem inline className="gap-8">
+    <SettingsItem inline>
       <SettingsTitle id="model">{t('common.model')}</SettingsTitle>
-      <Select
-        isDisabled={isDisabled}
-        selectionMode="single"
-        aria-labelledby="model"
-        items={models}
-        selectedKeys={[base.model]}
-        onSelectionChange={(keys) => {
-          updateModel(keys.currentKey)
+      <SelectAgentBaseModelButton
+        agentBase={base}
+        onSelect={async (model) => {
+          await updateModel(model)
         }}
-        className="max-w-80 flex-1"
-        placeholder={t('common.placeholders.select.model')}
-        renderValue={renderModels}>
-        {(model) => (
-          <SelectItem textValue={model.id}>
-            <ApiModelLabel model={model} />
-          </SelectItem>
-        )}
-      </Select>
+        isDisabled={isDisabled}
+      />
     </SettingsItem>
   )
 }

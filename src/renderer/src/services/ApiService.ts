@@ -3,19 +3,19 @@
  */
 import { loggerService } from '@logger'
 import AiProvider from '@renderer/aiCore'
-import { CompletionsParams } from '@renderer/aiCore/legacy/middleware/schemas'
-import { AiSdkMiddlewareConfig } from '@renderer/aiCore/middleware/AiSdkMiddlewareBuilder'
+import type { CompletionsParams } from '@renderer/aiCore/legacy/middleware/schemas'
+import type { AiSdkMiddlewareConfig } from '@renderer/aiCore/middleware/AiSdkMiddlewareBuilder'
 import { buildStreamTextParams } from '@renderer/aiCore/prepareParams'
 import { isDedicatedImageGenerationModel, isEmbeddingModel } from '@renderer/config/models'
 import { getStoreSetting } from '@renderer/hooks/useSettings'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
 import type { FetchChatCompletionParams } from '@renderer/types'
-import { Assistant, MCPServer, MCPTool, Model, Provider } from '@renderer/types'
+import type { Assistant, MCPServer, MCPTool, Model, Provider } from '@renderer/types'
 import type { StreamTextParams } from '@renderer/types/aiCoreTypes'
 import { type Chunk, ChunkType } from '@renderer/types/chunk'
-import { Message } from '@renderer/types/newMessage'
-import { SdkModel } from '@renderer/types/sdk'
+import type { Message } from '@renderer/types/newMessage'
+import type { SdkModel } from '@renderer/types/sdk'
 import { removeSpecialCharactersForTopicName, uuid } from '@renderer/utils'
 import { abortCompletion, readyToAbort } from '@renderer/utils/abortController'
 import { isAbortError } from '@renderer/utils/error'
@@ -25,7 +25,8 @@ import { findFileBlocks, getMainTextContent } from '@renderer/utils/messageUtils
 import { containsSupportedVariables, replacePromptVariables } from '@renderer/utils/prompt'
 import { isEmpty, takeRight } from 'lodash'
 
-import AiProviderNew, { ModernAiProviderConfig } from '../aiCore/index_new'
+import type { ModernAiProviderConfig } from '../aiCore/index_new'
+import AiProviderNew from '../aiCore/index_new'
 import {
   // getAssistantProvider,
   // getAssistantSettings,
@@ -138,7 +139,8 @@ export async function fetchChatCompletion({
     enableGenerateImage: capabilities.enableGenerateImage,
     enableUrlContext: capabilities.enableUrlContext,
     mcpTools,
-    uiMessages
+    uiMessages,
+    knowledgeRecognition: assistant.knowledgeRecognition
   }
 
   // --- Call AI Completions ---
@@ -242,6 +244,68 @@ export async function fetchMessagesSummary({ messages, assistant }: { messages: 
       ...middlewareConfig,
       assistant: summaryAssistant,
       topicId,
+      callType: 'summary'
+    })
+    const text = getText()
+    return removeSpecialCharactersForTopicName(text) || null
+  } catch (error: any) {
+    return null
+  }
+}
+
+export async function fetchNoteSummary({ content, assistant }: { content: string; assistant?: Assistant }) {
+  let prompt = (getStoreSetting('topicNamingPrompt') as string) || i18n.t('prompts.title')
+  const resolvedAssistant = assistant || getDefaultAssistant()
+  const model = getQuickModel() || resolvedAssistant.model || getDefaultModel()
+
+  if (prompt && containsSupportedVariables(prompt)) {
+    prompt = await replacePromptVariables(prompt, model.name)
+  }
+
+  const provider = getProviderByModel(model)
+
+  if (!hasApiKey(provider)) {
+    return null
+  }
+
+  const AI = new AiProviderNew(model)
+
+  // only 2000 char and no images
+  const truncatedContent = content.substring(0, 2000)
+  const purifiedContent = purifyMarkdownImages(truncatedContent)
+
+  const summaryAssistant = {
+    ...resolvedAssistant,
+    settings: {
+      ...resolvedAssistant.settings,
+      reasoning_effort: undefined,
+      qwenThinkMode: false
+    },
+    prompt,
+    model
+  }
+
+  const llmMessages = {
+    system: prompt,
+    prompt: purifiedContent
+  }
+
+  const middlewareConfig: AiSdkMiddlewareConfig = {
+    streamOutput: false,
+    enableReasoning: false,
+    isPromptToolUse: false,
+    isSupportedToolUse: false,
+    isImageGenerationEndpoint: false,
+    enableWebSearch: false,
+    enableGenerateImage: false,
+    enableUrlContext: false,
+    mcpTools: []
+  }
+
+  try {
+    const { getText } = await AI.completions(model.id, llmMessages, {
+      ...middlewareConfig,
+      assistant: summaryAssistant,
       callType: 'summary'
     })
     const text = getText()

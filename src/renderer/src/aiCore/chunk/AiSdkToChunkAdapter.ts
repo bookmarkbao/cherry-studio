@@ -4,11 +4,15 @@
  */
 
 import { loggerService } from '@logger'
-import { AISDKWebSearchResult, MCPTool, WebSearchResults, WebSearchSource } from '@renderer/types'
-import { Chunk, ChunkType } from '@renderer/types/chunk'
+import type { AISDKWebSearchResult, MCPTool, WebSearchResults } from '@renderer/types'
+import { WebSearchSource } from '@renderer/types'
+import type { Chunk } from '@renderer/types/chunk'
+import { ChunkType } from '@renderer/types/chunk'
+import { ProviderSpecificError } from '@renderer/types/provider-specific-error'
+import { formatErrorMessage } from '@renderer/utils/error'
 import { convertLinks, flushLinkConverterBuffer } from '@renderer/utils/linkConverter'
 import type { ClaudeCodeRawValue } from '@shared/agents/claudecode/types'
-import type { TextStreamPart, ToolSet } from 'ai'
+import { AISDKError, type TextStreamPart, type ToolSet } from 'ai'
 
 import { ToolCallChunkHandler } from './handleToolCallChunk'
 
@@ -24,6 +28,8 @@ export class AiSdkToChunkAdapter {
   private isFirstChunk = true
   private enableWebSearch: boolean = false
   private onSessionUpdate?: (sessionId: string) => void
+  private responseStartTimestamp: number | null = null
+  private firstTokenTimestamp: number | null = null
 
   constructor(
     private onChunk: (chunk: Chunk) => void,
@@ -36,6 +42,17 @@ export class AiSdkToChunkAdapter {
     this.accumulate = accumulate
     this.enableWebSearch = enableWebSearch || false
     this.onSessionUpdate = onSessionUpdate
+  }
+
+  private markFirstTokenIfNeeded() {
+    if (this.firstTokenTimestamp === null && this.responseStartTimestamp !== null) {
+      this.firstTokenTimestamp = Date.now()
+    }
+  }
+
+  private resetTimingState() {
+    this.responseStartTimestamp = null
+    this.firstTokenTimestamp = null
   }
 
   /**
@@ -65,6 +82,8 @@ export class AiSdkToChunkAdapter {
       webSearchResults: [],
       reasoningId: ''
     }
+    this.resetTimingState()
+    this.responseStartTimestamp = Date.now()
     // Reset link converter state at the start of stream
     this.isFirstChunk = true
 
@@ -77,6 +96,7 @@ export class AiSdkToChunkAdapter {
           if (this.enableWebSearch) {
             const remainingText = flushLinkConverterBuffer()
             if (remainingText) {
+              this.markFirstTokenIfNeeded()
               this.onChunk({
                 type: ChunkType.TEXT_DELTA,
                 text: remainingText
@@ -91,6 +111,7 @@ export class AiSdkToChunkAdapter {
       }
     } finally {
       reader.releaseLock()
+      this.resetTimingState()
     }
   }
 
@@ -152,6 +173,7 @@ export class AiSdkToChunkAdapter {
 
         // Only emit chunk if there's text to send
         if (finalText) {
+          this.markFirstTokenIfNeeded()
           this.onChunk({
             type: ChunkType.TEXT_DELTA,
             text: this.accumulate ? final.text : finalText
@@ -176,16 +198,18 @@ export class AiSdkToChunkAdapter {
         break
       case 'reasoning-delta':
         final.reasoningContent += chunk.text || ''
+        if (chunk.text) {
+          this.markFirstTokenIfNeeded()
+        }
         this.onChunk({
           type: ChunkType.THINKING_DELTA,
-          text: final.reasoningContent || '',
-          thinking_millsec: (chunk.providerMetadata?.metadata?.thinking_millsec as number) || 0
+          text: final.reasoningContent || ''
         })
         break
       case 'reasoning-end':
         this.onChunk({
           type: ChunkType.THINKING_COMPLETE,
-          text: (chunk.providerMetadata?.metadata?.thinking_content as string) || final.reasoningContent
+          text: final.reasoningContent || ''
         })
         final.reasoningContent = ''
         break
@@ -276,44 +300,37 @@ export class AiSdkToChunkAdapter {
         break
       }
 
-      case 'finish':
+      case 'finish': {
+        const usage = {
+          completion_tokens: chunk.totalUsage?.outputTokens || 0,
+          prompt_tokens: chunk.totalUsage?.inputTokens || 0,
+          total_tokens: chunk.totalUsage?.totalTokens || 0
+        }
+        const metrics = this.buildMetrics(chunk.totalUsage)
+        const baseResponse = {
+          text: final.text || '',
+          reasoning_content: final.reasoningContent || ''
+        }
+
         this.onChunk({
           type: ChunkType.BLOCK_COMPLETE,
           response: {
-            text: final.text || '',
-            reasoning_content: final.reasoningContent || '',
-            usage: {
-              completion_tokens: chunk.totalUsage.outputTokens || 0,
-              prompt_tokens: chunk.totalUsage.inputTokens || 0,
-              total_tokens: chunk.totalUsage.totalTokens || 0
-            },
-            metrics: chunk.totalUsage
-              ? {
-                  completion_tokens: chunk.totalUsage.outputTokens || 0,
-                  time_completion_millsec: 0
-                }
-              : undefined
+            ...baseResponse,
+            usage: { ...usage },
+            metrics: metrics ? { ...metrics } : undefined
           }
         })
         this.onChunk({
           type: ChunkType.LLM_RESPONSE_COMPLETE,
           response: {
-            text: final.text || '',
-            reasoning_content: final.reasoningContent || '',
-            usage: {
-              completion_tokens: chunk.totalUsage.outputTokens || 0,
-              prompt_tokens: chunk.totalUsage.inputTokens || 0,
-              total_tokens: chunk.totalUsage.totalTokens || 0
-            },
-            metrics: chunk.totalUsage
-              ? {
-                  completion_tokens: chunk.totalUsage.outputTokens || 0,
-                  time_completion_millsec: 0
-                }
-              : undefined
+            ...baseResponse,
+            usage: { ...usage },
+            metrics: metrics ? { ...metrics } : undefined
           }
         })
+        this.resetTimingState()
         break
+      }
 
       // === 源和文件相关事件 ===
       case 'source':
@@ -342,11 +359,46 @@ export class AiSdkToChunkAdapter {
       case 'error':
         this.onChunk({
           type: ChunkType.ERROR,
-          error: chunk.error as Record<string, any>
+          error:
+            chunk.error instanceof AISDKError
+              ? chunk.error
+              : new ProviderSpecificError({
+                  message: formatErrorMessage(chunk.error),
+                  provider: 'unknown',
+                  cause: chunk.error
+                })
         })
         break
 
       default:
+    }
+  }
+
+  private buildMetrics(totalUsage?: {
+    inputTokens?: number | null
+    outputTokens?: number | null
+    totalTokens?: number | null
+  }) {
+    if (!totalUsage) {
+      return undefined
+    }
+
+    const completionTokens = totalUsage.outputTokens ?? 0
+    const now = Date.now()
+    const start = this.responseStartTimestamp ?? now
+    const firstToken = this.firstTokenTimestamp
+    const timeFirstToken = Math.max(firstToken != null ? firstToken - start : 0, 0)
+    const baseForCompletion = firstToken ?? start
+    let timeCompletion = Math.max(now - baseForCompletion, 0)
+
+    if (timeCompletion === 0 && completionTokens > 0) {
+      timeCompletion = 1
+    }
+
+    return {
+      completion_tokens: completionTokens,
+      time_first_token_millsec: timeFirstToken,
+      time_completion_millsec: timeCompletion
     }
   }
 }

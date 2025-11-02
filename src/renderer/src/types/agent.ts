@@ -4,10 +4,11 @@
  *
  * WARNING: Any null value will be converted to undefined from api.
  */
-import { ModelMessage, TextStreamPart } from 'ai'
-import { z } from 'zod'
+import type { ModelMessage, TextStreamPart } from 'ai'
+import * as z from 'zod'
 
 import type { Message, MessageBlock } from './newMessage'
+import { InstalledPluginSchema, PluginMetadataSchema } from './plugin'
 
 // ------------------ Core enums and helper types ------------------
 export const PermissionModeSchema = z.enum(['default', 'acceptEdits', 'bypassPermissions', 'plan'])
@@ -42,12 +43,22 @@ export const ToolSchema = z.object({
 
 export type Tool = z.infer<typeof ToolSchema>
 
+export const SlashCommandSchema = z.object({
+  command: z.string(), // e.g. '/status'
+  description: z.string().optional() // e.g. 'Show help information'
+})
+
+export type SlashCommand = z.infer<typeof SlashCommandSchema>
+
 // ------------------ Agent configuration & base schema ------------------
 export const AgentConfigurationSchema = z
   .object({
+    avatar: z.string().optional(), // agent type as mark of default avatar; single emoji; URL or path to avatar image.
+    slash_commands: z.array(z.string()).optional(), // Array of slash commands to trigger the agent, this is from agent init response
+
     // https://docs.claude.com/en/docs/claude-code/sdk/sdk-permissions#mode-specific-behaviors
-    permission_mode: PermissionModeSchema.default('default'), // Permission mode, default to 'default'
-    max_turns: z.number().default(10) // Maximum number of interaction turns, default to 10
+    permission_mode: PermissionModeSchema.optional().default('default'), // Permission mode, default to 'default'
+    max_turns: z.number().optional().default(100) // Maximum number of interaction turns, default to 100
   })
   .loose()
 
@@ -111,6 +122,8 @@ export const isAgentEntity = (value: unknown): value is AgentEntity => {
 export interface ListOptions {
   limit?: number
   offset?: number
+  sortBy?: 'created_at' | 'updated_at' | 'name'
+  orderBy?: 'asc' | 'desc'
 }
 
 // AgentSession entity representing a conversation session with one or more agents
@@ -214,6 +227,25 @@ export type SessionForm = CreateSessionForm | UpdateSessionForm
 
 export type UpdateAgentBaseForm = Partial<AgentBase> & { id: string }
 
+// --------------------- Components & Hooks ----------------------
+
+export type UpdateAgentBaseOptions = {
+  /** Whether to show success toast after updating. Defaults to true. */
+  showSuccessToast?: boolean
+}
+
+export type UpdateAgentFunction = (
+  form: UpdateAgentForm,
+  options?: UpdateAgentBaseOptions
+) => Promise<AgentEntity | undefined>
+
+export type UpdateAgentSessionFunction = (
+  form: UpdateSessionForm,
+  options?: UpdateAgentBaseOptions
+) => Promise<AgentSessionEntity | undefined>
+
+export type UpdateAgentFunctionUnion = UpdateAgentFunction | UpdateAgentSessionFunction
+
 // ------------------ API data transfer objects ------------------
 export interface CreateAgentRequest extends AgentBase {
   type: AgentType
@@ -228,7 +260,8 @@ export interface UpdateAgentRequest extends Partial<AgentBase> {}
 export type ReplaceAgentRequest = AgentBase
 
 export const GetAgentResponseSchema = AgentEntitySchema.extend({
-  tools: z.array(ToolSchema).optional() // All tools available to the agent (including built-in and custom)
+  tools: z.array(ToolSchema).optional(), // All tools available to the agent (including built-in and custom)
+  installed_plugins: z.array(InstalledPluginSchema).optional() // Plugins loaded from .claude/plugins.json cache
 })
 
 export type GetAgentResponse = z.infer<typeof GetAgentResponseSchema>
@@ -252,10 +285,24 @@ export interface UpdateSessionRequest extends Partial<AgentBase> {}
 
 export const GetAgentSessionResponseSchema = AgentSessionEntitySchema.extend({
   tools: z.array(ToolSchema).optional(), // All tools available to the session (including built-in and custom)
-  messages: z.array(AgentSessionMessageEntitySchema).optional() // Messages in the session
+  messages: z.array(AgentSessionMessageEntitySchema).optional(), // Messages in the session
+  slash_commands: z.array(SlashCommandSchema).optional(), // Array of slash commands to trigger the agent
+  plugins: z
+    .array(
+      z.object({
+        filename: z.string(),
+        type: z.enum(['agent', 'command', 'skill']),
+        metadata: PluginMetadataSchema
+      })
+    )
+    .optional() // Installed plugins from workdir
 })
 
+export const CreateAgentSessionResponseSchema = GetAgentSessionResponseSchema
+
 export type GetAgentSessionResponse = z.infer<typeof GetAgentSessionResponseSchema>
+
+export type CreateAgentSessionResponse = GetAgentSessionResponse
 
 export const ListAgentSessionsResponseSchema = z.object({
   data: z.array(AgentSessionEntitySchema),
@@ -331,3 +378,15 @@ export type ReplaceSessionRequest = z.infer<typeof ReplaceSessionRequestSchema>
 export const CreateSessionMessageRequestSchema = z.object({
   content: z.string().min(1, 'Content must be a valid string')
 })
+
+export type PermissionModeCard = {
+  mode: PermissionMode
+  titleKey: string
+  titleFallback: string
+  descriptionKey: string
+  descriptionFallback: string
+  behaviorKey: string
+  behaviorFallback: string
+  caution?: boolean
+  unsupported?: boolean
+}

@@ -1,14 +1,13 @@
 import '@renderer/pages/home/Inputbar/tools'
 
-import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd'
+import type { DropResult } from '@hello-pangea/dnd'
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { ActionIconButton } from '@renderer/components/Buttons'
-import { QuickPanelListItem, QuickPanelReservedSymbol } from '@renderer/components/QuickPanel'
+import type { QuickPanelListItem, QuickPanelReservedSymbol } from '@renderer/components/QuickPanel'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useInputbarTools } from '@renderer/pages/home/Inputbar/context/InputbarToolsProvider'
 import { getInputbarConfig } from '@renderer/pages/home/Inputbar/registry'
-import {
-  getDefaultToolOrder,
-  getToolsForScope,
+import type {
   InputbarScope,
   ToolActionKey,
   ToolActionMap,
@@ -19,11 +18,13 @@ import {
   ToolStateKey,
   ToolStateMap
 } from '@renderer/pages/home/Inputbar/types'
+import { getDefaultToolOrder, getToolsForScope } from '@renderer/pages/home/Inputbar/types'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setIsCollapsed, setToolOrder } from '@renderer/store/inputTools'
+import type { InputBarToolType } from '@renderer/types/chat'
 import { classNames } from '@renderer/utils'
 import { Divider, Dropdown } from 'antd'
-import { ItemType } from 'antd/es/menu/interface'
+import type { ItemType } from 'antd/es/menu/interface'
 import { Check, CircleChevronRight } from 'lucide-react'
 import React, { useCallback, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -36,7 +37,7 @@ export interface InputbarToolsNewProps {
 }
 
 interface ToolButtonConfig {
-  key: string
+  key: InputBarToolType
   component: React.ReactNode
   condition?: boolean
   visible?: boolean
@@ -174,7 +175,7 @@ const InputbarTools = ({ scope, assistantId }: InputbarToolsNewProps) => {
   }, [hiddenTools])
 
   const toggleToolVisibility = useCallback(
-    (toolKey: string, isVisible: boolean | undefined) => {
+    (toolKey: InputBarToolType, isVisible: boolean | undefined) => {
       const newToolOrder: ToolOrderConfig = {
         visible: [...toolOrder.visible],
         hidden: [...toolOrder.hidden]

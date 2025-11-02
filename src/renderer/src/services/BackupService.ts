@@ -4,7 +4,7 @@ import { upgradeToV7, upgradeToV8 } from '@renderer/databases/upgrades'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
 import { setLocalBackupSyncState, setS3SyncState, setWebDAVSyncState } from '@renderer/store/backup'
-import { S3Config, WebDavConfig } from '@renderer/types'
+import type { S3Config, WebDavConfig } from '@renderer/types'
 import { uuid } from '@renderer/utils'
 import dayjs from 'dayjs'
 
@@ -89,6 +89,7 @@ export async function restore() {
       }
 
       await handleData(data)
+
       notificationService.send({
         id: uuid(),
         type: 'success',
@@ -850,6 +851,12 @@ export async function handleData(data: Record<string, any>) {
 
   if (data.version >= 2) {
     localStorage.setItem('persist:cherry-studio', data.localStorage['persist:cherry-studio'])
+
+    // remove notes_tree from indexedDB
+    if (data.indexedDB['notes_tree']) {
+      delete data.indexedDB['notes_tree']
+    }
+
     await restoreDatabase(data.indexedDB)
 
     if (data.version === 3) {

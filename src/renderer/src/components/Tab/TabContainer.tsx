@@ -13,10 +13,11 @@ import tabsService from '@renderer/services/TabsService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import type { Tab } from '@renderer/store/tabs'
 import { addTab, removeTab, setActiveTab, setTabs } from '@renderer/store/tabs'
-import { MinAppType, ThemeMode } from '@renderer/types'
+import type { MinAppType } from '@renderer/types'
+import { ThemeMode } from '@renderer/types'
 import { classNames } from '@renderer/utils'
 import { Tooltip } from 'antd'
-import { LRUCache } from 'lru-cache'
+import type { LRUCache } from 'lru-cache'
 import {
   FileSearch,
   Folder,
@@ -237,7 +238,17 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
             onSortEnd={onSortEnd}
             className="tabs-sortable"
             renderItem={(tab) => (
-              <Tab key={tab.id} active={tab.id === activeTabId} onClick={() => handleTabClick(tab)}>
+              <Tab
+                key={tab.id}
+                active={tab.id === activeTabId}
+                onClick={() => handleTabClick(tab)}
+                onAuxClick={(e) => {
+                  if (e.button === 1 && tab.id !== 'home') {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    closeTab(tab.id)
+                  }
+                }}>
                 <TabHeader>
                   {tab.id && <TabIcon>{getTabIcon(tab.id, minapps, minAppsCache)}</TabIcon>}
                   <TabTitle>{getTabTitle(tab.id)}</TabTitle>

@@ -1,18 +1,20 @@
 import { ActionIconButton } from '@renderer/components/Buttons'
 import ModelTagsWithLabel from '@renderer/components/ModelTagsWithLabel'
-import { QuickPanelListItem, QuickPanelReservedSymbol, useQuickPanel } from '@renderer/components/QuickPanel'
+import type { QuickPanelListItem } from '@renderer/components/QuickPanel'
+import { QuickPanelReservedSymbol, useQuickPanel } from '@renderer/components/QuickPanel'
 import { getModelLogo, isEmbeddingModel, isRerankModel, isVisionModel } from '@renderer/config/models'
 import db from '@renderer/databases'
 import { useProviders } from '@renderer/hooks/useProvider'
-import { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
+import type { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
 import { getModelUniqId } from '@renderer/services/ModelService'
-import { FileType, Model } from '@renderer/types'
+import type { FileType, Model } from '@renderer/types'
 import { getFancyProviderName } from '@renderer/utils'
 import { Avatar, Tooltip } from 'antd'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { first, sortBy } from 'lodash'
 import { AtSign, CircleX, Plus } from 'lucide-react'
-import { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react'
+import type { FC } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
@@ -121,7 +123,7 @@ const MentionModelsButton: FC<Props> = ({
             ),
             description: <ModelTagsWithLabel model={model} showLabel={false} size={10} style={{ opacity: 0.8 }} />,
             icon: (
-              <Avatar src={getModelLogo(model.id)} size={20}>
+              <Avatar src={getModelLogo(model)} size={20}>
                 {first(model.name)}
               </Avatar>
             ),
@@ -157,7 +159,7 @@ const MentionModelsButton: FC<Props> = ({
         ),
         description: <ModelTagsWithLabel model={model} showLabel={false} size={10} style={{ opacity: 0.8 }} />,
         icon: (
-          <Avatar src={getModelLogo(model.id)} size={20}>
+          <Avatar src={getModelLogo(model)} size={20}>
             {first(model.name)}
           </Avatar>
         ),
@@ -232,18 +234,18 @@ const MentionModelsButton: FC<Props> = ({
         },
         onClose({ action, searchText, context }) {
           if (action === 'esc') {
-            if (
-              hasModelActionRef.current &&
-              context.triggerInfo?.type === 'input' &&
-              context.triggerInfo?.position !== undefined
-            ) {
+            // 只有在输入触发且有模型选择动作时才删除@字符和搜索文本
+            const triggerInfo = context?.triggerInfo ?? triggerInfoRef.current
+            if (hasModelActionRef.current && triggerInfo?.type === 'input' && triggerInfo?.position !== undefined) {
+              // 基于当前光标 + 搜索词精确定位并删除，position 仅作兜底
               setText((currentText) => {
                 const textArea = document.querySelector('.inputbar textarea') as HTMLTextAreaElement | null
                 const caret = textArea ? (textArea.selectionStart ?? currentText.length) : currentText.length
-                return removeAtSymbolAndText(currentText, caret, searchText || '', context.triggerInfo?.position!)
+                return removeAtSymbolAndText(currentText, caret, searchText || '', triggerInfo?.position!)
               })
             }
           }
+          triggerInfoRef.current = undefined
         }
       })
     },

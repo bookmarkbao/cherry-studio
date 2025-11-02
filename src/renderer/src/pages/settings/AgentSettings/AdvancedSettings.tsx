@@ -1,13 +1,13 @@
 import { Input, Tooltip } from '@heroui/react'
-import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
-import { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
-import {
+import type { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
+import type { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
+import type {
   AgentConfiguration,
-  AgentConfigurationSchema,
   GetAgentResponse,
   GetAgentSessionResponse,
   UpdateAgentBaseForm
 } from '@renderer/types'
+import { AgentConfigurationSchema } from '@renderer/types'
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -19,11 +19,11 @@ type AgentConfigurationState = AgentConfiguration & Record<string, unknown>
 type AdvancedSettingsProps =
   | {
       agentBase: GetAgentResponse | undefined | null
-      update: ReturnType<typeof useUpdateAgent>
+      update: ReturnType<typeof useUpdateAgent>['updateAgent']
     }
   | {
       agentBase: GetAgentSessionResponse | undefined | null
-      update: ReturnType<typeof useUpdateSession>
+      update: ReturnType<typeof useUpdateSession>['updateSession']
     }
 
 const defaultConfiguration: AgentConfigurationState = AgentConfigurationSchema.parse({})

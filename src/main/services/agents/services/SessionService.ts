@@ -1,3 +1,4 @@
+import type { UpdateSessionResponse } from '@types'
 import {
   AgentBaseSchema,
   type AgentEntity,
@@ -5,14 +6,13 @@ import {
   type CreateSessionRequest,
   type GetAgentSessionResponse,
   type ListOptions,
-  type UpdateSessionRequest,
-  UpdateSessionResponse
+  type UpdateSessionRequest
 } from '@types'
 import { and, count, desc, eq, type SQL } from 'drizzle-orm'
 
 import { BaseService } from '../BaseService'
 import { agentsTable, type InsertSessionRow, type SessionRow, sessionsTable } from '../database/schema'
-import { AgentModelField } from '../errors'
+import type { AgentModelField } from '../errors'
 
 export class SessionService extends BaseService {
   private static instance: SessionService | null = null
@@ -110,6 +110,7 @@ export class SessionService extends BaseService {
 
     const session = this.deserializeJsonFields(result[0]) as GetAgentSessionResponse
     session.tools = await this.listMcpTools(session.agent_type, session.mcps)
+    session.slash_commands = await this.listSlashCommands(session.agent_type)
     return session
   }
 

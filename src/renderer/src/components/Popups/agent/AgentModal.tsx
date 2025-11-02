@@ -1,7 +1,6 @@
+import type { SelectedItemProps } from '@heroui/react'
 import {
   Button,
-  Chip,
-  cn,
   Form,
   Input,
   Modal,
@@ -10,8 +9,6 @@ import {
   ModalFooter,
   ModalHeader,
   Select,
-  SelectedItemProps,
-  SelectedItems,
   SelectItem,
   Textarea,
   useDisclosure
@@ -19,25 +16,29 @@ import {
 import { loggerService } from '@logger'
 import type { Selection } from '@react-types/shared'
 import ClaudeIcon from '@renderer/assets/images/models/claude.png'
-import { getModelLogo } from '@renderer/config/models'
+import { permissionModeCards } from '@renderer/config/agent'
+import { agentModelFilter, getModelLogoById } from '@renderer/config/models'
 import { useAgents } from '@renderer/hooks/agents/useAgents'
 import { useApiModels } from '@renderer/hooks/agents/useModels'
 import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
-import {
+import type {
   AddAgentForm,
-  AgentConfigurationSchema,
   AgentEntity,
   AgentType,
   BaseAgentForm,
-  isAgentType,
+  PermissionMode,
   Tool,
   UpdateAgentForm
 } from '@renderer/types'
-import { ChangeEvent, FormEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AgentConfigurationSchema, isAgentType } from '@renderer/types'
+import { AlertTriangleIcon } from 'lucide-react'
+import type { ChangeEvent, FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ErrorBoundary } from '../../ErrorBoundary'
-import { BaseOption, ModelOption, Option, renderOption } from './shared'
+import type { BaseOption, ModelOption } from './shared'
+import { Option, renderOption } from './shared'
 
 const logger = loggerService.withContext('AddAgentPopup')
 
@@ -56,48 +57,36 @@ const buildAgentForm = (existing?: AgentWithTools): BaseAgentForm => ({
   name: existing?.name ?? 'Claude Code',
   description: existing?.description,
   instructions: existing?.instructions,
-  model: existing?.model ?? 'claude-4-sonnet',
+  model: existing?.model ?? '',
   accessible_paths: existing?.accessible_paths ? [...existing.accessible_paths] : [],
   allowed_tools: existing?.allowed_tools ? [...existing.allowed_tools] : [],
   mcps: existing?.mcps ? [...existing.mcps] : [],
   configuration: AgentConfigurationSchema.parse(existing?.configuration ?? {})
 })
 
-interface BaseProps {
+type Props = {
   agent?: AgentWithTools
-}
-
-interface TriggerProps extends BaseProps {
-  trigger: { content: ReactNode; className?: string }
-  isOpen?: never
-  onClose?: never
-}
-
-interface StateProps extends BaseProps {
-  trigger?: never
   isOpen: boolean
   onClose: () => void
+  afterSubmit?: (a: AgentEntity) => void
 }
-
-type Props = TriggerProps | StateProps
 
 /**
  * Modal component for creating or editing an agent.
  *
  * Either trigger or isOpen and onClose is given.
  * @param agent - Optional agent entity for editing mode.
- * @param trigger - Optional trigger element that opens the modal. It MUST propagate the click event to trigger the modal.
  * @param isOpen - Optional controlled modal open state. From useDisclosure.
  * @param onClose - Optional callback when modal closes. From useDisclosure.
  * @returns Modal component for agent creation/editing
  */
-export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, onClose: _onClose }) => {
-  const { isOpen, onClose, onOpen } = useDisclosure({ isOpen: _isOpen, onClose: _onClose })
+export const AgentModal: React.FC<Props> = ({ agent, isOpen: _isOpen, onClose: _onClose, afterSubmit }) => {
+  const { isOpen, onClose } = useDisclosure({ isOpen: _isOpen, onClose: _onClose })
   const { t } = useTranslation()
   const loadingRef = useRef(false)
   // const { setTimeoutTimer } = useTimer()
   const { addAgent } = useAgents()
-  const updateAgent = useUpdateAgent()
+  const { updateAgent } = useUpdateAgent()
   // hard-coded. We only support anthropic for now.
   const { models } = useApiModels({ providerType: 'anthropic' })
   const isEditing = (agent?: AgentWithTools) => agent !== undefined
@@ -110,25 +99,41 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
     }
   }, [agent, isOpen])
 
-  const availableTools = useMemo(() => agent?.tools ?? [], [agent?.tools])
-  const selectedToolKeys = useMemo(() => new Set(form.allowed_tools), [form.allowed_tools])
+  const selectedPermissionMode = form.configuration?.permission_mode ?? 'default'
 
-  useEffect(() => {
-    if (!availableTools.length) {
+  const onPermissionModeChange = useCallback((keys: Selection) => {
+    if (keys === 'all') {
+      return
+    }
+
+    const [first] = Array.from(keys)
+    if (!first) {
       return
     }
 
     setForm((prev) => {
-      const validTools = prev.allowed_tools.filter((id) => availableTools.some((tool) => tool.id === id))
-      if (validTools.length === prev.allowed_tools.length) {
+      const parsedConfiguration = AgentConfigurationSchema.parse(prev.configuration ?? {})
+      const nextMode = first as PermissionMode
+
+      if (parsedConfiguration.permission_mode === nextMode) {
+        if (!prev.configuration) {
+          return {
+            ...prev,
+            configuration: parsedConfiguration
+          }
+        }
         return prev
       }
+
       return {
         ...prev,
-        allowed_tools: validTools
+        configuration: {
+          ...parsedConfiguration,
+          permission_mode: nextMode
+        }
       }
     })
-  }, [availableTools])
+  }, [])
 
   // add supported agents type here.
   const agentConfig = useMemo(
@@ -197,45 +202,6 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
     }))
   }, [])
 
-  const onAllowedToolsChange = useCallback(
-    (keys: Selection) => {
-      setForm((prev) => {
-        if (keys === 'all') {
-          return {
-            ...prev,
-            allowed_tools: availableTools.map((tool) => tool.id)
-          }
-        }
-
-        const next = Array.from(keys).map(String)
-        const filtered = availableTools.length
-          ? next.filter((id) => availableTools.some((tool) => tool.id === id))
-          : next
-
-        return {
-          ...prev,
-          allowed_tools: filtered
-        }
-      })
-    },
-    [availableTools]
-  )
-
-  const renderSelectedTools = useCallback((items: SelectedItems<Tool>) => {
-    if (!items.length) {
-      return null
-    }
-    return (
-      <div className="flex flex-wrap gap-2">
-        {items.map((item) => (
-          <Chip key={item.key} size="sm" variant="flat" className="max-w-[160px] truncate">
-            {item.data?.name ?? item.textValue ?? item.key}
-          </Chip>
-        ))}
-      </div>
-    )
-  }, [])
-
   const addAccessiblePath = useCallback(async () => {
     try {
       const selected = await window.api.file.selectFolder()
@@ -267,14 +233,23 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
 
   const modelOptions = useMemo(() => {
     // mocked data. not final version
-    return (models ?? []).map((model) => ({
-      type: 'model',
-      key: model.id,
-      label: model.name,
-      avatar: getModelLogo(model.id),
-      providerId: model.provider,
-      providerName: model.provider_name
-    })) satisfies ModelOption[]
+    return (models ?? [])
+      .filter((m) =>
+        agentModelFilter({
+          id: m.id,
+          provider: m.provider || '',
+          name: m.name,
+          group: ''
+        })
+      )
+      .map((model) => ({
+        type: 'model',
+        key: model.id,
+        label: model.name,
+        avatar: getModelLogoById(model.id),
+        providerId: model.provider,
+        providerName: model.provider_name
+      })) satisfies ModelOption[]
   }, [models])
 
   const onModelChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
@@ -306,13 +281,14 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
       }
 
       if (form.accessible_paths.length === 0) {
-        window.toast.error(t('agent.session.accessible_paths.required'))
+        window.toast.error(t('agent.session.accessible_paths.error.at_least_one'))
         loadingRef.current = false
         return
       }
 
       if (isEditing(agent)) {
         if (!agent) {
+          loadingRef.current = false
           throw new Error('Agent is required for editing mode')
         }
 
@@ -327,8 +303,13 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
           configuration: form.configuration ? { ...form.configuration } : undefined
         } satisfies UpdateAgentForm
 
-        updateAgent(updatePayload)
-        logger.debug('Updated agent', updatePayload)
+        const result = await updateAgent(updatePayload)
+        if (result) {
+          logger.debug('Updated agent', result)
+          afterSubmit?.(result)
+        } else {
+          logger.error('Update failed.')
+        }
       } else {
         const newAgent = {
           type: form.type,
@@ -340,10 +321,14 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
           allowed_tools: [...form.allowed_tools],
           configuration: form.configuration ? { ...form.configuration } : undefined
         } satisfies AddAgentForm
-        addAgent(newAgent)
-        logger.debug('Added agent', newAgent)
-      }
+        const result = await addAgent(newAgent)
 
+        if (!result.success) {
+          loadingRef.current = false
+          throw result.error
+        }
+        afterSubmit?.(result.data)
+      }
       loadingRef.current = false
 
       // setTimeoutTimer('onCreateAgent', () => EventEmitter.emit(EVENT_NAMES.SHOW_ASSISTANTS), 0)
@@ -352,39 +337,23 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
     [
       form.type,
       form.model,
+      form.accessible_paths,
       form.name,
       form.description,
       form.instructions,
-      form.accessible_paths,
       form.allowed_tools,
       form.configuration,
       agent,
       onClose,
       t,
       updateAgent,
+      afterSubmit,
       addAgent
     ]
   )
 
   return (
     <ErrorBoundary>
-      {/* NOTE: Hero UI Modal Pattern: Combine the Button and Modal components into a single
-      encapsulated component. This is because the Modal component needs to bind the onOpen
-      event handler to the Button for proper focus management.
-
-      Or just use external isOpen/onOpen/onClose to control modal state.
-      */}
-
-      {trigger && (
-        <div
-          onClick={(e) => {
-            e.stopPropagation()
-            onOpen()
-          }}
-          className={cn('w-full', trigger.className)}>
-          {trigger.content}
-        </div>
-      )}
       <Modal
         isOpen={isOpen}
         onClose={onClose}
@@ -404,6 +373,7 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
                       isDisabled={isEditing(agent)}
                       selectionMode="single"
                       selectedKeys={[form.type]}
+                      disallowEmptySelection
                       onChange={onAgentTypeChange}
                       items={agentOptions}
                       label={t('agent.type.label')}
@@ -421,6 +391,7 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
                     isRequired
                     selectionMode="single"
                     selectedKeys={form.model ? [form.model] : []}
+                    disallowEmptySelection
                     onChange={onModelChange}
                     items={modelOptions}
                     label={t('common.model')}
@@ -433,25 +404,35 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
                     )}
                   </Select>
                   <Select
-                    selectionMode="multiple"
-                    selectedKeys={selectedToolKeys}
-                    onSelectionChange={onAllowedToolsChange}
-                    label={t('agent.session.allowed_tools.label')}
-                    placeholder={t('agent.session.allowed_tools.placeholder')}
-                    description={
-                      availableTools.length
-                        ? t('agent.session.allowed_tools.helper')
-                        : t('agent.session.allowed_tools.empty')
-                    }
-                    isDisabled={!availableTools.length}
-                    items={availableTools}
-                    renderValue={renderSelectedTools}>
-                    {(tool) => (
-                      <SelectItem key={tool.id} textValue={tool.name}>
-                        <div className="flex flex-col">
-                          <span className="font-medium text-sm">{tool.name}</span>
-                          {tool.description ? (
-                            <span className="text-foreground-500 text-xs">{tool.description}</span>
+                    isRequired
+                    selectionMode="single"
+                    selectedKeys={[selectedPermissionMode]}
+                    onSelectionChange={onPermissionModeChange}
+                    label={t('agent.settings.tooling.permissionMode.title', 'Permission mode')}
+                    placeholder={t('agent.settings.tooling.permissionMode.placeholder', 'Select permission mode')}
+                    description={t(
+                      'agent.settings.tooling.permissionMode.helper',
+                      'Choose how the agent handles tool approvals.'
+                    )}
+                    items={permissionModeCards}>
+                    {(item) => (
+                      <SelectItem key={item.mode} textValue={t(item.titleKey, item.titleFallback)}>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-medium text-sm">{t(item.titleKey, item.titleFallback)}</span>
+                          <span className="text-foreground-500 text-xs">
+                            {t(item.descriptionKey, item.descriptionFallback)}
+                          </span>
+                          <span className="text-foreground-400 text-xs">
+                            {t(item.behaviorKey, item.behaviorFallback)}
+                          </span>
+                          {item.caution ? (
+                            <span className="flex items-center gap-1 text-danger-500 text-xs">
+                              <AlertTriangleIcon size={12} className="text-danger" />
+                              {t(
+                                'agent.settings.tooling.permissionMode.bypassPermissions.warning',
+                                'Use with caution — all tools will run without asking for approval.'
+                              )}
+                            </span>
                           ) : null}
                         </div>
                       </SelectItem>

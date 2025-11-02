@@ -3,9 +3,11 @@
  * 构建AI SDK的流式和非流式参数
  */
 
+import { anthropic } from '@ai-sdk/anthropic'
+import { google } from '@ai-sdk/google'
 import { vertexAnthropic } from '@ai-sdk/google-vertex/anthropic/edge'
 import { vertex } from '@ai-sdk/google-vertex/edge'
-import { WebSearchPluginConfig } from '@cherrystudio/ai-core/built-in/plugins'
+import type { WebSearchPluginConfig } from '@cherrystudio/ai-core/built-in/plugins'
 import { isBaseProvider } from '@cherrystudio/ai-core/core/providers/schemas'
 import { loggerService } from '@logger'
 import {
@@ -19,10 +21,11 @@ import {
 } from '@renderer/config/models'
 import { getAssistantSettings, getDefaultModel } from '@renderer/services/AssistantService'
 import store from '@renderer/store'
-import { CherryWebSearchConfig } from '@renderer/store/websearch'
+import type { CherryWebSearchConfig } from '@renderer/store/websearch'
 import { type Assistant, type MCPTool, type Provider } from '@renderer/types'
 import type { StreamTextParams } from '@renderer/types/aiCoreTypes'
 import { mapRegexToPatterns } from '@renderer/utils/blacklistMatchPattern'
+import { replacePromptVariables } from '@renderer/utils/prompt'
 import type { ModelMessage, Tool } from 'ai'
 import { stepCountIs } from 'ai'
 
@@ -96,10 +99,6 @@ export async function buildStreamTextParams(
 
   let tools = setupToolsConfig(mcpTools)
 
-  // if (webSearchProviderId) {
-  //   tools['builtin_web_search'] = webSearchTool(webSearchProviderId)
-  // }
-
   // 构建真正的 providerOptions
   const webSearchConfig: CherryWebSearchConfig = {
     maxResults: store.getState().websearch.maxResults,
@@ -126,7 +125,7 @@ export async function buildStreamTextParams(
   let webSearchPluginConfig: WebSearchPluginConfig | undefined = undefined
   if (enableWebSearch) {
     if (isBaseProvider(aiSdkProviderId)) {
-      webSearchPluginConfig = buildProviderBuiltinWebSearchConfig(aiSdkProviderId, webSearchConfig)
+      webSearchPluginConfig = buildProviderBuiltinWebSearchConfig(aiSdkProviderId, webSearchConfig, model)
     }
     if (!tools) {
       tools = {}
@@ -134,19 +133,42 @@ export async function buildStreamTextParams(
     if (aiSdkProviderId === 'google-vertex') {
       tools.google_search = vertex.tools.googleSearch({}) as ProviderDefinedTool
     } else if (aiSdkProviderId === 'google-vertex-anthropic') {
+      const blockedDomains = mapRegexToPatterns(webSearchConfig.excludeDomains)
       tools.web_search = vertexAnthropic.tools.webSearch_20250305({
         maxUses: webSearchConfig.maxResults,
-        blockedDomains: mapRegexToPatterns(webSearchConfig.excludeDomains)
+        blockedDomains: blockedDomains.length > 0 ? blockedDomains : undefined
       }) as ProviderDefinedTool
     }
   }
 
-  // google-vertex
-  if (enableUrlContext && aiSdkProviderId === 'google-vertex') {
+  if (enableUrlContext) {
     if (!tools) {
       tools = {}
     }
-    tools.url_context = vertex.tools.urlContext({}) as ProviderDefinedTool
+    const blockedDomains = mapRegexToPatterns(webSearchConfig.excludeDomains)
+
+    switch (aiSdkProviderId) {
+      case 'google-vertex':
+        tools.url_context = vertex.tools.urlContext({}) as ProviderDefinedTool
+        break
+      case 'google':
+        tools.url_context = google.tools.urlContext({}) as ProviderDefinedTool
+        break
+      case 'anthropic':
+      case 'google-vertex-anthropic':
+        tools.web_fetch = (
+          aiSdkProviderId === 'anthropic'
+            ? anthropic.tools.webFetch_20250910({
+                maxUses: webSearchConfig.maxResults,
+                blockedDomains: blockedDomains.length > 0 ? blockedDomains : undefined
+              })
+            : vertexAnthropic.tools.webFetch_20250910({
+                maxUses: webSearchConfig.maxResults,
+                blockedDomains: blockedDomains.length > 0 ? blockedDomains : undefined
+              })
+        ) as ProviderDefinedTool
+        break
+    }
   }
 
   // 构建基础参数
@@ -158,14 +180,14 @@ export async function buildStreamTextParams(
     abortSignal: options.requestOptions?.signal,
     headers: options.requestOptions?.headers,
     providerOptions,
-    stopWhen: stepCountIs(10),
+    stopWhen: stepCountIs(20),
     maxRetries: 0
   }
   if (tools) {
     params.tools = tools
   }
   if (assistant.prompt) {
-    params.system = assistant.prompt
+    params.system = await replacePromptVariables(assistant.prompt, model.name)
   }
   logger.debug('params', params)
   return {

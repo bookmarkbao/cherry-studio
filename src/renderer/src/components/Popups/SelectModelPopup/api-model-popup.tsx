@@ -3,11 +3,12 @@ import { HStack } from '@renderer/components/Layout'
 import ModelTagsWithLabel from '@renderer/components/ModelTagsWithLabel'
 import { TopView } from '@renderer/components/TopView'
 import { DynamicVirtualList, type DynamicVirtualListRef } from '@renderer/components/VirtualList'
-import { getModelLogo } from '@renderer/config/models'
+import { getModelLogoById } from '@renderer/config/models'
 import { useApiModels } from '@renderer/hooks/agents/useModels'
 import { getModelUniqId } from '@renderer/services/ModelService'
 import { getProviderNameById } from '@renderer/services/ProviderService'
-import { AdaptedApiModel, ApiModel, ApiModelsFilter, ModelType, objectEntries } from '@renderer/types'
+import type { AdaptedApiModel, ApiModel, ApiModelsFilter, Model, ModelType } from '@renderer/types'
+import { objectEntries } from '@renderer/types'
 import { classNames, filterModelsByKeywords } from '@renderer/utils'
 import { apiModelAdapter, getModelTags } from '@renderer/utils/model'
 import { Avatar, Divider, Empty, Modal } from 'antd'
@@ -27,15 +28,17 @@ import styled from 'styled-components'
 import { useModelTagFilter } from './filters'
 import SelectModelSearchBar from './searchbar'
 import TagFilterSection from './TagFilterSection'
-import { FlatListApiItem, FlatListApiModel } from './types'
+import type { FlatListApiItem, FlatListApiModel } from './types'
 
 const PAGE_SIZE = 12
 const ITEM_HEIGHT = 36
 
 interface PopupParams {
   model?: ApiModel
-  /** Api model filter */
-  filter?: ApiModelsFilter
+  /** Api models filter */
+  apiFilter?: ApiModelsFilter
+  /** model filter */
+  modelFilter?: (model: Model) => boolean
   /** Show tag filter section */
   showTagFilter?: boolean
 }
@@ -48,12 +51,12 @@ export type FilterType = Exclude<ModelType, 'text'> | 'free'
 
 // const logger = loggerService.withContext('SelectModelPopup')
 
-const PopupContainer: React.FC<Props> = ({ model, filter: baseFilter, showTagFilter = true, resolve }) => {
+const PopupContainer: React.FC<Props> = ({ model, apiFilter, modelFilter, showTagFilter = true, resolve }) => {
   const [open, setOpen] = useState(true)
   const listRef = useRef<DynamicVirtualListRef>(null)
   const [_searchText, setSearchText] = useState('')
   const searchText = useDeferredValue(_searchText)
-  const { models, isLoading } = useApiModels(baseFilter)
+  const { models, isLoading } = useApiModels(apiFilter)
   const adaptedModels = models.map((model) => apiModelAdapter(model))
 
   // 当前选中的模型ID
@@ -112,7 +115,7 @@ const PopupContainer: React.FC<Props> = ({ model, filter: baseFilter, showTagFil
           </TagsContainer>
         ),
         icon: (
-          <Avatar src={getModelLogo(model.id || '')} size={24}>
+          <Avatar src={getModelLogoById(model.id || '')} size={24}>
             {first(model.name) || 'M'}
           </Avatar>
         ),
@@ -128,7 +131,8 @@ const PopupContainer: React.FC<Props> = ({ model, filter: baseFilter, showTagFil
     const items: FlatListApiItem[] = []
     const finalModelFilter = (model: AdaptedApiModel) => {
       const _tagFilter = !showTagFilter || tagFilter(model)
-      return _tagFilter
+      const _modelFilter = modelFilter === undefined || modelFilter(model)
+      return _tagFilter && _modelFilter
     }
 
     // 筛选模型
@@ -150,7 +154,7 @@ const PopupContainer: React.FC<Props> = ({ model, filter: baseFilter, showTagFil
     // 获取可选择的模型项（过滤掉分组标题）
     const modelItems = items.filter((item) => item.type === 'model')
     return { listItems: items, modelItems }
-  }, [searchFilter, adaptedModels, showTagFilter, tagFilter, createModelItem])
+  }, [searchFilter, adaptedModels, showTagFilter, tagFilter, createModelItem, modelFilter])
 
   const listHeight = useMemo(() => {
     return Math.min(PAGE_SIZE, listItems.length) * ITEM_HEIGHT

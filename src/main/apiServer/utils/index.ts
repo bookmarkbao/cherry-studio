@@ -1,19 +1,19 @@
 import { CacheService } from '@main/services/CacheService'
 import { loggerService } from '@main/services/LoggerService'
 import { reduxService } from '@main/services/ReduxService'
-import { ApiModel, Model, Provider } from '@types'
+import type { ApiModel, Model, Provider } from '@types'
 
 const logger = loggerService.withContext('ApiServerUtils')
 
 // Cache configuration
 const PROVIDERS_CACHE_KEY = 'api-server:providers'
-const PROVIDERS_CACHE_TTL = 1 * 60 * 1000 // 1 minutes
+const PROVIDERS_CACHE_TTL = 10 * 1000 // 10 seconds
 
 export async function getAvailableProviders(): Promise<Provider[]> {
   try {
     // Try to get from cache first (faster)
     const cachedSupportedProviders = CacheService.get<Provider[]>(PROVIDERS_CACHE_KEY)
-    if (cachedSupportedProviders) {
+    if (cachedSupportedProviders && cachedSupportedProviders.length > 0) {
       logger.debug('Providers resolved from cache', {
         count: cachedSupportedProviders.length
       })
@@ -47,9 +47,11 @@ export async function getAvailableProviders(): Promise<Provider[]> {
   }
 }
 
-export async function listAllAvailableModels(): Promise<Model[]> {
+export async function listAllAvailableModels(providers?: Provider[]): Promise<Model[]> {
   try {
-    const providers = await getAvailableProviders()
+    if (!providers) {
+      providers = await getAvailableProviders()
+    }
     return providers.map((p: Provider) => p.models || []).flat()
   } catch (error: any) {
     logger.error('Failed to list available models', { error })
@@ -107,9 +109,12 @@ export interface ModelValidationError {
   code: string
 }
 
-export async function validateModelId(
-  model: string
-): Promise<{ valid: boolean; error?: ModelValidationError; provider?: Provider; modelId?: string }> {
+export async function validateModelId(model: string): Promise<{
+  valid: boolean
+  error?: ModelValidationError
+  provider?: Provider
+  modelId?: string
+}> {
   try {
     if (!model || typeof model !== 'string') {
       return {
@@ -192,8 +197,7 @@ export async function validateModelId(
   }
 }
 
-export function transformModelToOpenAI(model: Model, providers: Provider[]): ApiModel {
-  const provider = providers.find((p) => p.id === model.provider)
+export function transformModelToOpenAI(model: Model, provider?: Provider): ApiModel {
   const providerDisplayName = provider?.name
   return {
     id: `${model.provider}:${model.id}`,
@@ -268,7 +272,23 @@ export function validateProvider(provider: Provider): boolean {
 
     return true
   } catch (error: any) {
-    logger.error('Error validating provider', { error, providerId: provider?.id })
+    logger.error('Error validating provider', {
+      error,
+      providerId: provider?.id
+    })
     return false
+  }
+}
+
+export const getProviderAnthropicModelChecker = (providerId: string): ((m: Model) => boolean) => {
+  switch (providerId) {
+    case 'cherryin':
+    case 'new-api':
+      return (m: Model) => m.endpoint_type === 'anthropic'
+    case 'aihubmix':
+      return (m: Model) => m.id.includes('claude')
+    default:
+      // allow all models when checker not configured
+      return () => true
   }
 }

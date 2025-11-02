@@ -2,22 +2,17 @@
 
 This file provides guidance to AI coding assistants when working with code in this repository. Adherence to these guidelines is crucial for maintaining code quality and consistency.
 
-## Guiding Principles
+## Guiding Principles (MUST FOLLOW)
 
-- **Clarity and Simplicity**: Write code that is easy to understand and maintain.
-- **Consistency**: Follow existing patterns and conventions in the codebase.
-- **Correctness**: Ensure code is correct, well-tested, and robust.
-- **Efficiency**: Write performant code and use resources judiciously.
-
-## MUST Follow Rules
-
-1.  **Code Search**: Use `ast-grep` for semantic code pattern searches when available. Fallback to `rg` (ripgrep) or `grep` for text-based searches.
-2.  **UI Framework**: Exclusively use **HeroUI** for all new UI components. The use of `antd` or `styled-components` is strictly **PROHIBITED**.
-3.  **Quality Assurance**: **Always** run `yarn build:check` before finalizing your work or making any commits. This ensures code quality (linting, testing, and type checking).
-4.  **Centralized Logging**: Use the `loggerService` exclusively for all application logging (info, warn, error levels) with proper context. Do not use `console.log`.
-5.  **External Research**: Leverage `subagent` for gathering external information, including latest documentation, API references, news, or web-based research. This keeps the main conversation focused on the task at hand.
-6.  **Code Reviews**: Always seek a code review from a human developer before merging significant changes. This ensures adherence to project standards and catches potential issues.
-7.  **Documentation**: Update or create documentation for any new features, modules, or significant changes to existing functionality.
+- **Keep it clear**: Write code that is easy to read, maintain, and explain.
+- **Match the house style**: Reuse existing patterns, naming, and conventions.
+- **Search smart**: Prefer `ast-grep` for semantic queries; fall back to `rg`/`grep` when needed.
+- **Build with HeroUI**: Use HeroUI for every new UI component; never add `antd` or `styled-components`.
+- **Log centrally**: Route all logging through `loggerService` with the right context—no `console.log`.
+- **Research via subagent**: Lean on `subagent` for external docs, APIs, news, and references.
+- **Always propose before executing**: Before making any changes, clearly explain your planned approach and wait for explicit user approval to ensure alignment and prevent unwanted modifications.
+- **Write conventional commits with emoji**: Commit small, focused changes using emoji-prefixed Conventional Commit messages (e.g., `✨ feat:`, `🐛 fix:`, `♻️ refactor:`, `
+📝 docs:`).
 
 ## Development Commands
 
@@ -25,7 +20,7 @@ This file provides guidance to AI coding assistants when working with code in th
 - **Development**: `yarn dev` - Runs Electron app in development mode with hot reload
 - **Debug**: `yarn debug` - Starts with debugging enabled, use `chrome://inspect` to attach debugger
 - **Build Check**: `yarn build:check` - **REQUIRED** before commits (lint + test + typecheck)
-  - If having i18n sort issues, run `yarn i18n:sync` first to sync template
+  - If having i18n sort issues, run `yarn sync:i18n` first to sync template
   - If having formatting issues, run `yarn format` first
 - **Test**: `yarn test` - Run all tests (Vitest) across main and renderer processes
 - **Single Test**:

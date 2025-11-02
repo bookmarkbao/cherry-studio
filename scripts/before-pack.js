@@ -35,7 +35,7 @@ const allX64 = {
   '@napi-rs/system-ocr-win32-x64-msvc': '1.0.2'
 }
 
-const claudeCodeVenderPath = '@anthropic-ai/claude-code/vendor'
+const claudeCodeVenderPath = '@anthropic-ai/claude-agent-sdk/vendor'
 const claudeCodeVenders = ['arm64-darwin', 'arm64-linux', 'x64-darwin', 'x64-linux', 'x64-win32']
 
 const platformToArch = {
@@ -88,7 +88,7 @@ exports.default = async function (context) {
   const excludeClaudeCodeJBPlutins = ['!node_modules/' + claudeCodeVenderPath + '/' + 'claude-code-jetbrains-plugin']
 
   const includeClaudeCodeFilters = [
-    '!node_modules/' + claudeCodeVenderPath + '/' + `${archType}-${platformToArch[platform]}/**`
+    '!node_modules/' + claudeCodeVenderPath + '/ripgrep/' + `${archType}-${platformToArch[platform]}/**`
   ]
 
   if (arch === Arch.arm64) {

@@ -1,9 +1,10 @@
-import { Avatar, AvatarProps, cn } from '@heroui/react'
-import { getAgentAvatar } from '@renderer/config/agent'
+import { cn } from '@heroui/react'
+import EmojiIcon from '@renderer/components/EmojiIcon'
 import { getAgentTypeLabel } from '@renderer/i18n/label'
-import { AgentSessionEntity, AgentType } from '@renderer/types'
+import type { AgentEntity, AgentSessionEntity } from '@renderer/types'
 import { Menu, Modal } from 'antd'
-import React, { ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import { SettingDivider } from '..'
@@ -22,21 +23,23 @@ export const SettingsTitle: React.FC<SettingsTitleProps> = ({ children, actions 
 }
 
 export type AgentLabelProps = {
-  type: AgentType
-  name?: string
+  agent: AgentEntity | undefined | null
   classNames?: {
     container?: string
     avatar?: string
     name?: string
   }
-  avatarProps?: AvatarProps
 }
 
-export const AgentLabel: React.FC<AgentLabelProps> = ({ type, name, classNames, avatarProps }) => {
+export const AgentLabel: React.FC<AgentLabelProps> = ({ agent, classNames }) => {
+  const emoji = agent?.configuration?.avatar
+
   return (
-    <div className={cn('flex items-center gap-2', classNames?.container)}>
-      <Avatar src={getAgentAvatar(type)} title={type} {...avatarProps} className={cn('h-5 w-5', classNames?.avatar)} />
-      <span className={classNames?.name}>{name ?? getAgentTypeLabel(type)}</span>
+    <div className={cn('flex w-full items-center gap-2 truncate', classNames?.container)}>
+      <EmojiIcon emoji={emoji || '⭐️'} className={classNames?.avatar} />
+      <span className={cn('truncate', 'text-[var(--color-text)]', classNames?.name)}>
+        {agent?.name ?? (agent?.type ? getAgentTypeLabel(agent.type) : '')}
+      </span>
     </div>
   )
 }
@@ -50,7 +53,7 @@ export const SessionLabel: React.FC<SessionLabelProps> = ({ session, className }
   const displayName = session?.name ?? session?.id
   return (
     <>
-      <span className={cn('px-2 text-sm', className)}>{displayName}</span>
+      <span className={cn('truncate text-[var(--color-text)] text-sm', className)}>{displayName}</span>
     </>
   )
 }
@@ -83,7 +86,7 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({
 
 export const SettingsContainer: React.FC<React.ComponentPropsWithRef<'div'>> = ({ children, className, ...props }) => {
   return (
-    <div className={cn('flex flex-1 flex-col overflow-auto pr-2', className)} {...props}>
+    <div className={cn('flex flex-1 flex-col overflow-y-auto overflow-x-hidden pr-2', className)} {...props}>
       {children}
     </div>
   )

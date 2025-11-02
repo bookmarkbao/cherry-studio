@@ -1,17 +1,17 @@
-import { Model } from '@types'
-import z from 'zod'
+import type { Model } from '@types'
+import * as z from 'zod'
 
 export const ProviderTypeSchema = z.enum([
   'openai',
   'openai-response',
   'anthropic',
   'gemini',
-  'qwenlm',
   'azure-openai',
   'vertexai',
   'mistral',
   'aws-bedrock',
-  'vertex-anthropic'
+  'vertex-anthropic',
+  'new-api'
 ])
 
 export type ProviderType = z.infer<typeof ProviderTypeSchema>
@@ -36,6 +36,8 @@ export type ProviderApiOptions = {
   isSupportServiceTier?: boolean
   /** 是否不支持 enable_thinking 参数 */
   isNotSupportEnableThinking?: boolean
+  /** 是否不支持 APIVersion */
+  isNotSupportAPIVersion?: boolean
 }
 
 export const OpenAIServiceTiers = {
@@ -77,6 +79,8 @@ export type Provider = {
   name: string
   apiKey: string
   apiHost: string
+  anthropicApiHost?: string
+  isAnthropicModel?: (m: Model) => boolean
   apiVersion?: string
   models: Model[]
   enabled?: boolean
@@ -121,6 +125,7 @@ export const SystemProviderIds = {
   ph8: 'ph8',
   openrouter: 'openrouter',
   ollama: 'ollama',
+  ovms: 'ovms',
   'new-api': 'new-api',
   lmstudio: 'lmstudio',
   anthropic: 'anthropic',
@@ -157,7 +162,9 @@ export const SystemProviderIds = {
   voyageai: 'voyageai',
   'aws-bedrock': 'aws-bedrock',
   poe: 'poe',
-  aionly: 'aionly'
+  aionly: 'aionly',
+  longcat: 'longcat',
+  huggingface: 'huggingface'
 } as const
 
 export type SystemProviderId = keyof typeof SystemProviderIds
@@ -179,6 +186,11 @@ export type VertexProvider = Provider & {
   }
   project: string
   location: string
+}
+
+export type AzureOpenAIProvider = Provider & {
+  type: 'azure-openai'
+  apiVersion: string
 }
 
 /**

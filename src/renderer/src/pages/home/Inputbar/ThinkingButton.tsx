@@ -17,10 +17,11 @@ import {
 } from '@renderer/config/models'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { getReasoningEffortOptionsLabel } from '@renderer/i18n/label'
-import { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
-import { Model, ThinkingOption } from '@renderer/types'
+import type { ToolQuickPanelApi } from '@renderer/pages/home/Inputbar/types'
+import type { Model, ThinkingOption } from '@renderer/types'
 import { Tooltip } from 'antd'
-import { FC, ReactElement, useCallback, useEffect, useMemo } from 'react'
+import type { FC, ReactElement } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface Props {

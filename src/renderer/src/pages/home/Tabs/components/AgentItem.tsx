@@ -1,10 +1,15 @@
-import { Avatar, Button, cn } from '@heroui/react'
+import { cn, Tooltip } from '@heroui/react'
 import { DeleteIcon, EditIcon } from '@renderer/components/Icons'
-import { getAgentAvatar } from '@renderer/config/agent'
+import { useSessions } from '@renderer/hooks/agents/useSessions'
+import { useSettings } from '@renderer/hooks/useSettings'
 import AgentSettingsPopup from '@renderer/pages/settings/AgentSettings/AgentSettingsPopup'
-import { AgentEntity } from '@renderer/types'
+import { AgentLabel } from '@renderer/pages/settings/AgentSettings/shared'
+import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
+import type { AgentEntity } from '@renderer/types'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@renderer/ui/context-menu'
-import { FC, memo, useCallback } from 'react'
+import { Bot } from 'lucide-react'
+import type { FC } from 'react'
+import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // const logger = loggerService.withContext('AgentItem')
@@ -18,85 +23,113 @@ interface AgentItemProps {
 
 const AgentItem: FC<AgentItemProps> = ({ agent, isActive, onDelete, onPress }) => {
   const { t } = useTranslation()
-  // const { isOpen, onOpen, onClose } = useDisclosure()
-  // const { agents } = useAgents()
+  const { sessions } = useSessions(agent.id)
+  const { clickAssistantToShowTopic, topicPosition } = useSettings()
 
-  const AgentLabel = useCallback(() => {
-    const displayName = agent.name ?? agent.id
-    const avatar = getAgentAvatar(agent.type)
-    return (
-      <>
-        <Avatar className="h-6 w-6" src={avatar} name={displayName} />
-        <span className="text-sm">{displayName}</span>
-      </>
-    )
-  }, [agent.id, agent.name, agent.type])
+  const handlePress = useCallback(() => {
+    // Show session sidebar if setting is enabled (reusing the assistant setting for consistency)
+    if (clickAssistantToShowTopic) {
+      if (topicPosition === 'left') {
+        EventEmitter.emit(EVENT_NAMES.SWITCH_TOPIC_SIDEBAR)
+      }
+    }
+    onPress()
+  }, [clickAssistantToShowTopic, topicPosition, onPress])
 
   return (
-    <>
-      <ContextMenu modal={false}>
-        <ContextMenuTrigger>
-          <ButtonContainer onPress={onPress} className={isActive ? 'active' : ''}>
-            <AssistantNameRow className="name" title={agent.name ?? agent.id}>
-              <AgentLabel />
-            </AssistantNameRow>
-          </ButtonContainer>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem
-            key="edit"
-            onClick={async () => {
-              // onOpen()
-              await AgentSettingsPopup.show({
-                agentId: agent.id
-              })
-            }}>
-            <EditIcon size={14} />
-            {t('common.edit')}
-          </ContextMenuItem>
-          <ContextMenuItem
-            key="delete"
-            className="text-danger"
-            onClick={() => {
-              window.modal.confirm({
-                title: t('agent.delete.title'),
-                content: t('agent.delete.content'),
-                centered: true,
-                okButtonProps: { danger: true },
-                onOk: () => onDelete(agent)
-              })
-            }}>
-            <DeleteIcon size={14} className="lucide-custom text-danger" />
-            <span className="text-danger">{t('common.delete')}</span>
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
-      {/* <AgentModal isOpen={isOpen} onClose={onClose} agent={agent} /> */}
-    </>
+    <ContextMenu modal={false}>
+      <ContextMenuTrigger>
+        <Container onClick={handlePress} isActive={isActive}>
+          <AssistantNameRow className="name" title={agent.name ?? agent.id}>
+            <AgentNameWrapper>
+              <AgentLabel agent={agent} />
+            </AgentNameWrapper>
+            {isActive && (
+              <MenuButton>
+                <SessionCount>{sessions.length}</SessionCount>
+              </MenuButton>
+            )}
+            {!isActive && <BotIcon />}
+          </AssistantNameRow>
+        </Container>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem key="edit" onClick={() => AgentSettingsPopup.show({ agentId: agent.id })}>
+          <EditIcon size={14} />
+          {t('common.edit')}
+        </ContextMenuItem>
+        <ContextMenuItem
+          key="delete"
+          className="text-danger"
+          onClick={() => {
+            window.modal.confirm({
+              title: t('agent.delete.title'),
+              content: t('agent.delete.content'),
+              centered: true,
+              okButtonProps: { danger: true },
+              onOk: () => onDelete(agent)
+            })
+          }}>
+          <DeleteIcon size={14} className="lucide-custom text-danger" />
+          <span className="text-danger">{t('common.delete')}</span>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }
 
-const ButtonContainer: React.FC<React.ComponentProps<typeof Button>> = ({ className, children, ...props }) => (
-  <Button
-    {...props}
+export const Container: React.FC<{ isActive?: boolean } & React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  isActive,
+  ...props
+}) => (
+  <div
     className={cn(
-      'relative mb-2 flex h-[37px] flex-row justify-between p-2.5',
-      'rounded-[var(--list-item-border-radius)]',
-      'border-[0.5px] border-transparent',
-      'w-[calc(var(--assistants-width)_-_20px)]',
-      'bg-transparent hover:bg-[var(--color-list-item)] hover:shadow-sm',
-      'cursor-pointer',
-      className?.includes('active') && 'bg-[var(--color-list-item)] shadow-sm',
+      'relative flex h-[37px] w-[calc(var(--assistants-width)-20px)] cursor-pointer flex-row justify-between rounded-[var(--list-item-border-radius)] border border-transparent px-2',
+      !isActive && 'hover:bg-[var(--color-list-item-hover)]',
+      isActive && 'bg-[var(--color-list-item)] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]',
       className
-    )}>
-    {children}
-  </Button>
+    )}
+    {...props}
+  />
 )
 
-const AssistantNameRow: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (
+export const AssistantNameRow: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (
   <div
+    className={cn('flex min-w-0 flex-1 flex-row items-center gap-2 text-[13px] text-[var(--color-text)]', className)}
     {...props}
-    className={cn('text-[13px] text-[var(--color-text)]', 'flex flex-row items-center gap-2', className)}
+  />
+)
+
+export const AgentNameWrapper: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (
+  <div className={cn('min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap', className)} {...props} />
+)
+
+export const MenuButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (
+  <div
+    className={cn(
+      'flex h-5 min-h-5 w-5 flex-row items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-background)]',
+      className
+    )}
+    {...props}
+  />
+)
+
+export const BotIcon: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
+  const { t } = useTranslation()
+  return (
+    <Tooltip content={t('common.agent_one')} delay={500} closeDelay={0}>
+      <MenuButton {...props}>
+        <Bot size={14} className="text-primary" />
+      </MenuButton>
+    </Tooltip>
+  )
+}
+
+export const SessionCount: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (
+  <div
+    className={cn('flex flex-row items-center justify-center rounded-full text-[var(--color-text)] text-xs', className)}
+    {...props}
   />
 )
 

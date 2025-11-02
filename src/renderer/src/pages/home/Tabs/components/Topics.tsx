@@ -12,11 +12,11 @@ import { useSettings } from '@renderer/hooks/useSettings'
 import { finishTopicRenaming, startTopicRenaming, TopicManager } from '@renderer/hooks/useTopic'
 import { fetchMessagesSummary } from '@renderer/services/ApiService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
+import type { RootState } from '@renderer/store'
 import store from '@renderer/store'
-import { RootState } from '@renderer/store'
 import { newMessagesActions } from '@renderer/store/newMessage'
 import { setGenerating } from '@renderer/store/runtime'
-import { Assistant, Topic } from '@renderer/types'
+import type { Assistant, Topic } from '@renderer/types'
 import { classNames, removeSpecialCharactersForFileName } from '@renderer/utils'
 import { copyTopicAsMarkdown, copyTopicAsPlainText } from '@renderer/utils/copy'
 import {
@@ -28,8 +28,9 @@ import {
   exportTopicToNotion,
   topicToMarkdown
 } from '@renderer/utils/export'
-import { Dropdown, MenuProps, Tooltip } from 'antd'
-import { ItemType, MenuItemType } from 'antd/es/menu/interface'
+import type { MenuProps } from 'antd'
+import { Dropdown, Tooltip } from 'antd'
+import type { ItemType, MenuItemType } from 'antd/es/menu/interface'
 import dayjs from 'dayjs'
 import { findIndex } from 'lodash'
 import {
@@ -41,7 +42,6 @@ import {
   PackagePlus,
   PinIcon,
   PinOffIcon,
-  PlusIcon,
   Save,
   Sparkles,
   UploadIcon,
@@ -51,6 +51,8 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
+
+import AddButton from './AddButton'
 
 interface Props {
   assistant: Assistant
@@ -287,13 +289,7 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
         label: t('chat.topics.clear.title'),
         key: 'clear-messages',
         icon: <BrushCleaning size={14} />,
-        async onClick() {
-          window.modal.confirm({
-            title: t('chat.input.clear.content'),
-            centered: true,
-            onOk: () => onClearMessages(topic)
-          })
-        }
+        onClick: () => onClearMessages(topic)
       },
       {
         label: t('settings.topic.position.label'),
@@ -497,13 +493,12 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
       className="topics-tab"
       list={sortedTopics}
       onUpdate={updateTopics}
-      style={{ height: '100%', padding: '13px 0 10px 10px' }}
+      style={{ height: '100%', padding: '11px 0 10px 10px' }}
       itemContainerStyle={{ paddingBottom: '8px' }}
       header={
-        <AddTopicButton onClick={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)}>
-          <PlusIcon size={16} />
+        <AddButton onPress={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)} className="mb-2">
           {t('chat.add.topic.title')}
-        </AddTopicButton>
+        </AddButton>
       }>
       {(topic) => {
         const isActive = topic.id === activeTopic?.id
@@ -738,31 +733,6 @@ const FulfilledIndicator = styled.div.attrs({
   top: 15px;
   border-radius: 50%;
   background-color: var(--color-status-success);
-`
-
-const AddTopicButton = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: calc(100% - 10px);
-  padding: 7px 12px;
-  margin-bottom: 8px;
-  background: transparent;
-  color: var(--color-text-2);
-  font-size: 13px;
-  border-radius: var(--list-item-border-radius);
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: -5px;
-
-  &:hover {
-    background-color: var(--color-list-item-hover);
-    color: var(--color-text-1);
-  }
-
-  .anticon {
-    font-size: 12px;
-  }
 `
 
 const TopicPromptText = styled.div`

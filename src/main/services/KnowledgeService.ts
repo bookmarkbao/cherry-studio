@@ -16,7 +16,8 @@
 import * as fs from 'node:fs'
 import path from 'node:path'
 
-import { RAGApplication, RAGApplicationBuilder } from '@cherrystudio/embedjs'
+import type { RAGApplication } from '@cherrystudio/embedjs'
+import { RAGApplicationBuilder } from '@cherrystudio/embedjs'
 import { LibSqlDb } from '@cherrystudio/embedjs-libsql'
 import { SitemapLoader } from '@cherrystudio/embedjs-loader-sitemap'
 import { WebLoader } from '@cherrystudio/embedjs-loader-web'
@@ -29,12 +30,12 @@ import Reranker from '@main/knowledge/reranker/Reranker'
 import { fileStorage } from '@main/services/FileStorage'
 import { windowService } from '@main/services/WindowService'
 import { getDataPath } from '@main/utils'
-import { getAllFiles } from '@main/utils/file'
+import { getAllFiles, sanitizeFilename } from '@main/utils/file'
 import { TraceMethod } from '@mcp-trace/trace-core'
 import { MB } from '@shared/config/constant'
 import type { LoaderReturn } from '@shared/config/types'
 import { IpcChannel } from '@shared/IpcChannel'
-import { FileMetadata, KnowledgeBaseParams, KnowledgeItem, KnowledgeSearchResult } from '@types'
+import type { FileMetadata, KnowledgeBaseParams, KnowledgeItem, KnowledgeSearchResult } from '@types'
 import { v4 as uuidv4 } from 'uuid'
 
 const logger = loggerService.withContext('MainKnowledgeService')
@@ -147,11 +148,16 @@ class KnowledgeService {
     }
   }
 
+  private getDbPath = (id: string): string => {
+    // 消除网络搜索requestI d中的特殊字符
+    return path.join(this.storageDir, sanitizeFilename(id, '_'))
+  }
+
   /**
    * Delete knowledge base file
    */
   private deleteKnowledgeFile = (id: string): boolean => {
-    const dbPath = path.join(this.storageDir, id)
+    const dbPath = this.getDbPath(id)
     if (fs.existsSync(dbPath)) {
       try {
         fs.rmSync(dbPath, { recursive: true })
@@ -244,7 +250,8 @@ class KnowledgeService {
       dimensions
     })
     try {
-      const libSqlDb = new LibSqlDb({ path: path.join(this.storageDir, id) })
+      const dbPath = this.getDbPath(id)
+      const libSqlDb = new LibSqlDb({ path: dbPath })
       // Save database instance for later closing
       this.dbInstances.set(id, libSqlDb)
 

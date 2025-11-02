@@ -1,5 +1,7 @@
-import { ApiModelsFilterSchema, ApiModelsResponse } from '@types'
-import express, { Request, Response } from 'express'
+import type { ApiModelsResponse } from '@types'
+import { ApiModelsFilterSchema } from '@types'
+import type { Request, Response } from 'express'
+import express from 'express'
 
 import { loggerService } from '../../services/LoggerService'
 import { modelsService } from '../services/models'
@@ -104,9 +106,7 @@ const router = express
 
       logger.info('Models response ready', {
         filter,
-        total: response.total
-      })
-      logger.debug('Model IDs returned', {
+        total: response.total,
         modelIds: response.data.map((m) => m.id)
       })
 

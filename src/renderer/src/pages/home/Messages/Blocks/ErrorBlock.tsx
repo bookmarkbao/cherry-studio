@@ -1,10 +1,12 @@
 import { Button } from '@heroui/button'
 import CodeViewer from '@renderer/components/CodeViewer'
+import { useCodeStyle } from '@renderer/context/CodeStyleProvider'
 import { useTimer } from '@renderer/hooks/useTimer'
 import { getHttpMessageLabel, getProviderLabel } from '@renderer/i18n/label'
 import { getProviderById } from '@renderer/services/ProviderService'
 import { useAppDispatch } from '@renderer/store'
 import { removeBlocksThunk } from '@renderer/store/thunk/messageThunk'
+import type { SerializedAiSdkError, SerializedAiSdkErrorUnion, SerializedError } from '@renderer/types/error'
 import {
   isSerializedAiSdkAPICallError,
   isSerializedAiSdkDownloadError,
@@ -27,15 +29,12 @@ import {
   isSerializedAiSdkTooManyEmbeddingValuesForCallError,
   isSerializedAiSdkTypeValidationError,
   isSerializedAiSdkUnsupportedFunctionalityError,
-  isSerializedError,
-  SerializedAiSdkError,
-  SerializedAiSdkErrorUnion,
-  SerializedError
+  isSerializedError
 } from '@renderer/types/error'
 import type { ErrorMessageBlock, Message } from '@renderer/types/newMessage'
 import { formatAiSdkError, formatError, safeToString } from '@renderer/utils/error'
 import { Alert as AntdAlert, Modal } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -103,7 +102,8 @@ const MessageErrorInfo: React.FC<{ block: ErrorMessageBlock; message: Message }>
   const [showDetailModal, setShowDetailModal] = useState(false)
   const { t } = useTranslation()
 
-  const onRemoveBlock = () => {
+  const onRemoveBlock = (e: React.MouseEvent) => {
+    e.stopPropagation()
     setTimeoutTimer('onRemoveBlock', () => dispatch(removeBlocksThunk(message.topicId, message.id, [block.id])), 350)
   }
 
@@ -304,14 +304,36 @@ const BuiltinError = ({ error }: { error: SerializedError }) => {
 // 作为 base，渲染公共字段，应当在 ErrorDetailList 中渲染
 const AiSdkErrorBase = ({ error }: { error: SerializedAiSdkError }) => {
   const { t } = useTranslation()
+  const { highlightCode } = useCodeStyle()
+  const [highlightedString, setHighlightedString] = useState('')
   const cause = error.cause
+
+  useEffect(() => {
+    const highlight = async () => {
+      try {
+        const result = await highlightCode(JSON.stringify(JSON.parse(cause || '{}'), null, 2), 'json')
+        setHighlightedString(result)
+      } catch {
+        setHighlightedString(cause || '')
+      }
+    }
+    const timer = setTimeout(highlight, 0)
+
+    return () => clearTimeout(timer)
+  }, [highlightCode, cause])
+
   return (
     <>
       <BuiltinError error={error} />
       {cause && (
         <ErrorDetailItem>
           <ErrorDetailLabel>{t('error.cause')}:</ErrorDetailLabel>
-          <ErrorDetailValue>{error.cause}</ErrorDetailValue>
+          <ErrorDetailValue>
+            <div
+              className="markdown [&_pre]:!bg-transparent [&_pre_span]:whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{ __html: highlightedString }}
+            />
+          </ErrorDetailValue>
         </ErrorDetailItem>
       )}
     </>

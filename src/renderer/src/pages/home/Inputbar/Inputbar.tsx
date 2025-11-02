@@ -1,12 +1,8 @@
 import { HolderOutlined } from '@ant-design/icons'
 import { loggerService } from '@logger'
 import { ActionIconButton } from '@renderer/components/Buttons'
-import {
-  QuickPanelReservedSymbol,
-  QuickPanelTriggerInfo,
-  QuickPanelView,
-  useQuickPanel
-} from '@renderer/components/QuickPanel'
+import type { QuickPanelTriggerInfo } from '@renderer/components/QuickPanel'
+import { QuickPanelReservedSymbol, QuickPanelView, useQuickPanel } from '@renderer/components/QuickPanel'
 import TranslateButton from '@renderer/components/TranslateButton'
 import {
   isAutoEnableImageGenerationModel,
@@ -39,7 +35,7 @@ import WebSearchService from '@renderer/services/WebSearchService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setSearching } from '@renderer/store/runtime'
 import { sendMessage as _sendMessage } from '@renderer/store/thunk/messageThunk'
-import { Assistant, FileType, KnowledgeBase, Model, Topic, TopicType } from '@renderer/types'
+import type { Assistant, FileType, KnowledgeBase, Model, Topic, TopicType } from '@renderer/types'
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
 import { classNames, delay, filterSupportedFiles } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
@@ -52,10 +48,12 @@ import {
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Tooltip } from 'antd'
-import TextArea, { TextAreaRef } from 'antd/es/input/TextArea'
+import type { TextAreaRef } from 'antd/es/input/TextArea'
+import TextArea from 'antd/es/input/TextArea'
 import { debounce, isEmpty } from 'lodash'
 import { CirclePause, Languages } from 'lucide-react'
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { CSSProperties, FC } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -67,7 +65,7 @@ import MentionModelsInput from './MentionModelsInput'
 import { getInputbarConfig } from './registry'
 import SendMessageButton from './SendMessageButton'
 import TokenCount from './TokenCount'
-import { InputbarScope } from './types'
+import type { InputbarScope } from './types'
 
 const logger = loggerService.withContext('Inputbar')
 
@@ -484,6 +482,53 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
 
     focusTextarea()
   }, [features.enableExpand, focusTextarea, isExpanded, setIsExpanded, textareaHeight])
+
+  const appendTxtContentToInput = useCallback(
+    async (file: FileType, event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      try {
+        const targetPath = file.path
+        const content = await window.api.file.readExternal(targetPath, true)
+        try {
+          await navigator.clipboard.writeText(content)
+        } catch (clipboardError) {
+          logger.warn('Failed to copy txt attachment content to clipboard:', clipboardError as Error)
+        }
+
+        setText((prev) => {
+          if (!prev) {
+            return content
+          }
+
+          const needsSeparator = !prev.endsWith('\n')
+          return needsSeparator ? `${prev}\n${content}` : prev + content
+        })
+
+        setFiles((prev) => prev.filter((currentFile) => currentFile.id !== file.id))
+
+        setTimeoutTimer(
+          'appendTxtAttachment',
+          () => {
+            const textArea = textareaRef.current?.resizableTextArea?.textArea
+            if (textArea) {
+              const end = textArea.value.length
+              textArea.focus()
+              textArea.setSelectionRange(end, end)
+            }
+
+            resizeTextArea(true)
+          },
+          0
+        )
+      } catch (error) {
+        logger.warn('Failed to append txt attachment content:', error as Error)
+        window.toast.error(t('chat.input.file_error'))
+      }
+    },
+    [resizeTextArea, setTimeoutTimer, t]
+  )
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -1128,7 +1173,9 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
             isFileDragging && 'file-dragging',
             composerExpanded && 'expanded'
           )}>
-          {features.enableAttachments && files.length > 0 && <AttachmentPreview files={files} setFiles={setFiles} />}
+          {features.enableAttachments && files.length > 0 && (
+            <AttachmentPreview files={files} setFiles={setFiles} onAttachmentContextMenu={appendTxtContentToInput} />
+          )}
 
           {features.enableKnowledge && selectedKnowledgeBases.length > 0 && (
             <KnowledgeBaseInput

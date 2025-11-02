@@ -6,7 +6,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import AdvancedSettings from './AdvancedSettings'
-import AgentEssentialSettings from './AgentEssentialSettings'
+import EssentialSettings from './EssentialSettings'
+import PluginSettings from './PluginSettings'
 import PromptSettings from './PromptSettings'
 import { AgentLabel, LeftMenu, Settings, StyledMenu, StyledModal } from './shared'
 import ToolingSettings from './ToolingSettings'
@@ -20,7 +21,7 @@ interface AgentSettingPopupParams extends AgentSettingPopupShowParams {
   resolve: () => void
 }
 
-type AgentSettingPopupTab = 'essential' | 'prompt' | 'tooling' | 'advanced' | 'session-mcps'
+type AgentSettingPopupTab = 'essential' | 'prompt' | 'tooling' | 'advanced' | 'plugins' | 'session-mcps'
 
 const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, agentId, resolve }) => {
   const [open, setOpen] = useState(true)
@@ -28,7 +29,7 @@ const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, ag
   const [menu, setMenu] = useState<AgentSettingPopupTab>(tab || 'essential')
 
   const { agent, isLoading, error } = useAgent(agentId)
-  const updateAgent = useUpdateAgent()
+  const { updateAgent } = useUpdateAgent()
 
   const onOk = () => {
     setOpen(false)
@@ -57,6 +58,10 @@ const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, ag
         label: t('agent.settings.tooling.tab', 'Tooling & permissions')
       },
       {
+        key: 'plugins',
+        label: t('agent.settings.plugins.tab', 'Plugins')
+      },
+      {
         key: 'advanced',
         label: t('agent.settings.advance.title', 'Advanced Settings')
       }
@@ -75,6 +80,9 @@ const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, ag
         </div>
       )
     }
+    if (!agent) {
+      return null
+    }
     return (
       <div className="flex w-full flex-1">
         <LeftMenu>
@@ -87,9 +95,10 @@ const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, ag
           />
         </LeftMenu>
         <Settings>
-          {menu === 'essential' && <AgentEssentialSettings agent={agent} update={updateAgent} />}
+          {menu === 'essential' && <EssentialSettings agentBase={agent} update={updateAgent} />}
           {menu === 'prompt' && <PromptSettings agentBase={agent} update={updateAgent} />}
           {menu === 'tooling' && <ToolingSettings agentBase={agent} update={updateAgent} />}
+          {menu === 'plugins' && <PluginSettings agentBase={agent} update={updateAgent} />}
           {menu === 'advanced' && <AdvancedSettings agentBase={agent} update={updateAgent} />}
         </Settings>
       </div>
@@ -104,14 +113,7 @@ const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, ag
       afterClose={afterClose}
       maskClosable={false}
       footer={null}
-      title={
-        <AgentLabel
-          type={agent?.type ?? 'claude-code'}
-          name={agent?.name}
-          classNames={{ name: 'text-lg font-extrabold' }}
-          avatarProps={{ size: 'sm' }}
-        />
-      }
+      title={<AgentLabel agent={agent} />}
       transitionName="animation-move-down"
       styles={{
         content: {
@@ -121,7 +123,13 @@ const AgentSettingPopupContainer: React.FC<AgentSettingPopupParams> = ({ tab, ag
           display: 'flex',
           flexDirection: 'column'
         },
-        header: { padding: '10px 15px', borderBottom: '0.5px solid var(--color-border)', margin: 0, borderRadius: 0 },
+        header: {
+          padding: '10px 15px',
+          paddingRight: '32px',
+          borderBottom: '0.5px solid var(--color-border)',
+          margin: 0,
+          borderRadius: 0
+        },
         body: {
           padding: 0,
           display: 'flex',

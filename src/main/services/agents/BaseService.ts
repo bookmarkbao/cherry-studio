@@ -1,8 +1,10 @@
 import { type Client, createClient } from '@libsql/client'
 import { loggerService } from '@logger'
 import { mcpApiService } from '@main/apiServer/services/mcp'
-import { ModelValidationError, validateModelId } from '@main/apiServer/utils'
-import { AgentType, MCPTool, objectKeys, Provider, Tool } from '@types'
+import type { ModelValidationError } from '@main/apiServer/utils'
+import { validateModelId } from '@main/apiServer/utils'
+import type { AgentType, MCPTool, SlashCommand, Tool } from '@types'
+import { objectKeys } from '@types'
 import { drizzle, type LibSQLDatabase } from 'drizzle-orm/libsql'
 import fs from 'fs'
 import path from 'path'
@@ -10,7 +12,9 @@ import path from 'path'
 import { MigrationService } from './database/MigrationService'
 import * as schema from './database/schema'
 import { dbPath } from './drizzle.config'
-import { AgentModelField, AgentModelValidationError } from './errors'
+import type { AgentModelField } from './errors'
+import { AgentModelValidationError } from './errors'
+import { builtinSlashCommands } from './services/claudecode/commands'
 import { builtinTools } from './services/claudecode/tools'
 
 const logger = loggerService.withContext('BaseService')
@@ -58,22 +62,36 @@ export abstract class BaseService {
     }
     if (ids && ids.length > 0) {
       for (const id of ids) {
-        const server = await mcpApiService.getServerInfo(id)
-        if (server) {
-          server.tools.forEach((tool: MCPTool) => {
-            tools.push({
-              id: `mcp_${id}_${tool.name}`,
-              name: tool.name,
-              type: 'mcp',
-              description: tool.description || '',
-              requirePermissions: true
+        try {
+          const server = await mcpApiService.getServerInfo(id)
+          if (server) {
+            server.tools.forEach((tool: MCPTool) => {
+              tools.push({
+                id: `mcp_${id}_${tool.name}`,
+                name: tool.name,
+                type: 'mcp',
+                description: tool.description || '',
+                requirePermissions: true
+              })
             })
+          }
+        } catch (error) {
+          logger.warn('Failed to list MCP tools', {
+            id,
+            error: error as Error
           })
         }
       }
     }
 
     return tools
+  }
+
+  public async listSlashCommands(agentType: AgentType): Promise<SlashCommand[]> {
+    if (agentType === 'claude-code') {
+      return builtinSlashCommands
+    }
+    return []
   }
 
   private static async performInitialization(): Promise<void> {
@@ -297,23 +315,6 @@ export abstract class BaseService {
             code: 'provider_api_key_missing'
           }
         )
-      }
-
-      // different agent types may have different provider requirements
-      const agentTypeProviderRequirements: Record<AgentType, Provider['type']> = {
-        'claude-code': 'anthropic'
-      }
-      for (const [ak, pk] of Object.entries(agentTypeProviderRequirements)) {
-        if (agentType === ak && validation.provider.type !== pk) {
-          throw new AgentModelValidationError(
-            { agentType, field, model: modelValue },
-            {
-              type: 'unsupported_provider_type',
-              message: `Provider type '${validation.provider.type}' is not supported for agent type '${agentType}'. Expected '${pk}'`,
-              code: 'unsupported_provider_type'
-            }
-          )
-        }
       }
     }
   }

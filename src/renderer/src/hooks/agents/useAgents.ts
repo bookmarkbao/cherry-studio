@@ -1,36 +1,66 @@
 import { useAppDispatch } from '@renderer/store'
 import { setActiveAgentId, setActiveSessionIdAction } from '@renderer/store/runtime'
-import { AddAgentForm } from '@renderer/types'
+import type { AddAgentForm, CreateAgentResponse } from '@renderer/types'
 import { formatErrorMessageWithPrefix } from '@renderer/utils/error'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
+import { useApiServer } from '../useApiServer'
 import { useRuntime } from '../useRuntime'
 import { useAgentClient } from './useAgentClient'
+
+type Result<T> =
+  | {
+      success: true
+      data: T
+    }
+  | {
+      success: false
+      error: Error
+    }
 
 export const useAgents = () => {
   const { t } = useTranslation()
   const client = useAgentClient()
   const key = client.agentPaths.base
+  const { apiServerConfig, apiServerRunning } = useApiServer()
+
+  // Disable SWR fetching when server is not running by setting key to null
+  const swrKey = apiServerRunning ? key : null
+
   const fetcher = useCallback(async () => {
-    const result = await client.listAgents()
+    // API server will start on startup if enabled OR there are agents
+    if (!apiServerConfig.enabled && !apiServerRunning) {
+      throw new Error(t('apiServer.messages.notEnabled'))
+    }
+    if (!apiServerRunning) {
+      throw new Error(t('agent.server.error.not_running'))
+    }
+    const result = await client.listAgents({ sortBy: 'created_at', orderBy: 'desc' })
     // NOTE: We only use the array for now. useUpdateAgent depends on this behavior.
     return result.data
-  }, [client])
-  const { data, error, isLoading, mutate } = useSWR(key, fetcher)
+  }, [apiServerConfig.enabled, apiServerRunning, client, t])
+  const { data, error, isLoading, mutate } = useSWR(swrKey, fetcher)
   const { chat } = useRuntime()
   const { activeAgentId } = chat
   const dispatch = useAppDispatch()
 
   const addAgent = useCallback(
-    async (form: AddAgentForm) => {
+    async (form: AddAgentForm): Promise<Result<CreateAgentResponse>> => {
       try {
         const result = await client.createAgent(form)
         mutate((prev) => [...(prev ?? []), result])
         window.toast.success(t('common.add_success'))
+        return { success: true, data: result }
       } catch (error) {
-        window.toast.error(formatErrorMessageWithPrefix(error, t('agent.add.error.failed')))
+        const errorMessage = formatErrorMessageWithPrefix(error, t('agent.add.error.failed'))
+        window.toast.error(errorMessage)
+        if (error instanceof Error) {
+          return { success: false, error }
+        } else {
+          return { success: false, error: new Error(formatErrorMessageWithPrefix(error, t('agent.add.error.failed'))) }
+        }
       }
     },
     [client, mutate, t]
