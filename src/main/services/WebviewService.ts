@@ -74,7 +74,7 @@ const attachKeyboardHandler = (contents: Electron.WebContents) => {
       event.preventDefault()
     }
 
-    // Prevent default print/save dialogs and handle them custom
+    // Prevent default print/save dialogs and handle them with custom logic
     if (isPrintShortcut || isSaveShortcut) {
       event.preventDefault()
     }
@@ -178,10 +178,18 @@ export async function saveWebviewAsHTML(webviewId: number): Promise<string | nul
     // Get the HTML content
     const html = await webview.executeJavaScript(`
       (() => {
-        // Build DOCTYPE string if present
-        const doctype = document.doctype 
-          ? '<!DOCTYPE ' + document.doctype.name + '>' 
-          : '';
+        // Build complete DOCTYPE string if present
+        let doctype = '';
+        if (document.doctype) {
+          doctype = '<!DOCTYPE ' + document.doctype.name;
+          if (document.doctype.publicId) {
+            doctype += ' PUBLIC "' + document.doctype.publicId + '"';
+          }
+          if (document.doctype.systemId) {
+            doctype += ' "' + document.doctype.systemId + '"';
+          }
+          doctype += '>';
+        }
         return doctype + document.documentElement.outerHTML;
       })()
     `)
