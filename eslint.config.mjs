@@ -148,15 +148,16 @@ export default defineConfig([
           paths: [
             {
               name: 'antd',
-              importNames: ['Flex', 'Switch', 'message', 'Button', 'Tooltip'],
+              importNames: ['Flex', 'Switch', 'message', 'Button', 'Tooltip', 'Input'],
               message:
                 '❌ Do not import this component from antd. Use our custom components instead: import { ... } from "@cherrystudio/ui"'
             },
-            // {
-            //   name: '@heroui/react',
-            //   message:
-            //     '❌ Do not import components from heroui directly. Use our wrapped components instead: import { ... } from "@cherrystudio/ui"'
-            // }
+            {
+              name: '@heroui/react',
+              importNames: ['Input'],
+              message:
+                '❌ Do not import components from heroui directly. Use our wrapped components instead: import { ... } from "@cherrystudio/ui"'
+            }
           ]
         }
       ]
