@@ -110,12 +110,12 @@ const WebviewContainer = memo(
     useEffect(() => {
       if (!webviewRef.current) return
 
-      const webviewId = webviewRef.current.getWebContentsId()
-      if (!webviewId) return
-
       const unsubscribe = window.api?.webview?.onFindShortcut?.(async (payload) => {
+        // Get webviewId when event is triggered
+        const webviewId = webviewRef.current?.getWebContentsId()
+        
         // Only handle events for this webview
-        if (payload.webviewId !== webviewId) return
+        if (!webviewId || payload.webviewId !== webviewId) return
 
         const key = payload.key?.toLowerCase()
         const isModifier = payload.control || payload.meta

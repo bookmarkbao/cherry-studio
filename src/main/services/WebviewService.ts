@@ -1,7 +1,6 @@
 import { IpcChannel } from '@shared/IpcChannel'
 import { app, dialog, session, shell, webContents } from 'electron'
 import { promises as fs } from 'fs'
-import { join } from 'path'
 
 /**
  * init the useragent of the webview session
