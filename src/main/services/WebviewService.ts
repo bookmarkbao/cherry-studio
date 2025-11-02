@@ -195,18 +195,18 @@ export async function saveWebviewAsHTML(webviewId: number): Promise<string | nul
             
             // Add PUBLIC identifier if publicId is present
             if (dt.publicId) {
-              // Escape single quotes in publicId by doubling them
-              const escapedPublicId = String(dt.publicId).replace(/'/g, "\\\\'");
+              // Escape single quotes in publicId
+              const escapedPublicId = String(dt.publicId).replace(/'/g, "\\'");
               doctype += " PUBLIC '" + escapedPublicId + "'";
               
               // Add systemId if present (required when publicId is present)
               if (dt.systemId) {
-                const escapedSystemId = String(dt.systemId).replace(/'/g, "\\\\'");
+                const escapedSystemId = String(dt.systemId).replace(/'/g, "\\'");
                 doctype += " '" + escapedSystemId + "'";
               }
             } else if (dt.systemId) {
               // SYSTEM identifier (without PUBLIC)
-              const escapedSystemId = String(dt.systemId).replace(/'/g, "\\\\'");
+              const escapedSystemId = String(dt.systemId).replace(/'/g, "\\'");
               doctype += " SYSTEM '" + escapedSystemId + "'";
             }
             
