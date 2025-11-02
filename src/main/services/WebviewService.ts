@@ -129,10 +129,16 @@ export async function printWebviewToPDF(webviewId: number): Promise<string | nul
   }
 
   try {
+    // Get the page title for default filename
+    const pageTitle = await webview.executeJavaScript('document.title || "webpage"').catch(() => 'webpage')
+    // Sanitize filename by removing invalid characters
+    const sanitizedTitle = pageTitle.replace(/[<>:"/\\|?*]/g, '-').substring(0, 100)
+    const defaultFilename = sanitizedTitle ? `${sanitizedTitle}.pdf` : `webpage-${Date.now()}.pdf`
+
     // Show save dialog
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'Save as PDF',
-      defaultPath: `webpage-${Date.now()}.pdf`,
+      defaultPath: defaultFilename,
       filters: [{ name: 'PDF Files', extensions: ['pdf'] }]
     })
 
@@ -140,12 +146,14 @@ export async function printWebviewToPDF(webviewId: number): Promise<string | nul
       return null
     }
 
-    // Generate PDF
+    // Generate PDF with settings to capture full page
     const pdfData = await webview.printToPDF({
       marginsType: 0,
       printBackground: true,
       printSelectionOnly: false,
-      landscape: false
+      landscape: false,
+      pageSize: 'A4',
+      preferCSSPageSize: true
     })
 
     // Save PDF to file
@@ -169,10 +177,16 @@ export async function saveWebviewAsHTML(webviewId: number): Promise<string | nul
   }
 
   try {
+    // Get the page title for default filename
+    const pageTitle = await webview.executeJavaScript('document.title || "webpage"').catch(() => 'webpage')
+    // Sanitize filename by removing invalid characters
+    const sanitizedTitle = pageTitle.replace(/[<>:"/\\|?*]/g, '-').substring(0, 100)
+    const defaultFilename = sanitizedTitle ? `${sanitizedTitle}.html` : `webpage-${Date.now()}.html`
+
     // Show save dialog
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'Save as HTML',
-      defaultPath: `webpage-${Date.now()}.html`,
+      defaultPath: defaultFilename,
       filters: [
         { name: 'HTML Files', extensions: ['html', 'htm'] },
         { name: 'All Files', extensions: ['*'] }
