@@ -89,7 +89,7 @@ type ProviderActionHandlers = {
 }
 
 interface InputbarInnerProps extends Props {
-  actionsRef: React.MutableRefObject<ProviderActionHandlers>
+  actionsRef: React.RefObject<ProviderActionHandlers>
 }
 
 const Inputbar: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topic }) => {
