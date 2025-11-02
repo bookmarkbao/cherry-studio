@@ -1,6 +1,7 @@
 import { loggerService } from '@logger'
 import type { QuickPanelListItem, QuickPanelReservedSymbol } from '@renderer/components/QuickPanel'
 import { type Assistant, type Model, TopicType } from '@renderer/types'
+import type { InputBarToolType } from '@renderer/types/chat'
 import type { TFunction } from 'i18next'
 import React from 'react'
 
@@ -51,11 +52,12 @@ type ActionKeys<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
 }[keyof T]
 
-type ToolStateKeys = Exclude<ReadableKeys<InputbarToolsContextValue>, 'quickPanelRootMenu'>
-type ToolActionKeys = Exclude<
-  ActionKeys<InputbarToolsContextValue>,
-  'registerQuickPanelRootMenu' | 'registerQuickPanelTrigger' | 'emitQuickPanelTrigger'
->
+// 工具按钮不应该访问这些内部 API
+type ExcludedStateKeys = never // 没有需要排除的 state
+type ExcludedActionKeys = 'toolsRegistry' | 'triggers' // 这些 API 由工具系统内部管理
+
+type ToolStateKeys = Exclude<ReadableKeys<InputbarToolsContextValue>, ExcludedStateKeys>
+type ToolActionKeys = Exclude<ActionKeys<InputbarToolsContextValue>, ExcludedActionKeys>
 
 export type ToolStateMap = Pick<InputbarToolsContextValue, ToolStateKeys>
 export type ToolActionMap = Pick<InputbarToolsContextValue, ToolActionKeys>
@@ -76,10 +78,13 @@ export interface ToolContext {
   features: InputbarFeatures
 }
 
+/**
+ * 工具按钮的 QuickPanel API
+ * 只包含注册功能，不包含触发功能（触发功能只在 Inputbar 中使用）
+ */
 export interface ToolQuickPanelApi {
   registerRootMenu: (entries: QuickPanelListItem[]) => () => void
   registerTrigger: (symbol: QuickPanelReservedSymbol, handler: (payload?: unknown) => void) => () => void
-  emitTrigger: (symbol: QuickPanelReservedSymbol, payload?: unknown) => void
 }
 
 export type ToolRenderContext<S extends readonly ToolStateKey[], A extends readonly ToolActionKey[]> = ToolContext & {
@@ -162,8 +167,8 @@ export const getToolsForScope = (scope: InputbarScope, context: Omit<ToolContext
 
 // Tool order configuration
 export interface ToolOrderConfig {
-  visible: string[]
-  hidden: string[]
+  visible: InputBarToolType[]
+  hidden: InputBarToolType[]
 }
 
 const defaultToolOrder: Record<InputbarScope, ToolOrderConfig> = {

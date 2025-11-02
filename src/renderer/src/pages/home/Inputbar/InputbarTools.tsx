@@ -89,11 +89,12 @@ const InputbarTools = ({ scope, assistantId }: InputbarToolsNewProps) => {
       tool: ToolDefinition<S, A>
     ): ToolRenderContext<S, A> => {
       const deps = tool.dependencies
+      // 为工具按钮提供 QuickPanel API（只包含注册功能）
       const quickPanel: ToolQuickPanelApi = {
-        registerRootMenu: (entries: QuickPanelListItem[]) => toolsContext.registerQuickPanelRootMenu(tool.key, entries),
+        registerRootMenu: (entries: QuickPanelListItem[]) =>
+          toolsContext.toolsRegistry.registerRootMenu(tool.key, entries),
         registerTrigger: (symbol: QuickPanelReservedSymbol, handler: (payload?: unknown) => void) =>
-          toolsContext.registerQuickPanelTrigger(tool.key, symbol, handler),
-        emitTrigger: toolsContext.emitQuickPanelTrigger
+          toolsContext.toolsRegistry.registerTrigger(tool.key, symbol, handler)
       }
 
       const state = (deps?.state || ([] as unknown as S)).reduce(
@@ -132,7 +133,7 @@ const InputbarTools = ({ scope, assistantId }: InputbarToolsNewProps) => {
   // Convert tools to button configs
   const toolButtons = useMemo<ToolButtonConfig[]>(() => {
     return availableTools.map((tool) => ({
-      key: tool.key,
+      key: tool.key as InputBarToolType,
       label: typeof tool.label === 'function' ? tool.label(t) : tool.label,
       component: null, // Will be rendered later
       condition: true, // Already filtered by getToolsForScope

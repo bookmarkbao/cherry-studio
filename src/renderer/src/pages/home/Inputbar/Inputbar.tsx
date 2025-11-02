@@ -107,7 +107,6 @@ const Inputbar: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topi
       isExpanded: false,
       couldAddImageFile: false,
       extensions: [] as string[]
-      // ✅ text 已移除，现在是 InputbarInner 的本地状态
     }),
     [initialAssistant.knowledge_bases]
   )
@@ -141,13 +140,8 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   const inputbarInternalDispatch = useInputbarToolsInternalDispatch()
 
   const { files, mentionedModels, selectedKnowledgeBases, isExpanded } = state
-  const {
-    setFiles,
-    setMentionedModels,
-    setSelectedKnowledgeBases,
-    setIsExpanded,
-    quickPanel: quickPanelAPI
-  } = inputbarDispatch
+  const { setFiles, setMentionedModels, setSelectedKnowledgeBases, setIsExpanded, toolsRegistry, triggers } =
+    inputbarDispatch
   const { setCouldAddImageFile, setExtensions } = inputbarInternalDispatch
 
   const [text, setText] = useState('')
@@ -191,8 +185,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   // 全局 QuickPanel Hook (用于控制面板显示状态)
   const quickPanel = useQuickPanel()
   const quickPanelOpen = quickPanel.open
-  const quickPanelIsVisible = quickPanel.isVisible
-  const quickPanelSymbol = quickPanel.symbol
 
   const isVisionSupported = useMemo(
     () =>
@@ -401,13 +393,13 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   // ============================================================================
   // QuickPanel Root Menu 优化 (使用 ref 模式，避免频繁重新注册)
   // ============================================================================
-  const rootTriggerHandlerRef = useRef<(payload?: unknown) => void>()
+  const rootTriggerHandlerRef = useRef<((payload?: unknown) => void) | undefined>(undefined)
 
   // ✅ 更新 handler 逻辑（内部逻辑变化，不重新注册 trigger）
   useEffect(() => {
     rootTriggerHandlerRef.current = (payload) => {
       // 获取最新的工具注册的菜单项
-      const menuItems = quickPanelAPI.getQuickPanelRootMenu()
+      const menuItems = triggers.getRootMenu()
 
       // 添加 Inputbar 特有的菜单项（如翻译）
       if (features.enableTranslate && text.trim()) {
@@ -431,7 +423,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
         triggerInfo
       })
     }
-  }, [features.enableTranslate, quickPanelAPI, quickPanelOpen, t, text, translate])
+  }, [features.enableTranslate, triggers, quickPanelOpen, t, text, translate])
 
   // ✅ 只注册一次 trigger（组件挂载时）
   useEffect(() => {
@@ -439,7 +431,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       return
     }
 
-    const disposeRootTrigger = quickPanelAPI.registerTrigger(
+    const disposeRootTrigger = toolsRegistry.registerTrigger(
       'inputbar-root',
       QuickPanelReservedSymbol.Root,
       (payload) => rootTriggerHandlerRef.current?.(payload) // ✅ 调用 ref 中的最新函数
@@ -450,7 +442,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.enableQuickPanel])
-  // ✅ 只依赖稳定的值，不会频繁重新注册
 
   const onToggleExpanded = useCallback(() => {
     if (!features.enableExpand) {
@@ -527,7 +518,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
         window.toast.error(t('chat.input.file_error'))
       }
     },
-    [resizeTextArea, setTimeoutTimer, t]
+    [resizeTextArea, setFiles, setTimeoutTimer, t]
   )
 
   const handleKeyDown = useCallback(
@@ -623,15 +614,15 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       features.enableExpand,
       features.enableTranslate,
       files.length,
+      inputFocus,
       isExpanded,
       onToggleExpanded,
       sendMessage,
       sendMessageShortcut,
       setFiles,
-      setText,
       setTimeoutTimer,
       spaceClickCount,
-      text,
+      text.length,
       textareaHeight,
       translate
     ]
@@ -675,7 +666,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       const hasValidTriggerBoundary = previousChar === ' ' || isCursorAtTextStart
 
       const openRootPanelAt = (position: number) => {
-        quickPanelAPI.emitTrigger(QuickPanelReservedSymbol.Root, {
+        triggers.emit(QuickPanelReservedSymbol.Root, {
           type: 'input',
           position,
           originalText: newText
@@ -683,7 +674,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       }
 
       const openMentionPanelAt = (position: number) => {
-        quickPanelAPI.emitTrigger(QuickPanelReservedSymbol.MentionModels, {
+        triggers.emit(QuickPanelReservedSymbol.MentionModels, {
           type: 'input',
           position,
           originalText: newText
@@ -692,7 +683,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
 
       if (enableQuickPanelTriggers && config.enableQuickPanel) {
         // ✅ 检查是否有根菜单项（调用函数而非使用缓存的数组）
-        const hasRootMenuItems = quickPanelAPI.getQuickPanelRootMenu().length > 0
+        const hasRootMenuItems = triggers.getRootMenu().length > 0
         const textBeforeCursor = newText.slice(0, cursorPosition)
         const lastRootIndex = textBeforeCursor.lastIndexOf(QuickPanelReservedSymbol.Root)
         const lastMentionIndex = textBeforeCursor.lastIndexOf(QuickPanelReservedSymbol.MentionModels)
@@ -759,14 +750,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
 
       prevTextRef.current = newText
     },
-    [
-      config.enableQuickPanel,
-      enableQuickPanelTriggers,
-      features.enableMentionModels,
-      quickPanel,
-      quickPanelAPI,
-      setText
-    ]
+    [config.enableQuickPanel, enableQuickPanelTriggers, features.enableMentionModels, quickPanel, triggers, setText]
     // ✅ 移除了 quickPanelRootMenuItems 依赖
   )
 

@@ -26,6 +26,48 @@ export interface InputbarToolsState {
 // Dispatch Context (操作函数，永远不变)
 // ============================================================================
 
+/**
+ * 工具注册中心 API
+ * 供工具按钮使用，用于注册菜单项和触发器
+ */
+export interface ToolsRegistryAPI {
+  /**
+   * 注册工具到根菜单（`/` 触发的菜单）
+   * @param toolKey 工具唯一标识
+   * @param entries 菜单项列表
+   * @returns 取消注册的函数
+   */
+  registerRootMenu: (toolKey: string, entries: QuickPanelListItem[]) => () => void
+
+  /**
+   * 注册触发器处理函数
+   * @param toolKey 工具唯一标识
+   * @param symbol 触发符号（如 @, #, / 等）
+   * @param handler 触发时执行的处理函数
+   * @returns 取消注册的函数
+   */
+  registerTrigger: (toolKey: string, symbol: QuickPanelReservedSymbol, handler: QuickPanelTriggerHandler) => () => void
+}
+
+/**
+ * 触发器 API
+ * 供 Inputbar 使用，用于触发面板和获取菜单项
+ */
+export interface TriggersAPI {
+  /**
+   * 触发指定符号的面板
+   * @param symbol 触发符号
+   * @param payload 传递给触发器的数据
+   */
+  emit: (symbol: QuickPanelReservedSymbol, payload?: unknown) => void
+
+  /**
+   * 获取根菜单的所有菜单项（合并所有工具注册的菜单项）
+   * @returns 合并后的菜单项列表
+   */
+  getRootMenu: () => QuickPanelListItem[]
+}
+
 export interface InputbarToolsDispatch {
   // State setters
   setFiles: React.Dispatch<React.SetStateAction<FileType[]>>
@@ -39,17 +81,11 @@ export interface InputbarToolsDispatch {
   clearTopic: () => void
   onNewContext: () => void
 
-  // Quick Panel API
-  quickPanel: {
-    getQuickPanelRootMenu: () => QuickPanelListItem[]
-    registerRootMenu: (toolKey: string, entries: QuickPanelListItem[]) => () => void
-    registerTrigger: (
-      toolKey: string,
-      symbol: QuickPanelReservedSymbol,
-      handler: QuickPanelTriggerHandler
-    ) => () => void
-    emitTrigger: (symbol: QuickPanelReservedSymbol, payload?: unknown) => void
-  }
+  // ✅ 工具注册中心 (供工具按钮使用)
+  toolsRegistry: ToolsRegistryAPI
+
+  // ✅ 触发器 API (供 Inputbar 使用)
+  triggers: TriggersAPI
 }
 
 // ============================================================================
@@ -88,10 +124,16 @@ export const useInputbarToolsDispatch = (): InputbarToolsDispatch => {
 }
 
 /**
+ * 组合类型，包含所有 state 和 dispatch
+ * 用于工具按钮的 context 类型推断
+ */
+export type InputbarToolsContextValue = InputbarToolsState & InputbarToolsDispatch
+
+/**
  * 同时获取 state 和 dispatch（便捷 hook）
  * 注意：会订阅状态变化
  */
-export const useInputbarTools = (): InputbarToolsState & InputbarToolsDispatch => {
+export const useInputbarTools = (): InputbarToolsContextValue => {
   const state = useInputbarToolsState()
   const dispatch = useInputbarToolsDispatch()
   return { ...state, ...dispatch }
@@ -238,16 +280,25 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
   )
 
   // --------------------------------------------------------------------------
-  // Quick Panel API (永远不变，因为所有函数都是稳定的)
+  // Tools Registry API (供工具按钮使用，永远不变)
   // --------------------------------------------------------------------------
-  const quickPanelAPI = useMemo(
+  const toolsRegistryAPI = useMemo<ToolsRegistryAPI>(
     () => ({
-      getQuickPanelRootMenu,
       registerRootMenu,
-      registerTrigger,
-      emitTrigger
+      registerTrigger
     }),
-    [getQuickPanelRootMenu, registerRootMenu, registerTrigger, emitTrigger]
+    [registerRootMenu, registerTrigger]
+  )
+
+  // --------------------------------------------------------------------------
+  // Triggers API (供 Inputbar 使用，永远不变)
+  // --------------------------------------------------------------------------
+  const triggersAPI = useMemo<TriggersAPI>(
+    () => ({
+      emit: emitTrigger,
+      getRootMenu: getQuickPanelRootMenu
+    }),
+    [emitTrigger, getQuickPanelRootMenu]
   )
 
   // --------------------------------------------------------------------------
@@ -264,10 +315,11 @@ export const InputbarToolsProvider: React.FC<InputbarToolsProviderProps> = ({ ch
       // Stable actions
       ...stableActions,
 
-      // Quick Panel API
-      quickPanel: quickPanelAPI
+      // ✅ 拆分后的 API
+      toolsRegistry: toolsRegistryAPI,
+      triggers: triggersAPI
     }),
-    [stableActions, quickPanelAPI]
+    [stableActions, toolsRegistryAPI, triggersAPI]
   )
 
   // --------------------------------------------------------------------------
