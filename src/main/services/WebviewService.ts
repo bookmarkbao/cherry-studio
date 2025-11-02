@@ -1,5 +1,7 @@
 import { IpcChannel } from '@shared/IpcChannel'
-import { app, session, shell, webContents } from 'electron'
+import { app, dialog, session, shell, webContents } from 'electron'
+import { promises as fs } from 'fs'
+import { join } from 'path'
 
 /**
  * init the useragent of the webview session
@@ -54,10 +56,12 @@ const attachKeyboardHandler = (contents: Electron.WebContents) => {
     }
 
     const isFindShortcut = (input.control || input.meta) && key === 'f'
+    const isPrintShortcut = (input.control || input.meta) && key === 'p'
+    const isSaveShortcut = (input.control || input.meta) && key === 's'
     const isEscape = key === 'escape'
     const isEnter = key === 'enter'
 
-    if (!isFindShortcut && !isEscape && !isEnter) {
+    if (!isFindShortcut && !isPrintShortcut && !isSaveShortcut && !isEscape && !isEnter) {
       return
     }
 
@@ -68,6 +72,11 @@ const attachKeyboardHandler = (contents: Electron.WebContents) => {
 
     // Always prevent Cmd/Ctrl+F to override the guest page's native find dialog
     if (isFindShortcut) {
+      event.preventDefault()
+    }
+
+    // Prevent default print/save dialogs and handle them custom
+    if (isPrintShortcut || isSaveShortcut) {
       event.preventDefault()
     }
 
@@ -99,4 +108,88 @@ export function initWebviewHotkeys() {
   app.on('web-contents-created', (_, contents) => {
     attachKeyboardHandler(contents)
   })
+}
+
+/**
+ * Print webview content to PDF
+ * @param webviewId The webview webContents id
+ * @returns Path to saved PDF file or null if user cancelled
+ */
+export async function printWebviewToPDF(webviewId: number): Promise<string | null> {
+  const webview = webContents.fromId(webviewId)
+  if (!webview) {
+    throw new Error('Webview not found')
+  }
+
+  try {
+    // Show save dialog
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Save as PDF',
+      defaultPath: `webpage-${Date.now()}.pdf`,
+      filters: [{ name: 'PDF Files', extensions: ['pdf'] }]
+    })
+
+    if (canceled || !filePath) {
+      return null
+    }
+
+    // Generate PDF
+    const pdfData = await webview.printToPDF({
+      marginsType: 0,
+      printBackground: true,
+      printSelectionOnly: false,
+      landscape: false
+    })
+
+    // Save PDF to file
+    await fs.writeFile(filePath, pdfData)
+
+    return filePath
+  } catch (error) {
+    throw new Error(`Failed to print to PDF: ${(error as Error).message}`)
+  }
+}
+
+/**
+ * Save webview content as HTML
+ * @param webviewId The webview webContents id
+ * @returns Path to saved HTML file or null if user cancelled
+ */
+export async function saveWebviewAsHTML(webviewId: number): Promise<string | null> {
+  const webview = webContents.fromId(webviewId)
+  if (!webview) {
+    throw new Error('Webview not found')
+  }
+
+  try {
+    // Show save dialog
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Save as HTML',
+      defaultPath: `webpage-${Date.now()}.html`,
+      filters: [
+        { name: 'HTML Files', extensions: ['html', 'htm'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    })
+
+    if (canceled || !filePath) {
+      return null
+    }
+
+    // Get the HTML content
+    const html = await webview.executeJavaScript(`
+      (() => {
+        const doctype = document.doctype ? 
+          new XMLSerializer().serializeToString(document.doctype) : '';
+        return doctype + document.documentElement.outerHTML;
+      })()
+    `)
+
+    // Save HTML to file
+    await fs.writeFile(filePath, html, 'utf-8')
+
+    return filePath
+  } catch (error) {
+    throw new Error(`Failed to save as HTML: ${(error as Error).message}`)
+  }
 }
