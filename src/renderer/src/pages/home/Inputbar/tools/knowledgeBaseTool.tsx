@@ -2,7 +2,7 @@ import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useSidebarIconShow } from '@renderer/hooks/useSidebarIcon'
 import KnowledgeBaseButton from '@renderer/pages/home/Inputbar/KnowledgeBaseButton'
 import { defineTool, registerTool, TopicType } from '@renderer/pages/home/Inputbar/types'
-import { KnowledgeBase } from '@renderer/types'
+import type { KnowledgeBase } from '@renderer/types'
 import { isPromptToolUse, isSupportedToolUse } from '@renderer/utils/mcp-tools'
 import { useCallback } from 'react'
 

@@ -1,10 +1,10 @@
 import { loggerService } from '@logger'
-import { QuickPanelListItem, QuickPanelReservedSymbol } from '@renderer/components/QuickPanel'
+import type { QuickPanelListItem, QuickPanelReservedSymbol } from '@renderer/components/QuickPanel'
 import { type Assistant, type Model, TopicType } from '@renderer/types'
-import { TFunction } from 'i18next'
+import type { TFunction } from 'i18next'
 import React from 'react'
 
-import { InputbarToolsContextValue } from './context/InputbarToolsProvider'
+import type { InputbarToolsContextValue } from './context/InputbarToolsProvider'
 
 export { TopicType }
 

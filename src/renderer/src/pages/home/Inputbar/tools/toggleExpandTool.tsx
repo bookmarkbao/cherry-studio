@@ -1,5 +1,6 @@
 import { ActionIconButton } from '@renderer/components/Buttons'
-import { defineTool, registerTool, ToolRenderContext, TopicType } from '@renderer/pages/home/Inputbar/types'
+import type { ToolRenderContext } from '@renderer/pages/home/Inputbar/types'
+import { defineTool, registerTool, TopicType } from '@renderer/pages/home/Inputbar/types'
 import { Tooltip } from 'antd'
 import { Maximize, Minimize } from 'lucide-react'
 import React, { useCallback } from 'react'
