@@ -113,7 +113,7 @@ const WebviewContainer = memo(
       const unsubscribe = window.api?.webview?.onFindShortcut?.(async (payload) => {
         // Get webviewId when event is triggered
         const webviewId = webviewRef.current?.getWebContentsId()
-        
+
         // Only handle events for this webview
         if (!webviewId || payload.webviewId !== webviewId) return
 
