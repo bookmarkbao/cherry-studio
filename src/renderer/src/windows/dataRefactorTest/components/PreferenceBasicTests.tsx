@@ -1,7 +1,8 @@
 import { Button, Switch } from '@cherrystudio/ui'
+import { Input } from '@cherrystudio/ui'
 import { usePreference } from '@renderer/data/hooks/usePreference'
 import { type PreferenceKeyType, ThemeMode } from '@shared/data/preference/preferenceTypes'
-import { Input, message, Select, Slider, Space, Typography } from 'antd'
+import { message, Select, Slider, Space, Typography } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 

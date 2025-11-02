@@ -1,5 +1,6 @@
 import { Box } from '@cherrystudio/ui'
-import { Input, Modal } from 'antd'
+import { Input } from '@cherrystudio/ui'
+import { Modal } from 'antd'
 import type { TextAreaProps } from 'antd/es/input'
 import type { ReactNode } from 'react'
 import { useRef, useState } from 'react'

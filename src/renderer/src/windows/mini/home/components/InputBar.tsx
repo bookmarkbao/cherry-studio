@@ -1,8 +1,7 @@
+import { Input as CInput } from '@cherrystudio/ui'
 import ModelAvatar from '@renderer/components/Avatar/ModelAvatar'
 import { useTimer } from '@renderer/hooks/useTimer'
 import type { Assistant } from '@renderer/types'
-import { Input as AntdInput } from 'antd'
-import type { InputRef } from 'rc-input/lib/interface'
 import React, { useRef } from 'react'
 import styled from 'styled-components'
 
@@ -25,10 +24,10 @@ const InputBar = ({
   handleKeyDown,
   handleChange
 }: InputBarProps & { ref?: React.RefObject<HTMLDivElement | null> }) => {
-  const inputRef = useRef<InputRef>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const { setTimeoutTimer } = useTimer()
   if (!loading) {
-    setTimeoutTimer('focus', () => inputRef.current?.input?.focus(), 0)
+    setTimeoutTimer('focus', () => inputRef.current?.focus(), 0)
   }
   return (
     <InputWrapper ref={ref}>
@@ -53,7 +52,7 @@ const InputWrapper = styled.div`
   margin-top: 10px;
 `
 
-const Input = styled(AntdInput)`
+const Input = styled(CInput)`
   background: none;
   border: none;
   -webkit-app-region: none;

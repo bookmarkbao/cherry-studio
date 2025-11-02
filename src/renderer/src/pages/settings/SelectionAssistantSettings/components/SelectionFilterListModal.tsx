@@ -1,6 +1,7 @@
 import { Button } from '@cherrystudio/ui'
+import { Input } from '@cherrystudio/ui'
 import { isWin } from '@renderer/config/constant'
-import { Form, Input, Modal } from 'antd'
+import { Form, Modal } from 'antd'
 import type { FC } from 'react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'

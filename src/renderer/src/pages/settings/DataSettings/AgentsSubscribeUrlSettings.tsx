@@ -1,9 +1,9 @@
 import { RowFlex } from '@cherrystudio/ui'
+import { Input } from '@cherrystudio/ui'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useAppDispatch } from '@renderer/store'
 import { setAgentssubscribeUrl } from '@renderer/store/settings'
-import Input from 'antd/es/input/Input'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 

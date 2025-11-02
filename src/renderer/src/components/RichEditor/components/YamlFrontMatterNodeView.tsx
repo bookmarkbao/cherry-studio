@@ -1,6 +1,7 @@
+import { Input } from '@cherrystudio/ui'
 import { loggerService } from '@logger'
 import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-import { Checkbox, Dropdown, Input, type MenuProps } from 'antd'
+import { Checkbox, Dropdown, type MenuProps } from 'antd'
 import { Calendar, Check, FileText, Hash, MoreHorizontal, Plus, Tag as TagIcon, Trash2, Type, X } from 'lucide-react'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'

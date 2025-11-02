@@ -1,6 +1,7 @@
+import { Input } from '@cherrystudio/ui'
 import { prefetch, useInvalidateCache, useMutation, usePaginatedQuery, useQuery } from '@renderer/data/hooks/useDataApi'
 import { loggerService } from '@renderer/services/LoggerService'
-import { Alert, Button, Card, Col, Input, message, Row, Space, Spin, Table, Tag, Typography } from 'antd'
+import { Alert, Button, Card, Col, message, Row, Space, Spin, Table, Tag, Typography } from 'antd'
 import {
   ArrowLeft,
   ArrowRight,

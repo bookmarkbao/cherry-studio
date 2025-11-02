@@ -1,5 +1,8 @@
 import { cn } from '@cherrystudio/ui/utils'
+import { EyeIcon } from 'lucide-react'
 import React, { useMemo } from 'react'
+
+import { Button } from './button'
 
 export interface InputProps extends React.ComponentPropsWithRef<'input'> {
   startContent?: React.ReactNode
@@ -8,7 +11,7 @@ export interface InputProps extends React.ComponentPropsWithRef<'input'> {
   caption?: string
 }
 
-export function Input({ className, type, required, label, caption, ...props }: InputProps) {
+export function Input({ startContent, endContent, className, type, required, label, caption, ...props }: InputProps) {
   const id = React.useId()
 
   const input = useMemo(() => {
@@ -35,7 +38,14 @@ export function Input({ className, type, required, label, caption, ...props }: I
     return (
       <div className="flex flex-col w-full">
         <label htmlFor={id}>{label}</label>
+        <div>{startContent}</div>
         {input}
+        <div>
+          <Button>
+            <EyeIcon />
+          </Button>
+          {endContent}
+        </div>
         {caption && <div className="text-muted-foreground">{caption}</div>}
       </div>
     )
@@ -43,3 +53,5 @@ export function Input({ className, type, required, label, caption, ...props }: I
 
   return input
 }
+
+function InputPassword() {}
