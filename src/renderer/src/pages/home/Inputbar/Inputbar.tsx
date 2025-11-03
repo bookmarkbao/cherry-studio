@@ -44,22 +44,21 @@ import { setSearching } from '@renderer/store/runtime'
 import { sendMessage as _sendMessage } from '@renderer/store/thunk/messageThunk'
 import { type Assistant, type FileType, type KnowledgeBase, type Model, type Topic, TopicType } from '@renderer/types'
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
-import { classNames, delay } from '@renderer/utils'
+import { delay } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
 import { getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Tooltip } from 'antd'
-import TextArea from 'antd/es/input/TextArea'
 import { debounce } from 'lodash'
 import { CirclePause, Languages } from 'lucide-react'
-import type { CSSProperties, FC } from 'react'
+import type { FC } from 'react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import NarrowLayout from '../Messages/NarrowLayout'
 import AttachmentPreview from './AttachmentPreview'
+import { InputbarCore } from './components/InputbarCore'
 import { useFileDragDrop } from './hooks/useFileDragDrop'
 import { usePasteHandler } from './hooks/usePasteHandler'
 import InputbarTools from './InputbarTools'
@@ -78,60 +77,7 @@ interface Props {
   topic: Topic
 }
 
-type ProviderActionHandlers = {
-  resizeTextArea: () => void
-  addNewTopic: () => void
-  clearTopic: () => void
-  onNewContext: () => void
-  onTextChange: (updater: string | ((prev: string) => string)) => void
-}
-
-interface InputbarInnerProps extends Props {
-  actionsRef: React.RefObject<ProviderActionHandlers>
-}
-
-const Inputbar: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topic }) => {
-  const actionsRef = useRef<ProviderActionHandlers>({
-    resizeTextArea: () => {},
-    addNewTopic: () => {},
-    clearTopic: () => {},
-    onNewContext: () => {},
-    onTextChange: () => {}
-  })
-
-  const initialState = useMemo(
-    () => ({
-      files: [] as FileType[],
-      mentionedModels: [] as Model[],
-      selectedKnowledgeBases: initialAssistant.knowledge_bases ?? [],
-      isExpanded: false,
-      couldAddImageFile: false,
-      extensions: [] as string[]
-    }),
-    [initialAssistant.knowledge_bases]
-  )
-
-  return (
-    <InputbarToolsProvider
-      initialState={initialState}
-      actions={{
-        resizeTextArea: () => actionsRef.current.resizeTextArea(),
-        addNewTopic: () => actionsRef.current.addNewTopic(),
-        clearTopic: () => actionsRef.current.clearTopic(),
-        onNewContext: () => actionsRef.current.onNewContext(),
-        onTextChange: (updater) => actionsRef.current.onTextChange(updater)
-      }}>
-      <InputbarInner
-        assistant={initialAssistant}
-        setActiveTopic={setActiveTopic}
-        topic={topic}
-        actionsRef={actionsRef}
-      />
-    </InputbarToolsProvider>
-  )
-}
-
-const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, setActiveTopic, topic, actionsRef }) => {
+const InputbarInner: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topic }) => {
   const scope = useMemo<InputbarScope>(() => topic.type ?? TopicType.Chat, [topic.type])
   const config = useMemo(() => getInputbarConfig(scope), [scope])
   const features = config.features
@@ -180,7 +126,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
 
   const { t } = useTranslation()
   const { getLanguageByLangcode } = useTranslate()
-  const containerRef = useRef<HTMLDivElement | null>(null)
   const { searching } = useRuntime()
   const { pauseMessages } = useMessageOperations(topic)
   const loading = useTopicLoading(topic)
@@ -512,7 +457,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
         window.toast.error(t('chat.input.file_error'))
       }
     },
-    [resizeTextArea, setFiles, setTimeoutTimer, t]
+    [resizeTextArea, setFiles, setText, setTimeoutTimer, t, textareaRef]
   )
 
   const handleKeyDown = useCallback(
@@ -741,6 +686,17 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     [resizeTextArea, setText, setTimeoutTimer]
   )
 
+  const handleFocus = useCallback(() => {
+    setInputFocus(true)
+    dispatch(setSearching(false))
+    quickPanel.close()
+    PasteService.setLastFocusedComponent('inputbar')
+  }, [dispatch, quickPanel])
+
+  const handleBlur = useCallback(() => {
+    setInputFocus(false)
+  }, [])
+
   const handleDragStart = useCallback(
     (event: React.MouseEvent) => {
       if (!config.enableDragDrop) {
@@ -764,7 +720,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
     },
-    [config.enableDragDrop, textareaRef]
+    [config.enableDragDrop, setTextareaHeight, textareaRef]
   )
 
   const onQuote = useCallback(
@@ -937,18 +893,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   }, [focusTextarea])
 
   useEffect(() => {
-    actionsRef.current = {
-      resizeTextArea,
-      addNewTopic,
-      clearTopic,
-      onNewContext,
-      onTextChange: (updater) => {
-        setText(updater)
-      }
-    }
-  }, [actionsRef, addNewTopic, clearTopic, onNewContext, resizeTextArea, setText])
-
-  useEffect(() => {
     setSelectedKnowledgeBases(showKnowledgeIcon && features.enableKnowledge ? (assistant.knowledge_bases ?? []) : [])
   }, [assistant.knowledge_bases, features.enableKnowledge, setSelectedKnowledgeBases, showKnowledgeIcon])
 
@@ -1049,105 +993,87 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
 
   const composerExpanded = isExpanded || textareaIsExpanded
 
+  // topContent: 所有顶部预览内容
+  const topContent = (
+    <>
+      {features.enableAttachments && files.length > 0 && (
+        <AttachmentPreview files={files} setFiles={setFiles} onAttachmentContextMenu={appendTxtContentToInput} />
+      )}
+
+      {features.enableKnowledge && selectedKnowledgeBases.length > 0 && (
+        <KnowledgeBaseInput
+          selectedKnowledgeBases={selectedKnowledgeBases}
+          onRemoveKnowledgeBase={handleRemoveKnowledgeBase}
+        />
+      )}
+
+      {features.enableMentionModels && mentionedModels.length > 0 && (
+        <MentionModelsInput selectedModels={mentionedModels} onRemoveModel={handleRemoveModel} />
+      )}
+    </>
+  )
+
+  // leftToolbar: 左侧工具栏
+  const leftToolbar = config.showTools ? <InputbarTools scope={scope} assistantId={assistant.id} /> : null
+
+  // rightToolbar: 右侧工具栏
+  const rightToolbar = (
+    <>
+      {tokenCountProps && (
+        <TokenCount
+          estimateTokenCount={tokenCountProps.estimateTokenCount}
+          inputTokenCount={tokenCountProps.inputTokenCount}
+          contextCount={tokenCountProps.contextCount}
+        />
+      )}
+
+      {features.enableSendButton && (
+        <SendMessageButton sendMessage={sendMessage} disabled={cannotSend || loading || searching} />
+      )}
+
+      {rightSectionExtras}
+    </>
+  )
+
+  // quickPanel: QuickPanel 组件
+  const quickPanelElement = config.enableQuickPanel ? <QuickPanelView setInputText={setInputText} /> : null
+
+  // dragHandle: 拖拽手柄
+  const dragHandleElement = config.enableDragDrop ? (
+    <DragHandle onMouseDown={handleDragStart}>
+      <HolderOutlined style={{ fontSize: 12 }} />
+    </DragHandle>
+  ) : null
+
   return (
-    <NarrowLayout style={{ width: '100%' }}>
-      <Container
-        ref={containerRef}
-        onDragEnter={dragDrop.handleDragEnter}
-        onDragLeave={dragDrop.handleDragLeave}
-        onDragOver={dragDrop.handleDragOver}
-        onDrop={dragDrop.handleDrop}
-        className="inputbar">
-        {config.enableQuickPanel && <QuickPanelView setInputText={setInputText} />}
-        <InputBarContainer
-          id="inputbar"
-          className={classNames(
-            'inputbar-container',
-            inputFocus && 'focus',
-            dragDrop.isDragging && 'file-dragging',
-            composerExpanded && 'expanded'
-          )}>
-          {features.enableAttachments && files.length > 0 && (
-            <AttachmentPreview files={files} setFiles={setFiles} onAttachmentContextMenu={appendTxtContentToInput} />
-          )}
-
-          {features.enableKnowledge && selectedKnowledgeBases.length > 0 && (
-            <KnowledgeBaseInput
-              selectedKnowledgeBases={selectedKnowledgeBases}
-              onRemoveKnowledgeBase={handleRemoveKnowledgeBase}
-            />
-          )}
-
-          {features.enableMentionModels && mentionedModels.length > 0 && (
-            <MentionModelsInput selectedModels={mentionedModels} onRemoveModel={handleRemoveModel} />
-          )}
-
-          <Textarea
-            value={text}
-            onKeyDown={handleKeyDown}
-            placeholder={isTranslating ? t('chat.input.translating') : config.placeholder || placeholderText}
-            autoFocus
-            variant="borderless"
-            spellCheck={enableSpellCheck}
-            rows={2}
-            autoSize={textareaHeight ? false : { minRows: 2, maxRows: 20 }}
-            ref={textareaRef}
-            styles={{ textarea: TextareaStyle }}
-            onChange={handleTextareaChange}
-            onPaste={handlePaste}
-            onFocus={() => {
-              setInputFocus(true)
-              dispatch(setSearching(false))
-              quickPanel.close()
-              PasteService.setLastFocusedComponent('inputbar')
-            }}
-            onBlur={() => setInputFocus(false)}
-            onClick={() => {
-              if (searching) {
-                dispatch(setSearching(false))
-              }
-              quickPanel.close()
-            }}
-            style={{
-              fontSize,
-              height: textareaHeight,
-              minHeight: '30px'
-            }}
-            disabled={loading || searching}
-          />
-
-          {config.enableDragDrop && (
-            <DragHandle onMouseDown={handleDragStart}>
-              <HolderOutlined style={{ fontSize: 12 }} />
-            </DragHandle>
-          )}
-
-          <BottomBar>
-            <LeftSection>{config.showTools && <InputbarTools scope={scope} assistantId={assistant.id} />}</LeftSection>
-
-            <RightSection>
-              {tokenCountProps && (
-                <TokenCount
-                  estimateTokenCount={tokenCountProps.estimateTokenCount}
-                  inputTokenCount={tokenCountProps.inputTokenCount}
-                  contextCount={tokenCountProps.contextCount}
-                />
-              )}
-
-              {features.enableSendButton && (
-                <SendMessageButton sendMessage={sendMessage} disabled={cannotSend || loading || searching} />
-              )}
-
-              {rightSectionExtras}
-            </RightSection>
-          </BottomBar>
-        </InputBarContainer>
-      </Container>
-    </NarrowLayout>
+    <InputbarCore
+      text={text}
+      onTextChange={handleTextareaChange}
+      placeholder={isTranslating ? t('chat.input.translating') : config.placeholder || placeholderText}
+      textareaRef={textareaRef}
+      textareaHeight={textareaHeight}
+      onKeyDown={handleKeyDown}
+      onPaste={handlePaste}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onDragEnter={dragDrop.handleDragEnter}
+      onDragLeave={dragDrop.handleDragLeave}
+      onDragOver={dragDrop.handleDragOver}
+      onDrop={dragDrop.handleDrop}
+      isDragging={dragDrop.isDragging}
+      leftToolbar={leftToolbar}
+      rightToolbar={rightToolbar}
+      topContent={topContent}
+      quickPanel={quickPanelElement}
+      dragHandle={dragHandleElement}
+      fontSize={fontSize}
+      enableSpellCheck={enableSpellCheck}
+      disabled={loading || searching}
+      isExpanded={composerExpanded}
+    />
   )
 }
 
-// Add these styled components at the bottom
 const DragHandle = styled.div`
   position: absolute;
   top: -3px;
@@ -1173,89 +1099,25 @@ const DragHandle = styled.div`
   }
 `
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 2;
-  padding: 0 18px 18px 18px;
-  [navbar-position='top'] & {
-    padding: 0 18px 10px 18px;
-  }
-`
+// Wrapper 组件：提供 Context Provider
+const Inputbar: FC<Props> = ({ assistant, setActiveTopic, topic }) => {
+  const initialState = useMemo(
+    () => ({
+      files: [] as FileType[],
+      mentionedModels: [] as Model[],
+      selectedKnowledgeBases: assistant.knowledge_bases ?? [],
+      isExpanded: false,
+      couldAddImageFile: false,
+      extensions: [] as string[]
+    }),
+    [assistant.knowledge_bases]
+  )
 
-const InputBarContainer = styled.div`
-  border: 0.5px solid var(--color-border);
-  transition: all 0.2s ease;
-  position: relative;
-  border-radius: 17px;
-  padding-top: 8px;
-  background-color: var(--color-background-opacity);
-
-  &.file-dragging {
-    border: 2px dashed #2ecc71;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(46, 204, 113, 0.03);
-      border-radius: 14px;
-      z-index: 5;
-      pointer-events: none;
-    }
-  }
-`
-
-const TextareaStyle: CSSProperties = {
-  paddingLeft: 0,
-  padding: '6px 15px 0px' // 减小顶部padding
+  return (
+    <InputbarToolsProvider initialState={initialState}>
+      <InputbarInner assistant={assistant} setActiveTopic={setActiveTopic} topic={topic} />
+    </InputbarToolsProvider>
+  )
 }
-
-const Textarea = styled(TextArea)`
-  padding: 0;
-  border-radius: 0;
-  display: flex;
-  resize: none !important;
-  overflow: auto;
-  width: 100%;
-  box-sizing: border-box;
-  transition: none !important;
-  &.ant-input {
-    line-height: 1.4;
-  }
-  &::-webkit-scrollbar {
-    width: 3px;
-  }
-`
-
-const BottomBar = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 5px 8px;
-  height: 40px;
-  gap: 16px;
-  position: relative;
-  z-index: 2;
-  flex-shrink: 0;
-`
-
-const LeftSection = styled.div`
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-`
-
-const RightSection = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-`
 
 export default Inputbar
