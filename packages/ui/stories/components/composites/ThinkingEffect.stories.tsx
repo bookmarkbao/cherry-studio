@@ -1,7 +1,7 @@
-import { Button } from '../../../src/components'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect, useMemo, useState } from 'react'
 
+import { Button } from '../../../src/components'
 import { ThinkingEffect } from '../../../src/components'
 
 const meta: Meta<typeof ThinkingEffect> = {

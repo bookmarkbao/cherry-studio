@@ -1,7 +1,7 @@
-import { Button } from '../../../src/components'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
+import { Button } from '../../../src/components'
 import { Spinner } from '../../../src/components'
 
 const meta: Meta<typeof Spinner> = {
@@ -108,7 +108,7 @@ export const InteractiveDemo: Story = {
     return (
       <div className="space-y-4">
         <div className="flex gap-2">
-          <Button onPress={handleStartLoading} disabled={isLoading} color="primary">
+          <Button onClick={handleStartLoading} disabled={isLoading}>
             {isLoading ? '正在处理...' : '开始加载'}
           </Button>
           <input
@@ -269,7 +269,7 @@ export const LoadingSequence: Story = {
 
     return (
       <div className="space-y-4">
-        <Button onPress={nextStep}>{isComplete ? '重新开始' : '下一步'}</Button>
+        <Button onClick={nextStep}>{isComplete ? '重新开始' : '下一步'}</Button>
 
         <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
           {isComplete ? (
