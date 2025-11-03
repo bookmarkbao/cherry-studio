@@ -1,4 +1,3 @@
-import { Alert, Spinner } from '@heroui/react'
 import Scrollbar from '@renderer/components/Scrollbar'
 import { useAgents } from '@renderer/hooks/agents/useAgents'
 import { useApiServer } from '@renderer/hooks/useApiServer'
@@ -11,6 +10,7 @@ import { useAppDispatch } from '@renderer/store'
 import { addIknowAction } from '@renderer/store/runtime'
 import type { Assistant, AssistantsSortType, Topic } from '@renderer/types'
 import { getErrorMessage } from '@renderer/utils'
+import { Alert } from 'antd'
 import type { FC } from 'react'
 import { useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -128,26 +128,24 @@ const AssistantsTab: FC<AssistantsTabProps> = (props) => {
     <Container className="assistants-tab" ref={containerRef}>
       {!apiServerConfig.enabled && !apiServerRunning && !iknow[ALERT_KEY] && (
         <Alert
-          color="warning"
-          title={t('agent.warning.enable_server')}
-          isClosable
-          onClose={() => {
-            dispatch(addIknowAction(ALERT_KEY))
-          }}
-          className="mb-2"
+          type="warning"
+          message={t('agent.warning.enable_server')}
+          closable
+          onClose={() => dispatch(addIknowAction(ALERT_KEY))}
+          style={{ marginBottom: 10 }}
+          showIcon
         />
       )}
-
-      {(agentsLoading || apiServerLoading) && <Spinner />}
       {apiServerConfig.enabled && !apiServerLoading && !apiServerRunning && (
-        <Alert color="danger" title={t('agent.server.error.not_running')} isClosable className="mb-2" />
+        <Alert type="error" message={t('agent.server.error.not_running')} closable className="mb-2" showIcon />
       )}
       {apiServerRunning && agentsError && (
         <Alert
-          color="danger"
-          title={t('agent.list.error.failed')}
+          type="error"
+          message={t('agent.list.error.failed')}
           description={getErrorMessage(agentsError)}
           className="mb-2"
+          showIcon
         />
       )}
 

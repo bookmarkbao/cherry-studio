@@ -1,4 +1,3 @@
-import { Alert, Spinner } from '@heroui/react'
 import { DynamicVirtualList } from '@renderer/components/VirtualList'
 import { useCreateDefaultSession } from '@renderer/hooks/agents/useCreateDefaultSession'
 import { useSessions } from '@renderer/hooks/agents/useSessions'
@@ -11,6 +10,7 @@ import {
   setSessionWaitingAction
 } from '@renderer/store/runtime'
 import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
+import { Alert, Spin } from 'antd'
 import { motion } from 'framer-motion'
 import { memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -87,12 +87,14 @@ const Sessions: React.FC<SessionsProps> = ({ agentId }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="flex h-full items-center justify-center">
-        <Spinner size="lg" />
+        <Spin />
       </motion.div>
     )
   }
 
-  if (error) return <Alert color="danger" content={t('agent.session.get.error.failed')} />
+  if (error) {
+    return <Alert type="error" message={t('agent.session.get.error.failed')} showIcon style={{ margin: 10 }} />
+  }
 
   return (
     <div className="sessions-tab flex h-full w-full flex-col p-2">

@@ -1,4 +1,3 @@
-import { Skeleton } from '@heroui/react'
 import AddAssistantPopup from '@renderer/components/Popups/AddAssistantPopup'
 import { useActiveSession } from '@renderer/hooks/agents/useActiveSession'
 import { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
@@ -12,7 +11,7 @@ import { setActiveAgentId, setActiveTopicOrSessionAction } from '@renderer/store
 import type { Assistant, Topic } from '@renderer/types'
 import type { Tab } from '@renderer/types/chat'
 import { classNames, getErrorMessage, uuid } from '@renderer/utils'
-import { Alert } from 'antd'
+import { Alert, Skeleton } from 'antd'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -167,11 +166,11 @@ const HomeTabs: FC<Props> = ({
         )}
         {tab === 'settings' && isTopicView && <Settings assistant={activeAssistant} />}
         {tab === 'settings' && isSessionView && !sessionError && (
-          <Skeleton isLoaded={!isSessionLoading} className="h-full">
+          <Skeleton loading={isSessionLoading} active style={{ height: '100%', padding: '16px' }}>
             <SessionSettingsTab session={session} update={updateSession} />
           </Skeleton>
         )}
-        {tab === 'settings' && (
+        {tab === 'settings' && isSessionView && sessionError && (
           <div className="w-[var(--assistants-width)] p-2 px-3 pt-4">
             <Alert
               type="error"
