@@ -60,13 +60,13 @@
 }
 
 @layer base {
-  * {
+  /* * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
-  }
-
+  } */
+  /* TODO: 迁移完成后删除 */
   /* To disable drag title bar on toast. tailwind css doesn't provide such class name. */
   .hero-toast {
     -webkit-app-region: no-drag;
