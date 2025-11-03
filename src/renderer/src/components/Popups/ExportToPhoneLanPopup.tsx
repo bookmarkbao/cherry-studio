@@ -2,7 +2,7 @@ import { loggerService } from '@logger'
 import { AppLogo } from '@renderer/config/env'
 import { SettingHelpText, SettingRow } from '@renderer/pages/settings'
 import type { WebSocketCandidatesResponse } from '@shared/config/types'
-import { Button, Modal, Progress, Spin } from 'antd'
+import { Alert, Button, Modal, Progress, Spin } from 'antd'
 import { QRCodeSVG } from 'qrcode.react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -41,8 +41,8 @@ const ScanQRCode: React.FC<{ qrCodeValue: string }> = ({ qrCodeValue }) => {
         size={200}
         imageSettings={{
           src: AppLogo,
-          width: 60,
-          height: 60,
+          width: 40,
+          height: 40,
           excavate: true
         }}
       />
@@ -134,7 +134,6 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
   const [selectedFolderPath, setSelectedFolderPath] = useState<string | null>(null)
   const [sendProgress, setSendProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
-  const [showCloseConfirm, setShowCloseConfirm] = useState(false)
   const [autoCloseCountdown, setAutoCloseCountdown] = useState<number | null>(null)
 
   const { t } = useTranslation()
@@ -296,22 +295,20 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
   // 尝试关闭弹窗 - 如果正在传输则显示确认
   const handleCancel = useCallback(() => {
     if (isSending) {
-      setShowCloseConfirm(true)
+      window.modal.confirm({
+        title: t('settings.data.export_to_phone.lan.confirm_close_title'),
+        content: t('settings.data.export_to_phone.lan.confirm_close_message'),
+        centered: true,
+        okButtonProps: {
+          danger: true
+        },
+        okText: t('settings.data.export_to_phone.lan.force_close'),
+        onOk: () => setIsOpen(false)
+      })
     } else {
       setIsOpen(false)
     }
-  }, [isSending])
-
-  // 确认强制关闭
-  const handleForceClose = useCallback(() => {
-    logger.info('Force closing popup during transfer')
-    setIsOpen(false)
-  }, [])
-
-  // 取消关闭确认
-  const handleCancelClose = useCallback(() => {
-    setShowCloseConfirm(false)
-  }, [])
+  }, [isSending, t])
 
   // 清理并关闭
   const handleClose = useCallback(async () => {
@@ -373,11 +370,13 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
         style={{
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: '8px',
-          padding: '8px 12px',
-          borderRadius: '8px',
+          padding: '5px 12px',
+          width: '100%',
           backgroundColor: connectionStatusStyles.bg,
-          border: `1px solid ${connectionStatusStyles.border}`
+          border: `1px solid ${connectionStatusStyles.border}`,
+          marginBottom: 10
         }}>
         <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--color-text)' }}>{connectionStatusText}</span>
       </div>
@@ -409,7 +408,7 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
     if (!isSending && transferPhase !== 'completed') return null
 
     return (
-      <div style={{ paddingTop: '8px' }}>
+      <div style={{ paddingTop: '20px' }}>
         <div
           style={{
             display: 'flex',
@@ -491,52 +490,19 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
       closable={!isSending}
       maskClosable={false}
       keyboard={true}
-      footer={
-        showCloseConfirm ? (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: '12px',
-              padding: '8px',
-              borderRadius: '8px',
-              backgroundColor: 'var(--color-status-warning)',
-              border: '1px solid var(--color-status-warning)'
-            }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '20px' }}>⚠️</span>
-              <span style={{ fontSize: '14px', color: 'var(--color-text)', fontWeight: '500' }}>
-                {t('settings.data.export_to_phone.lan.confirm_close_title')}
-              </span>
-            </div>
-            <span style={{ fontSize: '13px', color: 'var(--color-text-2)', marginLeft: '28px' }}>
-              {t('settings.data.export_to_phone.lan.confirm_close_message')}
-            </span>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-              <Button size="small" onClick={handleCancelClose}>
-                {t('common.cancel')}
-              </Button>
-              <Button size="small" danger onClick={handleForceClose}>
-                {t('settings.data.export_to_phone.lan.force_close')}
-              </Button>
-            </div>
-          </div>
-        ) : null
-      }>
+      footer={null}
+      styles={{ body: { paddingBottom: 10 } }}>
       <SettingRow>
         <StatusIndicator />
       </SettingRow>
 
-      <SettingRow>
-        <div>{t('settings.data.export_to_phone.lan.content')}</div>
-      </SettingRow>
+      <Alert message={t('settings.data.export_to_phone.lan.content')} type="info" style={{ borderRadius: 0 }} />
 
-      <SettingRow style={{ display: 'flex', justifyContent: 'center', minHeight: '180px' }}>
+      <SettingRow style={{ display: 'flex', justifyContent: 'center', minHeight: '180px', marginBlock: 25 }}>
         <QRCodeDisplay />
       </SettingRow>
 
-      <SettingRow style={{ display: 'flex', alignItems: 'center' }}>
+      <SettingRow style={{ display: 'flex', alignItems: 'center', marginBlock: 10 }}>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', width: '100%' }}>
           <Button onClick={handleSelectZip} disabled={isSending}>
             {t('settings.data.export_to_phone.lan.selectZip')}
