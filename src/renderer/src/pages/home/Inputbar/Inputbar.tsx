@@ -44,14 +44,9 @@ import { setSearching } from '@renderer/store/runtime'
 import { sendMessage as _sendMessage } from '@renderer/store/thunk/messageThunk'
 import { type Assistant, type FileType, type KnowledgeBase, type Model, type Topic, TopicType } from '@renderer/types'
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
-import { classNames, delay, filterSupportedFiles } from '@renderer/utils'
+import { classNames, delay } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
-import {
-  getFilesFromDropEvent,
-  getSendMessageShortcutLabel,
-  getTextFromDropEvent,
-  isSendMessageKeyPressed
-} from '@renderer/utils/input'
+import { getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Tooltip } from 'antd'
@@ -65,6 +60,8 @@ import styled from 'styled-components'
 
 import NarrowLayout from '../Messages/NarrowLayout'
 import AttachmentPreview from './AttachmentPreview'
+import { useFileDragDrop } from './hooks/useFileDragDrop'
+import { usePasteHandler } from './hooks/usePasteHandler'
 import InputbarTools from './InputbarTools'
 import KnowledgeBaseInput from './KnowledgeBaseInput'
 import MentionModelsInput from './MentionModelsInput'
@@ -173,6 +170,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     textareaRef,
     resize: resizeTextArea,
     customHeight: textareaHeight,
+    setCustomHeight: setTextareaHeight,
     setExpanded,
     isExpanded: textareaIsExpanded
   } = useTextareaResize({
@@ -190,7 +188,6 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
   const [spaceClickCount, setSpaceClickCount] = useState(0)
   const spaceClickTimer = useRef<NodeJS.Timeout | null>(null)
   const [isTranslating, setIsTranslating] = useState(false)
-  const [isFileDragging, setIsFileDragging] = useState(false)
   const startDragY = useRef<number>(0)
   const startHeight = useRef<number>(0)
   const isMultiSelectMode = useAppSelector((state) => state.runtime.chat.isMultiSelectMode)
@@ -250,6 +247,25 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     return []
   }, [canAddImageFile, canAddTextFile, features.enableAttachments])
 
+  // 使用 usePasteHandler 处理粘贴
+  const { handlePaste } = usePasteHandler(text, setText, {
+    supportedExts,
+    setFiles,
+    pasteLongTextAsFile,
+    pasteLongTextThreshold,
+    onResize: resizeTextArea,
+    t
+  })
+
+  // 使用 useFileDragDrop 处理拖拽
+  const dragDrop = useFileDragDrop({
+    supportedExts,
+    setFiles,
+    onTextDropped: (droppedText) => setText((prev) => prev + droppedText),
+    enabled: features.enableAttachments,
+    t
+  })
+
   useEffect(() => {
     setCouldAddImageFile(canAddImageFile)
   }, [canAddImageFile, setCouldAddImageFile])
@@ -280,7 +296,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
 
   const focusTextarea = useCallback(() => {
     textareaRef.current?.focus()
-  }, [])
+  }, [textareaRef])
 
   // resizeTextArea 现在来自 useTextareaResize hook
 
@@ -588,44 +604,24 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       }
     },
     [
+      inputFocus,
       autoTranslateWithSpace,
       features.enableExpand,
       features.enableTranslate,
-      files.length,
-      inputFocus,
       isExpanded,
       textareaIsExpanded,
-      onToggleExpanded,
-      sendMessage,
-      sendMessageShortcut,
-      setFiles,
-      setTimeoutTimer,
-      spaceClickCount,
       text.length,
-      translate
+      files.length,
+      textareaRef,
+      spaceClickCount,
+      translate,
+      onToggleExpanded,
+      sendMessageShortcut,
+      sendMessage,
+      setText,
+      setTimeoutTimer,
+      setFiles
     ]
-  )
-
-  const handlePaste = useCallback(
-    async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
-      const nativeEvent = event.nativeEvent
-      const handled = await PasteService.handlePaste(
-        nativeEvent,
-        supportedExts,
-        setFiles,
-        setText,
-        pasteLongTextAsFile,
-        pasteLongTextThreshold,
-        text,
-        resizeTextArea,
-        t
-      )
-
-      if (handled) {
-        event.preventDefault()
-      }
-    },
-    [pasteLongTextAsFile, pasteLongTextThreshold, resizeTextArea, setFiles, setText, supportedExts, t, text]
   )
 
   const handleTextareaChange = useCallback(
@@ -726,81 +722,15 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       }
     },
     [
-      config.enableQuickPanel,
+      setText,
+      prevText.length,
+      textareaRef,
       enableQuickPanelTriggers,
-      features.enableMentionModels,
+      config.enableQuickPanel,
       quickPanel,
       triggers,
-      setText,
-      prevText
+      features.enableMentionModels
     ]
-  )
-
-  const handleDragOver = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault()
-      event.stopPropagation()
-      if (!features.enableAttachments) {
-        return
-      }
-      setIsFileDragging(true)
-    },
-    [features.enableAttachments]
-  )
-
-  const handleDragEnter = handleDragOver
-
-  const handleDragLeave = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault()
-      event.stopPropagation()
-      if (!features.enableAttachments) {
-        return
-      }
-      setIsFileDragging(false)
-    },
-    [features.enableAttachments]
-  )
-
-  const handleDrop = useCallback(
-    async (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault()
-      event.stopPropagation()
-
-      if (features.enableAttachments) {
-        setIsFileDragging(false)
-      }
-
-      const droppedText = await getTextFromDropEvent(event)
-      if (droppedText) {
-        setText((prev) => prev + droppedText)
-      }
-
-      if (!features.enableAttachments) {
-        return
-      }
-
-      const droppedFiles = await getFilesFromDropEvent(event).catch((err) => {
-        logger.error('handleDrop:', err)
-        return null
-      })
-
-      if (droppedFiles) {
-        const supportedFiles = await filterSupportedFiles(droppedFiles, supportedExts)
-        if (supportedFiles.length > 0) {
-          setFiles((prevFiles) => [...prevFiles, ...supportedFiles])
-        }
-
-        if (droppedFiles.length > 0 && supportedFiles.length !== droppedFiles.length) {
-          window.toast.info(
-            t('chat.input.file_not_supported_count', {
-              count: droppedFiles.length - supportedFiles.length
-            })
-          )
-        }
-      }
-    },
-    [features.enableAttachments, setFiles, setText, supportedExts, t]
   )
 
   const onTranslated = useCallback(
@@ -834,7 +764,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
     },
-    [config.enableDragDrop]
+    [config.enableDragDrop, textareaRef]
   )
 
   const onQuote = useCallback(
@@ -1016,7 +946,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
         setText(updater)
       }
     }
-  }, [actionsRef, addNewTopic, clearTopic, onNewContext, resizeTextArea])
+  }, [actionsRef, addNewTopic, clearTopic, onNewContext, resizeTextArea, setText])
 
   useEffect(() => {
     setSelectedKnowledgeBases(showKnowledgeIcon && features.enableKnowledge ? (assistant.knowledge_bases ?? []) : [])
@@ -1123,10 +1053,10 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
     <NarrowLayout style={{ width: '100%' }}>
       <Container
         ref={containerRef}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        onDragEnter={dragDrop.handleDragEnter}
+        onDragLeave={dragDrop.handleDragLeave}
+        onDragOver={dragDrop.handleDragOver}
+        onDrop={dragDrop.handleDrop}
         className="inputbar">
         {config.enableQuickPanel && <QuickPanelView setInputText={setInputText} />}
         <InputBarContainer
@@ -1134,7 +1064,7 @@ const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, se
           className={classNames(
             'inputbar-container',
             inputFocus && 'focus',
-            isFileDragging && 'file-dragging',
+            dragDrop.isDragging && 'file-dragging',
             composerExpanded && 'expanded'
           )}>
           {features.enableAttachments && files.length > 0 && (
