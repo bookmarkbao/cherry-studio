@@ -77,7 +77,60 @@ interface Props {
   topic: Topic
 }
 
-const InputbarInner: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topic }) => {
+type ProviderActionHandlers = {
+  resizeTextArea: () => void
+  addNewTopic: () => void
+  clearTopic: () => void
+  onNewContext: () => void
+  onTextChange: (updater: string | ((prev: string) => string)) => void
+}
+
+interface InputbarInnerProps extends Props {
+  actionsRef: React.RefObject<ProviderActionHandlers>
+}
+
+const Inputbar: FC<Props> = ({ assistant: initialAssistant, setActiveTopic, topic }) => {
+  const actionsRef = useRef<ProviderActionHandlers>({
+    resizeTextArea: () => {},
+    addNewTopic: () => {},
+    clearTopic: () => {},
+    onNewContext: () => {},
+    onTextChange: () => {}
+  })
+
+  const initialState = useMemo(
+    () => ({
+      files: [] as FileType[],
+      mentionedModels: [] as Model[],
+      selectedKnowledgeBases: initialAssistant.knowledge_bases ?? [],
+      isExpanded: false,
+      couldAddImageFile: false,
+      extensions: [] as string[]
+    }),
+    [initialAssistant.knowledge_bases]
+  )
+
+  return (
+    <InputbarToolsProvider
+      initialState={initialState}
+      actions={{
+        resizeTextArea: () => actionsRef.current.resizeTextArea(),
+        addNewTopic: () => actionsRef.current.addNewTopic(),
+        clearTopic: () => actionsRef.current.clearTopic(),
+        onNewContext: () => actionsRef.current.onNewContext(),
+        onTextChange: (updater) => actionsRef.current.onTextChange(updater)
+      }}>
+      <InputbarInner
+        assistant={initialAssistant}
+        setActiveTopic={setActiveTopic}
+        topic={topic}
+        actionsRef={actionsRef}
+      />
+    </InputbarToolsProvider>
+  )
+}
+
+const InputbarInner: FC<InputbarInnerProps> = ({ assistant: initialAssistant, setActiveTopic, topic, actionsRef }) => {
   const scope = useMemo<InputbarScope>(() => topic.type ?? TopicType.Chat, [topic.type])
   const config = useMemo(() => getInputbarConfig(scope), [scope])
   const features = config.features
@@ -893,6 +946,18 @@ const InputbarInner: FC<Props> = ({ assistant: initialAssistant, setActiveTopic,
   }, [focusTextarea])
 
   useEffect(() => {
+    actionsRef.current = {
+      resizeTextArea,
+      addNewTopic,
+      clearTopic,
+      onNewContext,
+      onTextChange: (updater) => {
+        setText(updater)
+      }
+    }
+  }, [actionsRef, addNewTopic, clearTopic, onNewContext, resizeTextArea, setText])
+
+  useEffect(() => {
     setSelectedKnowledgeBases(showKnowledgeIcon && features.enableKnowledge ? (assistant.knowledge_bases ?? []) : [])
   }, [assistant.knowledge_bases, features.enableKnowledge, setSelectedKnowledgeBases, showKnowledgeIcon])
 
@@ -1098,26 +1163,5 @@ const DragHandle = styled.div`
     font-size: 14px;
   }
 `
-
-// Wrapper 组件：提供 Context Provider
-const Inputbar: FC<Props> = ({ assistant, setActiveTopic, topic }) => {
-  const initialState = useMemo(
-    () => ({
-      files: [] as FileType[],
-      mentionedModels: [] as Model[],
-      selectedKnowledgeBases: assistant.knowledge_bases ?? [],
-      isExpanded: false,
-      couldAddImageFile: false,
-      extensions: [] as string[]
-    }),
-    [assistant.knowledge_bases]
-  )
-
-  return (
-    <InputbarToolsProvider initialState={initialState}>
-      <InputbarInner assistant={assistant} setActiveTopic={setActiveTopic} topic={topic} />
-    </InputbarToolsProvider>
-  )
-}
 
 export default Inputbar
