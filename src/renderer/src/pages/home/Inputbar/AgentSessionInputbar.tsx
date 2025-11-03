@@ -1,4 +1,3 @@
-import { Tooltip } from '@heroui/react'
 import { loggerService } from '@logger'
 import { ActionIconButton } from '@renderer/components/Buttons'
 import { QuickPanelView } from '@renderer/components/QuickPanel'
@@ -22,6 +21,7 @@ import { abortCompletion } from '@renderer/utils/abortController'
 import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
 import { createMainTextBlock, createMessage } from '@renderer/utils/messageUtils/create'
+import { Tooltip } from 'antd'
 import type { TextAreaRef } from 'antd/es/input/TextArea'
 import TextArea from 'antd/es/input/TextArea'
 import { isEmpty } from 'lodash'
@@ -309,7 +309,7 @@ const AgentSessionInputbar: FC<Props> = ({ agentId, sessionId }) => {
           />
           <Toolbar>
             <ToolbarGroup>
-              <Tooltip placement="top" content={t('chat.input.new_topic', { Command: newTopicShortcut })} delay={0}>
+              <Tooltip placement="top" title={t('chat.input.new_topic', { Command: newTopicShortcut })}>
                 <ActionIconButton
                   onClick={handleCreateSession}
                   disabled={createSessionDisabled}
@@ -321,7 +321,7 @@ const AgentSessionInputbar: FC<Props> = ({ agentId, sessionId }) => {
             <ToolbarGroup>
               <SendMessageButton sendMessage={sendMessage} disabled={sendDisabled} />
               {canAbort && (
-                <Tooltip placement="top" content={t('chat.input.pause')}>
+                <Tooltip placement="top" title={t('chat.input.pause')}>
                   <ActionIconButton onClick={abortAgentSession} style={{ marginRight: -2 }}>
                     <CirclePause size={20} color="var(--color-error)" />
                   </ActionIconButton>
