@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite'
+import { resolve } from 'path'
 
 const config: StorybookConfig = {
   stories: ['../stories/components/**/*.stories.@(js|jsx|ts|tsx)'],
@@ -6,10 +7,15 @@ const config: StorybookConfig = {
   framework: '@storybook/react-vite',
   viteFinal: async (config) => {
     const { mergeConfig } = await import('vite')
-    // 动态导入 @tailwindcss/vite 以避免 ESM/CJS 兼容性问题
     const tailwindPlugin = (await import('@tailwindcss/vite')).default
+    console.log('aliasaliasaliasaliasalias', resolve('src/index.ts'))
     return mergeConfig(config, {
-      plugins: [tailwindPlugin()]
+      plugins: [tailwindPlugin()],
+      resolve: {
+        alias: {
+          '@cherrystudio/ui': resolve('src')
+        }
+      }
     })
   }
 }

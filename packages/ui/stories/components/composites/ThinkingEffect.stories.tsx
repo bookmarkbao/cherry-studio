@@ -1,21 +1,22 @@
-import { Button } from '@heroui/react'
+import { Button } from '../../../src/components'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect, useMemo, useState } from 'react'
 
-import ThinkingEffect from '../../../src/components/composites/ThinkingEffect'
+import { ThinkingEffect } from '../../../src/components'
 
 const meta: Meta<typeof ThinkingEffect> = {
-  title: 'Display/ThinkingEffect',
+  title: 'Components/Composites/ThinkingEffect',
   component: ThinkingEffect,
   parameters: {
     layout: 'centered',
     docs: {
       description: {
-        component: '一个用于显示AI思考过程的动画组件，包含灯泡动画、思考内容滚动展示和展开收缩功能。'
+        component:
+          '⚠️ **已废弃** - 此组件使用频率仅为 1 次，不符合 UI 库提取标准（需 ≥3 次）。计划在未来版本中移除。此组件是 AI 思考特效，可能需要保留在主项目中而不是 UI 库。\n\n一个用于显示AI思考过程的动画组件，包含灯泡动画、思考内容滚动展示和展开收缩功能。'
       }
     }
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'deprecated'],
   argTypes: {
     isThinking: {
       control: { type: 'boolean' },

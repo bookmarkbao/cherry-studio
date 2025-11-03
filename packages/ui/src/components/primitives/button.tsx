@@ -54,19 +54,17 @@ function Button({
   }) {
   const Comp = asChild ? Slot : 'button'
 
-  // 根据按钮尺寸确定 spinner 大小
+  // Determine spinner size based on button size
   const getSpinnerSize = () => {
     if (size === 'sm' || size === 'icon-sm') return 14
     if (size === 'lg' || size === 'icon-lg') return 18
     return 16
   }
 
-  // 默认 loading icon
-  const defaultLoadingIcon = (
-    <Loader className={cn('animate-spin', loadingIconClassName)} size={getSpinnerSize()} />
-  )
+  // Default loading icon
+  const defaultLoadingIcon = <Loader className={cn('animate-spin', loadingIconClassName)} size={getSpinnerSize()} />
 
-  // 使用自定义 icon 或默认 icon
+  // Use custom icon or default icon
   const spinnerElement = loadingIcon ?? defaultLoadingIcon
 
   return (
@@ -75,8 +73,15 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={disabled || loading}
       {...props}>
-      {loading && spinnerElement}
-      {children}
+      {/* asChild mode does not support loading because Slot requires a single child element */}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {loading && spinnerElement}
+          {children}
+        </>
+      )}
     </Comp>
   )
 }

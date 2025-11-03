@@ -149,7 +149,7 @@ export function ToolPermissionRequestCard({ toolResponse }: Props) {
 
               <Button
                 aria-label={t('agent.toolPermission.aria.allowRequest')}
-                className="h-8 px-3 bg-green-600 hover:bg-green-700 text-white"
+                className="h-8 bg-green-600 px-3 text-white hover:bg-green-700"
                 disabled={isSubmitting || isExpired}
                 loading={isSubmittingAllow}
                 onClick={() => handleDecision('allow')}

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import DividerWithText from '../../../src/components/primitives/dividerWithText'
+import { DividerWithText } from '../../../src/components'
 
 const meta: Meta<typeof DividerWithText> = {
-  title: 'Base/DividerWithText',
+  title: 'Components/Primitives/DividerWithText',
   component: DividerWithText,
   parameters: {
     layout: 'padded'

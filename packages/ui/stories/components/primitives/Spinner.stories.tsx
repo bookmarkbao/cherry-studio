@@ -1,11 +1,11 @@
-import { Button } from '@heroui/react'
+import { Button } from '../../../src/components'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
-import Spinner from '../../../src/components/primitives/spinner'
+import { Spinner } from '../../../src/components'
 
 const meta: Meta<typeof Spinner> = {
-  title: 'Base/Spinner',
+  title: 'Components/Primitives/Spinner',
   component: Spinner,
   parameters: {
     layout: 'centered'

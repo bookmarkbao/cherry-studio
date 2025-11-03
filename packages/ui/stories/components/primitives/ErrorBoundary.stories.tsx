@@ -1,9 +1,9 @@
-import { Button } from '@heroui/react'
+import { Button } from '../../../src/components'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
-import type { CustomFallbackProps } from '../../../src/components/primitives/ErrorBoundary'
-import { ErrorBoundary } from '../../../src/components/primitives/ErrorBoundary'
+import type { CustomFallbackProps } from '../../../src/components'
+import { ErrorBoundary } from '../../../src/components'
 
 // 错误组件 - 用于触发错误
 const ThrowErrorComponent = ({ shouldThrow = false, errorMessage = '这是一个模拟错误' }) => {
@@ -36,7 +36,7 @@ const AsyncErrorComponent = () => {
 }
 
 const meta: Meta<typeof ErrorBoundary> = {
-  title: 'Base/ErrorBoundary',
+  title: 'Components/Primitives/ErrorBoundary',
   component: ErrorBoundary,
   parameters: {
     layout: 'padded'
