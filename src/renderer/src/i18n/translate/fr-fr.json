@@ -3337,8 +3337,8 @@
           "placeholder": "Bucket, par exemple : example"
         },
         "bypassProxy": {
-          "help": "[to be translated]:When enabled, S3 requests bypass the application proxy to prevent data corruption during large file uploads. Recommended to keep enabled unless your S3 endpoint requires proxy access.",
-          "label": "[to be translated]:Bypass Proxy"
+          "help": "Lorsqu’il est activé, les requêtes S3 contournent le proxy de l’application pour éviter la corruption des données lors du téléversement de gros fichiers. Il est recommandé de le laisser activé sauf si votre point de terminaison S3 nécessite un accès par proxy.",
+          "label": "Contourner le proxy"
         },
         "endpoint": {
           "label": "Adresse API",
@@ -4264,12 +4264,12 @@
       "aws-bedrock": {
         "access_key_id": "Identifiant de clé d'accès AWS",
         "access_key_id_help": "Votre identifiant de clé d'accès AWS, utilisé pour accéder au service AWS Bedrock",
-        "api_key": "[to be translated]:Bedrock API Key",
-        "api_key_help": "[to be translated]:Your AWS Bedrock API Key for authentication",
-        "auth_type": "[to be translated]:Authentication Type",
-        "auth_type_api_key": "[to be translated]:Bedrock API Key",
-        "auth_type_help": "[to be translated]:Choose between IAM credentials or Bedrock API Key authentication",
-        "auth_type_iam": "[to be translated]:IAM Credentials",
+        "api_key": "Clé API Bedrock",
+        "api_key_help": "Votre clé API AWS Bedrock pour l'authentification",
+        "auth_type": "Type d'authentification",
+        "auth_type_api_key": "Clé API Bedrock",
+        "auth_type_help": "Choisissez entre l'authentification par identifiants IAM ou par clé API Bedrock",
+        "auth_type_iam": "Identifiants IAM",
         "description": "AWS Bedrock est un service de modèles de base entièrement géré proposé par Amazon, prenant en charge divers grands modèles linguistiques avancés.",
         "region": "Région AWS",
         "region_help": "Votre région de service AWS, par exemple us-east-1",
