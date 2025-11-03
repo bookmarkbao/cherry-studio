@@ -13,7 +13,7 @@ import { Dispatcher, EnvHttpProxyAgent, getGlobalDispatcher, setGlobalDispatcher
 const logger = loggerService.withContext('ProxyManager')
 let byPassRules: string[] = []
 // Dynamic bypass rules that can be added/removed at runtime (e.g., for S3 endpoints)
-let dynamicBypassRules: string[] = []
+const dynamicBypassRules: string[] = []
 
 type HostnameMatchType = 'exact' | 'wildcardSubdomain' | 'generalWildcard'
 
