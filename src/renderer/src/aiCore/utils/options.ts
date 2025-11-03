@@ -1,26 +1,28 @@
-import { OpenAIResponsesProviderOptions } from '@ai-sdk/openai'
+import type { OpenAIResponsesProviderOptions } from '@ai-sdk/openai'
 import { baseProviderIdSchema, customProviderIdSchema } from '@cherrystudio/ai-core/provider'
 import { isOpenAIModel, isQwenMTModel, isSupportFlexServiceTierModel } from '@renderer/config/models'
 import { isSupportServiceTierProvider } from '@renderer/config/providers'
 import { mapLanguageToQwenMTModel } from '@renderer/config/translate'
 import { getStoreSetting } from '@renderer/hooks/useSettings'
-import {
+import type {
   Assistant,
   GroqServiceTier,
-  GroqServiceTiers,
   GroqSystemProvider,
+  Model,
+  NotGroqProvider,
+  OpenAIServiceTier,
+  Provider
+} from '@renderer/types'
+import {
+  GroqServiceTiers,
   isGroqServiceTier,
   isGroqSystemProvider,
   isOpenAIServiceTier,
   isTranslateAssistant,
-  Model,
-  NotGroqProvider,
-  OpenAIServiceTier,
-  OpenAIServiceTiers,
-  Provider
+  OpenAIServiceTiers
 } from '@renderer/types'
-import { OpenAIVerbosity } from '@renderer/types/aiCoreTypes'
-import { JSONValue } from 'ai'
+import type { OpenAIVerbosity } from '@renderer/types/aiCoreTypes'
+import type { JSONValue } from 'ai'
 import { t } from 'i18next'
 
 import { getAiSdkProviderId } from '../provider/factory'

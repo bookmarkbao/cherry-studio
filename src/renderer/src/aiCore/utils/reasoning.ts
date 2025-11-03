@@ -30,9 +30,10 @@ import {
 import { isSupportEnableThinkingProvider } from '@renderer/config/providers'
 import { getStoreSetting } from '@renderer/hooks/useSettings'
 import { getAssistantSettings, getProviderByModel } from '@renderer/services/AssistantService'
-import { Assistant, EFFORT_RATIO, isSystemProvider, Model, SystemProviderIds } from '@renderer/types'
-import { OpenAIReasoningEffort, OpenAISummaryText } from '@renderer/types/aiCoreTypes'
-import { ReasoningEffortOptionalParams } from '@renderer/types/sdk'
+import type { Assistant, Model } from '@renderer/types'
+import { EFFORT_RATIO, isSystemProvider, SystemProviderIds } from '@renderer/types'
+import type { OpenAIReasoningEffort, OpenAISummaryText } from '@renderer/types/aiCoreTypes'
+import type { ReasoningEffortOptionalParams } from '@renderer/types/sdk'
 import { toInteger } from 'lodash'
 
 const logger = loggerService.withContext('reasoning')
@@ -97,7 +98,7 @@ export function getReasoningEffort(assistant: Assistant, model: Model): Reasonin
           extra_body: {
             google: {
               thinking_config: {
-                thinkingBudget: 0
+                thinking_budget: 0
               }
             }
           }
@@ -258,8 +259,8 @@ export function getReasoningEffort(assistant: Assistant, model: Model): Reasonin
         extra_body: {
           google: {
             thinking_config: {
-              thinkingBudget: -1,
-              includeThoughts: true
+              thinking_budget: -1,
+              include_thoughts: true
             }
           }
         }
@@ -269,8 +270,8 @@ export function getReasoningEffort(assistant: Assistant, model: Model): Reasonin
       extra_body: {
         google: {
           thinking_config: {
-            thinkingBudget: budgetTokens,
-            includeThoughts: true
+            thinking_budget: budgetTokens ?? -1,
+            include_thoughts: true
           }
         }
       }
@@ -434,8 +435,8 @@ export function getGeminiReasoningParams(assistant: Assistant, model: Model): Re
     if (reasoningEffort === undefined) {
       return {
         thinkingConfig: {
-          includeThoughts: false,
-          ...(GEMINI_FLASH_MODEL_REGEX.test(model.id) ? { thinkingBudget: 0 } : {})
+          include_thoughts: false,
+          ...(GEMINI_FLASH_MODEL_REGEX.test(model.id) ? { thinking_budget: 0 } : {})
         }
       }
     }
@@ -445,7 +446,7 @@ export function getGeminiReasoningParams(assistant: Assistant, model: Model): Re
     if (effortRatio > 1) {
       return {
         thinkingConfig: {
-          includeThoughts: true
+          include_thoughts: true
         }
       }
     }
@@ -455,8 +456,8 @@ export function getGeminiReasoningParams(assistant: Assistant, model: Model): Re
 
     return {
       thinkingConfig: {
-        ...(budget > 0 ? { thinkingBudget: budget } : {}),
-        includeThoughts: true
+        ...(budget > 0 ? { thinking_budget: budget } : {}),
+        include_thoughts: true
       }
     }
   }

@@ -1,15 +1,14 @@
-import OpenAI from '@cherrystudio/openai'
-import { Model } from '@types'
+import type OpenAI from '@cherrystudio/openai'
+import type { Model } from '@types'
 import * as z from 'zod'
 
-import { OpenAIVerbosity } from './aiCoreTypes'
+import type { OpenAIVerbosity } from './aiCoreTypes'
 
 export const ProviderTypeSchema = z.enum([
   'openai',
   'openai-response',
   'anthropic',
   'gemini',
-  'qwenlm',
   'azure-openai',
   'vertexai',
   'mistral',
@@ -40,6 +39,8 @@ export type ProviderApiOptions = {
   isSupportServiceTier?: boolean
   /** 是否不支持 enable_thinking 参数 */
   isNotSupportEnableThinking?: boolean
+  /** 是否不支持 APIVersion */
+  isNotSupportAPIVersion?: boolean
 }
 
 // scale is not well supported now. It even lacks of docs
@@ -168,7 +169,8 @@ export const SystemProviderIdSchema = z.enum([
   'poe',
   'aionly',
   'longcat',
-  'huggingface'
+  'huggingface',
+  'sophnet'
 ])
 
 export type SystemProviderId = z.infer<typeof SystemProviderIdSchema>
@@ -193,6 +195,7 @@ export const SystemProviderIds = {
   cephalon: 'cephalon',
   lanyun: 'lanyun',
   ph8: 'ph8',
+  sophnet: 'sophnet',
   openrouter: 'openrouter',
   ollama: 'ollama',
   ovms: 'ovms',
@@ -252,6 +255,11 @@ export type VertexProvider = Provider & {
   }
   project: string
   location: string
+}
+
+export type AzureOpenAIProvider = Provider & {
+  type: 'azure-openai'
+  apiVersion: string
 }
 
 /**
