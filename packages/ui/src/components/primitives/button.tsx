@@ -1,6 +1,7 @@
 import { cn } from '@cherrystudio/ui/utils/index'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { Loader } from 'lucide-react'
 import * as React from 'react'
 
 const buttonVariants = cva(
@@ -38,14 +39,46 @@ function Button({
   variant,
   size,
   asChild = false,
+  loading = false,
+  loadingIcon,
+  loadingIconClassName,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
+    loading?: boolean
+    loadingIcon?: React.ReactNode
+    loadingIconClassName?: string
   }) {
   const Comp = asChild ? Slot : 'button'
 
-  return <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />
+  // 根据按钮尺寸确定 spinner 大小
+  const getSpinnerSize = () => {
+    if (size === 'sm' || size === 'icon-sm') return 14
+    if (size === 'lg' || size === 'icon-lg') return 18
+    return 16
+  }
+
+  // 默认 loading icon
+  const defaultLoadingIcon = (
+    <Loader className={cn('animate-spin', loadingIconClassName)} size={getSpinnerSize()} />
+  )
+
+  // 使用自定义 icon 或默认 icon
+  const spinnerElement = loadingIcon ?? defaultLoadingIcon
+
+  return (
+    <Comp
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      disabled={disabled || loading}
+      {...props}>
+      {loading && spinnerElement}
+      {children}
+    </Comp>
+  )
 }
 
 export { Button, buttonVariants }

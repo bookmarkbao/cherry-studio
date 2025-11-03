@@ -1,4 +1,5 @@
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ScrollShadow } from '@heroui/react'
+import { Button } from '@cherrystudio/ui'
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ScrollShadow } from '@heroui/react'
 import { loggerService } from '@logger'
 import { handleSaveData } from '@renderer/store'
 import type { ReleaseNoteInfo, UpdateInfo } from 'builder-util-runtime'
@@ -82,12 +83,11 @@ const UpdateDialog: React.FC<UpdateDialogProps> = ({ isOpen, onClose, releaseInf
               </Button>
 
               <Button
-                color="primary"
                 onClick={async () => {
                   await handleInstall()
                   onModalClose()
                 }}
-                isLoading={isInstalling}>
+                loading={isInstalling}>
                 {t('update.install')}
               </Button>
             </ModalFooter>

@@ -1,5 +1,6 @@
 import type { PermissionUpdate } from '@anthropic-ai/claude-agent-sdk'
-import { Button, Chip, ScrollShadow } from '@heroui/react'
+import { Button } from '@cherrystudio/ui'
+import { Chip, ScrollShadow } from '@heroui/react'
 import { loggerService } from '@logger'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { selectPendingPermissionByToolName, toolPermissionsActions } from '@renderer/store/toolPermissions'
@@ -137,23 +138,23 @@ export function ToolPermissionRequestCard({ toolResponse }: Props) {
               <Button
                 aria-label={t('agent.toolPermission.aria.denyRequest')}
                 className="h-8"
-                color="danger"
-                isDisabled={isSubmitting || isExpired}
-                isLoading={isSubmittingDeny}
-                onPress={() => handleDecision('deny')}
-                startContent={<CircleX size={16} />}
-                variant="bordered">
+                variant="outline"
+                disabled={isSubmitting || isExpired}
+                loading={isSubmittingDeny}
+                onClick={() => handleDecision('deny')}
+                loadingIcon={<CircleX size={16} />}>
+                <CircleX size={16} />
                 {t('agent.toolPermission.button.cancel')}
               </Button>
 
               <Button
                 aria-label={t('agent.toolPermission.aria.allowRequest')}
-                className="h-8 px-3"
-                color="success"
-                isDisabled={isSubmitting || isExpired}
-                isLoading={isSubmittingAllow}
-                onPress={() => handleDecision('allow')}
-                startContent={<CirclePlay size={16} />}>
+                className="h-8 px-3 bg-green-600 hover:bg-green-700 text-white"
+                disabled={isSubmitting || isExpired}
+                loading={isSubmittingAllow}
+                onClick={() => handleDecision('allow')}
+                loadingIcon={<CirclePlay size={16} />}>
+                <CirclePlay size={16} />
                 {t('agent.toolPermission.button.run')}
               </Button>
 
@@ -161,10 +162,10 @@ export function ToolPermissionRequestCard({ toolResponse }: Props) {
                 aria-label={
                   showDetails ? t('agent.toolPermission.aria.hideDetails') : t('agent.toolPermission.aria.showDetails')
                 }
-                className="h-8"
-                isIconOnly
-                onPress={() => setShowDetails((value) => !value)}
-                variant="light">
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setShowDetails((value) => !value)}
+                variant="ghost">
                 <ChevronDown className={`transition-transform ${showDetails ? 'rotate-180' : ''}`} size={16} />
               </Button>
             </div>

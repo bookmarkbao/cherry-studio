@@ -1,4 +1,5 @@
-import { Button, Tooltip } from '@heroui/react'
+import { Button } from '@cherrystudio/ui'
+import { Tooltip } from '@heroui/react'
 import { loggerService } from '@logger'
 import type { AgentBaseWithId, UpdateAgentBaseForm, UpdateAgentFunctionUnion } from '@renderer/types'
 import { Plus } from 'lucide-react'
@@ -66,7 +67,9 @@ export const AccessibleDirsSetting = ({ base, update }: AccessibleDirsSettingPro
       <SettingsTitle
         actions={
           <Tooltip content={t('agent.session.accessible_paths.add')}>
-            <Button variant="ghost" size="sm" startContent={<Plus />} isIconOnly onClick={addAccessiblePath} />
+            <Button variant="ghost" size="icon-sm" onClick={addAccessiblePath}>
+              <Plus />
+            </Button>
           </Tooltip>
         }>
         {t('agent.session.accessible_paths.label')}
@@ -79,7 +82,7 @@ export const AccessibleDirsSetting = ({ base, update }: AccessibleDirsSettingPro
             <span className="w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm" title={path}>
               {path}
             </span>
-            <Button size="sm" variant="ghost" color="danger" onClick={() => removeAccessiblePath(path)}>
+            <Button size="sm" variant="destructive" onClick={() => removeAccessiblePath(path)}>
               {t('common.delete')}
             </Button>
           </li>

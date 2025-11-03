@@ -1,4 +1,4 @@
-import { Button } from '@heroui/button'
+import { Button } from '@cherrystudio/ui'
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal'
 import { Progress } from '@heroui/progress'
 import { Spinner } from '@heroui/spinner'
@@ -517,10 +517,10 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
 
               <SettingRow style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'center', width: '100%' }}>
-                  <Button color="default" variant="flat" onPress={handleSelectZip} isDisabled={isSending}>
+                  <Button variant="secondary" onClick={handleSelectZip} disabled={isSending}>
                     {t('settings.data.export_to_phone.lan.selectZip')}
                   </Button>
-                  <Button color="primary" onPress={handleSendZip} isDisabled={!canSend} isLoading={isSending}>
+                  <Button onClick={handleSendZip} disabled={!canSend} loading={isSending}>
                     {transferStatusText || t('settings.data.export_to_phone.lan.sendZip')}
                   </Button>
                 </div>
@@ -564,10 +564,10 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
                     {t('settings.data.export_to_phone.lan.confirm_close_message')}
                   </span>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-                    <Button size="sm" color="default" variant="flat" onPress={handleCancelClose}>
+                    <Button size="sm" onClick={handleCancelClose}>
                       {t('common.cancel')}
                     </Button>
-                    <Button size="sm" color="danger" onPress={handleForceClose}>
+                    <Button size="sm" variant="destructive" onClick={handleForceClose}>
                       {t('settings.data.export_to_phone.lan.force_close')}
                     </Button>
                   </div>

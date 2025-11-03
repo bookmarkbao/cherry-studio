@@ -1,4 +1,5 @@
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Tab, Tabs } from '@heroui/react'
+import { Button } from '@cherrystudio/ui'
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Tab, Tabs } from '@heroui/react'
 import type { InstalledPlugin, PluginMetadata } from '@renderer/types/plugin'
 import { Filter, Search } from 'lucide-react'
 import type { FC } from 'react'
@@ -185,10 +186,8 @@ export const PluginBrowser: FC<PluginBrowserProps> = ({
         <Dropdown placement="bottom-end" classNames={{ content: 'max-h-60 overflow-y-auto p-0' }}>
           <DropdownTrigger>
             <Button
-              isIconOnly
-              variant={selectedCategories.length > 0 ? 'flat' : 'light'}
-              color={selectedCategories.length > 0 ? 'primary' : 'default'}
-              size="sm"
+              size="icon-sm"
+              variant={selectedCategories.length > 0 ? 'default' : 'ghost'}
               className="-translate-y-1/2 absolute top-1/2 right-2 z-10">
               <Filter className="h-4 w-4" />
             </Button>
