@@ -1,3 +1,11 @@
+/**
+ * @deprecated 此组件使用频率为 0 次，不符合 UI 库提取标准（需 ≥3 次）
+ * 计划在未来版本中移除。如需可搜索选择器，请直接使用 HeroUI 的 Autocomplete 组件。
+ *
+ * This component has 0 usages and does not meet the UI library extraction criteria (requires ≥3 usages).
+ * Planned for removal in future versions. Consider using HeroUI's Autocomplete component directly.
+ */
+
 import { Autocomplete, AutocompleteItem } from '@heroui/react'
 import type { Key } from '@react-types/shared'
 import { useMemo } from 'react'
