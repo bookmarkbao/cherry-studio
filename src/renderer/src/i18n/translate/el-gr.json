@@ -3336,6 +3336,10 @@
           "label": "Δοχείο",
           "placeholder": "Bucket, π.χ.: example"
         },
+        "bypassProxy": {
+          "help": "[to be translated]:When enabled, S3 requests bypass the application proxy to prevent data corruption during large file uploads. Recommended to keep enabled unless your S3 endpoint requires proxy access.",
+          "label": "[to be translated]:Bypass Proxy"
+        },
         "endpoint": {
           "label": "Διεύθυνση API",
           "placeholder": "https://s3.example.com"
@@ -4260,6 +4264,12 @@
       "aws-bedrock": {
         "access_key_id": "Αναγνωριστικό κλειδιού πρόσβασης AWS",
         "access_key_id_help": "Το ID του κλειδιού πρόσβασης AWS που χρησιμοποιείται για την πρόσβαση στην υπηρεσία AWS Bedrock",
+        "api_key": "[to be translated]:Bedrock API Key",
+        "api_key_help": "[to be translated]:Your AWS Bedrock API Key for authentication",
+        "auth_type": "[to be translated]:Authentication Type",
+        "auth_type_api_key": "[to be translated]:Bedrock API Key",
+        "auth_type_help": "[to be translated]:Choose between IAM credentials or Bedrock API Key authentication",
+        "auth_type_iam": "[to be translated]:IAM Credentials",
         "description": "Η AWS Bedrock είναι μια πλήρως διαχειριζόμενη υπηρεσία βασικών μοντέλων που παρέχεται από την Amazon και υποστηρίζει διάφορα προηγμένα μεγάλα γλωσσικά μοντέλα.",
         "region": "Περιοχές AWS",
         "region_help": "Η περιοχή υπηρεσίας AWS σας, για παράδειγμα us-east-1",

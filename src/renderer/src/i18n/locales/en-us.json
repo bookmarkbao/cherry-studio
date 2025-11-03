@@ -3336,6 +3336,10 @@
           "label": "Bucket",
           "placeholder": "Bucket, e.g: example"
         },
+        "bypassProxy": {
+          "help": "When enabled, S3 requests bypass the application proxy to prevent data corruption during large file uploads. Recommended to keep enabled unless your S3 endpoint requires proxy access.",
+          "label": "Bypass Proxy"
+        },
         "endpoint": {
           "label": "API Endpoint",
           "placeholder": "https://s3.example.com"
@@ -3418,10 +3422,6 @@
         "skipBackupFile": {
           "help": "When enabled, file data will be skipped during backup, only configuration information will be backed up, significantly reducing backup file size",
           "label": "Lightweight Backup"
-        },
-        "bypassProxy": {
-          "help": "When enabled, S3 requests bypass the application proxy to prevent data corruption during large file uploads. Recommended to keep enabled unless your S3 endpoint requires proxy access.",
-          "label": "Bypass Proxy"
         },
         "syncStatus": {
           "error": "Sync error: {{message}}",

@@ -3336,6 +3336,10 @@
           "label": "儲存桶",
           "placeholder": "Bucket，例如: example"
         },
+        "bypassProxy": {
+          "help": "開啟後，S3 請求將繞過應用程式代理，以防止大檔案上傳時的資料損壞。建議保持開啟，除非您的 S3 端點需要透過代理存取。",
+          "label": "繞過代理"
+        },
         "endpoint": {
           "label": "API 位址",
           "placeholder": "https://s3.example.com"
@@ -3418,10 +3422,6 @@
         "skipBackupFile": {
           "help": "開啟後備份時將跳過檔案資料，僅備份設定資訊，顯著減小備份檔案體積",
           "label": "精簡備份"
-        },
-        "bypassProxy": {
-          "help": "開啟後，S3 請求將繞過應用程式代理，以防止大檔案上傳時的資料損壞。建議保持開啟，除非您的 S3 端點需要透過代理存取。",
-          "label": "繞過代理"
         },
         "syncStatus": {
           "error": "同步錯誤: {{message}}",

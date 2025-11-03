@@ -3336,6 +3336,10 @@
           "label": "バケット",
           "placeholder": "Bucket、例: example"
         },
+        "bypassProxy": {
+          "help": "[to be translated]:When enabled, S3 requests bypass the application proxy to prevent data corruption during large file uploads. Recommended to keep enabled unless your S3 endpoint requires proxy access.",
+          "label": "[to be translated]:Bypass Proxy"
+        },
         "endpoint": {
           "label": "APIエンドポイント",
           "placeholder": "https://s3.example.com"
@@ -4260,6 +4264,12 @@
       "aws-bedrock": {
         "access_key_id": "AWS アクセスキー ID",
         "access_key_id_help": "あなたの AWS アクセスキー ID は、AWS Bedrock サービスへのアクセスに使用されます",
+        "api_key": "[to be translated]:Bedrock API Key",
+        "api_key_help": "[to be translated]:Your AWS Bedrock API Key for authentication",
+        "auth_type": "[to be translated]:Authentication Type",
+        "auth_type_api_key": "[to be translated]:Bedrock API Key",
+        "auth_type_help": "[to be translated]:Choose between IAM credentials or Bedrock API Key authentication",
+        "auth_type_iam": "[to be translated]:IAM Credentials",
         "description": "AWS Bedrock は、Amazon が提供する完全に管理されたベースモデルサービスで、さまざまな最先端の大言語モデルをサポートしています",
         "region": "AWS リージョン",
         "region_help": "あなたの AWS サービスリージョン、例：us-east-1",
