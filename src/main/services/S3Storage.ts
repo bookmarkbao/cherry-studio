@@ -39,7 +39,7 @@ export default class S3Storage {
   private root: string
 
   constructor(config: S3Config) {
-    const { endpoint, region, accessKeyId, secretAccessKey, bucket, root } = config
+    const { endpoint, region, accessKeyId, secretAccessKey, bucket, root, bypassProxy = true } = config
 
     const usePathStyle = (() => {
       if (!endpoint) return false
@@ -59,22 +59,24 @@ export default class S3Storage {
       }
     })()
 
-    // Fix for S3 backup failure when using proxy
-    // Issue: When proxy is enabled, S3 uploads can fail with incomplete writes
-    // Error: "Io error: put_object write size < data.size(), w_size=15728640, data.size=16396159"
-    // Root cause: AWS SDK uses global fetch/undici dispatcher which routes through proxy,
-    //             causing data corruption or incomplete transfers for large files
-    // Solution: Configure S3Client with a direct dispatcher that bypasses the global proxy
-    const directDispatcher = new UndiciAgent({
-      connect: {
-        timeout: 60000 // 60 second connection timeout
-      }
-    })
+    // Conditionally bypass proxy for S3 requests based on user configuration
+    // When bypassProxy is true (default), S3 requests use a direct dispatcher to avoid
+    // proxy interference with large file uploads that can cause incomplete transfers
+    // Error example: "Io error: put_object write size < data.size(), w_size=15728640, data.size=16396159"
+    let requestHandler: FetchHttpHandler | undefined
 
-    const requestHandler = new FetchHttpHandler({
-      requestTimeout: 300000, // 5 minute request timeout for large files
-      dispatcher: directDispatcher
-    })
+    if (bypassProxy) {
+      const directDispatcher = new UndiciAgent({
+        connect: {
+          timeout: 60000 // 60 second connection timeout
+        }
+      })
+
+      requestHandler = new FetchHttpHandler({
+        requestTimeout: 300000, // 5 minute request timeout for large files
+        dispatcher: directDispatcher
+      })
+    }
 
     this.client = new S3Client({
       region,
@@ -84,7 +86,7 @@ export default class S3Storage {
         secretAccessKey: secretAccessKey
       },
       forcePathStyle: usePathStyle,
-      requestHandler
+      ...(requestHandler && { requestHandler })
     })
 
     this.bucket = bucket
