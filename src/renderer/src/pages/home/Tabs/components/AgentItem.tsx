@@ -1,4 +1,3 @@
-import { cn, Tooltip } from '@heroui/react'
 import { DeleteIcon, EditIcon } from '@renderer/components/Icons'
 import { useSessions } from '@renderer/hooks/agents/useSessions'
 import { useSettings } from '@renderer/hooks/useSettings'
@@ -7,6 +6,8 @@ import { AgentLabel } from '@renderer/pages/settings/AgentSettings/shared'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import type { AgentEntity } from '@renderer/types'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@renderer/ui/context-menu'
+import { cn } from '@renderer/utils'
+import { Tooltip } from 'antd'
 import { Bot } from 'lucide-react'
 import type { FC } from 'react'
 import { memo, useCallback } from 'react'
@@ -118,7 +119,7 @@ export const MenuButton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ cla
 export const BotIcon: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
   const { t } = useTranslation()
   return (
-    <Tooltip content={t('common.agent_one')} delay={500} closeDelay={0}>
+    <Tooltip title={t('common.agent_one')} mouseEnterDelay={0.5}>
       <MenuButton {...props}>
         <Bot size={14} className="text-primary" />
       </MenuButton>

@@ -1,5 +1,6 @@
 import type { ButtonProps } from '@heroui/react'
-import { Button, cn } from '@heroui/react'
+import { Button } from '@heroui/react'
+import { cn } from '@renderer/utils'
 import { PlusIcon } from 'lucide-react'
 import type { FC } from 'react'
 

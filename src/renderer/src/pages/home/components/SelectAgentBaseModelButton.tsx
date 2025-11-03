@@ -1,4 +1,3 @@
-import { Button } from '@heroui/react'
 import ModelAvatar from '@renderer/components/Avatar/ModelAvatar'
 import { SelectApiModelPopup } from '@renderer/components/Popups/SelectModelPopup'
 import { agentModelFilter } from '@renderer/config/models'
@@ -8,6 +7,7 @@ import type { AgentBaseWithId, ApiModel } from '@renderer/types'
 import { isAgentEntity } from '@renderer/types'
 import { getModelFilterByAgentType } from '@renderer/utils/agentSession'
 import { apiModelAdapter } from '@renderer/utils/model'
+import { Button } from 'antd'
 import { ChevronsUpDown } from 'lucide-react'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -37,11 +37,11 @@ const SelectAgentBaseModelButton: FC<Props> = ({ agentBase: agent, onSelect, isD
 
   return (
     <Button
-      size="sm"
-      variant="light"
-      className="nodrag h-[28px] rounded-2xl px-1"
-      onPress={onSelectModel}
-      isDisabled={isDisabled}>
+      size="small"
+      type="text"
+      style={{ borderRadius: 20, fontSize: 12, padding: 2 }}
+      onClick={onSelectModel}
+      disabled={isDisabled}>
       <div className="flex items-center gap-1.5 overflow-x-hidden">
         <ModelAvatar model={model ? apiModelAdapter(model) : undefined} size={20} />
         <span className="truncate text-[var(--color-text)]">

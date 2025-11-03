@@ -1,6 +1,5 @@
 import {
   Button,
-  cn,
   Form,
   Input,
   Modal,
@@ -25,6 +24,7 @@ import type {
   Tool,
   UpdateSessionForm
 } from '@renderer/types'
+import { cn } from '@renderer/utils'
 import type { FormEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'

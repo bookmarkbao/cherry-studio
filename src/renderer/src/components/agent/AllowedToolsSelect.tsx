@@ -1,6 +1,7 @@
 import type { SelectedItems, SelectProps } from '@heroui/react'
-import { Chip, cn, Select, SelectItem } from '@heroui/react'
+import { Chip, Select, SelectItem } from '@heroui/react'
 import type { Tool } from '@renderer/types'
+import { cn } from '@renderer/utils'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 

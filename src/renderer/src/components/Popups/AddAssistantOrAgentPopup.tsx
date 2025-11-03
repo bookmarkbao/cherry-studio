@@ -1,5 +1,5 @@
-import { cn } from '@heroui/react'
 import { TopView } from '@renderer/components/TopView'
+import { cn } from '@renderer/utils'
 import { Modal } from 'antd'
 import { Bot, MessageSquare } from 'lucide-react'
 import { useState } from 'react'
