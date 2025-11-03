@@ -1,11 +1,3 @@
-/**
- * @deprecated 此组件使用频率仅为 2 次，不符合 UI 库提取标准（需 ≥3 次）
- * 计划在未来版本中移除。且此组件依赖 antd 和 styled-components，与项目迁移方向不符。
- *
- * This component has only 2 usages and does not meet the UI library extraction criteria (requires ≥3 usages).
- * Planned for removal in future versions. Also depends on antd and styled-components, which conflicts with the migration direction.
- */
-
 // Original path: src/renderer/src/components/EditableNumber/index.tsx
 import { InputNumber } from 'antd'
 import type { FC } from 'react'
