@@ -1,6 +1,8 @@
+import { Center } from '@renderer/components/Layout'
 import { TopView } from '@renderer/components/TopView'
 import { useAgent } from '@renderer/hooks/agents/useAgent'
 import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
+import { Alert, Spin } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,8 +12,6 @@ import PluginSettings from './PluginSettings'
 import PromptSettings from './PromptSettings'
 import { AgentLabel, LeftMenu, Settings, StyledMenu, StyledModal } from './shared'
 import ToolingSettings from './ToolingSettings'
-import { Center } from '@renderer/components/Layout'
-import { Alert, Spin } from 'antd'
 
 interface AgentSettingPopupShowParams {
   agentId: string

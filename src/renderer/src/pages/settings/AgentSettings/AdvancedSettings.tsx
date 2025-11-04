@@ -1,4 +1,3 @@
-import { InputNumber, Tooltip } from 'antd'
 import type { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
 import type { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
 import type {
@@ -8,6 +7,7 @@ import type {
   UpdateAgentBaseForm
 } from '@renderer/types'
 import { AgentConfigurationSchema } from '@renderer/types'
+import { InputNumber, Tooltip } from 'antd'
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'

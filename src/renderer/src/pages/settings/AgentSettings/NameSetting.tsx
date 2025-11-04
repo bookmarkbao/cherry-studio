@@ -1,5 +1,5 @@
-import { Input } from 'antd'
 import type { AgentBaseWithId, UpdateAgentBaseForm, UpdateAgentFunctionUnion } from '@renderer/types'
+import { Input } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

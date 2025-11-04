@@ -1,6 +1,6 @@
-import { Button, Tooltip } from 'antd'
 import { loggerService } from '@logger'
 import type { AgentBaseWithId, UpdateAgentBaseForm, UpdateAgentFunctionUnion } from '@renderer/types'
+import { Button, Tooltip } from 'antd'
 import { Plus } from 'lucide-react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'

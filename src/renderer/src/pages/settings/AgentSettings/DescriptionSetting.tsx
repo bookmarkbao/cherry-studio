@@ -1,9 +1,9 @@
 import type { AgentBaseWithId, UpdateAgentBaseForm, UpdateAgentFunctionUnion } from '@renderer/types'
+import TextArea from 'antd/es/input/TextArea'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingsItem, SettingsTitle } from './shared'
-import TextArea from 'antd/es/input/TextArea'
 
 export interface DescriptionSettingProps {
   base: AgentBaseWithId | undefined | null

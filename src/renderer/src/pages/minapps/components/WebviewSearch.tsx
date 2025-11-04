@@ -1,5 +1,6 @@
 import { loggerService } from '@logger'
-import { Button, Input, InputRef } from 'antd'
+import type { InputRef } from 'antd'
+import { Button, Input } from 'antd'
 import type { WebviewTag } from 'electron'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import type { FC } from 'react'

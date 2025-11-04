@@ -1,9 +1,9 @@
-import { Select } from 'antd'
 import { ProviderAvatarPrimitive } from '@renderer/components/ProviderAvatar'
 import { getProviderLogo } from '@renderer/config/providers'
 import ImageStorage from '@renderer/services/ImageStorage'
 import { getProviderNameById } from '@renderer/services/ProviderService'
 import type { Provider } from '@types'
+import { Select } from 'antd'
 import type { FC } from 'react'
 import React, { useEffect, useState } from 'react'
 
