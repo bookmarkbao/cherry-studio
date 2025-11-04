@@ -309,7 +309,7 @@ export class OpenAIAPIClient extends OpenAIBaseClient<
       // For OpenAI models (GPT-5, o1, o3, o4, etc), use the base class implementation
       // which returns the correct { reasoning: { effort, summary } } format
       if (isSupportedReasoningEffortOpenAIModel(model)) {
-        return super.getReasoningEffort(assistant, model)
+        return super.getReasoningEffort(assistant, model);
       }
       
       // For non-OpenAI models (Grok, Perplexity, etc), use reasoning_effort parameter
