@@ -60,9 +60,7 @@ const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant, setAct
 
   return (
     <div className="mb-1">
-      <AddButton onPress={handleAddButtonClick} className="-mt-[1px] mb-[2px]">
-        {t('chat.add.assistant.title')}
-      </AddButton>
+      <AddButton onClick={handleAddButtonClick}>{t('chat.add.assistant.title')}</AddButton>
       <AgentModal isOpen={isAgentModalOpen} onClose={onAgentModalClose} afterSubmit={afterCreate} />
     </div>
   )
