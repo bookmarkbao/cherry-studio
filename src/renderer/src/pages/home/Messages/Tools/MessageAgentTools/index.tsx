@@ -75,14 +75,13 @@ function renderToolContent(toolName: AgentToolsType, input: ToolInput, output?: 
   }, [Renderer, input, output, toolName])
 
   return (
-    <div className="w-max max-w-full rounded-md bg-foreground-100 py-1 transition-all duration-300 ease-in-out dark:bg-foreground-100">
-      <Collapse
-        className="w-max max-w-full"
-        expandIconPosition="end"
-        defaultActiveKey={toolName === AgentToolsType.TodoWrite ? [AgentToolsType.TodoWrite] : []}
-        items={[toolContentItem]}
-      />
-    </div>
+    <Collapse
+      className="w-max max-w-full"
+      expandIconPosition="end"
+      size="small"
+      defaultActiveKey={toolName === AgentToolsType.TodoWrite ? [AgentToolsType.TodoWrite] : []}
+      items={[toolContentItem]}
+    />
   )
 }
 
