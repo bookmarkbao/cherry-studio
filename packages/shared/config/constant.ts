@@ -198,9 +198,8 @@ export enum FeedUrl {
 }
 
 export enum UpdateConfigUrl {
-  //GITHUB = 'https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/update-config.json',
-  GITHUB = 'https://birdcat.top/voip/update-config.json',
-  GITCODE = 'https://birdcat.top/voip/update-config.json'
+  GITHUB = 'https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/update-config.json',
+  GITCODE = 'https://raw.gitcode.com/CherryHQ/cherry-studio/raw/main/update-config.json'
 }
 
 export enum UpgradeChannel {
