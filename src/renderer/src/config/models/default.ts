@@ -1,4 +1,4 @@
-import { Model, SystemProviderId } from '@renderer/types'
+import type { Model, SystemProviderId } from '@renderer/types'
 
 export const glm45FlashModel: Model = {
   id: 'glm-4.5-flash',
@@ -27,6 +27,7 @@ export const SYSTEM_MODELS: Record<SystemProviderId | 'defaultModel', Model[]> =
   ],
   cherryin: [],
   vertexai: [],
+  sophnet: [],
   '302ai': [
     {
       id: 'deepseek-chat',
@@ -430,6 +431,12 @@ export const SYSTEM_MODELS: Record<SystemProviderId | 'defaultModel', Model[]> =
     }
   ],
   anthropic: [
+    {
+      id: 'claude-haiku-4-5-20251001',
+      provider: 'anthropic',
+      name: 'Claude Haiku 4.5',
+      group: 'Claude 4.5'
+    },
     {
       id: 'claude-sonnet-4-5-20250929',
       provider: 'anthropic',
@@ -1735,6 +1742,7 @@ export const SYSTEM_MODELS: Record<SystemProviderId | 'defaultModel', Model[]> =
       id: 'DeepSeek-R1',
       provider: 'cephalon',
       name: 'DeepSeek-R1满血版',
+      capabilities: [{ type: 'reasoning' }],
       group: 'DeepSeek'
     }
   ],
@@ -1831,5 +1839,6 @@ export const SYSTEM_MODELS: Record<SystemProviderId | 'defaultModel', Model[]> =
       provider: 'longcat',
       group: 'LongCat'
     }
-  ]
+  ],
+  huggingface: []
 }

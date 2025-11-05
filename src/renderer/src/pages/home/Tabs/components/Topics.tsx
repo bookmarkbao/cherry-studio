@@ -12,11 +12,11 @@ import { useSettings } from '@renderer/hooks/useSettings'
 import { finishTopicRenaming, startTopicRenaming, TopicManager } from '@renderer/hooks/useTopic'
 import { fetchMessagesSummary } from '@renderer/services/ApiService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
+import type { RootState } from '@renderer/store'
 import store from '@renderer/store'
-import { RootState } from '@renderer/store'
 import { newMessagesActions } from '@renderer/store/newMessage'
 import { setGenerating } from '@renderer/store/runtime'
-import { Assistant, Topic } from '@renderer/types'
+import type { Assistant, Topic } from '@renderer/types'
 import { classNames, removeSpecialCharactersForFileName } from '@renderer/utils'
 import { copyTopicAsMarkdown, copyTopicAsPlainText } from '@renderer/utils/copy'
 import {
@@ -28,8 +28,9 @@ import {
   exportTopicToNotion,
   topicToMarkdown
 } from '@renderer/utils/export'
-import { Dropdown, MenuProps, Tooltip } from 'antd'
-import { ItemType, MenuItemType } from 'antd/es/menu/interface'
+import type { MenuProps } from 'antd'
+import { Dropdown, Tooltip } from 'antd'
+import type { ItemType, MenuItemType } from 'antd/es/menu/interface'
 import dayjs from 'dayjs'
 import { findIndex } from 'lodash'
 import {
@@ -288,13 +289,7 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
         label: t('chat.topics.clear.title'),
         key: 'clear-messages',
         icon: <BrushCleaning size={14} />,
-        async onClick() {
-          window.modal.confirm({
-            title: t('chat.input.clear.content'),
-            centered: true,
-            onOk: () => onClearMessages(topic)
-          })
-        }
+        onClick: () => onClearMessages(topic)
       },
       {
         label: t('settings.topic.position.label'),

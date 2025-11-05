@@ -33,7 +33,7 @@ import WebSearchService from '@renderer/services/WebSearchService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { setSearching } from '@renderer/store/runtime'
 import { sendMessage as _sendMessage } from '@renderer/store/thunk/messageThunk'
-import { Assistant, FileType, KnowledgeBase, Model, Topic } from '@renderer/types'
+import type { Assistant, FileType, KnowledgeBase, Model, Topic } from '@renderer/types'
 import type { MessageInputBaseParams } from '@renderer/types/newMessage'
 import { classNames, delay, filterSupportedFiles } from '@renderer/utils'
 import { formatQuotedText } from '@renderer/utils/formats'
@@ -46,16 +46,19 @@ import {
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Tooltip } from 'antd'
-import TextArea, { TextAreaRef } from 'antd/es/input/TextArea'
+import type { TextAreaRef } from 'antd/es/input/TextArea'
+import TextArea from 'antd/es/input/TextArea'
 import { debounce, isEmpty } from 'lodash'
 import { CirclePause } from 'lucide-react'
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { CSSProperties, FC } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import NarrowLayout from '../Messages/NarrowLayout'
 import AttachmentPreview from './AttachmentPreview'
-import InputbarTools, { InputbarToolsRef } from './InputbarTools'
+import type { InputbarToolsRef } from './InputbarTools'
+import InputbarTools from './InputbarTools'
 import KnowledgeBaseInput from './KnowledgeBaseInput'
 import MentionModelsInput from './MentionModelsInput'
 import SendMessageButton from './SendMessageButton'
@@ -292,6 +295,53 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
       setIsTranslating(false)
     }
   }, [isTranslating, text, getLanguageByLangcode, targetLanguage, setTimeoutTimer, resizeTextArea])
+
+  const appendTxtContentToInput = useCallback(
+    async (file: FileType, event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      try {
+        const targetPath = file.path
+        const content = await window.api.file.readExternal(targetPath, true)
+        try {
+          await navigator.clipboard.writeText(content)
+        } catch (clipboardError) {
+          logger.warn('Failed to copy txt attachment content to clipboard:', clipboardError as Error)
+        }
+
+        setText((prev) => {
+          if (!prev) {
+            return content
+          }
+
+          const needsSeparator = !prev.endsWith('\n')
+          return needsSeparator ? `${prev}\n${content}` : prev + content
+        })
+
+        setFiles((prev) => prev.filter((currentFile) => currentFile.id !== file.id))
+
+        setTimeoutTimer(
+          'appendTxtAttachment',
+          () => {
+            const textArea = textareaRef.current?.resizableTextArea?.textArea
+            if (textArea) {
+              const end = textArea.value.length
+              textArea.focus()
+              textArea.setSelectionRange(end, end)
+            }
+
+            resizeTextArea(true)
+          },
+          0
+        )
+      } catch (error) {
+        logger.warn('Failed to append txt attachment content:', error as Error)
+        window.toast.error(t('chat.input.file_error'))
+      }
+    },
+    [resizeTextArea, setTimeoutTimer, t]
+  )
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // 按下Tab键，自动选中${xxx}
@@ -831,7 +881,9 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic, topic }) =
           id="inputbar"
           className={classNames('inputbar-container', inputFocus && 'focus', isFileDragging && 'file-dragging')}
           ref={containerRef}>
-          {files.length > 0 && <AttachmentPreview files={files} setFiles={setFiles} />}
+          {files.length > 0 && (
+            <AttachmentPreview files={files} setFiles={setFiles} onAttachmentContextMenu={appendTxtContentToInput} />
+          )}
           {selectedKnowledgeBases.length > 0 && (
             <KnowledgeBaseInput
               selectedKnowledgeBases={selectedKnowledgeBases}

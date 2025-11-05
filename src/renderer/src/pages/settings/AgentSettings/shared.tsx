@@ -1,10 +1,10 @@
 import { cn } from '@heroui/react'
-import Ellipsis from '@renderer/components/Ellipsis'
 import EmojiIcon from '@renderer/components/EmojiIcon'
 import { getAgentTypeLabel } from '@renderer/i18n/label'
-import { AgentEntity, AgentSessionEntity } from '@renderer/types'
+import type { AgentEntity, AgentSessionEntity } from '@renderer/types'
 import { Menu, Modal } from 'antd'
-import React, { ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import { SettingDivider } from '..'
@@ -35,11 +35,11 @@ export const AgentLabel: React.FC<AgentLabelProps> = ({ agent, classNames }) => 
   const emoji = agent?.configuration?.avatar
 
   return (
-    <div className={cn('flex w-full items-center gap-2', classNames?.container)}>
+    <div className={cn('flex w-full items-center gap-2 truncate', classNames?.container)}>
       <EmojiIcon emoji={emoji || '⭐️'} className={classNames?.avatar} />
-      <Ellipsis className={classNames?.name}>
+      <span className={cn('truncate', 'text-[var(--color-text)]', classNames?.name)}>
         {agent?.name ?? (agent?.type ? getAgentTypeLabel(agent.type) : '')}
-      </Ellipsis>
+      </span>
     </div>
   )
 }
@@ -53,7 +53,7 @@ export const SessionLabel: React.FC<SessionLabelProps> = ({ session, className }
   const displayName = session?.name ?? session?.id
   return (
     <>
-      <span className={cn('px-2 text-sm', className)}>{displayName}</span>
+      <span className={cn('truncate text-[var(--color-text)] text-sm', className)}>{displayName}</span>
     </>
   )
 }

@@ -1,17 +1,20 @@
-import { McpError } from '@modelcontextprotocol/sdk/types.js'
-import { AgentServerError, AgentServerErrorSchema } from '@renderer/types'
-import {
+import type { McpError } from '@modelcontextprotocol/sdk/types.js'
+import type { AgentServerError } from '@renderer/types'
+import { AgentServerErrorSchema } from '@renderer/types'
+import type {
   AiSdkErrorUnion,
-  isSerializedAiSdkAPICallError,
   SerializedAiSdkError,
   SerializedAiSdkInvalidToolInputError,
   SerializedAiSdkNoSuchToolError,
   SerializedError
 } from '@renderer/types/error'
-import { InvalidToolInputError, NoSuchToolError } from 'ai'
-import { AxiosError, isAxiosError } from 'axios'
+import { isSerializedAiSdkAPICallError } from '@renderer/types/error'
+import type { NoSuchToolError } from 'ai'
+import { InvalidToolInputError } from 'ai'
+import type { AxiosError } from 'axios'
+import { isAxiosError } from 'axios'
 import { t } from 'i18next'
-import * as z from 'zod'
+import type * as z from 'zod'
 import { ZodError } from 'zod'
 
 import { parseJSON } from './json'
@@ -199,6 +202,7 @@ export const serializeError = (error: AiSdkErrorUnion): SerializedError => {
       ? serializeInvalidToolInputError(error.originalError)
       : serializeNoSuchToolError(error.originalError)
   if ('functionality' in error) serializedError.functionality = error.functionality
+  if ('provider' in error) serializedError.provider = error.provider
 
   return serializedError
 }

@@ -1,6 +1,6 @@
+import type { SelectedItemProps } from '@heroui/react'
 import {
   Button,
-  cn,
   Form,
   Input,
   Modal,
@@ -9,7 +9,6 @@ import {
   ModalFooter,
   ModalHeader,
   Select,
-  SelectedItemProps,
   SelectItem,
   Textarea,
   useDisclosure
@@ -17,28 +16,29 @@ import {
 import { loggerService } from '@logger'
 import type { Selection } from '@react-types/shared'
 import ClaudeIcon from '@renderer/assets/images/models/claude.png'
-import { getModelLogo } from '@renderer/config/models'
-import { permissionModeCards } from '@renderer/constants/permissionModes'
+import { permissionModeCards } from '@renderer/config/agent'
+import { agentModelFilter, getModelLogoById } from '@renderer/config/models'
 import { useAgents } from '@renderer/hooks/agents/useAgents'
 import { useApiModels } from '@renderer/hooks/agents/useModels'
 import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
-import {
+import type {
   AddAgentForm,
-  AgentConfigurationSchema,
   AgentEntity,
   AgentType,
   BaseAgentForm,
-  isAgentType,
   PermissionMode,
   Tool,
   UpdateAgentForm
 } from '@renderer/types'
+import { AgentConfigurationSchema, isAgentType } from '@renderer/types'
 import { AlertTriangleIcon } from 'lucide-react'
-import { ChangeEvent, FormEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ErrorBoundary } from '../../ErrorBoundary'
-import { BaseOption, ModelOption, Option, renderOption } from './shared'
+import type { BaseOption, ModelOption } from './shared'
+import { Option, renderOption } from './shared'
 
 const logger = loggerService.withContext('AddAgentPopup')
 
@@ -57,43 +57,31 @@ const buildAgentForm = (existing?: AgentWithTools): BaseAgentForm => ({
   name: existing?.name ?? 'Claude Code',
   description: existing?.description,
   instructions: existing?.instructions,
-  model: existing?.model ?? 'claude-4-sonnet',
+  model: existing?.model ?? '',
   accessible_paths: existing?.accessible_paths ? [...existing.accessible_paths] : [],
   allowed_tools: existing?.allowed_tools ? [...existing.allowed_tools] : [],
   mcps: existing?.mcps ? [...existing.mcps] : [],
   configuration: AgentConfigurationSchema.parse(existing?.configuration ?? {})
 })
 
-interface BaseProps {
+type Props = {
   agent?: AgentWithTools
-}
-
-interface TriggerProps extends BaseProps {
-  trigger: { content: ReactNode; className?: string }
-  isOpen?: never
-  onClose?: never
-}
-
-interface StateProps extends BaseProps {
-  trigger?: never
   isOpen: boolean
   onClose: () => void
+  afterSubmit?: (a: AgentEntity) => void
 }
-
-type Props = TriggerProps | StateProps
 
 /**
  * Modal component for creating or editing an agent.
  *
  * Either trigger or isOpen and onClose is given.
  * @param agent - Optional agent entity for editing mode.
- * @param trigger - Optional trigger element that opens the modal. It MUST propagate the click event to trigger the modal.
  * @param isOpen - Optional controlled modal open state. From useDisclosure.
  * @param onClose - Optional callback when modal closes. From useDisclosure.
  * @returns Modal component for agent creation/editing
  */
-export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, onClose: _onClose }) => {
-  const { isOpen, onClose, onOpen } = useDisclosure({ isOpen: _isOpen, onClose: _onClose })
+export const AgentModal: React.FC<Props> = ({ agent, isOpen: _isOpen, onClose: _onClose, afterSubmit }) => {
+  const { isOpen, onClose } = useDisclosure({ isOpen: _isOpen, onClose: _onClose })
   const { t } = useTranslation()
   const loadingRef = useRef(false)
   // const { setTimeoutTimer } = useTimer()
@@ -245,14 +233,23 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
 
   const modelOptions = useMemo(() => {
     // mocked data. not final version
-    return (models ?? []).map((model) => ({
-      type: 'model',
-      key: model.id,
-      label: model.name,
-      avatar: getModelLogo(model.id),
-      providerId: model.provider,
-      providerName: model.provider_name
-    })) satisfies ModelOption[]
+    return (models ?? [])
+      .filter((m) =>
+        agentModelFilter({
+          id: m.id,
+          provider: m.provider || '',
+          name: m.name,
+          group: ''
+        })
+      )
+      .map((model) => ({
+        type: 'model',
+        key: model.id,
+        label: model.name,
+        avatar: getModelLogoById(model.id),
+        providerId: model.provider,
+        providerName: model.provider_name
+      })) satisfies ModelOption[]
   }, [models])
 
   const onModelChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
@@ -306,8 +303,13 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
           configuration: form.configuration ? { ...form.configuration } : undefined
         } satisfies UpdateAgentForm
 
-        updateAgent(updatePayload)
-        logger.debug('Updated agent', updatePayload)
+        const result = await updateAgent(updatePayload)
+        if (result) {
+          logger.debug('Updated agent', result)
+          afterSubmit?.(result)
+        } else {
+          logger.error('Update failed.')
+        }
       } else {
         const newAgent = {
           type: form.type,
@@ -320,12 +322,13 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
           configuration: form.configuration ? { ...form.configuration } : undefined
         } satisfies AddAgentForm
         const result = await addAgent(newAgent)
+
         if (!result.success) {
           loadingRef.current = false
           throw result.error
         }
+        afterSubmit?.(result.data)
       }
-
       loadingRef.current = false
 
       // setTimeoutTimer('onCreateAgent', () => EventEmitter.emit(EVENT_NAMES.SHOW_ASSISTANTS), 0)
@@ -334,39 +337,23 @@ export const AgentModal: React.FC<Props> = ({ agent, trigger, isOpen: _isOpen, o
     [
       form.type,
       form.model,
+      form.accessible_paths,
       form.name,
       form.description,
       form.instructions,
-      form.accessible_paths,
       form.allowed_tools,
       form.configuration,
       agent,
       onClose,
       t,
       updateAgent,
+      afterSubmit,
       addAgent
     ]
   )
 
   return (
     <ErrorBoundary>
-      {/* NOTE: Hero UI Modal Pattern: Combine the Button and Modal components into a single
-      encapsulated component. This is because the Modal component needs to bind the onOpen
-      event handler to the Button for proper focus management.
-
-      Or just use external isOpen/onOpen/onClose to control modal state.
-      */}
-
-      {trigger && (
-        <div
-          onClick={(e) => {
-            e.stopPropagation()
-            onOpen()
-          }}
-          className={cn('w-full', trigger.className)}>
-          {trigger.content}
-        </div>
-      )}
       <Modal
         isOpen={isOpen}
         onClose={onClose}

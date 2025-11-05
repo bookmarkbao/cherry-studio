@@ -5,7 +5,8 @@
 
 import { definePlugin } from '../../'
 import type { AiRequestContext } from '../../types'
-import { DEFAULT_WEB_SEARCH_CONFIG, switchWebSearchTool, WebSearchPluginConfig } from './helper'
+import type { WebSearchPluginConfig } from './helper'
+import { DEFAULT_WEB_SEARCH_CONFIG, switchWebSearchTool } from './helper'
 
 /**
  * 网络搜索插件

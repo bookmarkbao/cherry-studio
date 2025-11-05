@@ -17,7 +17,7 @@ import { AllowedToolsSelect } from '@renderer/components/agent'
 import { useAgent } from '@renderer/hooks/agents/useAgent'
 import { useSessions } from '@renderer/hooks/agents/useSessions'
 import { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
-import {
+import type {
   AgentEntity,
   AgentSessionEntity,
   BaseSessionForm,
@@ -25,7 +25,8 @@ import {
   Tool,
   UpdateSessionForm
 } from '@renderer/types'
-import { FormEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { FormEvent, ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ErrorBoundary } from '../../ErrorBoundary'
@@ -98,7 +99,7 @@ export const SessionModal: React.FC<Props> = ({
   const loadingRef = useRef(false)
   // const { setTimeoutTimer } = useTimer()
   const { createSession } = useSessions(agentId)
-  const updateSession = useUpdateSession(agentId)
+  const { updateSession } = useUpdateSession(agentId)
   const { agent } = useAgent(agentId)
   const isEditing = (session?: AgentSessionEntity) => session !== undefined
 

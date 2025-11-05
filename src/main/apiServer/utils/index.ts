@@ -1,7 +1,7 @@
 import { CacheService } from '@main/services/CacheService'
 import { loggerService } from '@main/services/LoggerService'
 import { reduxService } from '@main/services/ReduxService'
-import { ApiModel, Model, Provider } from '@types'
+import type { ApiModel, Model, Provider } from '@types'
 
 const logger = loggerService.withContext('ApiServerUtils')
 
@@ -277,5 +277,18 @@ export function validateProvider(provider: Provider): boolean {
       providerId: provider?.id
     })
     return false
+  }
+}
+
+export const getProviderAnthropicModelChecker = (providerId: string): ((m: Model) => boolean) => {
+  switch (providerId) {
+    case 'cherryin':
+    case 'new-api':
+      return (m: Model) => m.endpoint_type === 'anthropic'
+    case 'aihubmix':
+      return (m: Model) => m.id.includes('claude')
+    default:
+      // allow all models when checker not configured
+      return () => true
   }
 }
