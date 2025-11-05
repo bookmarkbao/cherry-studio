@@ -75,7 +75,6 @@ export default class AppUpdater {
     this.autoUpdater = autoUpdater
   }
 
-
   public setAutoUpdate(isActive: boolean) {
     autoUpdater.autoDownload = isActive
     autoUpdater.autoInstallOnAppQuit = isActive
@@ -221,7 +220,6 @@ export default class AppUpdater {
     logger.info(`Using fallback feed URL: ${defaultFeedUrl} (IP country: ${ipCountry})`)
     this._setChannel(UpgradeChannel.LATEST, defaultFeedUrl)
   }
-
 
   public cancelDownload() {
     this.cancellationToken.cancel()
