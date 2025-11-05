@@ -1,6 +1,5 @@
-import { useDisclosure } from '@heroui/react'
 import AddAssistantOrAgentPopup from '@renderer/components/Popups/AddAssistantOrAgentPopup'
-import { AgentModal } from '@renderer/components/Popups/agent/AgentModal'
+import AgentModalPopup from '@renderer/components/Popups/agent/AgentModal'
 import { useAppDispatch } from '@renderer/store'
 import { setActiveTopicOrSessionAction } from '@renderer/store/runtime'
 import type { AgentEntity, Assistant, Topic } from '@renderer/types'
@@ -18,20 +17,7 @@ interface UnifiedAddButtonProps {
 
 const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant, setActiveAssistant, setActiveAgentId }) => {
   const { t } = useTranslation()
-  const { isOpen: isAgentModalOpen, onOpen: onAgentModalOpen, onClose: onAgentModalClose } = useDisclosure()
   const dispatch = useAppDispatch()
-
-  const handleAddButtonClick = () => {
-    AddAssistantOrAgentPopup.show({
-      onSelect: (type) => {
-        if (type === 'assistant') {
-          onCreateAssistant()
-        } else if (type === 'agent') {
-          onAgentModalOpen()
-        }
-      }
-    })
-  }
 
   const afterCreate = useCallback(
     (a: AgentEntity) => {
@@ -58,10 +44,21 @@ const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant, setAct
     [dispatch, setActiveAgentId, setActiveAssistant]
   )
 
+  const handleAddButtonClick = () => {
+    AddAssistantOrAgentPopup.show({
+      onSelect: (type) => {
+        if (type === 'assistant') {
+          onCreateAssistant()
+        } else if (type === 'agent') {
+          AgentModalPopup.show({ afterSubmit: afterCreate })
+        }
+      }
+    })
+  }
+
   return (
     <div className="mb-1">
       <AddButton onClick={handleAddButtonClick}>{t('chat.add.assistant.title')}</AddButton>
-      <AgentModal isOpen={isAgentModalOpen} onClose={onAgentModalClose} afterSubmit={afterCreate} />
     </div>
   )
 }
