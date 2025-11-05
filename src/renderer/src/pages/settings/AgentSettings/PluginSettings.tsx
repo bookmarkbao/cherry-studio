@@ -1,7 +1,8 @@
-import { Card, CardBody, Tab, Tabs } from '@heroui/react'
 import { useAvailablePlugins, useInstalledPlugins, usePluginActions } from '@renderer/hooks/usePlugins'
 import type { GetAgentResponse, GetAgentSessionResponse, UpdateAgentFunctionUnion } from '@renderer/types/agent'
+import { Card, Tabs } from 'antd'
 import type { FC } from 'react'
+import { useMemo } from 'react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -54,24 +55,18 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
     [uninstall, t]
   )
 
-  return (
-    <SettingsContainer className="pr-0">
-      <Tabs
-        aria-label="Plugin settings tabs"
-        classNames={{
-          base: 'w-full',
-          tabList: 'w-full',
-          panel: 'w-full flex-1 overflow-hidden'
-        }}>
-        <Tab key="available" title={t('agent.settings.plugins.available.title')}>
+  const tabItems = useMemo(() => {
+    return [
+      {
+        key: 'available',
+        label: t('agent.settings.plugins.available.title'),
+        children: (
           <div className="flex h-full flex-col overflow-y-auto pt-1 pr-2">
             {errorAvailable ? (
-              <Card className="bg-danger-50 dark:bg-danger-900/20">
-                <CardBody>
-                  <p className="text-danger">
-                    {t('agent.settings.plugins.error.load')}: {errorAvailable}
-                  </p>
-                </CardBody>
+              <Card variant="borderless">
+                <p className="text-danger">
+                  {t('agent.settings.plugins.error.load')}: {errorAvailable}
+                </p>
               </Card>
             ) : (
               <PluginBrowser
@@ -86,17 +81,18 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
               />
             )}
           </div>
-        </Tab>
-
-        <Tab key="installed" title={t('agent.settings.plugins.installed.title')}>
+        )
+      },
+      {
+        key: 'installed',
+        label: t('agent.settings.plugins.installed.title'),
+        children: (
           <div className="flex h-full flex-col overflow-y-auto pt-4 pr-2">
             {errorInstalled ? (
               <Card className="bg-danger-50 dark:bg-danger-900/20">
-                <CardBody>
-                  <p className="text-danger">
-                    {t('agent.settings.plugins.error.load')}: {errorInstalled}
-                  </p>
-                </CardBody>
+                <p className="text-danger">
+                  {t('agent.settings.plugins.error.load')}: {errorInstalled}
+                </p>
               </Card>
             ) : (
               <InstalledPluginsList
@@ -106,8 +102,29 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
               />
             )}
           </div>
-        </Tab>
-      </Tabs>
+        )
+      }
+    ]
+  }, [
+    agentBase.id,
+    agents,
+    commands,
+    errorAvailable,
+    errorInstalled,
+    handleInstall,
+    handleUninstall,
+    installing,
+    loadingAvailable,
+    loadingInstalled,
+    plugins,
+    skills,
+    t,
+    uninstalling
+  ])
+
+  return (
+    <SettingsContainer className="pr-0">
+      <Tabs centered items={tabItems} />
     </SettingsContainer>
   )
 }
