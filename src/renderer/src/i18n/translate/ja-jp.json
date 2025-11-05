@@ -4264,7 +4264,7 @@
         "api_key_help": "認証用のAWS Bedrock APIキー",
         "auth_type": "認証タイプ",
         "auth_type_api_key": "Bedrock APIキー",
-        "auth_type_help": "IAM認証情報とBedrock APIキー認証のいずれかを選択してください",
+        "auth_type_help": "IAM認証情報とBedrock APIキー認証のどちらかを選択してください",
         "auth_type_iam": "IAM認証情報",
         "description": "AWS Bedrock は、Amazon が提供する完全に管理されたベースモデルサービスで、さまざまな最先端の大言語モデルをサポートしています",
         "region": "AWS リージョン",
