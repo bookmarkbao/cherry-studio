@@ -85,8 +85,10 @@ vi.mock('electron-updater', () => ({
 }))
 
 // Import after mocks
+import { app, net } from 'electron'
 import AppUpdater from '../AppUpdater'
 import { configManager } from '../ConfigManager'
+import { getIpCountry } from '@main/utils/ipService'
 
 describe('AppUpdater', () => {
   let appUpdater: AppUpdater
@@ -272,6 +274,346 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any).processReleaseInfo(releaseInfo)
 
       expect(result.releaseNotes).toBeNull()
+    })
+  })
+
+  describe('_fetchUpdateConfig', () => {
+    const mockConfig = {
+      lastUpdated: '2025-01-05T00:00:00Z',
+      versions: {
+        '1.6.7': {
+          minCompatibleVersion: '1.0.0',
+          description: 'Test version',
+          channels: {
+            latest: {
+              feedUrl: 'https://github.com/test/v1.6.7',
+              version: '1.6.7'
+            },
+            rc: null,
+            beta: null
+          }
+        }
+      }
+    }
+
+    it('should fetch config from GitHub for non-CN users', async () => {
+      vi.mocked(getIpCountry).mockResolvedValue('US')
+      vi.mocked(net.fetch).mockResolvedValue({
+        ok: true,
+        json: async () => mockConfig
+      } as any)
+
+      const result = await (appUpdater as any)._fetchUpdateConfig()
+
+      expect(result).toEqual(mockConfig)
+      expect(net.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('github'),
+        expect.any(Object)
+      )
+    })
+
+    it('should fetch config from GitCode for CN users', async () => {
+      vi.mocked(getIpCountry).mockResolvedValue('CN')
+      vi.mocked(net.fetch).mockResolvedValue({
+        ok: true,
+        json: async () => mockConfig
+      } as any)
+
+      const result = await (appUpdater as any)._fetchUpdateConfig()
+
+      expect(result).toEqual(mockConfig)
+      expect(net.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('gitcode'),
+        expect.any(Object)
+      )
+    })
+
+    it('should return null on HTTP error', async () => {
+      vi.mocked(getIpCountry).mockResolvedValue('US')
+      vi.mocked(net.fetch).mockResolvedValue({
+        ok: false,
+        status: 404
+      } as any)
+
+      const result = await (appUpdater as any)._fetchUpdateConfig()
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null on network error', async () => {
+      vi.mocked(getIpCountry).mockResolvedValue('US')
+      vi.mocked(net.fetch).mockRejectedValue(new Error('Network error'))
+
+      const result = await (appUpdater as any)._fetchUpdateConfig()
+
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('_findCompatibleChannel', () => {
+    const mockConfig = {
+      lastUpdated: '2025-01-05T00:00:00Z',
+      versions: {
+        '1.6.7': {
+          minCompatibleVersion: '1.0.0',
+          description: 'v1.6.7',
+          channels: {
+            latest: {
+              feedUrl: 'https://github.com/test/v1.6.7',
+              version: '1.6.7'
+            },
+            rc: {
+              feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+              version: '1.7.0-rc.1'
+            },
+            beta: {
+              feedUrl: 'https://github.com/test/v1.7.0-beta.3',
+              version: '1.7.0-beta.3'
+            }
+          }
+        },
+        '2.0.0': {
+          minCompatibleVersion: '1.7.0',
+          description: 'v2.0.0',
+          channels: {
+            latest: null,
+            rc: null,
+            beta: null
+          }
+        }
+      }
+    }
+
+    it('should find compatible latest channel', () => {
+      vi.mocked(app.getVersion).mockReturnValue('1.5.0')
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.5.0', 'latest', mockConfig)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.6.7',
+        version: '1.6.7'
+      })
+    })
+
+    it('should find compatible rc channel', () => {
+      vi.mocked(app.getVersion).mockReturnValue('1.5.0')
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.5.0', 'rc', mockConfig)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+        version: '1.7.0-rc.1'
+      })
+    })
+
+    it('should find compatible beta channel', () => {
+      vi.mocked(app.getVersion).mockReturnValue('1.5.0')
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.5.0', 'beta', mockConfig)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0-beta.3',
+        version: '1.7.0-beta.3'
+      })
+    })
+
+    it('should return latest when latest version >= rc version', () => {
+      const configWithNewerLatest = {
+        lastUpdated: '2025-01-05T00:00:00Z',
+        versions: {
+          '1.7.0': {
+            minCompatibleVersion: '1.0.0',
+            description: 'v1.7.0',
+            channels: {
+              latest: {
+                feedUrl: 'https://github.com/test/v1.7.0',
+                version: '1.7.0'
+              },
+              rc: {
+                feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+                version: '1.7.0-rc.1'
+              },
+              beta: null
+            }
+          }
+        }
+      }
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.0', 'rc', configWithNewerLatest)
+
+      // Should return latest instead of rc because 1.7.0 >= 1.7.0-rc.1
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0',
+        version: '1.7.0'
+      })
+    })
+
+    it('should return latest when latest version >= beta version', () => {
+      const configWithNewerLatest = {
+        lastUpdated: '2025-01-05T00:00:00Z',
+        versions: {
+          '1.7.0': {
+            minCompatibleVersion: '1.0.0',
+            description: 'v1.7.0',
+            channels: {
+              latest: {
+                feedUrl: 'https://github.com/test/v1.7.0',
+                version: '1.7.0'
+              },
+              rc: null,
+              beta: {
+                feedUrl: 'https://github.com/test/v1.6.8-beta.1',
+                version: '1.6.8-beta.1'
+              }
+            }
+          }
+        }
+      }
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.0', 'beta', configWithNewerLatest)
+
+      // Should return latest instead of beta because 1.7.0 >= 1.6.8-beta.1
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0',
+        version: '1.7.0'
+      })
+    })
+
+    it('should return lower version when higher version has no compatible channel', () => {
+      vi.mocked(app.getVersion).mockReturnValue('1.8.0')
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.8.0', 'latest', mockConfig)
+
+      // 1.8.0 >= 1.7.0 but 2.0.0 has no latest channel, so return 1.6.7
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.6.7',
+        version: '1.6.7'
+      })
+    })
+
+    it('should return null when current version does not meet minCompatibleVersion', () => {
+      vi.mocked(app.getVersion).mockReturnValue('0.9.0')
+
+      const result = (appUpdater as any)._findCompatibleChannel('0.9.0', 'latest', mockConfig)
+
+      // 0.9.0 < 1.0.0 (minCompatibleVersion)
+      expect(result).toBeNull()
+    })
+
+    it('should return lower version rc when higher version has no rc channel', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('1.8.0', 'rc', mockConfig)
+
+      // 1.8.0 >= 1.7.0 but 2.0.0 has no rc channel, so return 1.6.7 rc
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+        version: '1.7.0-rc.1'
+      })
+    })
+
+    it('should return null when no version has the requested channel', () => {
+      const configWithoutRc = {
+        lastUpdated: '2025-01-05T00:00:00Z',
+        versions: {
+          '1.6.7': {
+            minCompatibleVersion: '1.0.0',
+            description: 'v1.6.7',
+            channels: {
+              latest: {
+                feedUrl: 'https://github.com/test/v1.6.7',
+                version: '1.6.7'
+              },
+              rc: null,
+              beta: null
+            }
+          }
+        }
+      }
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.5.0', 'rc', configWithoutRc)
+
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('Upgrade Path', () => {
+    const fullConfig = {
+      lastUpdated: '2025-01-05T00:00:00Z',
+      versions: {
+        '1.6.7': {
+          minCompatibleVersion: '1.0.0',
+          description: 'Last v1.x',
+          channels: {
+            latest: {
+              feedUrl: 'https://github.com/test/v1.6.7',
+              version: '1.6.7'
+            },
+            rc: {
+              feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+              version: '1.7.0-rc.1'
+            },
+            beta: {
+              feedUrl: 'https://github.com/test/v1.7.0-beta.3',
+              version: '1.7.0-beta.3'
+            }
+          }
+        },
+        '2.0.0': {
+          minCompatibleVersion: '1.7.0',
+          description: 'First v2.x',
+          channels: {
+            latest: null,
+            rc: null,
+            beta: null
+          }
+        }
+      }
+    }
+
+    it('should upgrade from 1.6.3 to 1.6.7', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.3', 'latest', fullConfig)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.6.7',
+        version: '1.6.7'
+      })
+    })
+
+    it('should block upgrade from 1.6.7 to 2.0.0 (minCompatibleVersion not met)', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.7', 'latest', fullConfig)
+
+      // Should return 1.6.7, not 2.0.0, because 1.6.7 < 1.7.0 (minCompatibleVersion of 2.0.0)
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.6.7',
+        version: '1.6.7'
+      })
+    })
+
+    it('should allow upgrade from 1.7.0 to 2.0.0', () => {
+      const configWith2x = {
+        ...fullConfig,
+        versions: {
+          ...fullConfig.versions,
+          '2.0.0': {
+            minCompatibleVersion: '1.7.0',
+            description: 'First v2.x',
+            channels: {
+              latest: {
+                feedUrl: 'https://github.com/test/v2.0.0',
+                version: '2.0.0'
+              },
+              rc: null,
+              beta: null
+            }
+          }
+        }
+      }
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.7.0', 'latest', configWith2x)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v2.0.0',
+        version: '2.0.0'
+      })
     })
   })
 })

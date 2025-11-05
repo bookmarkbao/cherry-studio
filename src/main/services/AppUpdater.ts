@@ -159,12 +159,19 @@ export default class AppUpdater {
     for (const versionKey of versionKeys) {
       const versionConfig = config.versions[versionKey]
       const channelConfig = versionConfig.channels[requestedChannel]
+      const latestChannelConfig = versionConfig.channels[UpgradeChannel.LATEST]
 
       // Check version compatibility and channel availability
       if (semver.gte(currentVersion, versionConfig.minCompatibleVersion) && channelConfig !== null) {
         logger.info(
           `Found compatible version: ${versionKey} (minCompatibleVersion: ${versionConfig.minCompatibleVersion}), feedUrl: ${channelConfig.feedUrl}`
         )
+
+        if (latestChannelConfig && semver.gte(latestChannelConfig.version, channelConfig.version)) {
+          logger.info(`latest channel config is greater than the current channel config: ${latestChannelConfig.feedUrl} > ${channelConfig.feedUrl}`)
+          return latestChannelConfig
+        }
+        
         return channelConfig
       }
     }
