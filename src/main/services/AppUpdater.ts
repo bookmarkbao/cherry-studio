@@ -75,60 +75,6 @@ export default class AppUpdater {
     this.autoUpdater = autoUpdater
   }
 
-  private async _getReleaseVersionFromGithub(channel: UpgradeChannel) {
-    const headers = {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'Accept-Language': 'en-US,en;q=0.9'
-    }
-    try {
-      logger.info(`get release version from github: ${channel}`)
-      const responses = await net.fetch('https://api.github.com/repos/CherryHQ/cherry-studio/releases?per_page=8', {
-        headers
-      })
-      const data = (await responses.json()) as GithubReleaseInfo[]
-      let mightHaveLatest = false
-      const release: GithubReleaseInfo | undefined = data.find((item: GithubReleaseInfo) => {
-        if (!item.draft && !item.prerelease) {
-          mightHaveLatest = true
-        }
-
-        return item.prerelease && item.tag_name.includes(`-${channel}.`)
-      })
-
-      if (!release) {
-        return null
-      }
-
-      // if the release version is the same as the current version, return null
-      if (release.tag_name === app.getVersion()) {
-        return null
-      }
-
-      if (mightHaveLatest) {
-        logger.info(`might have latest release, get latest release`)
-        const latestReleaseResponse = await net.fetch(
-          'https://api.github.com/repos/CherryHQ/cherry-studio/releases/latest',
-          {
-            headers
-          }
-        )
-        const latestRelease = (await latestReleaseResponse.json()) as GithubReleaseInfo
-        if (semver.gt(latestRelease.tag_name, release.tag_name)) {
-          logger.info(
-            `latest release version is ${latestRelease.tag_name}, prerelease version is ${release.tag_name}, return null`
-          )
-          return null
-        }
-      }
-
-      logger.info(`release url is ${release.tag_name}, set channel to ${channel}`)
-      return `https://github.com/CherryHQ/cherry-studio/releases/download/${release.tag_name}`
-    } catch (error) {
-      logger.error('Failed to get latest not draft version from github:', error as Error)
-      return null
-    }
-  }
 
   public setAutoUpdate(isActive: boolean) {
     autoUpdater.autoDownload = isActive
@@ -161,6 +107,76 @@ export default class AppUpdater {
     return UpgradeChannel.LATEST
   }
 
+  /**
+   * Fetch update configuration from GitHub or GitCode based on IP location
+   * @returns UpdateConfig object or null if fetch fails
+   */
+  private async _fetchUpdateConfig(): Promise<UpdateConfig | null> {
+    const ipCountry = await getIpCountry()
+    const configUrl =
+      ipCountry.toLowerCase() === 'cn'
+        ? 'https://gitcode.com/CherryHQ/cherry-studio/raw/main/update-config.json'
+        : 'https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/update-config.json'
+
+    try {
+      logger.info(`Fetching update config from ${configUrl}`)
+      const response = await net.fetch(configUrl, {
+        headers: {
+          'User-Agent': generateUserAgent(),
+          Accept: 'application/json',
+          'X-Client-Id': configManager.getClientId()
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const config = (await response.json()) as UpdateConfig
+      logger.info(`Update config fetched successfully, last updated: ${config.lastUpdated}`)
+      return config
+    } catch (error) {
+      logger.error('Failed to fetch update config:', error as Error)
+      return null
+    }
+  }
+
+  /**
+   * Find compatible channel configuration based on current version
+   * @param currentVersion - Current app version
+   * @param requestedChannel - Requested upgrade channel (latest/rc/beta)
+   * @param config - Update configuration object
+   * @returns ChannelConfig if compatible version found, null otherwise
+   */
+  private _findCompatibleChannel(
+    currentVersion: string,
+    requestedChannel: UpgradeChannel,
+    config: UpdateConfig
+  ): ChannelConfig | null {
+    // Get all version keys and sort descending (newest first)
+    const versionKeys = Object.keys(config.versions).sort(semver.rcompare)
+
+    logger.info(
+      `Finding compatible channel for version ${currentVersion}, requested channel: ${requestedChannel}, available versions: ${versionKeys.join(', ')}`
+    )
+
+    for (const versionKey of versionKeys) {
+      const versionConfig = config.versions[versionKey]
+      const channelConfig = versionConfig.channels[requestedChannel]
+
+      // Check version compatibility and channel availability
+      if (semver.gte(currentVersion, versionConfig.minCompatibleVersion) && channelConfig !== null) {
+        logger.info(
+          `Found compatible version: ${versionKey} (minCompatibleVersion: ${versionConfig.minCompatibleVersion}), feedUrl: ${channelConfig.feedUrl}`
+        )
+        return channelConfig
+      }
+    }
+
+    logger.warn(`No compatible channel found for version ${currentVersion} and channel ${requestedChannel}`)
+    return null
+  }
+
   private _setChannel(channel: UpgradeChannel, feedUrl: string) {
     this.autoUpdater.channel = channel
     this.autoUpdater.setFeedURL(feedUrl)
@@ -172,34 +188,40 @@ export default class AppUpdater {
   }
 
   private async _setFeedUrl() {
+    const currentVersion = app.getVersion()
     const testPlan = configManager.getTestPlan()
-    if (testPlan) {
-      const channel = this._getTestChannel()
+    const requestedChannel = testPlan ? this._getTestChannel() : UpgradeChannel.LATEST
 
-      if (channel === UpgradeChannel.LATEST) {
-        this._setChannel(UpgradeChannel.LATEST, FeedUrl.GITHUB_LATEST)
+    logger.info(
+      `Setting feed URL for version ${currentVersion}, testPlan: ${testPlan}, requested channel: ${requestedChannel}`
+    )
+
+    // Try to fetch update config from remote
+    const updateConfig = await this._fetchUpdateConfig()
+
+    if (updateConfig) {
+      // Use new config-based system
+      const channelConfig = this._findCompatibleChannel(currentVersion, requestedChannel, updateConfig)
+
+      if (channelConfig) {
+        logger.info(`Using config-based feed URL: ${channelConfig.feedUrl} for channel ${requestedChannel}`)
+        this._setChannel(requestedChannel, channelConfig.feedUrl)
         return
+      } else {
+        logger.warn('No compatible channel found in config, falling back to default feed URL')
       }
-
-      const releaseUrl = await this._getReleaseVersionFromGithub(channel)
-      if (releaseUrl) {
-        logger.info(`release url is ${releaseUrl}, set channel to ${channel}`)
-        this._setChannel(channel, releaseUrl)
-        return
-      }
-
-      // if no prerelease url, use github latest to get release
-      this._setChannel(UpgradeChannel.LATEST, FeedUrl.GITHUB_LATEST)
-      return
+    } else {
+      logger.warn('Failed to fetch update config, falling back to default feed URL')
     }
 
-    this._setChannel(UpgradeChannel.LATEST, FeedUrl.PRODUCTION)
+    // Fallback: use default feed URL based on IP location
     const ipCountry = await getIpCountry()
-    logger.info(`ipCountry is ${ipCountry}, set channel to ${UpgradeChannel.LATEST}`)
-    if (ipCountry.toLowerCase() !== 'cn') {
-      this._setChannel(UpgradeChannel.LATEST, FeedUrl.GITHUB_LATEST)
-    }
+    const defaultFeedUrl = ipCountry.toLowerCase() === 'cn' ? FeedUrl.PRODUCTION : FeedUrl.GITHUB_LATEST
+
+    logger.info(`Using fallback feed URL: ${defaultFeedUrl} (IP country: ${ipCountry})`)
+    this._setChannel(UpgradeChannel.LATEST, defaultFeedUrl)
   }
+
 
   public cancelDownload() {
     this.cancellationToken.cancel()
@@ -320,8 +342,25 @@ export default class AppUpdater {
     return processedInfo
   }
 }
-interface GithubReleaseInfo {
-  draft: boolean
-  prerelease: boolean
-  tag_name: string
+
+interface UpdateConfig {
+  lastUpdated: string
+  versions: {
+    [versionKey: string]: VersionConfig
+  }
+}
+
+interface VersionConfig {
+  minCompatibleVersion: string
+  description: string
+  channels: {
+    latest: ChannelConfig | null
+    rc: ChannelConfig | null
+    beta: ChannelConfig | null
+  }
+}
+
+interface ChannelConfig {
+  feedUrl: string
+  version: string
 }

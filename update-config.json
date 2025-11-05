@@ -1,0 +1,35 @@
+{
+  "lastUpdated": "2025-01-05T00:00:00Z",
+  "versions": {
+    "1.7.0": {
+      "minCompatibleVersion": "1.0.0",
+      "description": "Last stable v1.7.x release - required intermediate version for users below v1.7",
+      "channels": {
+        "latest": {
+          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.7.0",
+          "version": "1.7.0"
+        },
+        "rc": null,
+        "beta": null
+      }
+    },
+    "2.0.0": {
+      "minCompatibleVersion": "1.7.0",
+      "description": "Major release v2.0 - available for v1.7.0 and above",
+      "channels": {
+        "latest": {
+          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/latest",
+          "version": "2.0.0"
+        },
+        "rc": {
+          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.0.0-rc.1",
+          "version": "2.0.0-rc.1"
+        },
+        "beta": {
+          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.0.0-beta.1",
+          "version": "2.0.0-beta.1"
+        }
+      }
+    }
+  }
+}
