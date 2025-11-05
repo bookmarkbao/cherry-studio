@@ -1,5 +1,5 @@
 import type { PluginMetadata } from '@renderer/types/plugin'
-import { Button as AntButton, Input, Modal as AntdModal, Spin, Tag } from 'antd'
+import { Button, Input, Modal, Spin, Tag } from 'antd'
 import { Dot, Download, Edit, Save, Trash2, X } from 'lucide-react'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
@@ -111,7 +111,7 @@ export const PluginDetailModal: FC<PluginDetailModalProps> = ({
   if (!plugin) return null
 
   const modalContent = (
-    <AntdModal
+    <Modal
       centered
       open={isOpen}
       onCancel={onClose}
@@ -147,11 +147,11 @@ export const PluginDetailModal: FC<PluginDetailModalProps> = ({
       }
       footer={
         <div className="flex flex-row justify-end gap-4">
-          <AntButton type="text" onClick={onClose}>
+          <Button type="text" onClick={onClose}>
             {t('common.close')}
-          </AntButton>
+          </Button>
           {installed ? (
-            <AntButton
+            <Button
               danger
               variant="filled"
               icon={loading ? <Spin size="small" /> : <Trash2 className="h-4 w-4" />}
@@ -159,9 +159,9 @@ export const PluginDetailModal: FC<PluginDetailModalProps> = ({
               onClick={onUninstall}
               disabled={loading}>
               {loading ? t('plugins.uninstalling') : t('plugins.uninstall')}
-            </AntButton>
+            </Button>
           ) : (
-            <AntButton
+            <Button
               color="primary"
               variant="solid"
               icon={loading ? <Spin size="small" /> : <Download className="h-4 w-4" />}
@@ -169,7 +169,7 @@ export const PluginDetailModal: FC<PluginDetailModalProps> = ({
               onClick={onInstall}
               disabled={loading}>
               {loading ? t('plugins.installing') : t('plugins.install')}
-            </AntButton>
+            </Button>
           )}
         </div>
       }>
@@ -259,7 +259,7 @@ export const PluginDetailModal: FC<PluginDetailModalProps> = ({
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
-                    <AntButton
+                    <Button
                       danger
                       variant="filled"
                       icon={<X className="h-3 w-3" />}
@@ -267,20 +267,20 @@ export const PluginDetailModal: FC<PluginDetailModalProps> = ({
                       onClick={handleCancelEdit}
                       disabled={saving}>
                       {t('common.cancel')}
-                    </AntButton>
-                    <AntButton
+                    </Button>
+                    <Button
                       color="primary"
                       variant="filled"
                       icon={saving ? <Spin size="small" /> : <Save className="h-3 w-3" />}
                       onClick={handleSave}
                       disabled={saving}>
                       {t('common.save')}
-                    </AntButton>
+                    </Button>
                   </>
                 ) : (
-                  <AntButton variant="filled" icon={<Edit className="h-3 w-3" />} onClick={handleEdit}>
+                  <Button variant="filled" icon={<Edit className="h-3 w-3" />} onClick={handleEdit}>
                     {t('common.edit')}
-                  </AntButton>
+                  </Button>
                 )}
               </div>
             )}
@@ -307,7 +307,7 @@ export const PluginDetailModal: FC<PluginDetailModalProps> = ({
           )}
         </div>
       </div>
-    </AntdModal>
+    </Modal>
   )
 
   return createPortal(modalContent, document.body)
