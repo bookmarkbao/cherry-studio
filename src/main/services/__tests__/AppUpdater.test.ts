@@ -616,4 +616,113 @@ describe('AppUpdater', () => {
       })
     })
   })
+
+  describe('Complete Multi-Step Upgrade Path', () => {
+    const fullUpgradeConfig = {
+      lastUpdated: '2025-01-05T00:00:00Z',
+      versions: {
+        '1.7.5': {
+          minCompatibleVersion: '1.0.0',
+          description: 'Last v1.x stable',
+          channels: {
+            latest: {
+              feedUrl: 'https://github.com/test/v1.7.5',
+              version: '1.7.5'
+            },
+            rc: null,
+            beta: null
+          }
+        },
+        '2.0.0': {
+          minCompatibleVersion: '1.7.0',
+          description: 'First v2.x - intermediate version',
+          channels: {
+            latest: {
+              feedUrl: 'https://github.com/test/v2.0.0',
+              version: '2.0.0'
+            },
+            rc: null,
+            beta: null
+          }
+        },
+        '2.1.6': {
+          minCompatibleVersion: '2.0.0',
+          description: 'Current v2.x stable',
+          channels: {
+            latest: {
+              feedUrl: 'https://github.com/test/latest',
+              version: '2.1.6'
+            },
+            rc: null,
+            beta: null
+          }
+        }
+      }
+    }
+
+    it('should upgrade from 1.6.3 to 1.7.5 (step 1)', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.3', 'latest', fullUpgradeConfig)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.5',
+        version: '1.7.5'
+      })
+    })
+
+    it('should upgrade from 1.7.5 to 2.0.0 (step 2)', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('1.7.5', 'latest', fullUpgradeConfig)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v2.0.0',
+        version: '2.0.0'
+      })
+    })
+
+    it('should upgrade from 2.0.0 to 2.1.6 (step 3)', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('2.0.0', 'latest', fullUpgradeConfig)
+
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/latest',
+        version: '2.1.6'
+      })
+    })
+
+    it('should complete full upgrade path: 1.6.3 -> 1.7.5 -> 2.0.0 -> 2.1.6', () => {
+      // Step 1: 1.6.3 -> 1.7.5
+      let currentVersion = '1.6.3'
+      let result = (appUpdater as any)._findCompatibleChannel(currentVersion, 'latest', fullUpgradeConfig)
+      expect(result.version).toBe('1.7.5')
+
+      // Step 2: 1.7.5 -> 2.0.0
+      currentVersion = result.version
+      result = (appUpdater as any)._findCompatibleChannel(currentVersion, 'latest', fullUpgradeConfig)
+      expect(result.version).toBe('2.0.0')
+
+      // Step 3: 2.0.0 -> 2.1.6
+      currentVersion = result.version
+      result = (appUpdater as any)._findCompatibleChannel(currentVersion, 'latest', fullUpgradeConfig)
+      expect(result.version).toBe('2.1.6')
+
+      // Final: 2.1.6 is the latest, no more upgrades
+      currentVersion = result.version
+      result = (appUpdater as any)._findCompatibleChannel(currentVersion, 'latest', fullUpgradeConfig)
+      expect(result.version).toBe('2.1.6')
+    })
+
+    it('should block direct upgrade from 1.6.3 to 2.0.0 (skip intermediate)', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.3', 'latest', fullUpgradeConfig)
+
+      // Should return 1.7.5, not 2.0.0, because 1.6.3 < 1.7.0 (minCompatibleVersion of 2.0.0)
+      expect(result.version).toBe('1.7.5')
+      expect(result.version).not.toBe('2.0.0')
+    })
+
+    it('should block direct upgrade from 1.7.5 to 2.1.6 (skip intermediate)', () => {
+      const result = (appUpdater as any)._findCompatibleChannel('1.7.5', 'latest', fullUpgradeConfig)
+
+      // Should return 2.0.0, not 2.1.6, because 1.7.5 < 2.0.0 (minCompatibleVersion of 2.1.6)
+      expect(result.version).toBe('2.0.0')
+      expect(result.version).not.toBe('2.1.6')
+    })
+  })
 })
