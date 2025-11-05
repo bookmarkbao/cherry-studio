@@ -168,10 +168,12 @@ export default class AppUpdater {
         )
 
         if (latestChannelConfig && semver.gte(latestChannelConfig.version, channelConfig.version)) {
-          logger.info(`latest channel config is greater than the current channel config: ${latestChannelConfig.feedUrl} > ${channelConfig.feedUrl}`)
+          logger.info(
+            `latest channel config is greater than the current channel config: ${latestChannelConfig.feedUrl} > ${channelConfig.feedUrl}`
+          )
           return latestChannelConfig
         }
-        
+
         return channelConfig
       }
     }

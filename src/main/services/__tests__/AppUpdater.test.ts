@@ -85,10 +85,11 @@ vi.mock('electron-updater', () => ({
 }))
 
 // Import after mocks
+import { getIpCountry } from '@main/utils/ipService'
 import { app, net } from 'electron'
+
 import AppUpdater from '../AppUpdater'
 import { configManager } from '../ConfigManager'
-import { getIpCountry } from '@main/utils/ipService'
 
 describe('AppUpdater', () => {
   let appUpdater: AppUpdater
@@ -306,10 +307,7 @@ describe('AppUpdater', () => {
       const result = await (appUpdater as any)._fetchUpdateConfig()
 
       expect(result).toEqual(mockConfig)
-      expect(net.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('github'),
-        expect.any(Object)
-      )
+      expect(net.fetch).toHaveBeenCalledWith(expect.stringContaining('github'), expect.any(Object))
     })
 
     it('should fetch config from GitCode for CN users', async () => {
@@ -322,10 +320,7 @@ describe('AppUpdater', () => {
       const result = await (appUpdater as any)._fetchUpdateConfig()
 
       expect(result).toEqual(mockConfig)
-      expect(net.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('gitcode'),
-        expect.any(Object)
-      )
+      expect(net.fetch).toHaveBeenCalledWith(expect.stringContaining('gitcode'), expect.any(Object))
     })
 
     it('should return null on HTTP error', async () => {
