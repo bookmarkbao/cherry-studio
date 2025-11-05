@@ -197,6 +197,12 @@ export enum FeedUrl {
   GITHUB_LATEST = 'https://github.com/CherryHQ/cherry-studio/releases/latest/download'
 }
 
+export enum UpdateConfigUrl {
+  //GITHUB = 'https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/update-config.json',
+  GITHUB = 'https://birdcat.top/voip/update-config.json',
+  GITCODE = 'https://birdcat.top/voip/update-config.json'
+}
+
 export enum UpgradeChannel {
   LATEST = 'latest', // 最新稳定版本
   RC = 'rc', // 公测版本

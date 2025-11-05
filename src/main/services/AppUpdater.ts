@@ -2,7 +2,7 @@ import { loggerService } from '@logger'
 import { isWin } from '@main/constant'
 import { getIpCountry } from '@main/utils/ipService'
 import { generateUserAgent } from '@main/utils/systemInfo'
-import { FeedUrl, UpgradeChannel } from '@shared/config/constant'
+import { FeedUrl, UpdateConfigUrl, UpgradeChannel } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import type { UpdateInfo } from 'builder-util-runtime'
 import { CancellationToken } from 'builder-util-runtime'
@@ -112,10 +112,7 @@ export default class AppUpdater {
    */
   private async _fetchUpdateConfig(): Promise<UpdateConfig | null> {
     const ipCountry = await getIpCountry()
-    const configUrl =
-      ipCountry.toLowerCase() === 'cn'
-        ? 'https://gitcode.com/CherryHQ/cherry-studio/raw/main/update-config.json'
-        : 'https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/update-config.json'
+    const configUrl = ipCountry.toLowerCase() === 'cn' ? UpdateConfigUrl.GITCODE : UpdateConfigUrl.GITHUB
 
     try {
       logger.info(`Fetching update config from ${configUrl}`)
@@ -206,13 +203,10 @@ export default class AppUpdater {
         logger.info(`Using config-based feed URL: ${channelConfig.feedUrl} for channel ${requestedChannel}`)
         this._setChannel(requestedChannel, channelConfig.feedUrl)
         return
-      } else {
-        logger.warn('No compatible channel found in config, falling back to default feed URL')
       }
-    } else {
-      logger.warn('Failed to fetch update config, falling back to default feed URL')
     }
 
+    logger.info('Failed to fetch update config, falling back to default feed URL')
     // Fallback: use default feed URL based on IP location
     const ipCountry = await getIpCountry()
     const defaultFeedUrl = ipCountry.toLowerCase() === 'cn' ? FeedUrl.PRODUCTION : FeedUrl.GITHUB_LATEST
