@@ -27,7 +27,6 @@ export const PluginCard: FC<PluginCardProps> = ({ plugin, installed, onInstall, 
     <Card
       className="flex h-full w-full cursor-pointer flex-col"
       onClick={onClick}
-      hoverable
       styles={{
         body: { display: 'flex', flexDirection: 'column', height: '100%', padding: '16px' }
       }}>

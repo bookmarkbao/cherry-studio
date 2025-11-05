@@ -1,8 +1,8 @@
 import { useAvailablePlugins, useInstalledPlugins, usePluginActions } from '@renderer/hooks/usePlugins'
 import type { GetAgentResponse, GetAgentSessionResponse, UpdateAgentFunctionUnion } from '@renderer/types/agent'
-import { Card, Tabs } from 'antd'
+import { Card, Segmented } from 'antd'
 import type { FC } from 'react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -17,6 +17,7 @@ interface PluginSettingsProps {
 
 const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
   const { t } = useTranslation()
+  const [activeTab, setActiveTab] = useState<string>('available')
 
   // Fetch available plugins
   const { agents, commands, skills, loading: loadingAvailable, error: errorAvailable } = useAvailablePlugins()
@@ -55,57 +56,64 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
     [uninstall, t]
   )
 
-  const tabItems = useMemo(() => {
+  const segmentOptions = useMemo(() => {
     return [
       {
-        key: 'available',
-        label: t('agent.settings.plugins.available.title'),
-        children: (
-          <div className="flex h-full flex-col overflow-y-auto pt-1 pr-2">
-            {errorAvailable ? (
-              <Card variant="borderless">
-                <p className="text-danger">
-                  {t('agent.settings.plugins.error.load')}: {errorAvailable}
-                </p>
-              </Card>
-            ) : (
-              <PluginBrowser
-                agentId={agentBase.id}
-                agents={agents}
-                commands={commands}
-                skills={skills}
-                installedPlugins={plugins}
-                onInstall={handleInstall}
-                onUninstall={handleUninstall}
-                loading={loadingAvailable || installing || uninstalling}
-              />
-            )}
-          </div>
-        )
+        value: 'available',
+        label: t('agent.settings.plugins.available.title')
       },
       {
-        key: 'installed',
-        label: t('agent.settings.plugins.installed.title'),
-        children: (
-          <div className="flex h-full flex-col overflow-y-auto pt-4 pr-2">
-            {errorInstalled ? (
-              <Card className="bg-danger-50 dark:bg-danger-900/20">
-                <p className="text-danger">
-                  {t('agent.settings.plugins.error.load')}: {errorInstalled}
-                </p>
-              </Card>
-            ) : (
-              <InstalledPluginsList
-                plugins={plugins}
-                onUninstall={handleUninstall}
-                loading={loadingInstalled || uninstalling}
-              />
-            )}
-          </div>
-        )
+        value: 'installed',
+        label: t('agent.settings.plugins.installed.title')
       }
     ]
+  }, [t])
+
+  const renderContent = useMemo(() => {
+    if (activeTab === 'available') {
+      return (
+        <div className="flex h-full flex-col overflow-y-auto pt-4 pr-2">
+          {errorAvailable ? (
+            <Card variant="borderless">
+              <p className="text-danger">
+                {t('agent.settings.plugins.error.load')}: {errorAvailable}
+              </p>
+            </Card>
+          ) : (
+            <PluginBrowser
+              agentId={agentBase.id}
+              agents={agents}
+              commands={commands}
+              skills={skills}
+              installedPlugins={plugins}
+              onInstall={handleInstall}
+              onUninstall={handleUninstall}
+              loading={loadingAvailable || installing || uninstalling}
+            />
+          )}
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex h-full flex-col overflow-y-auto pt-4 pr-2">
+        {errorInstalled ? (
+          <Card className="bg-danger-50 dark:bg-danger-900/20">
+            <p className="text-danger">
+              {t('agent.settings.plugins.error.load')}: {errorInstalled}
+            </p>
+          </Card>
+        ) : (
+          <InstalledPluginsList
+            plugins={plugins}
+            onUninstall={handleUninstall}
+            loading={loadingInstalled || uninstalling}
+          />
+        )}
+      </div>
+    )
   }, [
+    activeTab,
     agentBase.id,
     agents,
     commands,
@@ -123,8 +131,13 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
   ])
 
   return (
-    <SettingsContainer className="pr-0">
-      <Tabs centered items={tabItems} />
+    <SettingsContainer className="pt-0">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-center">
+          <Segmented options={segmentOptions} value={activeTab} onChange={(value) => setActiveTab(value as string)} />
+        </div>
+        {renderContent}
+      </div>
     </SettingsContainer>
   )
 }

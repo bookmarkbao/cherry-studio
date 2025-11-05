@@ -243,7 +243,6 @@ export const PluginBrowser: FC<PluginBrowserProps> = ({
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           prefix={<Search className="h-4 w-4 text-default-400" />}
-          size="large"
           suffix={
             <AntButton
               variant={selectedCategories.length > 0 ? 'filled' : 'text'}
@@ -267,9 +266,7 @@ export const PluginBrowser: FC<PluginBrowserProps> = ({
           menu={{ items: pluginCategoryMenuItems }}
           trigger={['click']}
           open={filterDropdownOpen}
-          onOpenChange={(nextOpen) => {
-            setFilterDropdownOpen(nextOpen)
-          }}>
+          onOpenChange={setFilterDropdownOpen}>
           <AntButton
             variant={selectedCategories.length > 0 ? 'filled' : 'text'}
             color={selectedCategories.length > 0 ? 'primary' : 'default'}
@@ -296,7 +293,6 @@ export const PluginBrowser: FC<PluginBrowserProps> = ({
           items={pluginTypeTabItems}
           className="w-full"
           size="small"
-          centered
         />
       </div>
 
