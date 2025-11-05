@@ -10,11 +10,14 @@ import { isOpenAIChatCompletionOnlyModel } from '@renderer/config/models'
 import {
   isAnthropicProvider,
   isAzureOpenAIProvider,
+  isCherryAIProvider,
   isGeminiProvider,
   isNewApiProvider
 } from '@renderer/config/providers'
 import {
   getAwsBedrockAccessKeyId,
+  getAwsBedrockApiKey,
+  getAwsBedrockAuthType,
   getAwsBedrockRegion,
   getAwsBedrockSecretAccessKey
 } from '@renderer/hooks/useAwsBedrock'
@@ -99,6 +102,8 @@ function formatProviderApiHost(provider: Provider): Provider {
     formatted.apiHost = formatAzureOpenAIApiHost(formatted.apiHost)
   } else if (isVertexProvider(formatted)) {
     formatted.apiHost = formatVertexApiHost(formatted)
+  } else if (isCherryAIProvider(formatted)) {
+    formatted.apiHost = formatApiHost(formatted.apiHost, false)
   } else {
     formatted.apiHost = formatApiHost(formatted.apiHost)
   }
@@ -193,9 +198,15 @@ export function providerToAiSdkConfig(
 
   // bedrock
   if (aiSdkProviderId === 'bedrock') {
+    const authType = getAwsBedrockAuthType()
     extraOptions.region = getAwsBedrockRegion()
-    extraOptions.accessKeyId = getAwsBedrockAccessKeyId()
-    extraOptions.secretAccessKey = getAwsBedrockSecretAccessKey()
+
+    if (authType === 'apiKey') {
+      extraOptions.apiKey = getAwsBedrockApiKey()
+    } else {
+      extraOptions.accessKeyId = getAwsBedrockAccessKeyId()
+      extraOptions.secretAccessKey = getAwsBedrockSecretAccessKey()
+    }
   }
   // google-vertex
   if (aiSdkProviderId === 'google-vertex' || aiSdkProviderId === 'google-vertex-anthropic') {
