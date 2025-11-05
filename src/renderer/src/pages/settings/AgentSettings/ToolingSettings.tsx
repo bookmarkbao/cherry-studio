@@ -2,9 +2,8 @@ import { Alert, Card, CardBody, CardHeader, Chip, Input, Switch } from '@heroui/
 import { permissionModeCards } from '@renderer/config/agent'
 import { useMCPServers } from '@renderer/hooks/useMCPServers'
 import useScrollPosition from '@renderer/hooks/useScrollPosition'
-import {
+import type {
   AgentConfiguration,
-  AgentConfigurationSchema,
   GetAgentResponse,
   GetAgentSessionResponse,
   PermissionMode,
@@ -13,9 +12,11 @@ import {
   UpdateAgentFunction,
   UpdateAgentSessionFunction
 } from '@renderer/types'
+import { AgentConfigurationSchema } from '@renderer/types'
 import { Modal } from 'antd'
 import { ShieldAlert, ShieldCheck, Wrench } from 'lucide-react'
-import { FC, useCallback, useMemo, useState } from 'react'
+import type { FC } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SettingsContainer, SettingsItem, SettingsTitle } from './shared'
@@ -168,6 +169,7 @@ export const ToolingSettings: FC<AgentToolingSettingsProps> = ({ agentBase, upda
               </div>
             </div>
           ),
+          centered: true,
           okText: t('common.confirm'),
           cancelText: t('common.cancel'),
           onOk: applyChange,
@@ -274,9 +276,10 @@ export const ToolingSettings: FC<AgentToolingSettingsProps> = ({ agentBase, upda
                 key={card.mode}
                 isPressable={!disabled}
                 isDisabled={disabled || isUpdatingMode}
+                shadow="none"
                 onPress={() => handleSelectPermissionMode(card.mode)}
                 className={`border ${
-                  isSelected ? 'border-primary shadow-lg' : 'border-default-200'
+                  isSelected ? 'border-primary' : 'border-default-200'
                 } ${disabled ? 'opacity-60' : ''}`}>
                 <CardHeader className="flex items-start justify-between gap-2">
                   <div className="flex flex-col">

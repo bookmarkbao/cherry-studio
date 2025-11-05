@@ -21,24 +21,22 @@ import db from '@renderer/databases'
 import i18n from '@renderer/i18n'
 import { DEFAULT_ASSISTANT_SETTINGS } from '@renderer/services/AssistantService'
 import { defaultPreprocessProviders } from '@renderer/store/preprocess'
-import {
+import type {
   Assistant,
   BuiltinOcrProvider,
-  isBuiltinMCPServer,
-  isSystemProvider,
   Model,
   Provider,
   ProviderApiOptions,
-  SystemProviderIds,
   TranslateLanguageCode,
   WebSearchProvider
 } from '@renderer/types'
+import { isBuiltinMCPServer, isSystemProvider, SystemProviderIds } from '@renderer/types'
 import { getDefaultGroupName, getLeadingEmoji, runAsyncFunction, uuid } from '@renderer/utils'
 import { defaultByPassRules, UpgradeChannel } from '@shared/config/constant'
 import { isEmpty } from 'lodash'
 import { createMigrate } from 'redux-persist'
 
-import { RootState } from '.'
+import type { RootState } from '.'
 import { DEFAULT_TOOL_ORDER } from './inputTools'
 import { initialState as llmInitialState, moveProvider } from './llm'
 import { mcpSlice } from './mcp'
@@ -2788,6 +2786,17 @@ const migrateConfig = {
   },
   '170': (state: RootState) => {
     try {
+      addProvider(state, 'sophnet')
+      state.llm.providers = moveProvider(state.llm.providers, 'sophnet', 17)
+      state.settings.defaultPaintingProvider = 'cherryin'
+      return state
+    } catch (error) {
+      logger.error('migrate 170 error', error as Error)
+      return state
+    }
+  },
+  '171': (state: RootState) => {
+    try {
       addProvider(state, 'ai-gateway')
       state.llm.providers.forEach((provider) => {
         if (provider.id === SystemProviderIds.minimax) {
@@ -2796,7 +2805,7 @@ const migrateConfig = {
       })
       return state
     } catch (error) {
-      logger.error('migrate 169 error', error as Error)
+      logger.error('migrate 171 error', error as Error)
       return state
     }
   }

@@ -5,13 +5,8 @@
  */
 
 import { loggerService } from '@logger'
-import {
-  AgentType,
-  BuiltinMCPServerName,
-  BuiltinMCPServerNames,
-  BuiltinOcrProviderId,
-  ThinkingOption
-} from '@renderer/types'
+import type { AgentType, BuiltinMCPServerName, BuiltinOcrProviderId, ThinkingOption } from '@renderer/types'
+import { BuiltinMCPServerNames } from '@renderer/types'
 
 import i18n from './index'
 
@@ -91,6 +86,7 @@ const providerKeyMap = {
   aionly: 'provider.aionly',
   longcat: 'provider.longcat',
   huggingface: 'provider.huggingface',
+  sophnet: 'provider.sophnet',
   'ai-gateway': 'provider.ai-gateway'
 } as const
 
@@ -244,7 +240,7 @@ const paintingsImageSizeOptionsKeyMap = {
 } as const
 
 export const getPaintingsImageSizeOptionsLabel = (key: string): string => {
-  return getLabel(paintingsImageSizeOptionsKeyMap, key)
+  return paintingsImageSizeOptionsKeyMap[key] ? getLabel(paintingsImageSizeOptionsKeyMap, key) : key
 }
 
 const paintingsQualityOptionsKeyMap = {

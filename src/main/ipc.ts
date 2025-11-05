@@ -8,11 +8,12 @@ import { generateSignature } from '@main/integration/cherryai'
 import anthropicService from '@main/services/AnthropicService'
 import { getBinaryPath, isBinaryExists, runInstallScript } from '@main/utils/process'
 import { handleZoomFactor } from '@main/utils/zoom'
-import { SpanEntity, TokenUsage } from '@mcp-trace/trace-core'
-import { MIN_WINDOW_HEIGHT, MIN_WINDOW_WIDTH, UpgradeChannel } from '@shared/config/constant'
+import type { SpanEntity, TokenUsage } from '@mcp-trace/trace-core'
+import type { UpgradeChannel } from '@shared/config/constant'
+import { MIN_WINDOW_HEIGHT, MIN_WINDOW_WIDTH } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import type { PluginError } from '@types'
-import {
+import type {
   AgentPersistedMessage,
   FileMetadata,
   Notification,
@@ -23,7 +24,8 @@ import {
   ThemeMode
 } from '@types'
 import checkDiskSpace from 'check-disk-space'
-import { BrowserWindow, dialog, ipcMain, ProxyConfig, session, shell, systemPreferences, webContents } from 'electron'
+import type { ProxyConfig } from 'electron'
+import { BrowserWindow, dialog, ipcMain, session, shell, systemPreferences, webContents } from 'electron'
 import fontList from 'font-list'
 
 import { agentMessageRepository } from './services/agents/database'
@@ -48,6 +50,7 @@ import * as NutstoreService from './services/NutstoreService'
 import ObsidianVaultService from './services/ObsidianVaultService'
 import { ocrService } from './services/ocr/OcrService'
 import OvmsManager from './services/OvmsManager'
+import powerMonitorService from './services/PowerMonitorService'
 import { proxyManager } from './services/ProxyManager'
 import { pythonService } from './services/PythonService'
 import { FileServiceManager } from './services/remotefile/FileServiceManager'
@@ -113,8 +116,17 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   const appUpdater = new AppUpdater()
   const notificationService = new NotificationService()
 
-  // Initialize Python service with main window
-  pythonService.setMainWindow(mainWindow)
+  // Register shutdown handlers
+  powerMonitorService.registerShutdownHandler(() => {
+    appUpdater.setAutoUpdate(false)
+  })
+
+  powerMonitorService.registerShutdownHandler(() => {
+    const mw = windowService.getMainWindow()
+    if (mw && !mw.isDestroyed()) {
+      mw.webContents.send(IpcChannel.App_SaveData)
+    }
+  })
 
   const checkMainWindow = () => {
     if (!mainWindow || mainWindow.isDestroyed()) {

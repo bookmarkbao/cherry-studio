@@ -1,6 +1,7 @@
 {
   "agent": {
     "add": {
+      "description": "調用各種工具處理複雜任務",
       "error": {
         "failed": "無法新增代理人",
         "invalid_agent": "無效的 Agent"
@@ -547,7 +548,11 @@
   "chat": {
     "add": {
       "assistant": {
+        "description": "日常對話和快速問答",
         "title": "新增助手"
+      },
+      "option": {
+        "title": "選擇新增類型"
       },
       "topic": {
         "title": "新增話題"
@@ -2478,6 +2483,7 @@
     "qiniu": "七牛雲 AI 推理",
     "qwenlm": "QwenLM",
     "silicon": "SiliconFlow",
+    "sophnet": "SophNet",
     "stepfun": "StepFun",
     "tencent-cloud-ti": "騰訊雲 TI",
     "together": "Together",
@@ -4255,6 +4261,12 @@
       "aws-bedrock": {
         "access_key_id": "AWS 存取密鑰 ID",
         "access_key_id_help": "您的 AWS 存取密鑰 ID，用於存取 AWS Bedrock 服務",
+        "api_key": "Bedrock API 金鑰",
+        "api_key_help": "您的 AWS Bedrock API 金鑰，用於身份驗證",
+        "auth_type": "認證方式",
+        "auth_type_api_key": "Bedrock API 金鑰",
+        "auth_type_help": "選擇使用 IAM 憑證或 Bedrock API 金鑰進行身份驗證",
+        "auth_type_iam": "IAM 憑證",
         "description": "AWS Bedrock 是亞馬遜提供的全托管基础模型服務，支持多種先進的大語言模型",
         "region": "AWS 區域",
         "region_help": "您的 AWS 服務區域，例如 us-east-1",
