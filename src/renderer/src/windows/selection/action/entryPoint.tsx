@@ -4,7 +4,6 @@ import '@ant-design/v5-patch-for-react-19'
 
 import KeyvStorage from '@kangfenmao/keyv-storage'
 import { loggerService } from '@logger'
-import { ToastPortal } from '@renderer/components/ToastPortal'
 import { getToastUtilities } from '@renderer/components/TopView/toast'
 import AntdProvider from '@renderer/context/AntdProvider'
 import { CodeStyleProvider } from '@renderer/context/CodeStyleProvider'
@@ -54,7 +53,6 @@ const App: FC = () => {
             </CodeStyleProvider>
           </AntdProvider>
         </ThemeProvider>
-        <ToastPortal />
       </HeroUIProvider>
     </Provider>
   )

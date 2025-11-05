@@ -1,6 +1,7 @@
+import { MessageInitializer } from '@renderer/components/MessageInitializer'
 import { useSettings } from '@renderer/hooks/useSettings'
 import type { LanguageVarious } from '@renderer/types'
-import { ConfigProvider, theme } from 'antd'
+import { App, ConfigProvider, theme } from 'antd'
 import deDE from 'antd/locale/de_DE'
 import elGR from 'antd/locale/el_GR'
 import enUS from 'antd/locale/en_US'
@@ -114,7 +115,15 @@ const AntdProvider: FC<PropsWithChildren> = ({ children }) => {
           motionDurationMid: '100ms'
         }
       }}>
-      {children}
+      <App
+        message={{
+          top: 20,
+          maxCount: 3,
+          duration: 3
+        }}>
+        <MessageInitializer />
+        {children}
+      </App>
     </ConfigProvider>
   )
 }

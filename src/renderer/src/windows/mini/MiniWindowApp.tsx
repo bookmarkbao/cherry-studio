@@ -1,7 +1,6 @@
 import '@renderer/databases'
 
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
-import { ToastPortal } from '@renderer/components/ToastPortal'
 import { getToastUtilities } from '@renderer/components/TopView/toast'
 import { HeroUIProvider } from '@renderer/context/HeroUIProvider'
 import { useSettings } from '@renderer/hooks/useSettings'
@@ -55,7 +54,6 @@ function MiniWindow(): React.ReactElement {
             </CodeStyleProvider>
           </AntdProvider>
         </ThemeProvider>
-        <ToastPortal />
       </HeroUIProvider>
     </Provider>
   )
