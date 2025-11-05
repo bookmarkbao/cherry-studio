@@ -1,6 +1,7 @@
 {
   "agent": {
     "add": {
+      "description": "[to be translated]:Handle complex tasks with various tools",
       "error": {
         "failed": "Échec de l'ajout de l'agent",
         "invalid_agent": "Agent invalide"
@@ -547,7 +548,11 @@
   "chat": {
     "add": {
       "assistant": {
+        "description": "[to be translated]:Daily conversations and quick Q&A",
         "title": "Ajouter un assistant"
+      },
+      "option": {
+        "title": "[to be translated]:Select Type"
       },
       "topic": {
         "title": "Nouveau sujet"
