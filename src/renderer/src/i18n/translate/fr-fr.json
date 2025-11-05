@@ -4266,7 +4266,7 @@
         "auth_type": "Type d'authentification",
         "auth_type_api_key": "Clé API Bedrock",
         "auth_type_help": "Choisissez entre l'authentification par identifiants IAM ou par clé API Bedrock",
-        "auth_type_iam": "Informations d'identification IAM",
+        "auth_type_iam": "Identifiants IAM",
         "description": "AWS Bedrock est un service de modèles de base entièrement géré proposé par Amazon, prenant en charge divers grands modèles linguistiques avancés.",
         "region": "Région AWS",
         "region_help": "Votre région de service AWS, par exemple us-east-1",

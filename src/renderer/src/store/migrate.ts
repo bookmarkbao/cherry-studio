@@ -2797,6 +2797,22 @@ const migrateConfig = {
   },
   '171': (state: RootState) => {
     try {
+      // Ensure aws-bedrock provider exists
+      addProvider(state, 'aws-bedrock')
+
+      // Ensure awsBedrock settings exist and have all required fields
+      if (!state.llm.settings.awsBedrock) {
+        state.llm.settings.awsBedrock = llmInitialState.settings.awsBedrock
+      } else {
+        // For users who have awsBedrock but missing new fields (authType and apiKey)
+        if (!state.llm.settings.awsBedrock.authType) {
+          state.llm.settings.awsBedrock.authType = 'iam'
+        }
+        if (state.llm.settings.awsBedrock.apiKey === undefined) {
+          state.llm.settings.awsBedrock.apiKey = ''
+        }
+      }
+
       addProvider(state, 'ai-gateway')
       state.llm.providers.forEach((provider) => {
         if (provider.id === SystemProviderIds.minimax) {
