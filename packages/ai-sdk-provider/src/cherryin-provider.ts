@@ -96,6 +96,30 @@ const resolveApiKey = (options: CherryInProviderSettings): string =>
 const isAnthropicModel = (modelId: string) => ANTHROPIC_PREFIX.test(modelId)
 const isGeminiModel = (modelId: string) => GEMINI_PREFIX.test(modelId)
 
+const createCustomFetch = (originalFetch?: any) => {
+  return async (url: string, options: any) => {
+    if (options?.body) {
+      try {
+        const body = JSON.parse(options.body)
+        if (body.tools && Array.isArray(body.tools) && body.tools.length === 0 && body.tool_choice) {
+          delete body.tool_choice
+          options.body = JSON.stringify(body)
+        }
+      } catch (error) {}
+    }
+
+    return originalFetch ? originalFetch(url, options) : fetch(url, options)
+  }
+}
+class CherryInOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
+  constructor(modelId: string, settings: any) {
+    super(modelId, {
+      ...settings,
+      fetch: createCustomFetch(settings.fetch)
+    })
+  }
+}
+
 const resolveConfiguredHeaders = (headers?: HeadersInput): Record<string, HeaderValue> => {
   if (typeof headers === 'function') {
     return { ...headers() }
@@ -168,16 +192,26 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
       supportedUrls: () => ({})
     })
 
+  const createOpenAIChatModel = (modelId: string, settings: OpenAIProviderSettings = {}) =>
+    new CherryInOpenAIChatLanguageModel(modelId, {
+      provider: `${CHERRYIN_PROVIDER_NAME}.openai-chat`,
+      url,
+      headers: () => ({
+        ...getJsonHeaders(),
+        ...settings.headers
+      }),
+      fetch
+    })
+
   const createChatModel = (modelId: string, settings: OpenAIProviderSettings = {}) => {
     if (isAnthropicModel(modelId)) {
       return createAnthropicModel(modelId)
     }
-
     if (isGeminiModel(modelId)) {
       return createGeminiModel(modelId)
     }
-    return new OpenAIChatLanguageModel(modelId, {
-      provider: `${CHERRYIN_PROVIDER_NAME}.chat`,
+    return new OpenAIResponsesLanguageModel(modelId, {
+      provider: `${CHERRYIN_PROVIDER_NAME}.openai`,
       url,
       headers: () => ({
         ...getJsonHeaders(),
@@ -259,7 +293,7 @@ export const createCherryIn = (options: CherryInProviderSettings = {}): CherryIn
   }
 
   provider.languageModel = createChatModel
-  provider.chat = createChatModel
+  provider.chat = createOpenAIChatModel
 
   provider.responses = createResponsesModel
   provider.completion = createCompletionModel

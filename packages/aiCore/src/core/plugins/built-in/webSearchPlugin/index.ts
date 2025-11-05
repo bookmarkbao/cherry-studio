@@ -21,10 +21,11 @@ export const webSearchPlugin = (config: WebSearchPluginConfig = DEFAULT_WEB_SEAR
     transformParams: async (params: any, context: AiRequestContext) => {
       const { providerId } = context
       switchWebSearchTool(providerId, config, params)
-      if (providerId === 'cherryin') {
+
+      if (providerId === 'cherryin' || providerId === 'cherryin-chat') {
         // cherryin.gemini
-        const providerId = params.model.provider.split('.')[1]
-        switchWebSearchTool(providerId, config, params)
+        const _providerId = params.model.provider.split('.')[1]
+        switchWebSearchTool(_providerId, config, params)
       }
       return params
     }

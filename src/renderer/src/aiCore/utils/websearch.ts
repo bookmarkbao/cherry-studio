@@ -107,6 +107,12 @@ export function buildProviderBuiltinWebSearchConfig(
         }
       }
     }
+    case 'cherryin': {
+      const _providerId = { 'openai-response': 'openai', openai: 'openai-chat' }[
+        model?.endpoint_type ?? ''
+      ] as BaseProviderId
+      return buildProviderBuiltinWebSearchConfig(_providerId, webSearchConfig, model)
+    }
     default: {
       return {}
     }
