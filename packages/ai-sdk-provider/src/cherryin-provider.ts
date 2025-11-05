@@ -105,7 +105,9 @@ const createCustomFetch = (originalFetch?: any) => {
           delete body.tool_choice
           options.body = JSON.stringify(body)
         }
-      } catch (error) {}
+      } catch (error) {
+        // ignore error
+      }
     }
 
     return originalFetch ? originalFetch(url, options) : fetch(url, options)

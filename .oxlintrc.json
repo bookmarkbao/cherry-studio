@@ -53,6 +53,12 @@
         "node": true
       },
       "files": ["src/preload/**"]
+    },
+    {
+      "files": ["packages/ai-sdk-provider/**"],
+      "globals": {
+        "fetch": "readonly"
+      }
     }
   ],
   // We don't use the React plugin here because its behavior differs slightly from that of ESLint's React plugin.
