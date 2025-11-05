@@ -1,3 +1,4 @@
+import Scrollbar from '@renderer/components/Scrollbar'
 import { DynamicVirtualList } from '@renderer/components/VirtualList'
 import { useCreateDefaultSession } from '@renderer/hooks/agents/useCreateDefaultSession'
 import { useSessions } from '@renderer/hooks/agents/useSessions'
@@ -14,6 +15,7 @@ import { Alert, Spin } from 'antd'
 import { motion } from 'framer-motion'
 import { memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import AddButton from './AddButton'
 import SessionItem from './SessionItem'
@@ -97,11 +99,10 @@ const Sessions: React.FC<SessionsProps> = ({ agentId }) => {
   }
 
   return (
-    <div className="sessions-tab flex h-full w-full flex-col p-2">
-      <AddButton onClick={createDefaultSession} disabled={creatingSession}>
+    <Container className="sessions-tab">
+      <AddButton onClick={createDefaultSession} disabled={creatingSession} className="-mt-[4px] mb-[6px]">
         {t('agent.session.add.title')}
       </AddButton>
-      <div className="my-1"></div>
       {/* h-9 */}
       <DynamicVirtualList
         list={sessions}
@@ -121,8 +122,14 @@ const Sessions: React.FC<SessionsProps> = ({ agentId }) => {
           />
         )}
       </DynamicVirtualList>
-    </div>
+    </Container>
   )
 }
+
+const Container = styled(Scrollbar)`
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px;
+`
 
 export default memo(Sessions)
