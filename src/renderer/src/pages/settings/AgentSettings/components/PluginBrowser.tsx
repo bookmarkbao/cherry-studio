@@ -230,57 +230,27 @@ export const PluginBrowser: FC<PluginBrowserProps> = ({
     setSelectedPlugin(null)
   }
 
-  const handleOpenFilterDropdown = () => {
-    setFilterDropdownOpen(!filterDropdownOpen)
-  }
-
   return (
     <div className="flex flex-col gap-4">
       {/* Search and Filter */}
-      <div className="relative flex gap-0">
+      <div className="flex gap-2">
         <AntInput
           placeholder={t('plugins.search_placeholder')}
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           prefix={<Search className="h-4 w-4 text-default-400" />}
-          suffix={
-            <AntButton
-              variant={selectedCategories.length > 0 ? 'filled' : 'text'}
-              color={selectedCategories.length > 0 ? 'primary' : 'default'}
-              size="small"
-              style={{
-                position: 'absolute',
-                top: '50%',
-                right: '8px',
-                transform: 'translateY(-50%)',
-                padding: '4px',
-                minWidth: '32px',
-                borderRadius: '4px'
-              }}
-              icon={<Filter className="h-4 w-4" />}
-              onClick={handleOpenFilterDropdown}
-            />
-          }
         />
         <AntDropdown
           menu={{ items: pluginCategoryMenuItems }}
           trigger={['click']}
           open={filterDropdownOpen}
+          placement="bottomRight"
           onOpenChange={setFilterDropdownOpen}>
           <AntButton
-            variant={selectedCategories.length > 0 ? 'filled' : 'text'}
+            variant={selectedCategories.length > 0 ? 'filled' : 'outlined'}
             color={selectedCategories.length > 0 ? 'primary' : 'default'}
-            size="small"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              right: '8px',
-              transform: 'translateY(-50%)',
-              padding: '4px',
-              minWidth: '32px',
-              borderRadius: '4px'
-            }}
-            icon={<Filter className="h-4 w-4" />}
+            size="middle"
+            icon={<Filter className="h-4 w-4" color="var(--color-text-2)" />}
           />
         </AntDropdown>
       </div>

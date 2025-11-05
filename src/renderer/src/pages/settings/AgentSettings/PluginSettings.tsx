@@ -1,3 +1,4 @@
+import Scrollbar from '@renderer/components/Scrollbar'
 import { useAvailablePlugins, useInstalledPlugins, usePluginActions } from '@renderer/hooks/usePlugins'
 import type { GetAgentResponse, GetAgentSessionResponse, UpdateAgentFunctionUnion } from '@renderer/types/agent'
 import { Card, Segmented } from 'antd'
@@ -8,7 +9,6 @@ import { useTranslation } from 'react-i18next'
 
 import { InstalledPluginsList } from './components/InstalledPluginsList'
 import { PluginBrowser } from './components/PluginBrowser'
-import { SettingsContainer } from './shared'
 
 interface PluginSettingsProps {
   agentBase: GetAgentResponse | GetAgentSessionResponse
@@ -131,14 +131,14 @@ const PluginSettings: FC<PluginSettingsProps> = ({ agentBase }) => {
   ])
 
   return (
-    <SettingsContainer className="pt-0">
+    <Scrollbar>
       <div className="flex flex-col gap-2">
         <div className="flex justify-center">
           <Segmented options={segmentOptions} value={activeTab} onChange={(value) => setActiveTab(value as string)} />
         </div>
         {renderContent}
       </div>
-    </SettingsContainer>
+    </Scrollbar>
   )
 }
 

@@ -14,7 +14,7 @@ import type {
 import { AgentConfigurationSchema } from '@renderer/types'
 import { Modal, Tag } from 'antd'
 import { Alert, Card, Input, Switch } from 'antd'
-import { ShieldAlert, ShieldCheck, Wrench } from 'lucide-react'
+import { ShieldAlert, Wrench } from 'lucide-react'
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -274,60 +274,47 @@ export const ToolingSettings: FC<AgentToolingSettingsProps> = ({ agentBase, upda
             return (
               <div
                 key={card.mode}
-                className={`flex overflow-hidden rounded-lg border ${
-                  isSelected ? 'border-primary' : 'border-default-200'
-                } ${disabled ? 'opacity-60' : ''}`}
-                onClick={() => handleSelectPermissionMode(card.mode)}>
-                <Card
-                  variant={'borderless'}
-                  title={
-                    <div className="flex flex-row items-center justify-between gap-2 py-2">
-                      <div className="flex flex-col">
-                        <span className="whitespace-normal break-words text-left font-semibold text-sm">
-                          {t(card.titleKey, card.titleFallback)}
-                        </span>
-                        <span className="whitespace-normal break-words text-left text-foreground-500 text-xs">
-                          {t(card.descriptionKey, card.descriptionFallback)}
-                        </span>
-                      </div>
-                      {disabled ? (
-                        <Tag color="warning">{t('common.coming_soon', 'Coming soon')}</Tag>
-                      ) : isSelected ? (
-                        <Tag color="success">
-                          <div className="flex flex-col items-center py-2">
-                            <ShieldCheck size={14} />
-                            <span>{t('common.selected', 'Selected')}</span>
-                          </div>
-                        </Tag>
-                      ) : null}
-                    </div>
-                  }
-                  styles={{
-                    header: {
-                      paddingLeft: '12px',
-                      paddingRight: '12px',
-                      borderBottom: 'none'
-                    },
-                    body: {
-                      paddingLeft: '12px',
-                      paddingRight: '12px'
-                    }
-                  }}>
-                  <div className="gap-2 text-left text-xs">
-                    <span className="text-foreground-600">{t(card.behaviorKey, card.behaviorFallback)}</span>
-                    {showCaution ? (
-                      <div className="flex items-center gap-1">
-                        <ShieldAlert className="text-danger-600" size={24} />
-                        <span className="text-danger-600">
-                          {t(
-                            'agent.settings.tooling.permissionMode.bypassPermissions.warning',
-                            'Use with caution — all tools will run without asking for approval.'
-                          )}
-                        </span>
-                      </div>
-                    ) : null}
+                className={`flex flex-col gap-3 overflow-hidden rounded-lg border p-4 transition-colors ${
+                  isSelected
+                    ? 'border-primary bg-primary-50/30 dark:bg-primary-950/20'
+                    : 'border-default-200 hover:bg-default-50 dark:hover:bg-default-900/20'
+                } ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                onClick={() => !disabled && handleSelectPermissionMode(card.mode)}>
+                {/* Header */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="whitespace-normal break-words text-left font-semibold text-sm">
+                      {t(card.titleKey, card.titleFallback)}
+                    </span>
+                    <span className="whitespace-normal break-words text-left text-foreground-500 text-xs">
+                      {t(card.descriptionKey, card.descriptionFallback)}
+                    </span>
                   </div>
-                </Card>
+                  {disabled && <Tag color="warning">{t('common.coming_soon', 'Coming soon')}</Tag>}
+                  {isSelected && !disabled && (
+                    <Tag color="success">
+                      <div className="flex items-center gap-1">
+                        <span>{t('common.selected', 'Selected')}</span>
+                      </div>
+                    </Tag>
+                  )}
+                </div>
+
+                {/* Body */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-foreground-600 text-xs">{t(card.behaviorKey, card.behaviorFallback)}</span>
+                  {showCaution && (
+                    <div className="flex items-start gap-2 rounded-md bg-danger-50 p-2 dark:bg-danger-950/30">
+                      <ShieldAlert className="mt-0.5 flex-shrink-0 text-danger-600" size={16} />
+                      <span className="text-danger-600 text-xs">
+                        {t(
+                          'agent.settings.tooling.permissionMode.bypassPermissions.warning',
+                          'Use with caution — all tools will run without asking for approval.'
+                        )}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             )
           })}
@@ -414,7 +401,7 @@ export const ToolingSettings: FC<AgentToolingSettingsProps> = ({ agentBase, upda
                           })}
                           checked={isApproved}
                           disabled={isAuto || isUpdatingTools}
-                          size="default"
+                          size="small"
                           onChange={(checked) => handleToggleTool(tool.id, checked)}
                         />
                       </div>
@@ -485,7 +472,7 @@ export const ToolingSettings: FC<AgentToolingSettingsProps> = ({ agentBase, upda
                             name: server.name
                           })}
                           checked={isSelected}
-                          size="default"
+                          size="small"
                           disabled={!server.isActive || isUpdatingMcp}
                           onChange={(checked) => handleToggleMcp(server.id, checked)}
                         />
