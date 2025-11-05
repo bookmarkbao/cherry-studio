@@ -1097,7 +1097,6 @@
     "name": "Name",
     "no_results": "Keine Ergebnisse",
     "none": "Keine",
-    "off": "Aus",
     "open": "Öffnen",
     "paste": "Einfügen",
     "placeholders": {
@@ -4144,6 +4143,7 @@
         "default": "Standard",
         "flex": "Flexibel",
         "on_demand": "Auf Anfrage",
+        "performance": "Leistung",
         "priority": "Priorität",
         "tip": "Latenz-Ebene für Anfrageverarbeitung festlegen",
         "title": "Service-Tier"
@@ -4260,7 +4260,7 @@
       "aws-bedrock": {
         "access_key_id": "AWS-Zugriffsschlüssel-ID",
         "access_key_id_help": "Ihre AWS-Zugriffsschlüssel-ID, um auf AWS Bedrock-Dienste zuzugreifen",
-        "api_key": "Bedrock API-Schlüssel",
+        "api_key": "Bedrock-API-Schlüssel",
         "api_key_help": "Ihr AWS Bedrock-API-Schlüssel für die Authentifizierung",
         "auth_type": "Authentifizierungstyp",
         "auth_type_api_key": "Bedrock-API-Schlüssel",

@@ -1097,7 +1097,6 @@
     "name": "Имя",
     "no_results": "Результатов не найдено",
     "none": "без",
-    "off": "Выкл",
     "open": "Открыть",
     "paste": "Вставить",
     "placeholders": {
@@ -4144,6 +4143,7 @@
         "default": "По умолчанию",
         "flex": "Гибкий",
         "on_demand": "по требованию",
+        "performance": "производительность",
         "priority": "приоритет",
         "tip": "Указывает уровень задержки, который следует использовать для обработки запроса",
         "title": "Уровень сервиса"
@@ -4261,7 +4261,7 @@
         "access_key_id": "AWS Ключ доступа ID",
         "access_key_id_help": "Ваш AWS Ключ доступа ID для доступа к AWS Bedrock",
         "api_key": "Ключ API Bedrock",
-        "api_key_help": "Ваш API-ключ AWS Bedrock для аутентификации",
+        "api_key_help": "Ваш ключ API AWS Bedrock для аутентификации",
         "auth_type": "Тип аутентификации",
         "auth_type_api_key": "Ключ API Bedrock",
         "auth_type_help": "Выберите между аутентификацией с помощью учетных данных IAM или ключа API Bedrock",

@@ -1097,7 +1097,6 @@
     "name": "Nom",
     "no_results": "Aucun résultat",
     "none": "Aucun",
-    "off": "Arrêt",
     "open": "Ouvrir",
     "paste": "Coller",
     "placeholders": {
@@ -4144,6 +4143,7 @@
         "default": "Par défaut",
         "flex": "Flexible",
         "on_demand": "à la demande",
+        "performance": "performance",
         "priority": "priorité",
         "tip": "Spécifie le niveau de latence utilisé pour traiter la demande",
         "title": "Niveau de service"
@@ -4265,7 +4265,7 @@
         "auth_type": "Type d'authentification",
         "auth_type_api_key": "Clé API Bedrock",
         "auth_type_help": "Choisissez entre l'authentification par identifiants IAM ou par clé API Bedrock",
-        "auth_type_iam": "Informations d'identification IAM",
+        "auth_type_iam": "Identifiants IAM",
         "description": "AWS Bedrock est un service de modèles de base entièrement géré proposé par Amazon, prenant en charge divers grands modèles linguistiques avancés.",
         "region": "Région AWS",
         "region_help": "Votre région de service AWS, par exemple us-east-1",
