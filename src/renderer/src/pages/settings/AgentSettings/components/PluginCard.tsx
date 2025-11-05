@@ -1,4 +1,5 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Spinner } from '@heroui/react'
+import { Button } from '@cherrystudio/ui'
+import { Card, CardBody, CardFooter, CardHeader, Chip, Spinner } from '@heroui/react'
 import type { PluginMetadata } from '@renderer/types/plugin'
 import { upperFirst } from 'lodash'
 import { Download, Trash2 } from 'lucide-react'
@@ -56,30 +57,28 @@ export const PluginCard: FC<PluginCardProps> = ({ plugin, installed, onInstall, 
       <CardFooter className="pt-2">
         {installed ? (
           <Button
-            color="danger"
-            variant="flat"
+            variant="destructive"
             size="sm"
-            startContent={loading ? <Spinner size="sm" color="current" /> : <Trash2 className="h-4 w-4" />}
             onClick={(e) => {
               e.stopPropagation()
               onUninstall()
             }}
-            isDisabled={loading}
-            fullWidth>
+            disabled={loading}
+            className="w-full">
+            {loading ? <Spinner size="sm" color="current" /> : <Trash2 className="h-4 w-4" />}
             {loading ? t('plugins.uninstalling') : t('plugins.uninstall')}
           </Button>
         ) : (
           <Button
-            color="primary"
-            variant="flat"
+            variant="secondary"
             size="sm"
-            startContent={loading ? <Spinner size="sm" color="current" /> : <Download className="h-4 w-4" />}
             onClick={(e) => {
               e.stopPropagation()
               onInstall()
             }}
-            isDisabled={loading}
-            fullWidth>
+            disabled={loading}
+            className="w-full">
+            {loading ? <Spinner size="sm" color="current" /> : <Download className="h-4 w-4" />}
             {loading ? t('plugins.installing') : t('plugins.install')}
           </Button>
         )}

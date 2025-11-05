@@ -1,4 +1,5 @@
-import { Button, Divider } from '@heroui/react'
+import { Button } from '@cherrystudio/ui'
+import { Divider } from '@heroui/react'
 import type { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
 import { SessionSettingsPopup } from '@renderer/pages/settings/AgentSettings'
 import AdvancedSettings from '@renderer/pages/settings/AgentSettings/AdvancedSettings'
@@ -33,7 +34,7 @@ const SessionSettingsTab: FC<Props> = ({ session, update }) => {
       <EssentialSettings agentBase={session} update={update} showModelSetting={false} />
       <AdvancedSettings agentBase={session} update={update} />
       <Divider className="my-2" />
-      <Button size="sm" fullWidth onClick={onMoreSetting}>
+      <Button size="sm" className="w-full" onClick={onMoreSetting}>
         {t('settings.moresetting.label')}
       </Button>
     </div>

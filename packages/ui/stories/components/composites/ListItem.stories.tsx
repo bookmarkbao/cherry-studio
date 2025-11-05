@@ -1,4 +1,3 @@
-import { Button } from '@heroui/react'
 import type { Meta, StoryObj } from '@storybook/react'
 import {
   ChevronRight,
@@ -16,10 +15,10 @@ import {
 } from 'lucide-react'
 import { action } from 'storybook/actions'
 
-import ListItem from '../../../src/components/composites/ListItem'
+import { Button, ListItem } from '../../../src/components'
 
 const meta: Meta<typeof ListItem> = {
-  title: 'Display/ListItem',
+  title: 'Components/Composites/ListItem',
   component: ListItem,
   parameters: {
     layout: 'centered',
@@ -78,7 +77,7 @@ export const Default: Story = {
   args: {
     title: '默认列表项'
   },
-  render: (args) => (
+  render: (args: any) => (
     <div className="w-80">
       <ListItem {...args} />
     </div>
@@ -92,7 +91,7 @@ export const WithIcon: Story = {
     title: '带图标的列表项',
     subtitle: '这是一个副标题'
   },
-  render: (args) => (
+  render: (args: any) => (
     <div className="w-80">
       <ListItem {...args} />
     </div>
@@ -107,7 +106,7 @@ export const Active: Story = {
     subtitle: '当前选中项',
     active: true
   },
-  render: (args) => (
+  render: (args: any) => (
     <div className="w-80">
       <ListItem {...args} />
     </div>
@@ -122,7 +121,7 @@ export const WithRightContent: Story = {
     subtitle: '右侧有附加信息',
     rightContent: <ChevronRight size={16} className="text-gray-400" />
   },
-  render: (args) => (
+  render: (args: any) => (
     <div className="w-80">
       <ListItem {...args} />
     </div>
@@ -195,7 +194,7 @@ export const DifferentRightContent: Story = {
         title="带按钮"
         subtitle="操作类型"
         rightContent={
-          <Button size="sm" variant="ghost" isIconOnly>
+          <Button size="icon-sm" variant="ghost">
             <MoreHorizontal size={16} />
           </Button>
         }
@@ -212,10 +211,10 @@ export const DifferentRightContent: Story = {
         subtitle="复合操作"
         rightContent={
           <div className="flex gap-1">
-            <Button size="sm" variant="ghost" isIconOnly>
+            <Button size="icon-sm" variant="ghost">
               <Edit size={14} />
             </Button>
-            <Button size="sm" variant="ghost" isIconOnly color="danger">
+            <Button size="icon-sm" variant="destructive">
               <Trash2 size={14} />
             </Button>
           </div>

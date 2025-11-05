@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import clsx from 'clsx'
+import { clsx } from 'clsx'
 import { useMemo, useState } from 'react'
 
-import { Sortable } from '../../../src/components/composites/Sortable'
+import { Sortable } from '../../../src/components'
 import { useDndReorder } from '../../../src/hooks'
 
 type ExampleItem = { id: number; label: string }
@@ -13,7 +13,7 @@ const initialItems: ExampleItem[] = Array.from({ length: 18 }).map((_, i) => ({
 }))
 
 const meta: Meta<typeof Sortable> = {
-  title: 'Interactive/Sortable',
+  title: 'Components/Composites/Sortable',
   component: Sortable,
   parameters: {
     layout: 'padded',

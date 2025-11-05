@@ -1,4 +1,5 @@
-import { Button, Chip, Skeleton, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react'
+import { Button } from '@cherrystudio/ui'
+import { Chip, Skeleton, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react'
 import type { InstalledPlugin } from '@renderer/types/plugin'
 import { Trash2 } from 'lucide-react'
 import type { FC } from 'react'
@@ -81,13 +82,12 @@ export const InstalledPluginsList: FC<InstalledPluginsListProps> = ({ plugins, o
             </TableCell>
             <TableCell>
               <Button
-                size="sm"
-                color="danger"
-                variant="light"
-                isIconOnly
-                onPress={() => handleUninstall(plugin)}
-                isLoading={uninstallingPlugin === plugin.filename}
-                isDisabled={loading}>
+                size="icon-sm"
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
+                onClick={() => handleUninstall(plugin)}
+                loading={uninstallingPlugin === plugin.filename}
+                disabled={loading}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </TableCell>

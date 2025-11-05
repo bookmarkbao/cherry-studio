@@ -1,9 +1,9 @@
-import { Button } from '@heroui/react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
-import type { CustomFallbackProps } from '../../../src/components/primitives/ErrorBoundary'
-import { ErrorBoundary } from '../../../src/components/primitives/ErrorBoundary'
+import type { CustomFallbackProps } from '../../../src/components'
+import { Button } from '../../../src/components'
+import { ErrorBoundary } from '../../../src/components'
 
 // 错误组件 - 用于触发错误
 const ThrowErrorComponent = ({ shouldThrow = false, errorMessage = '这是一个模拟错误' }) => {
@@ -30,13 +30,13 @@ const AsyncErrorComponent = () => {
   return (
     <div className="p-4 space-y-2">
       <p>这是一个可以触发异步错误的组件</p>
-      <Button onPress={handleAsyncError}>1秒后触发错误</Button>
+      <Button onClick={handleAsyncError}>1秒后触发错误</Button>
     </div>
   )
 }
 
 const meta: Meta<typeof ErrorBoundary> = {
-  title: 'Base/ErrorBoundary',
+  title: 'Components/Primitives/ErrorBoundary',
   component: ErrorBoundary,
   parameters: {
     layout: 'padded'
@@ -138,7 +138,7 @@ export const InteractiveDemo: Story = {
     return (
       <div className="space-y-4">
         <div className="flex gap-2">
-          <Button color={shouldThrow ? 'danger' : 'primary'} onPress={() => setShouldThrow(!shouldThrow)}>
+          <Button variant={shouldThrow ? 'destructive' : 'default'} onClick={() => setShouldThrow(!shouldThrow)}>
             {shouldThrow ? '取消错误' : '触发错误'}
           </Button>
           <input
@@ -174,12 +174,12 @@ export const CustomFallback: Story = {
           <p className="text-sm opacity-90 mb-4">{error?.message}</p>
           <div className="flex gap-2 justify-center">
             {onDebugClick && (
-              <Button size="sm" variant="flat" onPress={onDebugClick}>
+              <Button size="sm" variant="outline" onClick={onDebugClick}>
                 检查错误
               </Button>
             )}
             {onReloadClick && (
-              <Button size="sm" variant="flat" onPress={onReloadClick}>
+              <Button size="sm" variant="outline" onClick={onReloadClick}>
                 重试
               </Button>
             )}

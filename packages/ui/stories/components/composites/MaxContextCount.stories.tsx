@@ -1,19 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import MaxContextCount from '../../../src/components/composites/MaxContextCount'
+import { MaxContextCount } from '../../../src/components'
 
 const meta: Meta<typeof MaxContextCount> = {
-  title: 'Display/MaxContextCount',
+  title: 'Components/Composites/MaxContextCount',
   component: MaxContextCount,
   parameters: {
     layout: 'centered',
     docs: {
       description: {
-        component: '一个用于显示最大上下文数量的组件。当数量达到100时显示无限符号，否则显示具体数字。'
+        component:
+          '⚠️ **已废弃** - 此组件使用频率仅为 1 次，不符合 UI 库提取标准（需 ≥3 次）。计划在未来版本中移除。此组件与业务逻辑耦合，不适合通用 UI 库。\n\n一个用于显示最大上下文数量的组件。当数量达到100时显示无限符号，否则显示具体数字。'
       }
     }
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'deprecated'],
   argTypes: {
     maxContext: {
       control: { type: 'number', min: 0, max: 100, step: 1 },

@@ -1,10 +1,10 @@
 import type { Meta } from '@storybook/react'
 import { useState } from 'react'
 
-import Selector from '../../../src/components/primitives/Selector'
+import { Selector } from '../../../src/components'
 
 const meta: Meta<typeof Selector> = {
-  title: 'Interactive/Selector',
+  title: 'Components/Composites/Selector',
   component: Selector,
   parameters: {
     layout: 'padded'

@@ -1,9 +1,11 @@
-import { Button } from '@heroui/button'
+import { Button } from '@cherrystudio/ui'
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal'
 import { Progress } from '@heroui/progress'
 import { Spinner } from '@heroui/spinner'
 import { loggerService } from '@logger'
+import { AppLogo } from '@renderer/config/env'
 import { SettingHelpText, SettingRow } from '@renderer/pages/settings'
+import type { WebSocketCandidatesResponse } from '@shared/config/types'
 import { QRCodeSVG } from 'qrcode.react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -38,12 +40,12 @@ const ScanQRCode: React.FC<{ qrCodeValue: string }> = ({ qrCodeValue }) => {
       <QRCodeSVG
         marginSize={2}
         value={qrCodeValue}
-        level="Q"
-        size={160}
+        level="H"
+        size={200}
         imageSettings={{
-          src: '/src/assets/images/logo.png',
-          width: 40,
-          height: 40,
+          src: AppLogo,
+          width: 60,
+          height: 60,
           excavate: true
         }}
       />
@@ -198,17 +200,28 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
       const { port, ip } = await window.api.webSocket.status()
 
       if (ip && port) {
-        const candidates = await window.api.webSocket.getAllCandidates()
-        const connectionInfo = {
-          type: 'cherry-studio-app',
-          candidates,
-          selectedHost: ip,
-          port,
-          timestamp: Date.now()
+        const candidatesData = await window.api.webSocket.getAllCandidates()
+
+        const optimizeConnectionInfo = () => {
+          const ipToNumber = (ip: string) => {
+            return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet), 0)
+          }
+
+          const compressedData = [
+            'CSA',
+            ipToNumber(ip),
+            candidatesData.map((candidate: WebSocketCandidatesResponse) => ipToNumber(candidate.host)),
+            port, // 端口号
+            Date.now() % 86400000
+          ]
+
+          return compressedData
         }
-        setQrCodeValue(JSON.stringify(connectionInfo))
+
+        const compressedData = optimizeConnectionInfo()
+        const qrCodeValue = JSON.stringify(compressedData)
+        setQrCodeValue(qrCodeValue)
         setConnectionPhase('waiting_qr_scan')
-        logger.info(`QR code generated: ${ip}:${port} with ${candidates.length} IP candidates`)
       } else {
         setError(t('settings.data.export_to_phone.lan.error.no_ip'))
         setConnectionPhase('error')
@@ -504,10 +517,10 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
 
               <SettingRow style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'center', width: '100%' }}>
-                  <Button color="default" variant="flat" onPress={handleSelectZip} isDisabled={isSending}>
+                  <Button variant="secondary" onClick={handleSelectZip} disabled={isSending}>
                     {t('settings.data.export_to_phone.lan.selectZip')}
                   </Button>
-                  <Button color="primary" onPress={handleSendZip} isDisabled={!canSend} isLoading={isSending}>
+                  <Button onClick={handleSendZip} disabled={!canSend} loading={isSending}>
                     {transferStatusText || t('settings.data.export_to_phone.lan.sendZip')}
                   </Button>
                 </div>
@@ -551,10 +564,10 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
                     {t('settings.data.export_to_phone.lan.confirm_close_message')}
                   </span>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-                    <Button size="sm" color="default" variant="flat" onPress={handleCancelClose}>
+                    <Button size="sm" onClick={handleCancelClose}>
                       {t('common.cancel')}
                     </Button>
-                    <Button size="sm" color="danger" onPress={handleForceClose}>
+                    <Button size="sm" variant="destructive" onClick={handleForceClose}>
                       {t('settings.data.export_to_phone.lan.force_close')}
                     </Button>
                   </div>

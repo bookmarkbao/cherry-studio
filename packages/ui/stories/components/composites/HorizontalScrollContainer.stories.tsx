@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
-import HorizontalScrollContainer from '../../../src/components/composites/HorizontalScrollContainer'
+import { HorizontalScrollContainer } from '../../../src/components'
 
 const meta: Meta<typeof HorizontalScrollContainer> = {
-  title: 'Layout/HorizontalScrollContainer',
+  title: 'Components/Composites/HorizontalScrollContainer',
   component: HorizontalScrollContainer,
   parameters: {
     layout: 'centered'

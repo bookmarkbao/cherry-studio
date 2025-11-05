@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import Ellipsis from '../../../src/components/composites/Ellipsis'
+import { Ellipsis } from '../../../src/components'
 
 const meta = {
-  title: 'Display/Ellipsis',
+  title: 'Components/Composites/Ellipsis',
   component: Ellipsis,
   parameters: {
     layout: 'centered',
