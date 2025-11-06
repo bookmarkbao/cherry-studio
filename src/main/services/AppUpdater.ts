@@ -167,7 +167,11 @@ export default class AppUpdater {
           `Found compatible version: ${versionKey} (minCompatibleVersion: ${versionConfig.minCompatibleVersion}), feedUrl: ${channelConfig.feedUrl}`
         )
 
-        if (requestedChannel !== UpgradeChannel.LATEST && latestChannelConfig && semver.gte(latestChannelConfig.version, channelConfig.version)) {
+        if (
+          requestedChannel !== UpgradeChannel.LATEST &&
+          latestChannelConfig &&
+          semver.gte(latestChannelConfig.version, channelConfig.version)
+        ) {
           logger.info(
             `latest channel config is greater than the current channel config: ${latestChannelConfig.feedUrl} > ${channelConfig.feedUrl}`
           )
