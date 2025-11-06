@@ -1,3 +1,4 @@
+import { useSettings } from '@renderer/hooks/useSettings'
 import type { ButtonProps } from 'antd'
 import { Button } from 'antd'
 import { PlusIcon } from 'lucide-react'
@@ -19,9 +20,12 @@ const StyledButton = styled(Button)`
 `
 
 const AddButton: FC<ButtonProps> = ({ ...props }) => {
+  const { topicPosition } = useSettings()
+
   return (
     <StyledButton
       {...props}
+      style={{ borderRadius: topicPosition === 'left' ? 20 : 8 }}
       type="text"
       onClick={props.onClick}
       icon={<PlusIcon size={16} style={{ flexShrink: 0 }} />}>
