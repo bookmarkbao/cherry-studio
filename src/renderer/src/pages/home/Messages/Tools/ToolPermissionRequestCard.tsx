@@ -3,7 +3,7 @@ import { loggerService } from '@logger'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { selectPendingPermissionByToolName, toolPermissionsActions } from '@renderer/store/toolPermissions'
 import type { NormalToolResponse } from '@renderer/types'
-import { Button, Tag } from 'antd'
+import { Button } from 'antd'
 import { ChevronDown, CirclePlay, CircleX } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -127,11 +127,14 @@ export function ToolPermissionRequestCard({ toolResponse }: Props) {
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <Tag color={isExpired ? 'error' : 'warning'}>
+            <div
+              className={`rounded px-2 py-0.5 font-medium text-xs ${
+                isExpired ? 'text-[var(--color-error)]' : 'text-[var(--color-status-warning)]'
+              }`}>
               {isExpired
                 ? t('agent.toolPermission.expired')
                 : t('agent.toolPermission.pending', { seconds: remainingSeconds })}
-            </Tag>
+            </div>
 
             <div className="flex items-center gap-1">
               <Button
