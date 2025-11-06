@@ -95,11 +95,14 @@ const NewApiPage: FC<{ Options: string[] }> = ({ Options }) => {
     return editImageFiles
   }, [editImageFiles])
 
-  const updatePaintingState = (updates: Partial<PaintingAction>) => {
-    const updatedPainting = { ...painting, providerId: newApiProvider.id, ...updates }
-    setPainting(updatedPainting)
-    updatePainting(mode, updatedPainting)
-  }
+  const updatePaintingState = useCallback(
+    (updates: Partial<PaintingAction>) => {
+      const updatedPainting = { ...painting, providerId: newApiProvider.id, ...updates }
+      setPainting(updatedPainting)
+      updatePainting(mode, updatedPainting)
+    },
+    [painting, newApiProvider.id, mode, updatePainting]
+  )
 
   // ---------------- Model Related Configurations ----------------
   // const modelOptions = MODELS.map((m) => ({ label: m.name, value: m.name }))
@@ -480,6 +483,13 @@ const NewApiPage: FC<{ Options: string[] }> = ({ Options }) => {
       }
     }
   }, [])
+
+  // if painting.model is not set, set it to the first model in modelOptions
+  useEffect(() => {
+    if (!painting.model && modelOptions.length > 0) {
+      updatePaintingState({ model: modelOptions[0].value })
+    }
+  }, [modelOptions, painting.model, updatePaintingState])
 
   return (
     <Container>

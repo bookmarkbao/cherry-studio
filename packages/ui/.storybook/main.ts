@@ -1,14 +1,15 @@
+import { fileURLToPath } from 'node:url'
+
 import type { StorybookConfig } from '@storybook/react-vite'
-import { resolve } from 'path'
+import { dirname, resolve } from 'path'
 
 const config: StorybookConfig = {
   stories: ['../stories/components/**/*.stories.@(js|jsx|ts|tsx)'],
-  addons: ['@storybook/addon-docs', '@storybook/addon-themes'],
-  framework: '@storybook/react-vite',
+  addons: [getAbsolutePath('@storybook/addon-docs'), getAbsolutePath('@storybook/addon-themes')],
+  framework: getAbsolutePath('@storybook/react-vite'),
   viteFinal: async (config) => {
     const { mergeConfig } = await import('vite')
     const tailwindPlugin = (await import('@tailwindcss/vite')).default
-    console.log('aliasaliasaliasaliasalias', resolve('src/index.ts'))
     return mergeConfig(config, {
       plugins: [tailwindPlugin()],
       resolve: {
@@ -21,3 +22,7 @@ const config: StorybookConfig = {
 }
 
 export default config
+
+function getAbsolutePath(value: string): any {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)))
+}
