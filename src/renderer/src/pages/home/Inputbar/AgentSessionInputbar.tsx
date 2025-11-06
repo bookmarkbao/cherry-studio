@@ -10,6 +10,7 @@ import { useShortcutDisplay } from '@renderer/hooks/useShortcuts'
 import { useTimer } from '@renderer/hooks/useTimer'
 import PasteService from '@renderer/services/PasteService'
 import { pauseTrace } from '@renderer/services/SpanManagerService'
+import { estimateUserPromptUsage } from '@renderer/services/TokenService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { newMessagesActions, selectMessagesForTopic } from '@renderer/store/newMessage'
 import { sendMessage as dispatchSendMessage } from '@renderer/store/thunk/messageThunk'
@@ -199,11 +200,15 @@ const AgentSessionInputbar: FC<Props> = ({ agentId, sessionId }) => {
           }
         : undefined
 
+      // Calculate token usage for the user message
+      const usage = await estimateUserPromptUsage({ content: text })
+
       const userMessage: Message = createMessage('user', sessionTopicId, agentId, {
         id: userMessageId,
         blocks: userMessageBlocks.map((block) => block?.id),
         model,
-        modelId: model?.id
+        modelId: model?.id,
+        usage
       })
 
       const assistantStub: Assistant = {
