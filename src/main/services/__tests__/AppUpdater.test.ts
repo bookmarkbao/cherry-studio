@@ -474,6 +474,99 @@ describe('AppUpdater', () => {
       })
     })
 
+    it('should not compare latest with itself when requesting latest channel', () => {
+      const config = {
+        lastUpdated: '2025-01-05T00:00:00Z',
+        versions: {
+          '1.7.0': {
+            minCompatibleVersion: '1.0.0',
+            description: 'v1.7.0',
+            channels: {
+              latest: {
+                feedUrl: 'https://github.com/test/v1.7.0',
+                version: '1.7.0'
+              },
+              rc: {
+                feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+                version: '1.7.0-rc.1'
+              },
+              beta: null
+            }
+          }
+        }
+      }
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.0', 'latest', config)
+
+      // Should return latest directly without comparing with itself
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0',
+        version: '1.7.0'
+      })
+    })
+
+    it('should return rc when rc version > latest version', () => {
+      const configWithNewerRc = {
+        lastUpdated: '2025-01-05T00:00:00Z',
+        versions: {
+          '1.7.0': {
+            minCompatibleVersion: '1.0.0',
+            description: 'v1.7.0',
+            channels: {
+              latest: {
+                feedUrl: 'https://github.com/test/v1.6.7',
+                version: '1.6.7'
+              },
+              rc: {
+                feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+                version: '1.7.0-rc.1'
+              },
+              beta: null
+            }
+          }
+        }
+      }
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.0', 'rc', configWithNewerRc)
+
+      // Should return rc because 1.7.0-rc.1 > 1.6.7
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0-rc.1',
+        version: '1.7.0-rc.1'
+      })
+    })
+
+    it('should return beta when beta version > latest version', () => {
+      const configWithNewerBeta = {
+        lastUpdated: '2025-01-05T00:00:00Z',
+        versions: {
+          '1.7.0': {
+            minCompatibleVersion: '1.0.0',
+            description: 'v1.7.0',
+            channels: {
+              latest: {
+                feedUrl: 'https://github.com/test/v1.6.7',
+                version: '1.6.7'
+              },
+              rc: null,
+              beta: {
+                feedUrl: 'https://github.com/test/v1.7.0-beta.5',
+                version: '1.7.0-beta.5'
+              }
+            }
+          }
+        }
+      }
+
+      const result = (appUpdater as any)._findCompatibleChannel('1.6.0', 'beta', configWithNewerBeta)
+
+      // Should return beta because 1.7.0-beta.5 > 1.6.7
+      expect(result).toEqual({
+        feedUrl: 'https://github.com/test/v1.7.0-beta.5',
+        version: '1.7.0-beta.5'
+      })
+    })
+
     it('should return lower version when higher version has no compatible channel', () => {
       vi.mocked(app.getVersion).mockReturnValue('1.8.0')
 
