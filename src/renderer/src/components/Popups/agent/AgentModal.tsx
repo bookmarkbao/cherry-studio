@@ -3,14 +3,14 @@ import ClaudeIcon from '@renderer/assets/images/models/claude.png'
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { TopView } from '@renderer/components/TopView'
 import { permissionModeCards } from '@renderer/config/agent'
-import { agentModelFilter, getModelLogoById } from '@renderer/config/models'
 import { useAgents } from '@renderer/hooks/agents/useAgents'
-import { useApiModels } from '@renderer/hooks/agents/useModels'
 import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
+import SelectAgentBaseModelButton from '@renderer/pages/home/components/SelectAgentBaseModelButton'
 import type {
   AddAgentForm,
   AgentEntity,
   AgentType,
+  ApiModel,
   BaseAgentForm,
   PermissionMode,
   Tool,
@@ -65,7 +65,6 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
   const loadingRef = useRef(false)
   const { addAgent } = useAgents()
   const { updateAgent } = useUpdateAgent()
-  const { models } = useApiModels({ providerType: 'anthropic' })
   const isEditing = (agent?: AgentWithTools) => agent !== undefined
 
   const [form, setForm] = useState<BaseAgentForm>(() => buildAgentForm(agent))
@@ -199,32 +198,26 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
     }))
   }, [])
 
-  const modelOptions = useMemo(() => {
-    return (models ?? [])
-      .filter((m) =>
-        agentModelFilter({
-          id: m.id,
-          provider: m.provider || '',
-          name: m.name,
-          group: ''
-        })
-      )
-      .map((model) => ({
-        value: model.id,
-        label: (
-          <OptionWrapper>
-            <Avatar src={getModelLogoById(model.id)} size={24} />
-            <span>{model.name}</span>
-          </OptionWrapper>
-        )
-      }))
-  }, [models])
+  // Create a temporary agentBase object for SelectAgentBaseModelButton
+  const tempAgentBase: AgentEntity = useMemo(
+    () => ({
+      id: agent?.id ?? 'temp-creating',
+      type: form.type,
+      name: form.name,
+      model: form.model,
+      accessible_paths: form.accessible_paths.length > 0 ? form.accessible_paths : ['/'],
+      allowed_tools: form.allowed_tools ?? [],
+      description: form.description,
+      instructions: form.instructions,
+      configuration: form.configuration,
+      created_at: agent?.created_at ?? new Date().toISOString(),
+      updated_at: agent?.updated_at ?? new Date().toISOString()
+    }),
+    [form, agent?.id, agent?.created_at, agent?.updated_at]
+  )
 
-  const onModelChange = useCallback((value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      model: value
-    }))
+  const handleModelSelect = useCallback(async (model: ApiModel) => {
+    setForm((prev) => ({ ...prev, model: model.id }))
   }, [])
 
   const onCancel = () => {
@@ -336,7 +329,7 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
         afterClose={onClose}
         transitionName="animation-move-down"
         centered
-        width={680}
+        width={500}
         footer={null}>
         <StyledForm onSubmit={onSubmit}>
           <FormContent>
@@ -363,17 +356,20 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
               <Label>
                 {t('common.model')} <RequiredMark>*</RequiredMark>
               </Label>
-              <Select
-                value={form.model || undefined}
-                onChange={onModelChange}
-                options={modelOptions}
-                placeholder={t('common.placeholders.select.model')}
-                style={{ width: '100%' }}
-                showSearch
-                filterOption={(input, option) => {
-                  const label = option?.label as any
-                  return label?.props?.children?.[1]?.toLowerCase().includes(input.toLowerCase()) || false
+              <SelectAgentBaseModelButton
+                agentBase={tempAgentBase}
+                onSelect={handleModelSelect}
+                fontSize={14}
+                avatarSize={24}
+                iconSize={16}
+                buttonStyle={{
+                  padding: '8px 12px',
+                  width: '100%',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 6,
+                  height: 'auto'
                 }}
+                containerClassName="flex items-center justify-between w-full"
               />
             </FormItem>
 
