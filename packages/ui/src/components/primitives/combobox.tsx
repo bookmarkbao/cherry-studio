@@ -29,9 +29,9 @@ const comboboxTriggerVariants = cva(
         disabled: 'opacity-50 cursor-not-allowed pointer-events-none'
       },
       size: {
-        sm: 'h-8 px-2 text-xs gap-1',
-        default: 'h-9 px-3 gap-2',
-        lg: 'h-10 px-4 gap-2'
+        sm: 'px-2 text-xs gap-1',
+        default: 'px-3 gap-2',
+        lg: 'px-4 gap-2'
       }
     },
     defaultVariants: {
@@ -69,38 +69,38 @@ export interface ComboboxOption {
 }
 
 export interface ComboboxProps extends Omit<VariantProps<typeof comboboxTriggerVariants>, 'state'> {
-  // 数据源
+  // Data source
   options: ComboboxOption[]
   value?: string | string[]
   defaultValue?: string | string[]
   onChange?: (value: string | string[]) => void
 
-  // 模式
+  // Mode
   multiple?: boolean
 
-  // 自定义渲染
+  // Custom rendering
   renderOption?: (option: ComboboxOption) => React.ReactNode
   renderValue?: (value: string | string[], options: ComboboxOption[]) => React.ReactNode
 
-  // 搜索
+  // Search
   searchable?: boolean
   searchPlaceholder?: string
   emptyText?: string
   onSearch?: (search: string) => void
 
-  // 状态
+  // State
   error?: boolean
   disabled?: boolean
   open?: boolean
   onOpenChange?: (open: boolean) => void
 
-  // 样式
+  // Styling
   placeholder?: string
   className?: string
   popoverClassName?: string
   width?: string | number
 
-  // 其他
+  // Other
   name?: string
 }
 
@@ -194,7 +194,13 @@ export function Combobox({
           {selectedOptions.map((option) => (
             <span
               key={option.value}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-success/10 text-success-foreground text-xs">
+              className={cn(
+                'bg-success/10',
+                'gap-1 px-2 py-0.5',
+                'inline-flex items-center rounded',
+                'text-success-foreground text-xs',
+                'text-primary background-primary/10'
+              )}>
               {option.label}
               <X
                 className="size-3 cursor-pointer hover:text-success"
@@ -279,35 +285,4 @@ export function Combobox({
       {name && <input type="hidden" name={name} value={multiple ? JSON.stringify(value) : (value as string)} />}
     </Popover>
   )
-}
-
-// ==================== Demo (for testing) ====================
-
-const frameworks = [
-  {
-    value: 'next.js',
-    label: 'Next.js'
-  },
-  {
-    value: 'sveltekit',
-    label: 'SvelteKit'
-  },
-  {
-    value: 'nuxt.js',
-    label: 'Nuxt.js'
-  },
-  {
-    value: 'remix',
-    label: 'Remix'
-  },
-  {
-    value: 'astro',
-    label: 'Astro'
-  }
-]
-
-export function ComboboxDemo() {
-  const [value, setValue] = React.useState('')
-
-  return <Combobox options={frameworks} value={value} onChange={(val) => setValue(val as string)} width={200} />
 }
