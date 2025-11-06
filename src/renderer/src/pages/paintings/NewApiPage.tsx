@@ -102,7 +102,7 @@ const NewApiPage: FC<{ Options: string[] }> = ({ Options }) => {
       setPainting(updatedPainting)
       updatePainting(mode, updatedPainting)
     },
-    [mode, newApiProvider.id, painting, updatePainting]
+    [painting, newApiProvider.id, mode, updatePainting]
   )
 
   // ---------------- Model Related Configurations ----------------
