@@ -7,10 +7,7 @@ import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useAssistantsTabSortType } from '@renderer/hooks/useStore'
 import { useTags } from '@renderer/hooks/useTags'
 import { useAppDispatch } from '@renderer/store'
-import { addIknowAction } from '@renderer/store/runtime'
 import type { Assistant, AssistantsSortType, Topic } from '@renderer/types'
-import { getErrorMessage } from '@renderer/utils'
-import { Alert } from 'antd'
 import type { FC } from 'react'
 import { useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -126,29 +123,6 @@ const AssistantsTab: FC<AssistantsTabProps> = (props) => {
 
   return (
     <Container className="assistants-tab" ref={containerRef}>
-      {!apiServerConfig.enabled && !apiServerRunning && !iknow[ALERT_KEY] && (
-        <Alert
-          type="warning"
-          message={t('agent.warning.enable_server')}
-          closable
-          onClose={() => dispatch(addIknowAction(ALERT_KEY))}
-          style={{ marginBottom: 10 }}
-          showIcon
-        />
-      )}
-      {apiServerConfig.enabled && !apiServerLoading && !apiServerRunning && (
-        <Alert type="error" message={t('agent.server.error.not_running')} closable className="mb-2" showIcon />
-      )}
-      {apiServerRunning && agentsError && (
-        <Alert
-          type="error"
-          message={t('agent.list.error.failed')}
-          description={getErrorMessage(agentsError)}
-          className="mb-2"
-          showIcon
-        />
-      )}
-
       <UnifiedAddButton
         onCreateAssistant={onCreateAssistant}
         setActiveAssistant={setActiveAssistant}
