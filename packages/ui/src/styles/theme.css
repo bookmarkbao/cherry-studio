@@ -19,9 +19,11 @@
   /* 语义化颜色（覆盖 Tailwind 标准命名） */
   /* ==================== */
   --color-primary: var(--cs-primary);
+  --color-primary-hover: var(--cs-primary-hover);
   --color-primary-foreground: var(--cs-white);
 
   --color-destructive: var(--cs-destructive);
+  --color-destructive-hover: var(--cs-destructive-hover);
   --color-destructive-foreground: var(--cs-white);
 
   --color-success: var(--cs-success);
@@ -362,6 +364,19 @@
   /* Black & White */
   --color-black: var(--cs-black);
   --color-white: var(--cs-white);
+
+  /* Brand (Cherry Studio 品牌色) */
+  --color-brand-50: var(--cs-brand-50);
+  --color-brand-100: var(--cs-brand-100);
+  --color-brand-200: var(--cs-brand-200);
+  --color-brand-300: var(--cs-brand-300);
+  --color-brand-400: var(--cs-brand-400);
+  --color-brand-500: var(--cs-brand-500);
+  --color-brand-600: var(--cs-brand-600);
+  --color-brand-700: var(--cs-brand-700);
+  --color-brand-800: var(--cs-brand-800);
+  --color-brand-900: var(--cs-brand-900);
+  --color-brand-950: var(--cs-brand-950);
 
   /* ==================== */
   /* Spacing & Sizing（自定义尺寸，额外扩展） */

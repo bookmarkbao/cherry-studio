@@ -304,13 +304,28 @@
   --cs-black: hsla(0, 0%, 0%, 1);
   --cs-white: hsla(0, 0%, 100%, 1);
 
+  /* Brand (Cherry Studio 品牌专属色) */
+  --cs-brand-50: hsla(132, 64%, 97%, 1);
+  --cs-brand-100: hsla(132, 64%, 93%, 1);
+  --cs-brand-200: hsla(132, 64%, 85%, 1);
+  --cs-brand-300: hsla(132, 64%, 73%, 1);
+  --cs-brand-400: hsla(132, 64%, 63%, 1);
+  --cs-brand-500: hsla(132, 64%, 53%, 1);
+  --cs-brand-600: hsla(132, 64%, 43%, 1);
+  --cs-brand-700: hsla(132, 64%, 33%, 1);
+  --cs-brand-800: hsla(132, 64%, 23%, 1);
+  --cs-brand-900: hsla(132, 64%, 13%, 1);
+  --cs-brand-950: hsla(132, 64%, 8%, 1);
+
   /* ==================== */
   /* Semantic Tokens - Light Mode */
   /* ==================== */
 
   /* Brand Colors */
-  --cs-primary: var(--cs-lime-500);
+  --cs-primary: var(--cs-brand-500);
+  --cs-primary-hover: var(--cs-brand-300);
   --cs-destructive: var(--cs-red-500);
+  --cs-destructive-hover: var(--cs-red-400);
   --cs-success: var(--cs-green-500);
   --cs-warning: var(--cs-amber-500);
 
@@ -331,7 +346,7 @@
   --cs-border-active: hsla(0, 0%, 0%, 0.3);
 
   /* Ring (Focus) */
-  --cs-ring: hsla(84, 81%, 44%, 0.4);
+  --cs-ring: color-mix(in srgb, var(--cs-primary) 40%, transparent);
 
   /* UI Element Colors */
   --cs-secondary: hsla(0, 0%, 0%, 0.05); /* Secondary Button Background */
@@ -345,46 +360,6 @@
   /* Sidebar */
   --cs-sidebar: var(--cs-white);
   --cs-sidebar-accent: hsla(0, 0%, 0%, 0.05);
-
-  /* ==================== */
-  /* UI 元素细分颜色 */
-  /* ==================== */
-
-  /* Modal / Overlay */
-  --cs-modal-backdrop: hsla(0, 0%, 0%, 0.4);
-  --cs-modal-thumb: hsla(0, 0%, 0%, 0.2);
-  --cs-modal-thumb-hover: hsla(0, 0%, 0%, 0.3);
-
-  /* Icon */
-  --cs-icon-default: var(--cs-foreground-secondary);
-  --cs-icon-hover: var(--cs-foreground);
-
-  /* Input / Select */
-  --cs-input-background: var(--cs-white);
-  --cs-input-border: var(--cs-border);
-  --cs-input-border-hover: var(--cs-border-hover);
-  --cs-input-border-focus: var(--cs-primary);
-
-  /* Primary Button */
-  --cs-primary-button-background: var(--cs-primary);
-  --cs-primary-button-text: var(--cs-white);
-  --cs-primary-button-background-hover: hsla(84, 81%, 44%, 0.85);
-  --cs-primary-button-background-active: hsla(84, 81%, 44%, 0.7);
-  --cs-primary-button-background-2nd: hsla(84, 81%, 44%, 0.1);
-  --cs-primary-button-background-3rd: hsla(84, 81%, 44%, 0.05);
-
-  /* Secondary Button */
-  --cs-secondary-button-background: var(--cs-secondary);
-  --cs-secondary-button-text: var(--cs-foreground);
-  --cs-secondary-button-background-hover: hsla(0, 0%, 0%, 0.85);
-  --cs-secondary-button-background-active: hsla(0, 0%, 0%, 0.7);
-  --cs-secondary-button-border: var(--cs-border);
-
-  /* Ghost Button */
-  --cs-ghost-button-background: hsla(0, 0%, 0%, 0);
-  --cs-ghost-button-text: var(--cs-foreground);
-  --cs-ghost-button-background-hover: var(--cs-ghost-hover);
-  --cs-ghost-button-background-active: var(--cs-ghost-active);
 
   /* ==================== */
   /* Spacing & Sizing (合并) */
@@ -517,44 +492,4 @@
   /* Sidebar */
   --cs-sidebar: var(--cs-black);
   --cs-sidebar-accent: hsla(0, 0%, 100%, 0.1);
-
-  /* ==================== */
-  /* UI 元素细分颜色 (Dark Mode) */
-  /* ==================== */
-
-  /* Modal / Overlay */
-  --cs-modal-backdrop: hsla(0, 0%, 0%, 0.06);
-  --cs-modal-thumb: hsla(0, 0%, 100%, 0.2);
-  --cs-modal-thumb-hover: hsla(0, 0%, 100%, 0.3);
-
-  /* Icon */
-  --cs-icon-default: var(--cs-foreground-secondary);
-  --cs-icon-hover: var(--cs-foreground);
-
-  /* Input / Select */
-  --cs-input-background: var(--cs-black);
-  --cs-input-border: var(--cs-border);
-  --cs-input-border-hover: var(--cs-border-hover);
-  --cs-input-border-focus: var(--cs-primary);
-
-  /* Primary Button - 保持不变 */
-  --cs-primary-button-background: var(--cs-primary);
-  --cs-primary-button-text: var(--cs-white);
-  --cs-primary-button-background-hover: hsla(84, 81%, 44%, 0.85);
-  --cs-primary-button-background-active: hsla(84, 81%, 44%, 0.7);
-  --cs-primary-button-background-2nd: hsla(84, 81%, 44%, 0.1);
-  --cs-primary-button-background-3rd: hsla(84, 81%, 44%, 0.05);
-
-  /* Secondary Button */
-  --cs-secondary-button-background: var(--cs-secondary);
-  --cs-secondary-button-text: var(--cs-foreground);
-  --cs-secondary-button-background-hover: hsla(0, 0%, 100%, 0.2);
-  --cs-secondary-button-background-active: hsla(0, 0%, 100%, 0.25);
-  --cs-secondary-button-border: var(--cs-border);
-
-  /* Ghost Button */
-  --cs-ghost-button-background: hsla(0, 0%, 100%, 0);
-  --cs-ghost-button-text: var(--cs-foreground);
-  --cs-ghost-button-background-hover: var(--cs-ghost-hover);
-  --cs-ghost-button-background-active: var(--cs-ghost-active);
 }
