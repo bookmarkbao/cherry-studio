@@ -1,35 +1,40 @@
 import { SyncOutlined } from '@ant-design/icons'
-import { Button } from '@cherrystudio/ui'
-import { usePreference } from '@data/hooks/usePreference'
-import { useDisclosure } from '@heroui/react'
-import UpdateDialog from '@renderer/components/UpdateDialog'
-import { useAppUpdateState } from '@renderer/hooks/useAppUpdate'
+import UpdateDialogPopup from '@renderer/components/Popups/UpdateDialogPopup'
+import { useRuntime } from '@renderer/hooks/useRuntime'
+import { useSettings } from '@renderer/hooks/useSettings'
+import { Button } from 'antd'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 const UpdateAppButton: FC = () => {
-  const { appUpdateState } = useAppUpdateState()
-  const [autoCheckUpdate] = usePreference('app.dist.auto_update.enabled')
+  const { update } = useRuntime()
+  const { autoCheckUpdate } = useSettings()
   const { t } = useTranslation()
-  const { isOpen, onOpen, onClose } = useDisclosure()
 
-  if (!appUpdateState) {
+  if (!update) {
     return null
   }
 
-  if (!appUpdateState.downloaded || !autoCheckUpdate) {
+  if (!update.downloaded || !autoCheckUpdate) {
     return null
+  }
+
+  const handleOpenUpdateDialog = () => {
+    UpdateDialogPopup.show({ releaseInfo: update.info || null })
   }
 
   return (
     <Container>
-      <UpdateButton className="nodrag" onClick={onOpen} variant="outline" size="sm">
-        <SyncOutlined />
+      <UpdateButton
+        className="nodrag"
+        onClick={handleOpenUpdateDialog}
+        icon={<SyncOutlined />}
+        color="orange"
+        variant="outlined"
+        size="small">
         {t('button.update_available')}
       </UpdateButton>
-
-      <UpdateDialog isOpen={isOpen} onClose={onClose} releaseInfo={appUpdateState.info || null} />
     </Container>
   )
 }

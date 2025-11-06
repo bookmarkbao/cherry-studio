@@ -9,7 +9,6 @@ export { ErrorBoundary } from './primitives/ErrorBoundary'
 export { default as IndicatorLight } from './primitives/indicatorLight'
 export { default as Spinner } from './primitives/spinner'
 export { DescriptionSwitch, Switch } from './primitives/switch'
-export { getToastUtilities, type ToastUtilities } from './primitives/toast'
 export { Tooltip, type TooltipProps } from './primitives/tooltip'
 
 // Composite Components

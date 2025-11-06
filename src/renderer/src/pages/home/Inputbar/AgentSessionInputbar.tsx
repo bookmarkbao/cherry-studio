@@ -1,4 +1,3 @@
-import { Tooltip } from '@heroui/react'
 import { loggerService } from '@logger'
 import { ActionIconButton } from '@renderer/components/Buttons'
 import { QuickPanelView } from '@renderer/components/QuickPanel'
@@ -11,17 +10,21 @@ import { useShortcutDisplay } from '@renderer/hooks/useShortcuts'
 import { useTimer } from '@renderer/hooks/useTimer'
 import PasteService from '@renderer/services/PasteService'
 import { pauseTrace } from '@renderer/services/SpanManagerService'
+import { estimateUserPromptUsage } from '@renderer/services/TokenService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { newMessagesActions, selectMessagesForTopic } from '@renderer/store/newMessage'
 import { sendMessage as dispatchSendMessage } from '@renderer/store/thunk/messageThunk'
 import type { Assistant, Message, Model, Topic } from '@renderer/types'
-import { type MessageBlock, MessageBlockStatus } from '@renderer/types/newMessage'
+import type { MessageBlock } from '@renderer/types/newMessage'
+import { MessageBlockStatus } from '@renderer/types/newMessage'
 import { classNames } from '@renderer/utils'
 import { abortCompletion } from '@renderer/utils/abortController'
 import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { getSendMessageShortcutLabel, isSendMessageKeyPressed } from '@renderer/utils/input'
 import { createMainTextBlock, createMessage } from '@renderer/utils/messageUtils/create'
-import TextArea, { type TextAreaRef } from 'antd/es/input/TextArea'
+import { Tooltip } from 'antd'
+import type { TextAreaRef } from 'antd/es/input/TextArea'
+import TextArea from 'antd/es/input/TextArea'
 import { isEmpty } from 'lodash'
 import { CirclePause, MessageSquareDiff } from 'lucide-react'
 import type { CSSProperties, FC } from 'react'
@@ -197,11 +200,15 @@ const AgentSessionInputbar: FC<Props> = ({ agentId, sessionId }) => {
           }
         : undefined
 
+      // Calculate token usage for the user message
+      const usage = await estimateUserPromptUsage({ content: text })
+
       const userMessage: Message = createMessage('user', sessionTopicId, agentId, {
         id: userMessageId,
         blocks: userMessageBlocks.map((block) => block?.id),
         model,
-        modelId: model?.id
+        modelId: model?.id,
+        usage
       })
 
       const assistantStub: Assistant = {
@@ -307,22 +314,22 @@ const AgentSessionInputbar: FC<Props> = ({ agentId, sessionId }) => {
           />
           <Toolbar>
             <ToolbarGroup>
-              <Tooltip placement="top" content={t('chat.input.new_topic', { Command: newTopicShortcut })} delay={0}>
+              <Tooltip placement="top" title={t('chat.input.new_topic', { Command: newTopicShortcut })}>
                 <ActionIconButton
                   onClick={handleCreateSession}
                   disabled={createSessionDisabled}
-                  icon={<MessageSquareDiff size={19} />}></ActionIconButton>
+                  loading={creatingSession}>
+                  <MessageSquareDiff size={19} />
+                </ActionIconButton>
               </Tooltip>
             </ToolbarGroup>
             <ToolbarGroup>
               <SendMessageButton sendMessage={sendMessage} disabled={sendDisabled} />
               {canAbort && (
-                <Tooltip placement="top" content={t('chat.input.pause')}>
-                  <ActionIconButton
-                    onClick={abortAgentSession}
-                    className="-mr-0.5"
-                    icon={<CirclePause size={20} color="var(--color-error)" />}
-                  />
+                <Tooltip placement="top" title={t('chat.input.pause')}>
+                  <ActionIconButton onClick={abortAgentSession} style={{ marginRight: -2 }}>
+                    <CirclePause size={20} color="var(--color-error)" />
+                  </ActionIconButton>
                 </Tooltip>
               )}
             </ToolbarGroup>

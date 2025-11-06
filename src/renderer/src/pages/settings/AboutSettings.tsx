@@ -1,9 +1,8 @@
 import { GithubOutlined } from '@ant-design/icons'
-import { Avatar, Button, RowFlex, Switch, Tooltip } from '@cherrystudio/ui'
+import { Button, RadioGroup, RowFlex, Switch, Tooltip } from '@cherrystudio/ui'
 import { usePreference } from '@data/hooks/usePreference'
-import { Radio, RadioGroup, useDisclosure } from '@heroui/react'
 import IndicatorLight from '@renderer/components/IndicatorLight'
-import UpdateDialog from '@renderer/components/UpdateDialog'
+import UpdateDialogPopup from '@renderer/components/Popups/UpdateDialogPopup'
 import { APP_NAME, AppLogo } from '@renderer/config/env'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useAppUpdateState } from '@renderer/hooks/useAppUpdate'
@@ -14,9 +13,7 @@ import i18n from '@renderer/i18n'
 // import { setUpdateState as setAppUpdateState } from '@renderer/store/runtime'
 import { runAsyncFunction } from '@renderer/utils'
 import { UpgradeChannel } from '@shared/data/preference/preferenceTypes'
-import { ThemeMode } from '@shared/data/preference/preferenceTypes'
-import { Progress, Row, Tag } from 'antd'
-import type { UpdateInfo } from 'builder-util-runtime'
+import { Avatar, Progress, Radio, Row, Tag } from 'antd'
 import { debounce } from 'lodash'
 import { Bug, Building2, Github, Globe, Mail, Rss } from 'lucide-react'
 import { BadgeQuestionMark } from 'lucide-react'
@@ -36,8 +33,6 @@ const AboutSettings: FC = () => {
 
   const [version, setVersion] = useState('')
   const [isPortable, setIsPortable] = useState(false)
-  const [updateDialogInfo, setUpdateDialogInfo] = useState<UpdateInfo | null>(null)
-  const { isOpen, onOpen, onClose } = useDisclosure()
   const { t } = useTranslation()
   const { theme } = useTheme()
   // const dispatch = useAppDispatch()
@@ -54,8 +49,7 @@ const AboutSettings: FC = () => {
 
       if (appUpdateState.downloaded) {
         // Open update dialog directly in renderer
-        setUpdateDialogInfo(appUpdateState.info || null)
-        onOpen()
+        UpdateDialogPopup.show({ releaseInfo: update.info || null })
         return
       }
 
@@ -341,9 +335,6 @@ const AboutSettings: FC = () => {
           <Button onClick={debug}>{t('settings.about.debug.open')}</Button>
         </SettingRow>
       </SettingGroup>
-
-      {/* Update Dialog */}
-      <UpdateDialog isOpen={isOpen} onClose={onClose} releaseInfo={updateDialogInfo} />
     </SettingContainer>
   )
 }
