@@ -6,7 +6,7 @@ import {
   WifiOutlined,
   YuqueOutlined
 } from '@ant-design/icons'
-import { Button, RowFlex, Switch } from '@cherrystudio/ui'
+import { Button, RowFlex } from '@cherrystudio/ui'
 import { usePreference } from '@data/hooks/usePreference'
 import DividerWithText from '@renderer/components/DividerWithText'
 import { NutstoreIcon } from '@renderer/components/Icons/NutstoreIcons'
@@ -21,7 +21,7 @@ import { reset } from '@renderer/services/BackupService'
 import type { AppInfo } from '@renderer/types'
 import { formatFileSize } from '@renderer/utils'
 import { occupiedDirs } from '@shared/config/constant'
-import { Progress, Typography } from 'antd'
+import { Progress, Switch, Typography } from 'antd'
 import { FileText, FolderCog, FolderInput, FolderOpen, SaveIcon, Sparkle } from 'lucide-react'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'

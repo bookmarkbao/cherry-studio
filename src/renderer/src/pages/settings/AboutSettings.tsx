@@ -12,7 +12,7 @@ import i18n from '@renderer/i18n'
 // import { handleSaveData } from '@renderer/store'
 // import { setUpdateState as setAppUpdateState } from '@renderer/store/runtime'
 import { runAsyncFunction } from '@renderer/utils'
-import { UpgradeChannel } from '@shared/data/preference/preferenceTypes'
+import { ThemeMode, UpgradeChannel } from '@shared/data/preference/preferenceTypes'
 import { Avatar, Progress, Radio, Row, Tag } from 'antd'
 import { debounce } from 'lodash'
 import { Bug, Building2, Github, Globe, Mail, Rss } from 'lucide-react'
@@ -49,7 +49,7 @@ const AboutSettings: FC = () => {
 
       if (appUpdateState.downloaded) {
         // Open update dialog directly in renderer
-        UpdateDialogPopup.show({ releaseInfo: update.info || null })
+        UpdateDialogPopup.show({ releaseInfo: appUpdateState.info || null })
         return
       }
 
@@ -243,7 +243,6 @@ const AboutSettings: FC = () => {
                 <SettingRow>
                   <SettingRowTitle>{t('settings.general.test_plan.version_options')}</SettingRowTitle>
                   <RadioGroup
-                    size="sm"
                     orientation="horizontal"
                     value={getTestChannel()}
                     onValueChange={(value) => handleTestChannelChange(value as UpgradeChannel)}>

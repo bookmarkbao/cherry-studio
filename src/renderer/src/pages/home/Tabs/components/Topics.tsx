@@ -504,7 +504,7 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
       itemContainerStyle={{ paddingBottom: '8px' }}
       header={
         <>
-          <AddButton onClick={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)}>
+          <AddButton onClick={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)} className="">
             {t('chat.add.topic.title')}
           </AddButton>
           <div className="my-1"></div>

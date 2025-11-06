@@ -318,18 +318,19 @@ const AgentSessionInputbar: FC<Props> = ({ agentId, sessionId }) => {
                 <ActionIconButton
                   onClick={handleCreateSession}
                   disabled={createSessionDisabled}
-                  loading={creatingSession}>
-                  <MessageSquareDiff size={19} />
-                </ActionIconButton>
+                  icon={<MessageSquareDiff size={19} />}
+                />
               </Tooltip>
             </ToolbarGroup>
             <ToolbarGroup>
               <SendMessageButton sendMessage={sendMessage} disabled={sendDisabled} />
               {canAbort && (
                 <Tooltip placement="top" title={t('chat.input.pause')}>
-                  <ActionIconButton onClick={abortAgentSession} style={{ marginRight: -2 }}>
-                    <CirclePause size={20} color="var(--color-error)" />
-                  </ActionIconButton>
+                  <ActionIconButton
+                    onClick={abortAgentSession}
+                    className="-mr-0.5"
+                    icon={<CirclePause size={20} color="var(--color-error)" />}
+                  />
                 </Tooltip>
               )}
             </ToolbarGroup>
