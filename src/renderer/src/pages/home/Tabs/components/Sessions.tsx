@@ -130,6 +130,7 @@ const Container = styled(Scrollbar)`
   display: flex;
   flex-direction: column;
   padding: 12px 10px;
+  overflow-x: hidden;
 `
 
 export default memo(Sessions)
