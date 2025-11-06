@@ -97,8 +97,7 @@ const initialState: RuntimeState = {
   },
   websearch: {
     activeSearches: {}
-  },
-  iknow: {}
+  }
 }
 
 const runtimeSlice = createSlice({
