@@ -6,11 +6,9 @@ import { useAssistantPresets } from '@renderer/hooks/useAssistantPresets'
 import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useAssistantsTabSortType } from '@renderer/hooks/useStore'
 import { useTags } from '@renderer/hooks/useTags'
-import { useAppDispatch } from '@renderer/store'
 import type { Assistant, AssistantsSortType, Topic } from '@renderer/types'
 import type { FC } from 'react'
 import { useCallback, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import UnifiedAddButton from './components/UnifiedAddButton'
@@ -28,16 +26,12 @@ interface AssistantsTabProps {
   onCreateDefaultAssistant: () => void
 }
 
-const ALERT_KEY = 'enable_api_server_to_use_agent'
-
 const AssistantsTab: FC<AssistantsTabProps> = (props) => {
   const { activeAssistant, setActiveAssistant, onCreateAssistant, onCreateDefaultAssistant } = props
   const containerRef = useRef<HTMLDivElement>(null)
-  const { t } = useTranslation()
-  const { apiServerConfig, apiServerRunning, apiServerLoading } = useApiServer()
+  const { apiServerConfig } = useApiServer()
   const apiServerEnabled = apiServerConfig.enabled
-  const { iknow, chat } = useRuntime()
-  const dispatch = useAppDispatch()
+  const { chat } = useRuntime()
 
   // Agent related hooks
   const { agents, deleteAgent, isLoading: agentsLoading, error: agentsError } = useAgents()

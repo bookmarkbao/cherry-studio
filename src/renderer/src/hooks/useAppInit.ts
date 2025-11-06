@@ -24,6 +24,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useApiServer } from './useApiServer'
 import { useDefaultModel } from './useAssistant'
 import useFullScreenNotice from './useFullScreenNotice'
 import { useRuntime } from './useRuntime'
@@ -51,6 +52,8 @@ export function useAppInit() {
   const avatar = useLiveQuery(() => db.settings.get('image://avatar'))
   const { theme } = useTheme()
   const memoryConfig = useAppSelector(selectMemoryConfig)
+  const { apiServerConfig, startApiServer } = useApiServer()
+  const apiServerEnabled = apiServerConfig.enabled
 
   useEffect(() => {
     document.getElementById('spinner')?.remove()
@@ -245,4 +248,9 @@ export function useAppInit() {
   useEffect(() => {
     checkDataLimit()
   }, [])
+
+  useEffect(() => {
+    apiServerEnabled && startApiServer()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiServerEnabled])
 }

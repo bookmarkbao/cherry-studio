@@ -1,5 +1,6 @@
 import AddAssistantOrAgentPopup from '@renderer/components/Popups/AddAssistantOrAgentPopup'
 import AgentModalPopup from '@renderer/components/Popups/agent/AgentModal'
+import { useApiServer } from '@renderer/hooks/useApiServer'
 import { useAppDispatch } from '@renderer/store'
 import { setActiveTopicOrSessionAction } from '@renderer/store/runtime'
 import type { AgentEntity, Assistant, Topic } from '@renderer/types'
@@ -18,6 +19,7 @@ interface UnifiedAddButtonProps {
 const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant, setActiveAssistant, setActiveAgentId }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const { apiServerRunning, startApiServer } = useApiServer()
 
   const afterCreate = useCallback(
     (a: AgentEntity) => {
@@ -44,12 +46,15 @@ const UnifiedAddButton: FC<UnifiedAddButtonProps> = ({ onCreateAssistant, setAct
     [dispatch, setActiveAgentId, setActiveAssistant]
   )
 
-  const handleAddButtonClick = () => {
+  const handleAddButtonClick = async () => {
     AddAssistantOrAgentPopup.show({
       onSelect: (type) => {
         if (type === 'assistant') {
           onCreateAssistant()
-        } else if (type === 'agent') {
+        }
+
+        if (type === 'agent') {
+          !apiServerRunning && startApiServer()
           AgentModalPopup.show({ afterSubmit: afterCreate })
         }
       }

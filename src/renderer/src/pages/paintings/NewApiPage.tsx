@@ -96,11 +96,14 @@ const NewApiPage: FC<{ Options: string[] }> = ({ Options }) => {
     return editImageFiles
   }, [editImageFiles])
 
-  const updatePaintingState = (updates: Partial<PaintingAction>) => {
-    const updatedPainting = { ...painting, providerId: newApiProvider.id, ...updates }
-    setPainting(updatedPainting)
-    updatePainting(mode, updatedPainting)
-  }
+  const updatePaintingState = useCallback(
+    (updates: Partial<PaintingAction>) => {
+      const updatedPainting = { ...painting, providerId: newApiProvider.id, ...updates }
+      setPainting(updatedPainting)
+      updatePainting(mode, updatedPainting)
+    },
+    [mode, newApiProvider.id, painting, updatePainting]
+  )
 
   // ---------------- Model Related Configurations ----------------
   // const modelOptions = MODELS.map((m) => ({ label: m.name, value: m.name }))
