@@ -69,12 +69,14 @@ export const InstalledPluginsList: FC<InstalledPluginsListProps> = ({ plugins, o
       title: t('plugins.type'),
       dataIndex: 'type',
       key: 'type',
+      align: 'center',
       render: (type: string) => <Tag color={type === 'agent' ? 'magenta' : 'purple'}>{type}</Tag>
     },
     {
       title: t('plugins.category'),
       dataIndex: 'category',
       key: 'category',
+      align: 'center',
       render: (_: any, plugin: InstalledPlugin) => (
         <Tag
           icon={<Dot size={14} strokeWidth={8} />}
@@ -91,7 +93,7 @@ export const InstalledPluginsList: FC<InstalledPluginsListProps> = ({ plugins, o
     {
       title: t('plugins.actions'),
       key: 'actions',
-      align: 'right' as const,
+      align: 'center',
       render: (_: any, plugin: InstalledPlugin) => (
         <Button
           danger
@@ -105,5 +107,5 @@ export const InstalledPluginsList: FC<InstalledPluginsListProps> = ({ plugins, o
     }
   ]
 
-  return <AntTable columns={columns} dataSource={plugins} />
+  return <AntTable columns={columns} dataSource={plugins} size="small" />
 }
