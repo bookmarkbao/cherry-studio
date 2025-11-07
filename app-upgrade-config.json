@@ -5,13 +5,6 @@
       "minCompatibleVersion": "1.0.0",
       "description": "Last stable v1.7.x release - required intermediate version for users below v1.7",
       "channels": {
-        "latest": {
-          "version": "1.6.7",
-          "feedUrls": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.6.7",
-            "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/v1.6.7"
-          }
-        },
         "rc": {
           "version": "1.6.0-rc.5",
           "feedUrls": {
@@ -20,10 +13,17 @@
           }
         },
         "beta": {
-          "version": "1.6.7-beta.3",
+          "version": "1.7.0-beta.3",
           "feedUrls": {
             "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.7.0-beta.3",
             "gitcode": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.7.0-beta.3"
+          }
+        },
+        "latest": {
+          "version": "1.6.7",
+          "feedUrls": {
+            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.6.7",
+            "gitcode": "https://releases.cherry-ai.com"
           }
         }
       }
