@@ -1,0 +1,23 @@
+/**
+ * Border Radius
+ * 圆角半径
+ */
+
+:root {
+  --cs-radius-4xs: 4px; /* 4px */
+  --cs-radius-3xs: 8px; /* 8px */
+  --cs-radius-2xs: 12px; /* 12px */
+  --cs-radius-xs: 16px; /* 16px */
+  --cs-radius-sm: 24px; /* 24px */
+  --cs-radius-md: 32px; /* 32px */
+  --cs-radius-lg: 2.5rem; /* 40px */
+  --cs-radius-xl: 48px; /* 48px */
+  --cs-radius-2xl: 56px; /* 56px */
+  --cs-radius-3xl: 64px; /* 64px */
+  --cs-radius-round: 999px; /* 保持 px，因为是特殊值 */
+
+  /* Border Width */
+  --cs-border-width-sm: 1px; /* 1px */
+  --cs-border-width-md: 2px; /* 2px */
+  --cs-border-width-lg: 3px; /* 3px */
+}
