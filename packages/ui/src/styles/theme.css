@@ -420,7 +420,7 @@
 /* Dark Mode 覆盖 */
 /* ==================== */
 
-@theme dark {
+/* @theme dark {
   --color-background: var(--cs-background);
   --color-foreground: var(--cs-foreground);
   --color-card: var(--cs-card);
@@ -432,7 +432,7 @@
   --color-accent: var(--cs-accent);
   --color-sidebar: var(--cs-sidebar);
   --color-sidebar-accent: var(--cs-sidebar-accent);
-}
+} */
 
 /* ==================== */
 /* Base Styles（可选） */

@@ -254,7 +254,7 @@ export function Combobox({
           size={size}
           disabled={disabled}
           style={{ width: triggerWidth }}
-          className={cn(comboboxTriggerVariants({ state, size }), 'bg-white', className)}
+          className={cn(comboboxTriggerVariants({ state, size }), className)}
           aria-expanded={open}
           aria-invalid={error}>
           {renderTriggerContent()}
