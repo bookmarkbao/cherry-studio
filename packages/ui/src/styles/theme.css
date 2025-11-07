@@ -8,12 +8,11 @@
  * Generated on: 2025-11-07T08:56:09.444Z
  */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-
   /* ==================== */
   /* Primitive Colors */
   /* ==================== */
