@@ -85,6 +85,7 @@ vi.mock('electron-updater', () => ({
 }))
 
 // Import after mocks
+import { UpdateMirror } from '@shared/config/constant'
 import { getIpCountry } from '@main/utils/ipService'
 import { app, net } from 'electron'
 
@@ -287,8 +288,11 @@ describe('AppUpdater', () => {
           description: 'Test version',
           channels: {
             latest: {
-              feedUrl: 'https://github.com/test/v1.6.7',
-              version: '1.6.7'
+              version: '1.6.7',
+              feedUrls: {
+                github: 'https://github.com/test/v1.6.7',
+                gitcode: 'https://gitcode.com/test/v1.6.7'
+              }
             },
             rc: null,
             beta: null
@@ -297,49 +301,45 @@ describe('AppUpdater', () => {
       }
     }
 
-    it('should fetch config from GitHub for non-CN users', async () => {
-      vi.mocked(getIpCountry).mockResolvedValue('US')
+    it('should fetch config from GitHub mirror', async () => {
       vi.mocked(net.fetch).mockResolvedValue({
         ok: true,
         json: async () => mockConfig
       } as any)
 
-      const result = await (appUpdater as any)._fetchUpdateConfig()
+      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITHUB)
 
       expect(result).toEqual(mockConfig)
       expect(net.fetch).toHaveBeenCalledWith(expect.stringContaining('github'), expect.any(Object))
     })
 
-    it('should fetch config from GitCode for CN users', async () => {
-      vi.mocked(getIpCountry).mockResolvedValue('CN')
+    it('should fetch config from GitCode mirror', async () => {
       vi.mocked(net.fetch).mockResolvedValue({
         ok: true,
         json: async () => mockConfig
       } as any)
 
-      const result = await (appUpdater as any)._fetchUpdateConfig()
+      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITCODE)
 
       expect(result).toEqual(mockConfig)
       expect(net.fetch).toHaveBeenCalledWith(expect.stringContaining('gitcode'), expect.any(Object))
     })
 
     it('should return null on HTTP error', async () => {
-      vi.mocked(getIpCountry).mockResolvedValue('US')
       vi.mocked(net.fetch).mockResolvedValue({
         ok: false,
         status: 404
       } as any)
 
-      const result = await (appUpdater as any)._fetchUpdateConfig()
+      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITHUB)
 
       expect(result).toBeNull()
     })
 
     it('should return null on network error', async () => {
-      vi.mocked(getIpCountry).mockResolvedValue('US')
       vi.mocked(net.fetch).mockRejectedValue(new Error('Network error'))
 
-      const result = await (appUpdater as any)._fetchUpdateConfig()
+      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITHUB)
 
       expect(result).toBeNull()
     })
@@ -354,16 +354,25 @@ describe('AppUpdater', () => {
           description: 'v1.6.7',
           channels: {
             latest: {
-              feedUrl: 'https://github.com/test/v1.6.7',
-              version: '1.6.7'
+              version: '1.6.7',
+              feedUrls: {
+                github: 'https://github.com/test/v1.6.7',
+                gitcode: 'https://gitcode.com/test/v1.6.7'
+              }
             },
             rc: {
-              feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-              version: '1.7.0-rc.1'
+              version: '1.7.0-rc.1',
+              feedUrls: {
+                github: 'https://github.com/test/v1.7.0-rc.1',
+                gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+              }
             },
             beta: {
-              feedUrl: 'https://github.com/test/v1.7.0-beta.3',
-              version: '1.7.0-beta.3'
+              version: '1.7.0-beta.3',
+              feedUrls: {
+                github: 'https://github.com/test/v1.7.0-beta.3',
+                gitcode: 'https://gitcode.com/test/v1.7.0-beta.3'
+              }
             }
           }
         },
@@ -385,8 +394,11 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('1.5.0', 'latest', mockConfig)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.6.7',
-        version: '1.6.7'
+        version: '1.6.7',
+        feedUrls: {
+          github: 'https://github.com/test/v1.6.7',
+          gitcode: 'https://gitcode.com/test/v1.6.7'
+        }
       })
     })
 
@@ -396,8 +408,11 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('1.5.0', 'rc', mockConfig)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-        version: '1.7.0-rc.1'
+        version: '1.7.0-rc.1',
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0-rc.1',
+          gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+        }
       })
     })
 
@@ -407,8 +422,11 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('1.5.0', 'beta', mockConfig)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0-beta.3',
-        version: '1.7.0-beta.3'
+        version: '1.7.0-beta.3',
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0-beta.3',
+          gitcode: 'https://gitcode.com/test/v1.7.0-beta.3'
+        }
       })
     })
 
@@ -421,12 +439,18 @@ describe('AppUpdater', () => {
             description: 'v1.7.0',
             channels: {
               latest: {
-                feedUrl: 'https://github.com/test/v1.7.0',
-                version: '1.7.0'
+                version: '1.7.0',
+                feedUrls: {
+                  github: 'https://github.com/test/v1.7.0',
+                  gitcode: 'https://gitcode.com/test/v1.7.0'
+                }
               },
               rc: {
-                feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-                version: '1.7.0-rc.1'
+                version: '1.7.0-rc.1',
+                feedUrls: {
+                  github: 'https://github.com/test/v1.7.0-rc.1',
+                  gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                }
               },
               beta: null
             }
@@ -438,8 +462,11 @@ describe('AppUpdater', () => {
 
       // Should return latest instead of rc because 1.7.0 >= 1.7.0-rc.1
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0',
-        version: '1.7.0'
+        version: '1.7.0',
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0',
+          gitcode: 'https://gitcode.com/test/v1.7.0'
+        }
       })
     })
 
@@ -452,13 +479,23 @@ describe('AppUpdater', () => {
             description: 'v1.7.0',
             channels: {
               latest: {
-                feedUrl: 'https://github.com/test/v1.7.0',
-                version: '1.7.0'
+                version: '1.7.0',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.7.0',
+
+                  gitcode: 'https://gitcode.com/test/v1.7.0'
+                }
               },
               rc: null,
               beta: {
-                feedUrl: 'https://github.com/test/v1.6.8-beta.1',
-                version: '1.6.8-beta.1'
+                version: '1.6.8-beta.1',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.6.8-beta.1',
+
+                  gitcode: 'https://gitcode.com/test/v1.6.8-beta.1'
+                }
               }
             }
           }
@@ -469,8 +506,13 @@ describe('AppUpdater', () => {
 
       // Should return latest instead of beta because 1.7.0 >= 1.6.8-beta.1
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0',
-        version: '1.7.0'
+        version: '1.7.0',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0',
+
+          gitcode: 'https://gitcode.com/test/v1.7.0'
+        }
       })
     })
 
@@ -483,12 +525,22 @@ describe('AppUpdater', () => {
             description: 'v1.7.0',
             channels: {
               latest: {
-                feedUrl: 'https://github.com/test/v1.7.0',
-                version: '1.7.0'
+                version: '1.7.0',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.7.0',
+
+                  gitcode: 'https://gitcode.com/test/v1.7.0'
+                }
               },
               rc: {
-                feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-                version: '1.7.0-rc.1'
+                version: '1.7.0-rc.1',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.7.0-rc.1',
+
+                  gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                }
               },
               beta: null
             }
@@ -500,8 +552,13 @@ describe('AppUpdater', () => {
 
       // Should return latest directly without comparing with itself
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0',
-        version: '1.7.0'
+        version: '1.7.0',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0',
+
+          gitcode: 'https://gitcode.com/test/v1.7.0'
+        }
       })
     })
 
@@ -514,12 +571,22 @@ describe('AppUpdater', () => {
             description: 'v1.7.0',
             channels: {
               latest: {
-                feedUrl: 'https://github.com/test/v1.6.7',
-                version: '1.6.7'
+                version: '1.6.7',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.6.7',
+
+                  gitcode: 'https://gitcode.com/test/v1.6.7'
+                }
               },
               rc: {
-                feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-                version: '1.7.0-rc.1'
+                version: '1.7.0-rc.1',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.7.0-rc.1',
+
+                  gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                }
               },
               beta: null
             }
@@ -531,8 +598,13 @@ describe('AppUpdater', () => {
 
       // Should return rc because 1.7.0-rc.1 > 1.6.7
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-        version: '1.7.0-rc.1'
+        version: '1.7.0-rc.1',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0-rc.1',
+
+          gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+        }
       })
     })
 
@@ -545,13 +617,23 @@ describe('AppUpdater', () => {
             description: 'v1.7.0',
             channels: {
               latest: {
-                feedUrl: 'https://github.com/test/v1.6.7',
-                version: '1.6.7'
+                version: '1.6.7',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.6.7',
+
+                  gitcode: 'https://gitcode.com/test/v1.6.7'
+                }
               },
               rc: null,
               beta: {
-                feedUrl: 'https://github.com/test/v1.7.0-beta.5',
-                version: '1.7.0-beta.5'
+                version: '1.7.0-beta.5',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.7.0-beta.5',
+
+                  gitcode: 'https://gitcode.com/test/v1.7.0-beta.5'
+                }
               }
             }
           }
@@ -562,8 +644,13 @@ describe('AppUpdater', () => {
 
       // Should return beta because 1.7.0-beta.5 > 1.6.7
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0-beta.5',
-        version: '1.7.0-beta.5'
+        version: '1.7.0-beta.5',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0-beta.5',
+
+          gitcode: 'https://gitcode.com/test/v1.7.0-beta.5'
+        }
       })
     })
 
@@ -574,8 +661,13 @@ describe('AppUpdater', () => {
 
       // 1.8.0 >= 1.7.0 but 2.0.0 has no latest channel, so return 1.6.7
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.6.7',
-        version: '1.6.7'
+        version: '1.6.7',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.6.7',
+
+          gitcode: 'https://gitcode.com/test/v1.6.7'
+        }
       })
     })
 
@@ -593,8 +685,13 @@ describe('AppUpdater', () => {
 
       // 1.8.0 >= 1.7.0 but 2.0.0 has no rc channel, so return 1.6.7 rc
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-        version: '1.7.0-rc.1'
+        version: '1.7.0-rc.1',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.0-rc.1',
+
+          gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+        }
       })
     })
 
@@ -607,8 +704,13 @@ describe('AppUpdater', () => {
             description: 'v1.6.7',
             channels: {
               latest: {
-                feedUrl: 'https://github.com/test/v1.6.7',
-                version: '1.6.7'
+                version: '1.6.7',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v1.6.7',
+
+                  gitcode: 'https://gitcode.com/test/v1.6.7'
+                }
               },
               rc: null,
               beta: null
@@ -632,16 +734,31 @@ describe('AppUpdater', () => {
           description: 'Last v1.x',
           channels: {
             latest: {
-              feedUrl: 'https://github.com/test/v1.6.7',
-              version: '1.6.7'
+              version: '1.6.7',
+
+              feedUrls: {
+                github: 'https://github.com/test/v1.6.7',
+
+                gitcode: 'https://gitcode.com/test/v1.6.7'
+              }
             },
             rc: {
-              feedUrl: 'https://github.com/test/v1.7.0-rc.1',
-              version: '1.7.0-rc.1'
+              version: '1.7.0-rc.1',
+
+              feedUrls: {
+                github: 'https://github.com/test/v1.7.0-rc.1',
+
+                gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+              }
             },
             beta: {
-              feedUrl: 'https://github.com/test/v1.7.0-beta.3',
-              version: '1.7.0-beta.3'
+              version: '1.7.0-beta.3',
+
+              feedUrls: {
+                github: 'https://github.com/test/v1.7.0-beta.3',
+
+                gitcode: 'https://gitcode.com/test/v1.7.0-beta.3'
+              }
             }
           }
         },
@@ -661,8 +778,13 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('1.6.3', 'latest', fullConfig)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.6.7',
-        version: '1.6.7'
+        version: '1.6.7',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.6.7',
+
+          gitcode: 'https://gitcode.com/test/v1.6.7'
+        }
       })
     })
 
@@ -671,8 +793,13 @@ describe('AppUpdater', () => {
 
       // Should return 1.6.7, not 2.0.0, because 1.6.7 < 1.7.0 (minCompatibleVersion of 2.0.0)
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.6.7',
-        version: '1.6.7'
+        version: '1.6.7',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.6.7',
+
+          gitcode: 'https://gitcode.com/test/v1.6.7'
+        }
       })
     })
 
@@ -686,8 +813,13 @@ describe('AppUpdater', () => {
             description: 'First v2.x',
             channels: {
               latest: {
-                feedUrl: 'https://github.com/test/v2.0.0',
-                version: '2.0.0'
+                version: '2.0.0',
+
+                feedUrls: {
+                  github: 'https://github.com/test/v2.0.0',
+
+                  gitcode: 'https://gitcode.com/test/v2.0.0'
+                }
               },
               rc: null,
               beta: null
@@ -699,8 +831,13 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('1.7.0', 'latest', configWith2x)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v2.0.0',
-        version: '2.0.0'
+        version: '2.0.0',
+
+        feedUrls: {
+          github: 'https://github.com/test/v2.0.0',
+
+          gitcode: 'https://gitcode.com/test/v2.0.0'
+        }
       })
     })
   })
@@ -714,8 +851,13 @@ describe('AppUpdater', () => {
           description: 'Last v1.x stable',
           channels: {
             latest: {
-              feedUrl: 'https://github.com/test/v1.7.5',
-              version: '1.7.5'
+              version: '1.7.5',
+
+              feedUrls: {
+                github: 'https://github.com/test/v1.7.5',
+
+                gitcode: 'https://gitcode.com/test/v1.7.5'
+              }
             },
             rc: null,
             beta: null
@@ -726,8 +868,13 @@ describe('AppUpdater', () => {
           description: 'First v2.x - intermediate version',
           channels: {
             latest: {
-              feedUrl: 'https://github.com/test/v2.0.0',
-              version: '2.0.0'
+              version: '2.0.0',
+
+              feedUrls: {
+                github: 'https://github.com/test/v2.0.0',
+
+                gitcode: 'https://gitcode.com/test/v2.0.0'
+              }
             },
             rc: null,
             beta: null
@@ -738,8 +885,13 @@ describe('AppUpdater', () => {
           description: 'Current v2.x stable',
           channels: {
             latest: {
-              feedUrl: 'https://github.com/test/latest',
-              version: '2.1.6'
+              version: '2.1.6',
+
+              feedUrls: {
+                github: 'https://github.com/test/latest',
+
+                gitcode: 'https://gitcode.com/test/latest'
+              }
             },
             rc: null,
             beta: null
@@ -752,8 +904,13 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('1.6.3', 'latest', fullUpgradeConfig)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v1.7.5',
-        version: '1.7.5'
+        version: '1.7.5',
+
+        feedUrls: {
+          github: 'https://github.com/test/v1.7.5',
+
+          gitcode: 'https://gitcode.com/test/v1.7.5'
+        }
       })
     })
 
@@ -761,8 +918,13 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('1.7.5', 'latest', fullUpgradeConfig)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/v2.0.0',
-        version: '2.0.0'
+        version: '2.0.0',
+
+        feedUrls: {
+          github: 'https://github.com/test/v2.0.0',
+
+          gitcode: 'https://gitcode.com/test/v2.0.0'
+        }
       })
     })
 
@@ -770,8 +932,13 @@ describe('AppUpdater', () => {
       const result = (appUpdater as any)._findCompatibleChannel('2.0.0', 'latest', fullUpgradeConfig)
 
       expect(result).toEqual({
-        feedUrl: 'https://github.com/test/latest',
-        version: '2.1.6'
+        version: '2.1.6',
+
+        feedUrls: {
+          github: 'https://github.com/test/latest',
+
+          gitcode: 'https://gitcode.com/test/latest'
+        }
       })
     })
 
