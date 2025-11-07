@@ -2,7 +2,7 @@ import { loggerService } from '@logger'
 import { isWin } from '@main/constant'
 import { getIpCountry } from '@main/utils/ipService'
 import { generateUserAgent } from '@main/utils/systemInfo'
-import { FeedUrl, UpdateConfigUrl, UpgradeChannel } from '@shared/config/constant'
+import { FeedUrl, UpdateConfigUrl, UpdateMirror, UpgradeChannel } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import type { UpdateInfo } from 'builder-util-runtime'
 import { CancellationToken } from 'builder-util-runtime'
@@ -22,7 +22,29 @@ const LANG_MARKERS = {
   EN_START: '<!--LANG:en-->',
   ZH_CN_START: '<!--LANG:zh-CN-->',
   END: '<!--LANG:END-->'
-} as const
+}
+
+interface UpdateConfig {
+  lastUpdated: string
+  versions: {
+    [versionKey: string]: VersionConfig
+  }
+}
+
+interface VersionConfig {
+  minCompatibleVersion: string
+  description: string
+  channels: {
+    latest: ChannelConfig | null
+    rc: ChannelConfig | null
+    beta: ChannelConfig | null
+  }
+}
+
+interface ChannelConfig {
+  version: string
+  feedUrls: Record<UpdateMirror, string>
+}
 
 export default class AppUpdater {
   autoUpdater: _AppUpdater = autoUpdater
@@ -107,15 +129,15 @@ export default class AppUpdater {
   }
 
   /**
-   * Fetch update configuration from GitHub or GitCode based on IP location
+   * Fetch update configuration from GitHub or GitCode based on mirror
+   * @param mirror - Mirror to fetch config from
    * @returns UpdateConfig object or null if fetch fails
    */
-  private async _fetchUpdateConfig(): Promise<UpdateConfig | null> {
-    const ipCountry = await getIpCountry()
-    const configUrl = ipCountry.toLowerCase() === 'cn' ? UpdateConfigUrl.GITCODE : UpdateConfigUrl.GITHUB
+  private async _fetchUpdateConfig(mirror: UpdateMirror): Promise<UpdateConfig | null> {
+    const configUrl = mirror === UpdateMirror.GITCODE ? UpdateConfigUrl.GITCODE : UpdateConfigUrl.GITHUB
 
     try {
-      logger.info(`Fetching update config from ${configUrl}`)
+      logger.info(`Fetching update config from ${configUrl} (mirror: ${mirror})`)
       const response = await net.fetch(configUrl, {
         headers: {
           'User-Agent': generateUserAgent(),
@@ -164,7 +186,7 @@ export default class AppUpdater {
       // Check version compatibility and channel availability
       if (semver.gte(currentVersion, versionConfig.minCompatibleVersion) && channelConfig !== null) {
         logger.info(
-          `Found compatible version: ${versionKey} (minCompatibleVersion: ${versionConfig.minCompatibleVersion}), feedUrl: ${channelConfig.feedUrl}`
+          `Found compatible version: ${versionKey} (minCompatibleVersion: ${versionConfig.minCompatibleVersion}), version: ${channelConfig.version}`
         )
 
         if (
@@ -173,7 +195,7 @@ export default class AppUpdater {
           semver.gte(latestChannelConfig.version, channelConfig.version)
         ) {
           logger.info(
-            `latest channel config is greater than the current channel config: ${latestChannelConfig.feedUrl} > ${channelConfig.feedUrl}`
+            `latest channel version is greater than the requested channel version: ${latestChannelConfig.version} > ${channelConfig.version}`
           )
           return latestChannelConfig
         }
@@ -201,30 +223,34 @@ export default class AppUpdater {
     const testPlan = configManager.getTestPlan()
     const requestedChannel = testPlan ? this._getTestChannel() : UpgradeChannel.LATEST
 
+    // Determine mirror based on IP country
+    const ipCountry = await getIpCountry()
+    const mirror = ipCountry.toLowerCase() === 'cn' ? UpdateMirror.GITCODE : UpdateMirror.GITHUB
+
     logger.info(
-      `Setting feed URL for version ${currentVersion}, testPlan: ${testPlan}, requested channel: ${requestedChannel}`
+      `Setting feed URL for version ${currentVersion}, testPlan: ${testPlan}, requested channel: ${requestedChannel}, mirror: ${mirror} (IP country: ${ipCountry})`
     )
 
     // Try to fetch update config from remote
-    const updateConfig = await this._fetchUpdateConfig()
+    const config = await this._fetchUpdateConfig(mirror)
 
-    if (updateConfig) {
+    if (config) {
       // Use new config-based system
-      const channelConfig = this._findCompatibleChannel(currentVersion, requestedChannel, updateConfig)
+      const channelConfig = this._findCompatibleChannel(currentVersion, requestedChannel, config)
 
       if (channelConfig) {
-        logger.info(`Using config-based feed URL: ${channelConfig.feedUrl} for channel ${requestedChannel}`)
-        this._setChannel(requestedChannel, channelConfig.feedUrl)
+        const feedUrl = channelConfig.feedUrls[mirror]
+        logger.info(`Using config-based feed URL: ${feedUrl} for channel ${requestedChannel} (mirror: ${mirror})`)
+        this._setChannel(requestedChannel, feedUrl)
         return
       }
     }
 
     logger.info('Failed to fetch update config, falling back to default feed URL')
-    // Fallback: use default feed URL based on IP location
-    const ipCountry = await getIpCountry()
-    const defaultFeedUrl = ipCountry.toLowerCase() === 'cn' ? FeedUrl.PRODUCTION : FeedUrl.GITHUB_LATEST
+    // Fallback: use default feed URL based on mirror
+    const defaultFeedUrl = mirror === UpdateMirror.GITCODE ? FeedUrl.PRODUCTION : FeedUrl.GITHUB_LATEST
 
-    logger.info(`Using fallback feed URL: ${defaultFeedUrl} (IP country: ${ipCountry})`)
+    logger.info(`Using fallback feed URL: ${defaultFeedUrl}`)
     this._setChannel(UpgradeChannel.LATEST, defaultFeedUrl)
   }
 
@@ -346,26 +372,4 @@ export default class AppUpdater {
 
     return processedInfo
   }
-}
-
-interface UpdateConfig {
-  lastUpdated: string
-  versions: {
-    [versionKey: string]: VersionConfig
-  }
-}
-
-interface VersionConfig {
-  minCompatibleVersion: string
-  description: string
-  channels: {
-    latest: ChannelConfig | null
-    rc: ChannelConfig | null
-    beta: ChannelConfig | null
-  }
-}
-
-interface ChannelConfig {
-  feedUrl: string
-  version: string
 }

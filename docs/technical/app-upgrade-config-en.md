@@ -21,8 +21,10 @@ Currently, AppUpdater directly queries the GitHub API to retrieve beta and rc up
 
 ### File Location
 
-- **GitHub**: `https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/update-config.json`
-- **GitCode**: `https://gitcode.com/CherryHQ/cherry-studio/raw/main/update-config.json`
+- **GitHub**: `https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/app-upgrade-config.json`
+- **GitCode**: `https://gitcode.com/CherryHQ/cherry-studio/raw/main/app-upgrade-config.json`
+
+**Note**: Both mirrors provide the same configuration file. The client automatically selects the optimal mirror based on IP geolocation.
 
 ### Configuration Structure (Current Implementation)
 
@@ -30,34 +32,40 @@ Currently, AppUpdater directly queries the GitHub API to retrieve beta and rc up
 {
   "lastUpdated": "2025-01-05T00:00:00Z",
   "versions": {
-    "1.7.0": {
-      "minCompatibleVersion": "0.0.0",
+    "1.6.7": {
+      "minCompatibleVersion": "1.0.0",
       "description": "Last stable v1.7.x release - required intermediate version for users below v1.7",
       "channels": {
         "latest": {
-          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.7.0",
-          "version": "1.7.0"
+          "version": "1.6.7",
+          "feedUrls": {
+            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.6.7",
+            "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/v1.6.7"
+          }
         },
-        "rc": null,
-        "beta": null
+        "rc": {
+          "version": "1.6.0-rc.5",
+          "feedUrls": {
+            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.6.0-rc.5",
+            "gitcode": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.6.0-rc.5"
+          }
+        },
+        "beta": {
+          "version": "1.6.7-beta.3",
+          "feedUrls": {
+            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.7.0-beta.3",
+            "gitcode": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.7.0-beta.3"
+          }
+        }
       }
     },
     "2.0.0": {
       "minCompatibleVersion": "1.7.0",
-      "description": "Major release v2.0 - available for v1.7.0 and above",
+      "description": "Major release v2.0 - required intermediate version for v2.x upgrades",
       "channels": {
-        "latest": {
-          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/latest",
-          "version": "2.0.0"
-        },
-        "rc": {
-          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.0.0-rc.1",
-          "version": "2.0.0-rc.1"
-        },
-        "beta": {
-          "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.0.0-beta.1",
-          "version": "2.0.0-beta.1"
-        }
+        "latest": null,
+        "rc": null,
+        "beta": null
       }
     }
   }
@@ -75,8 +83,11 @@ When releasing v3.0, if users need to first upgrade to v2.8, you can add:
     "description": "Stable v2.8 - required for v3 upgrade",
     "channels": {
       "latest": {
-        "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.8.0",
-        "version": "2.8.0"
+        "version": "2.8.0",
+        "feedUrls": {
+          "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.8.0",
+          "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/v2.8.0"
+        }
       },
       "rc": null,
       "beta": null
@@ -87,12 +98,18 @@ When releasing v3.0, if users need to first upgrade to v2.8, you can add:
     "description": "Major release v3.0",
     "channels": {
       "latest": {
-        "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/latest",
-        "version": "3.0.0"
+        "version": "3.0.0",
+        "feedUrls": {
+          "github": "https://github.com/CherryHQ/cherry-studio/releases/latest",
+          "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/latest"
+        }
       },
       "rc": {
-        "feedUrl": "https://github.com/CherryHQ/cherry-studio/releases/download/v3.0.0-rc.1",
-        "version": "3.0.0-rc.1"
+        "version": "3.0.0-rc.1",
+        "feedUrls": {
+          "github": "https://github.com/CherryHQ/cherry-studio/releases/download/v3.0.0-rc.1",
+          "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/v3.0.0-rc.1"
+        }
       },
       "beta": null
     }
@@ -111,8 +128,10 @@ When releasing v3.0, if users need to first upgrade to v2.8, you can add:
     - `rc`: Release Candidate channel
     - `beta`: Beta testing channel
     - Each channel contains:
-      - `feedUrl`: electron-updater feed URL
       - `version`: Version number for this channel
+      - `feedUrls`: Multi-mirror URL configuration
+        - `github`: electron-updater feed URL for GitHub mirror
+        - `gitcode`: electron-updater feed URL for GitCode mirror
 
 ## TypeScript Type Definitions
 
@@ -135,8 +154,11 @@ interface VersionConfig {
 }
 
 interface ChannelConfig {
-  feedUrl: string
   version: string
+  feedUrls: {
+    github: string
+    gitcode: string
+  }
 }
 ```
 
@@ -248,20 +270,51 @@ Assuming v2.8.0 and v3.0.0 configurations have been added:
    - `VersionConfig`
    - `ChannelConfig`
 
-### Configuration Source Selection Logic
+### Mirror Selection Logic
+
+The client automatically selects the optimal mirror based on IP geolocation:
 
 ```typescript
-private async _fetchUpdateConfig(): Promise<UpdateConfig | null> {
+private async _setFeedUrl() {
+  const currentVersion = app.getVersion()
+  const testPlan = configManager.getTestPlan()
+  const requestedChannel = testPlan ? this._getTestChannel() : UpgradeChannel.LATEST
+
+  // Determine mirror based on IP country
   const ipCountry = await getIpCountry()
-  const configUrl = ipCountry.toLowerCase() === 'cn'
-    ? 'https://gitcode.com/CherryHQ/cherry-studio/raw/main/update-config.json'
-    : 'https://raw.githubusercontent.com/CherryHQ/cherry-studio/main/update-config.json'
+  const mirror = ipCountry.toLowerCase() === 'cn' ? 'gitcode' : 'github'
+
+  // Fetch update config
+  const config = await this._fetchUpdateConfig(mirror)
+
+  if (config) {
+    const channelConfig = this._findCompatibleChannel(currentVersion, requestedChannel, config)
+    if (channelConfig) {
+      // Select feed URL from the corresponding mirror
+      const feedUrl = channelConfig.feedUrls[mirror]
+      this._setChannel(requestedChannel, feedUrl)
+      return
+    }
+  }
+
+  // Fallback logic
+  const defaultFeedUrl = mirror === 'gitcode'
+    ? FeedUrl.PRODUCTION
+    : FeedUrl.GITHUB_LATEST
+  this._setChannel(UpgradeChannel.LATEST, defaultFeedUrl)
+}
+
+private async _fetchUpdateConfig(mirror: 'github' | 'gitcode'): Promise<UpdateConfig | null> {
+  const configUrl = mirror === 'gitcode'
+    ? UpdateConfigUrl.GITCODE
+    : UpdateConfigUrl.GITHUB
 
   try {
     const response = await net.fetch(configUrl, {
       headers: {
         'User-Agent': generateUserAgent(),
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-Client-Id': configManager.getClientId()
       }
     })
     return await response.json() as UpdateConfig
