@@ -59,7 +59,9 @@ export default class AppUpdater {
     autoUpdater.requestHeaders = {
       ...autoUpdater.requestHeaders,
       'User-Agent': generateUserAgent(),
-      'X-Client-Id': configManager.getClientId()
+      'X-Client-Id': configManager.getClientId(),
+      // no-cache
+      'Cache-Control': 'no-cache'
     }
 
     autoUpdater.on('error', (error) => {
@@ -142,7 +144,9 @@ export default class AppUpdater {
         headers: {
           'User-Agent': generateUserAgent(),
           Accept: 'application/json',
-          'X-Client-Id': configManager.getClientId()
+          'X-Client-Id': configManager.getClientId(),
+          // no-cache
+          'Cache-Control': 'no-cache'
         }
       })
 
