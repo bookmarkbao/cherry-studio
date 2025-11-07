@@ -86,7 +86,6 @@ vi.mock('electron-updater', () => ({
 
 // Import after mocks
 import { UpdateMirror } from '@shared/config/constant'
-import { getIpCountry } from '@main/utils/ipService'
 import { app, net } from 'electron'
 
 import AppUpdater from '../AppUpdater'
