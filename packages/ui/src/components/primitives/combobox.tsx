@@ -23,8 +23,7 @@ const comboboxTriggerVariants = cva(
     variants: {
       state: {
         default: 'border-border aria-expanded:border-primary aria-expanded:ring-3 aria-expanded:ring-primary/20',
-        error:
-          'border-destructive ring-2 ring-destructive/20 aria-expanded:border-destructive aria-expanded:ring-destructive/20',
+        error: 'border border-destructive! aria-expanded:ring-3 aria-expanded:ring-red-600/20',
         disabled: 'opacity-50 cursor-not-allowed pointer-events-none'
       },
       size: {
@@ -262,7 +261,9 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className={cn('p-0 rounded-2xs', popoverClassName)} style={{ width: triggerWidth }}>
         <Command>
-          {searchable && <CommandInput placeholder={searchPlaceholder} className="h-9" onValueChange={onSearch} />}
+          {searchable && (
+            <CommandInput placeholder={searchPlaceholder} className="h-9 rounded-none" onValueChange={onSearch} />
+          )}
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
