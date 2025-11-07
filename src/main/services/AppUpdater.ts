@@ -164,13 +164,13 @@ export default class AppUpdater {
    * @param currentVersion - Current app version
    * @param requestedChannel - Requested upgrade channel (latest/rc/beta)
    * @param config - Update configuration object
-   * @returns ChannelConfig if compatible version found, null otherwise
+   * @returns Object containing ChannelConfig and actual channel if found, null otherwise
    */
   private _findCompatibleChannel(
     currentVersion: string,
     requestedChannel: UpgradeChannel,
     config: UpdateConfig
-  ): ChannelConfig | null {
+  ): { config: ChannelConfig; channel: UpgradeChannel } | null {
     // Get all version keys and sort descending (newest first)
     const versionKeys = Object.keys(config.versions).sort(semver.rcompare)
 
@@ -195,12 +195,12 @@ export default class AppUpdater {
           semver.gte(latestChannelConfig.version, channelConfig.version)
         ) {
           logger.info(
-            `latest channel version is greater than the requested channel version: ${latestChannelConfig.version} > ${channelConfig.version}`
+            `latest channel version is greater than the requested channel version: ${latestChannelConfig.version} > ${channelConfig.version}, using latest instead`
           )
-          return latestChannelConfig
+          return { config: latestChannelConfig, channel: UpgradeChannel.LATEST }
         }
 
-        return channelConfig
+        return { config: channelConfig, channel: requestedChannel }
       }
     }
 
@@ -236,12 +236,15 @@ export default class AppUpdater {
 
     if (config) {
       // Use new config-based system
-      const channelConfig = this._findCompatibleChannel(currentVersion, requestedChannel, config)
+      const result = this._findCompatibleChannel(currentVersion, requestedChannel, config)
 
-      if (channelConfig) {
+      if (result) {
+        const { config: channelConfig, channel: actualChannel } = result
         const feedUrl = channelConfig.feedUrls[mirror]
-        logger.info(`Using config-based feed URL: ${feedUrl} for channel ${requestedChannel} (mirror: ${mirror})`)
-        this._setChannel(requestedChannel, feedUrl)
+        logger.info(
+          `Using config-based feed URL: ${feedUrl} for channel ${actualChannel} (requested: ${requestedChannel}, mirror: ${mirror})`
+        )
+        this._setChannel(actualChannel, feedUrl)
         return
       }
     }
