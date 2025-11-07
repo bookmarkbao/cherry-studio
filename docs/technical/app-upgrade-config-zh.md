@@ -136,6 +136,12 @@
 ## TypeScript 类型定义
 
 ```typescript
+// 镜像源枚举
+enum UpdateMirror {
+  GITHUB = 'github',
+  GITCODE = 'gitcode'
+}
+
 interface UpdateConfig {
   lastUpdated: string
   versions: {
@@ -155,10 +161,12 @@ interface VersionConfig {
 
 interface ChannelConfig {
   version: string
-  feedUrls: {
-    github: string
-    gitcode: string
-  }
+  feedUrls: Record<UpdateMirror, string>
+  // 等同于:
+  // feedUrls: {
+  //   github: string
+  //   gitcode: string
+  // }
 }
 ```
 

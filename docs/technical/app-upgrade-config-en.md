@@ -136,6 +136,12 @@ When releasing v3.0, if users need to first upgrade to v2.8, you can add:
 ## TypeScript Type Definitions
 
 ```typescript
+// Mirror enum
+enum UpdateMirror {
+  GITHUB = 'github',
+  GITCODE = 'gitcode'
+}
+
 interface UpdateConfig {
   lastUpdated: string
   versions: {
@@ -155,10 +161,12 @@ interface VersionConfig {
 
 interface ChannelConfig {
   version: string
-  feedUrls: {
-    github: string
-    gitcode: string
-  }
+  feedUrls: Record<UpdateMirror, string>
+  // Equivalent to:
+  // feedUrls: {
+  //   github: string
+  //   gitcode: string
+  // }
 }
 ```
 
