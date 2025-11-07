@@ -22,7 +22,7 @@ const comboboxTriggerVariants = cva(
   {
     variants: {
       state: {
-        default: 'border-input aria-expanded:border-success aria-expanded:ring-2 aria-expanded:ring-success/20',
+        default: 'border-border aria-expanded:border-primary aria-expanded:ring-3 aria-expanded:ring-primary/20',
         error:
           'border-destructive ring-2 ring-destructive/20 aria-expanded:border-destructive aria-expanded:ring-destructive/20',
         disabled: 'opacity-50 cursor-not-allowed pointer-events-none'
@@ -194,11 +194,10 @@ export function Combobox({
             <span
               key={option.value}
               className={cn(
-                'bg-success/10',
+                'bg-primary/10 text-primary',
                 'gap-1 px-2 py-0.5',
                 'inline-flex items-center rounded',
-                'text-success-foreground text-xs',
-                'text-primary background-primary/10'
+                'text-success-foreground text-xs'
               )}>
               {option.label}
               <X
