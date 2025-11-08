@@ -5,7 +5,7 @@ import { Terminal } from 'lucide-react'
 import { ToolTitle } from './GenericTools'
 import type { BashToolInput as BashToolInputType, BashToolOutput as BashToolOutputType } from './types'
 
-const MAX_TAG_LENGTH = 200
+const MAX_TAG_LENGTH = 100
 
 export function BashTool({
   input,
